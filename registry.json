@@ -87,8 +87,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/chapter-library.mjs",
-      "bytes": 12016,
-      "sha256": "3b3326fa552df5aa4fee0365d921a3728fa3e7ac21d5b9807544c0ce2112917b"
+      "bytes": 12072,
+      "sha256": "ee4c38e7ad376009c55330cd553430bc43f2913f8adc421bf542b263e96d33b5"
     },
     {
       "path": "Tools/ChromaticBBS/chapters/the-weather-inside.json",
@@ -148,7 +148,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 8244,
-      "sha256": "358537c325f0088ccdfe036b5c4323a5732d4e0e25a2a3206e75ba89f7e1de21"
+      "sha256": "ad37b631c2431f01aa96f4332069671b8daaede5092a3b8e9509e53bfaf63d7b"
     },
     {
       "path": "Tools/ChromaticBBS/packing-results.json",
@@ -277,8 +277,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 468678,
-      "sha256": "293462a356314727bbd6b1f876d977f7cdea09781a5773aa31a2b50da0e565a8"
+      "bytes": 468734,
+      "sha256": "cc610410c77ddab403b5da7c9f93c8c354fdce558b38b50a7427a97fa1d7acaa"
     },
     {
       "path": "runbook.md",
