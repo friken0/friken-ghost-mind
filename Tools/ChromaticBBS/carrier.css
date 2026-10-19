@@ -241,3 +241,13 @@
 #chromatic-carrier #cg-chapter-detail{white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto;border-left:2px solid var(--cg-ink);padding:10px}
 
 #chromatic-carrier .cg-canon-edges path[data-branch=canon]{stroke:var(--cg-warn)}
+
+/* Full caption geometry remains stable while playback reveals its ink. */
+#chromatic-carrier .cg-read-unread{color:transparent!important;text-shadow:none!important}
+#chromatic-carrier [data-reading=speaking]>span:first-child{border-right:2px solid var(--cg-ink)}
+@media(prefers-reduced-motion:reduce){#chromatic-carrier .cg-read-unread{color:inherit!important}}
+
+#chromatic-carrier .cg-completion{border:1px solid var(--cg-ink);border-left:4px solid var(--cg-accent);padding:12px;margin:12px 0;background:var(--cg-panel)}
+#chromatic-carrier .cg-completion h2{color:var(--cg-warn);margin:8px 0}
+#chromatic-carrier .cg-completion ol,#chromatic-carrier #cg-chapter-handoff ol{padding-left:22px}
+#chromatic-carrier #cg-canon-note{color:var(--cg-warn)}

@@ -3,7 +3,7 @@ import {validateVoiceClips} from './recorded-voice.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {battlePlan} from './roll-battle.mjs';
-import {castVoices,speechSegments} from './speech.mjs';
+import {castVoices,speechSegments,speechText,mountSpeech,speechUnits} from './speech.mjs';
 import {responsePacket,validateResponse} from './response.mjs';
 import {newGame,view,choose,encodeSeed} from './engine.mjs';
 test('every legal die/stat/DC battle conserves subtraction and leaves exactly the signed margin',()=>{
@@ -56,4 +56,50 @@ test('listeners hear Ghost acknowledge the choice before female narration and th
   const casting={ghost:{voiceURI:'david'},narrator:{voiceURI:'female'}};
   const lines=speechSegments({scene:'Next scene.',ghost:'Next response.',decision:{spoken:'You chose the private route.'}},casting);
   assert.deepEqual(lines.map(s=>s.role),['ghost','narrator','ghost']);assert.equal(lines[0].text,'You chose the private route.');assert.equal(lines[1].text,'Next scene.');
+});
+
+test('speech reads uppercase emphasis as words and deliberately spells known initialisms',()=>{
+  assert.equal(speechText('WHO WAS HERE? WHO gets TOMORROW?'),'who was here? who gets tomorrow?');
+  assert.equal(speechText('DON’T SHOOT. We CAN FIX THIS. NASA says OK.'),'don’t shoot. We can fix this. nasa says ok.');
+  assert.equal(speechText('GPU / SDF / AI / DC / UI / BBS'),'G P U / S D F / A I / D C / U I / B B S');
+  assert.equal(speechText('Who? I am Friken.Ghost. W. H. O. GPUs and GPU’s.'),'Who? I am Friken.Ghost. W. H. O. G P U’s and G P U’s.');
+  const line='WHO checks the SDF?';assert.equal(speechText(speechText(line)),speechText(line));
+});
+
+test('both browser voices receive speech normalization without altering captions or choice text',async()=>{
+  const saved=new Map(['window','document','speechSynthesis','SpeechSynthesisUtterance','cancelAnimationFrame'].map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));
+  const spoken=[],beginnings=[],voices=[{name:'Samantha',lang:'en-US',voiceURI:'sam'},{name:'Daniel',lang:'en-GB',voiceURI:'dan'}];
+  const element=()=>({dataset:{},append(){},replaceChildren(){},addEventListener(){},pause(){},setAttribute(){},removeAttribute(){}}),nodes=new Map();
+  try{
+    globalThis.document={createElement:element,createTextNode:text=>text,addEventListener(){}};
+    globalThis.cancelAnimationFrame=()=>{};
+    globalThis.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
+    globalThis.speechSynthesis={cancel(){},getVoices:()=>voices,addEventListener(){},speak(line){spoken.push(line);beginnings.push(Date.now());queueMicrotask(()=>line.onend());}};
+    globalThis.window={speechSynthesis,SpeechSynthesisUtterance};
+    const root={append(){},querySelector(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);}};
+    const speech=mountSpeech(root,{note(){},pulse(){},talking(){},storage:{getItem:()=>JSON.stringify({engine:'device'})}});
+    const frame={scene:'WHO WAS HERE?',ghost:'The GPU knows WHO.',decision:{spoken:'You chose WHO GETS TOMORROW.'}},before=JSON.stringify(frame);
+    speech.speak(frame);await new Promise(resolve=>setTimeout(resolve,1400));
+    assert.deepEqual(spoken.map(line=>line.text),['You chose who gets tomorrow.','who was here?','The G P U knows who.']);
+    assert.deepEqual(spoken.map(line=>line.voice.voiceURI),['dan','sam','dan']);
+    assert.ok(beginnings[1]-beginnings[0]>=250&&beginnings[2]-beginnings[1]>=250,'sentences have an actual pause, not cosmetic punctuation');
+    assert.equal(JSON.stringify(frame),before);assert.equal(speechSegments(frame,castVoices(voices))[1].text,'WHO WAS HERE?');
+    spoken.length=0;speech.speak({scene:'One sentence. Another sentence.',ghost:''});speech.stop();await new Promise(resolve=>setTimeout(resolve,350));assert.equal(spoken.length,1,'cancelling during the sentence gap never queues later speech');
+  }finally{
+    for(const [key,descriptor] of saved){if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];}
+  }
+});
+
+test('sentence pacing preserves original offsets, decimals and in-word periods',()=>{
+ const text='Hello, Friken.Ghost. WHO WAS HERE? Version 5.1 stays.';
+ const units=speechUnits(text);assert.deepEqual(units.map(u=>u.text),['Hello, Friken.Ghost.','WHO WAS HERE?','Version 5.1 stays.']);
+ for(const u of units){assert.equal(text.slice(u.start,u.end).trim(),u.text);assert.ok(u.pause>=250);}
+ assert.ok(units[1].pause>units[0].pause);
+});
+
+test('long imported sentences retain all text through bounded neural chunks',()=>{
+ const text=('a curious star remembers the caller '+ 'through the dark corridor ').repeat(30)+'.';
+ const units=speechUnits(text);assert.ok(units.length>2);assert.ok(units.every(u=>u.text.length<=400));
+ assert.equal(units.map(u=>u.text).join(' ').replace(/\s+/g,' '),text.trim().replace(/\s+/g,' '));
+ for(const u of units)assert.equal(text.slice(u.start,u.end).trim(),u.text);
 });

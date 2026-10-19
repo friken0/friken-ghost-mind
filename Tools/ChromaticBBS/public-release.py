@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json,shutil,argparse
 ROOT=Path(__file__).resolve().parents[2];BASE=Path(__file__).resolve().parent
-FILES=['Packing-Results.md','packing_benchmark.py','packing-results.json','comprehension-results.json','runbook-packing-results.json','canon.mjs','canon.test.mjs','chapter-library.mjs','engine.mjs','chapters.mjs','chapter-cli.mjs','chapter-data.mjs','session-share.mjs','session-store.py','session-store.test.py','public-release.py','storage.mjs','stage.mjs','portrait.mjs','face-data.mjs','rose-data.mjs','cinema.mjs','shell.mjs','juice.mjs','commentary.mjs','roll-battle.mjs','recorded-voice.mjs','voice-data.mjs','voice-reference.json','speech.mjs','response.mjs','mind-data.mjs','app.mjs','surface.html','carrier.css','build.py','Framework.md','Writing.md','engine.test.mjs','storage.test.mjs','presentation.test.mjs','chapters.test.mjs','browser-check.html','chapter-check.html','fixtures/c26-2-completed.seed','chapters/the-weather-inside.json','vendor/rose/PROVENANCE.md','vendor/rose/rose.vertex.glsl','vendor/rose/rose.fragment.glsl']
+FILES=['Packing-Results.md','packing_benchmark.py','packing-results.json','comprehension-results.json','runbook-packing-results.json','canon.mjs','canon.test.mjs','chapter-library.mjs','engine.mjs','chapters.mjs','chapter-cli.mjs','chapter-data.mjs','session-share.mjs','session-store.py','session-store.test.py','public-release.py','storage.mjs','stage.mjs','portrait.mjs','face-data.mjs','rose-data.mjs','cinema.mjs','shell.mjs','juice.mjs','commentary.mjs','roll-battle.mjs','recorded-voice.mjs','voice-data.mjs','voice-reference.json','speech.mjs', 'neural-voice.mjs','response.mjs','mind-data.mjs','app.mjs','surface.html','carrier.css','build.py','Framework.md','Writing.md','engine.test.mjs','storage.test.mjs','presentation.test.mjs','chapters.test.mjs','browser-check.html','neural-check.html','Voice-Research.md','chapter-check.html','fixtures/c26-2-completed.seed','chapters/the-weather-inside.json','vendor/rose/PROVENANCE.md','vendor/rose/rose.vertex.glsl','vendor/rose/rose.fragment.glsl']
 README='''# Friken.Ghost / The shared carrier
 
 Ghost writes the adventure. This repository holds the reusable BBS body,
@@ -36,6 +36,25 @@ numbers through one million, with a 512 KB per-seed bound and finite vault
 capacity. This is extensible continuity, not a promise of infinite storage.
 The twelve-decision Weather Inside is explicitly a synthetic-seed example.
 Ghost must author each player's new plot from that player's real ending.
+
+## Voice and a clear chapter ending
+
+The carrier now defaults to local Kokoro neural speech: male George for
+Ghost and female Heart for narration, with separate audition casts. The
+first Read downloads about 100 MB of pinned runtime/model dependencies.
+Inference stays in the browser. VOICE CAST also offers an explicit Device
+mode for hosts where model downloads are unavailable. No cloud voice key
+is bundled. See `Tools/ChromaticBBS/Voice-Research.md` for sources and limits.
+For the threaded loopback host run:
+`python3 Tools/ChromaticBBS/build.py --serve --port 4331`.
+
+Sentence gaps and playback-paced terminal ink keep narration legible.
+Show full text leaves audio running; mute or a new choice cancels it.
+At the ending, the completion receipt shows saved decisions and carried
+consequences. Prepare next chapter opens the actual handoff in SAVE / SEED.
+Choose that exact ending and ancestry as canon there, copy the full prompt
+to your Ghost runbook chat, then import the chapter JSON Ghost returns.
+The website does not silently call a model or publish your private seed.
 
 ## Play other chapters and creations
 

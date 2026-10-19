@@ -1,0 +1,35 @@
+<!doctype html><meta charset="utf-8"><title>Chromatic neural speech witness</title>
+<style>body{font:16px monospace;background:#090b17;color:#a5f7ef;padding:24px}button{font:inherit;padding:12px}pre{white-space:pre-wrap}</style>
+<h1>Real Kokoro inference / two independent voices</h1>
+<p>Downloads the pinned local neural model (~100 MB). Synthesizes and plays male Ghost and female narration. No scene text goes to a voice service.</p>
+<button id="run">Run neural speech witness</button><button id="stop">Stop speech</button><pre id="result">Not run.</pre>
+<script type="module">
+import {mountNeuralVoice} from './neural-voice.mjs';
+import {speechText,speechUnits,mountReadAlong} from './speech.mjs';
+const out=document.querySelector('#result'),logs=[];let peak=0,frames=0,starts=0,progress=0;
+const line=s=>{logs.push(s);if(logs.length>140)logs.shift();out.textContent=logs.join('\n');};
+const voice=mountNeuralVoice({status:line,level(v){peak=Math.max(peak,v);if(v>0)frames++;},talking(v){if(v)starts++;}});
+document.querySelector('#stop').onclick=()=>voice.stop();
+document.querySelector('#run').onclick=async()=>{
+ document.querySelector('#run').disabled=true;
+ try{
+  const host=document.createElement('section');host.innerHTML='<section class="cg-story"><p id="cg-scene">WHO WAS HERE? The stars wait.</p></section><button id="cg-reveal" hidden>Show full text</button>';document.body.append(host);
+  const caption=host.querySelector('#cg-scene'),full=caption.textContent,segment={field:'scene',text:full};const read=mountReadAlong(host);read.prepare([segment]);
+  if(caption.textContent!==full||caption.children.length!==2)throw Error('Read-along lost original caption');read.progress(segment,7);
+  if(caption.firstChild.textContent!==full.slice(0,7)||caption.textContent!==full)throw Error('Progressive ink differs from source');host.querySelector('#cg-reveal').click();
+  if(caption.textContent!==full||caption.children.length)throw Error('Reveal full text failed');read.prepare([segment]);caption.textContent='A new scene.';read.finish();
+  if(caption.textContent!=='A new scene.')throw Error('Old read overwrote a new scene');line('PASS / read-along partial ink / full accessible text / reveal / stale cancellation');
+  line('Loading pinned Kokoro 1.2.1 / q8 WASM…');
+  for(const [role,cast,text] of [['ghost','bm_george','WHO gets tomorrow? The universe filed an objection. I ate the form.'],['narrator','af_heart','A face gathers in the phosphor. Beyond the window, the stars wait for your answer.']]){
+   const began=performance.now();let beganAudio=0;
+   await voice.speak(speechText(text),{voice:cast,role,onStart(){beganAudio=performance.now();line(role+' actual playback started.');},onProgress(v){progress=v;}});
+   if(!beganAudio||progress!==1)throw Error('No complete actual playback for '+role);
+   line(role+' / '+cast+' / first audio '+((beganAudio-began)/1000).toFixed(2)+'s / playback '+((performance.now()-beganAudio)/1000).toFixed(2)+'s');
+  }
+  if(!peak||!frames||starts!==1)throw Error('Missing real Ghost PCM or wrong-role mouth gate');
+  const units=speechUnits('Hello, Friken.Ghost. WHO WAS HERE? Version 5.1 stays.');
+  if(units.length!==3||units[0].pause<250)throw Error('Sentence segmentation/pause failed');
+  line('PASS / real neural audio / two voices / Ghost-only PCM / peak '+peak.toFixed(3)+' / '+frames+' sampled frames / sentence pause '+units[0].pause+'ms');
+ }catch(error){line('FAIL / '+error.message);}finally{document.querySelector('#run').disabled=false;voice.stop();}
+};
+</script>

@@ -49,7 +49,7 @@ const chapterLibrary=mountChapterLibrary(root,{current:()=>state,storage:nativeS
 const juice=mountJuice(root);
 const speech=mountSpeech(root,{note,storage:nativeStorage,silent:checkMode||!!qaStore,pcm(value){portrait?.audioLevel(value);},talking(value){portrait?.talking(value);},pulse(){portrait?.pulse();}});
 function stopVoice(){speech.stop();}
-function speak(includeDecision=true){if(battle.active){speech.speak({scene:'',ghost:choiceCommentary(state.lastReceipt,state)?.spoken||''});return;}const f=started?playView(state):meeting;speech.speak(started?{...f,ghost:f.sceneGhost||f.ghost,decision:includeDecision?choiceCommentary(state.lastReceipt,state):null}:meeting);}
+function speak(includeDecision=true){if(battle.active){speech.speak({scene:'',ghost:choiceCommentary(state.lastReceipt,state)?.spoken||'',battle:true});return;}const f=started?playView(state):meeting;speech.speak(started?{...f,ghost:f.sceneGhost||f.ghost,decision:includeDecision?choiceCommentary(state.lastReceipt,state):null}:meeting);}
 const battle=mountRollBattle(root,()=>{note('Result held in the ledger · your next move.');if(voice)speak(false);});
 const inspector=mountInspector(root,{stage,onOpen(){battle.hold(true);},onRead(){if(!voice){voice=speech.toggle();el('voice').textContent='Voice: '+(voice?'on':'off');el('repeat').hidden=!voice;}speak();}});
 el('replay-roll').addEventListener('click',()=>{if(state.lastReceipt?.roll){stopVoice();battle.show(state.lastReceipt,choiceCommentary(state.lastReceipt,state));}});
@@ -114,19 +114,20 @@ function renderVault(){
   el('resume').hidden=!vault.current()&&!preparedChapter;
 }
 function draw(){
+  handoffParent=null;el('chapter-request').value='';
   const f=playView(state),complete=!!state.ending,total=f.total;
   root.querySelector('.cg-subtitle').textContent='CHROMATIC BBS // '+(state.pack?.title||'THE UNFINISHED CARRIER');
   root.dataset.theme=['cyan','purple','amber'][(state.scars.length+state.chapter-1)%3];
   el('boot').hidden=started;
   el('act').textContent=started?'ACT '+f.actName:'FIRST CONTACT / NO TURN SPENT';
-  el('turn').textContent=complete?'CARRIER COMPLETE':'DECISION '+String(state.turn).padStart(2,'0')+' / '+total;
+  el('turn').textContent=complete?'CHAPTER '+state.chapter+' COMPLETE':'DECISION '+String(state.turn).padStart(2,'0')+' / '+total;
   el('chapter').textContent='CHAPTER '+state.chapter;
   const finished=Math.min(total,state.turn-1);
   el('progress-fill').style.width=(finished/total*100)+'%';root.querySelector('[role=progressbar]').setAttribute('aria-valuenow',finished);root.querySelector('[role=progressbar]').setAttribute('aria-valuemax',total);
   el('relic').textContent=state.world.relic.form.toUpperCase()+' / REV '+state.world.relic.revision+' / '+state.handle;
   for(const key of ['signal','compute','noise']){el(key).textContent=state.resources[key];el(key+'-meter').value=state.resources[key];juice.resource(key,state.resources[key]);}
   if(started){
-    el('scene-tag').textContent=state.pack?state.pack.title:(complete?'SOMEBODY ANSWERED':'THE UNFINISHED CARRIER');
+    el('scene-tag').textContent=state.pack?state.pack.title:(complete?'CHAPTER '+state.chapter+' COMPLETE':'THE UNFINISHED CARRIER');
     renderResponse(root,responsePacket(state,f));
   }else{el('decision').hidden=true;el('scene-tag').textContent='YOUR FIRST MEETING';el('title').textContent=meeting.title;el('scene').textContent=meeting.scene;el('ghost').textContent=meeting.ghost;}
   el('laws').replaceChildren(...state.modules.map(m=>text('span',m.id.toUpperCase()+' / '+m.law.name+' / v'+m.revision,'cg-law')));
@@ -138,11 +139,20 @@ function draw(){
     desc.append(text('small',choice.detail));b.append(text('span','['+(i+1)+']','cg-choice-number'),desc);
     b.addEventListener('click',()=>act(choice.id));return b;
   }):[];
-  if(complete){const b=text('button','Ask Ghost to write Chapter '+(state.chapter+1)+' →','cg-primary');b.type='button';b.addEventListener('click',()=>bootNext(encodePlaySeed(state)));buttons.push(b);}
+  if(complete){const b=text('button','Continue to Chapter '+(state.chapter+1)+' / prepare Ghost prompt →','cg-primary');b.type='button';b.addEventListener('click',()=>bootNext(encodePlaySeed(state)));buttons.push(b);}
   el('choices').replaceChildren(...buttons);
   el('export').hidden=!started;el('repeat').hidden=!voice;root.querySelector('.cg-narrative').scrollTop=0;
   stage?.update(state);battle.setMode(state.pack?.roller||'armies');el('mode').textContent=state.pack?'MODEL-AUTHORED CHAPTER / LOCAL RULES':'AUTHORED DEMO / ASK GHOST FOR NEXT CHAPTER';
   renderVault();
+  el('completion').hidden=!started||!complete;
+  if(complete){
+    el('complete-label').textContent='CHAPTER '+state.chapter+' COMPLETE / ALL '+state.journal.length+' DECISIONS SAVED';
+    el('complete-title').textContent=state.ending.title||f.title;
+    el('complete-summary').textContent=state.ending.text||f.scene;
+    el('complete-stats').textContent='SCORE '+el('score').textContent+' · SIGNAL '+state.resources.signal+'/10 · COMPUTE '+state.resources.compute+'/10 · NOISE '+state.resources.noise+'/10 · '+state.scars.length+' SCARS';
+    el('complete-laws').textContent='LAWS YOU CARRY: '+(state.modules.map(m=>m.law.name).join(' / ')||'none installed');
+    el('complete-threads').textContent='UNFINISHED BUSINESS: '+(state.world.threads.join(' / ')||'No unresolved threads recorded. Ghost will build from your ending.');
+  }
   if(complete){el('seed').value=encodePlaySeed(state);el('archive').open=true;el('seed-status').textContent='Chapter complete. Ask Ghost for a new chapter; its request carries your exact choices, laws and unresolved business.';}
   // Inspection surface for honest browser acceptance; it has no turn writer.
   el('state').value=JSON.stringify(state,null,2);
@@ -150,26 +160,50 @@ function draw(){
 }
 function act(id){
   if(battle.active)return;
-  try{chapterLibrary.assertPlayable(state);const before=state.resources,next=playChoose(state,id);stopVoice();state=next;persist();draw();juice.transition(before,state.resources);note('Decision committed · '+(state.lastReceipt?.summary||'waiting for you'));if(state.lastReceipt?.roll){const decision=choiceCommentary(state.lastReceipt,state);battle.show(state.lastReceipt,decision);if(voice)speech.speak({scene:'',ghost:decision.spoken});}else if(voice)speak();}
+  try{chapterLibrary.assertPlayable(state);const before=state.resources,next=playChoose(state,id);stopVoice();state=next;persist();draw();juice.transition(before,state.resources);note('Decision committed · '+(state.lastReceipt?.summary||'waiting for you'));if(state.lastReceipt?.roll){const decision=choiceCommentary(state.lastReceipt,state);battle.show(state.lastReceipt,decision);if(voice)speech.speak({scene:'',ghost:decision.spoken,battle:true});}else if(voice)speak();}
   catch(error){note('Decision refused: '+error.message);}
 }
 function seedText(){return el('seed').value.trim().replace(/^BOOT\s*\+?\s*/i,'');}
-function bootNext(code){
-  try{const parent=decodePlaySeed(code);chapterLibrary.assertContinuation(parent);const request=chapterRequest(parent,{repository:'https://github.com/friken0/friken-ghost-mind',manifest:'https://raw.githubusercontent.com/friken0/friken-ghost-mind/main/registry.json'});el('chapter-request').value=JSON.stringify(request,null,2);carrierShell.open('archive');el('seed-status').textContent=parent.ending?'NEXT CHAPTER NEEDS GHOST. Copy the request into the runbook chat; import the new chapter JSON here. Your current ending stays saved.':'Return this request to Ghost to resume the exact pending decision. No new chapter has been created.';el('chapter-handoff').open=true;note('Waiting for a real new chapter from Ghost. No replay, no made-up model call.');}
-  catch(error){el('seed-status').textContent='Handoff refused: '+error.message;carrierShell.open('wire');chapterLibrary.refresh();note('Choose your canon ending in WIRE, then request the next chapter.');}
+let handoffParent=null;
+function canonForHandoff(){
+  try{chapterLibrary.assertContinuation(handoffParent);el('next-canon').hidden=true;el('canon-note').textContent='This exact ending is your canon. Its choices and outcomes are in the prompt.';return true;}
+  catch(error){el('next-canon').hidden=false;el('canon-note').textContent='Choose your timeline: '+error.message+' Use the button below to make this ending and all its carried ancestry canon. Later pins change; every saved branch survives.';return false;}
 }
-el('chapter-copy').addEventListener('click',async()=>{try{if(!el('chapter-request').value)bootNext(encodePlaySeed(state));await navigator.clipboard.writeText('BOOT\n'+el('chapter-request').value);el('chapter-status').textContent='Copied. Paste into the chat holding the Ghost runbook; bring back its chapter JSON.';}catch(error){el('chapter-status').textContent='Select and copy the request below. '+error.message;}});
+function bootNext(code){
+  carrierShell.open('archive');el('chapter-handoff').open=true;el('archive').insertBefore(el('chapter-handoff'),el('archive').querySelector('label[for="cg-seed"]'));
+  try{
+    const parent=decodePlaySeed(code),request=chapterRequest(parent,{repository:'https://github.com/friken0/friken-ghost-mind',manifest:'https://raw.githubusercontent.com/friken0/friken-ghost-mind/main/registry.json'});
+    handoffParent=parent;el('seed').value=code;el('chapter-request').value=JSON.stringify(request,null,2);
+    el('handoff-title').textContent=parent.ending?'CHAPTER '+parent.chapter+' COMPLETE → GHOST WRITES CHAPTER '+(parent.chapter+1):'RESUME YOUR EXACT DECISION';
+    el('chapter-brief').textContent=(parent.ending?.text||'Your current decision is waiting.')+' '+parent.journal.length+' decisions, '+parent.modules.length+' carried laws, '+parent.scars.length+' scars and '+parent.world.threads.length+' unresolved threads. The prompt includes the full private seed, readable state and earlier chapter choices. Share it only with your chosen runbook chat.';
+    const ready=canonForHandoff();el('seed-status').textContent=ready?'NEXT CHAPTER PROMPT READY. Copy it into the Ghost runbook chat, then import Ghost’s returned chapter JSON below.':'Choose this ending as canon here, then copy the prepared prompt. Your ending remains saved.';
+    note('Your ending is saved. Prepare → copy to Ghost chat → import the new chapter.');
+    return request;
+  }catch(error){handoffParent=null;el('chapter-request').value='';el('seed-status').textContent='Handoff refused: '+error.message;note('The saved game is intact. Check the seed in SAVE / SEED.');return null;}
+}
+el('next-canon').addEventListener('click',()=>{try{if(!handoffParent?.ending)throw Error('Prepare a completed chapter first');chapterLibrary.chooseEnding(handoffParent);canonForHandoff();el('seed-status').textContent='Canon selected. Copy the next-chapter prompt, then paste it into your Ghost runbook chat.';}catch(error){el('canon-note').textContent=error.message;}});
+el('chapter-copy').addEventListener('click',async()=>{
+  try{
+    if(!handoffParent&&!bootNext(encodePlaySeed(state)))return;
+    if(!canonForHandoff()){el('chapter-status').textContent='First choose the ending you want to carry as canon using the button above.';return;}
+    const request=chapterRequest(handoffParent,{repository:'https://github.com/friken0/friken-ghost-mind',manifest:'https://raw.githubusercontent.com/friken0/friken-ghost-mind/main/registry.json'});
+    const prompt='BOOT\nI finished chapter '+handoffParent.chapter+'. Use my exact results below to author chapter '+request.nextChapter+' for the existing Chromatic BBS carrier. Load the runbook from '+request.framework.repository+'/blob/main/runbook.md if it is not already in this chat. Explain what changed because of my choices, then return a valid chapter JSON pack I can import. Do not replay the old chapter.\n\n'+JSON.stringify(request,null,2);
+    el('chapter-request').value=prompt;
+    await navigator.clipboard.writeText(prompt);el('chapter-status').textContent='COPIED. Return to your Ghost runbook chat and paste. Bring its chapter JSON back to the field below; then Admit and play.';
+  }catch(error){el('chapter-request').focus();el('chapter-request').select();el('chapter-status').textContent='Select and copy the prepared prompt manually. '+error.message;}
+});
 el('chapter-load').addEventListener('click',()=>{try{const packet=JSON.parse(el('chapter-pack').value),parent=packet.chapter===1?null:state,next=createChapter(packet,parent,{handle:state.handle,entropy:crypto.getRandomValues(new Uint32Array(1))[0]});chapterLibrary.assertPlayable(next);stopVoice();state=next;started=true;persist();carrierShell.home();draw();note('New model-authored chapter admitted. Same Ghost, new trouble.');if(voice)speak();}catch(error){el('chapter-status').textContent='Chapter refused; current save kept. '+error.message;}});
 el('start').addEventListener('click',()=>{const entropy=crypto.getRandomValues(new Uint32Array(1))[0];state=preparedChapter||newGame({rngSeed:entropy,handle:el('handle').value.trim()||'DIVER'});started=true;persist();draw();note('Carrier connected · choose 1, 2 or 3');if(voice)speak();});
 el('resume').addEventListener('click',()=>{const saved=preferredResume();if(!saved)return;stopVoice();state=saved;started=true;draw();note('Carrier resumed. The math kept its fkn receipts.');});
 el('motion').addEventListener('click',()=>{motionHeld=!motionHeld;juice.hold(motionHeld);battle.hold(motionHeld);stage?.hold(motionHeld);portrait?.hold(motionHeld);el('motion').textContent='Motion: '+(motionHeld?'held':'on');});
 el('motion').textContent='Motion: '+(motionHeld?'held':'on');
 el('voice').textContent='Voice: on';
-el('voice').addEventListener('click',()=>{
-  if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){note('This host does not expose browser voice · use the captions');return;}
+function toggleVoice(){
   voice=speech.toggle();el('voice').textContent='Voice: '+(voice?'on':'off');el('repeat').hidden=!voice;
-  if(!voice){stopVoice();note('Voice off');}else speak();
-});
+  el('boot-voice').setAttribute('aria-pressed',String(voice));el('boot-voice').textContent=voice?'VOICE: ON / LOCAL NEURAL ~100 MB FIRST USE':'VOICE: OFF / CAPTIONS ONLY';
+  if(!voice){stopVoice();note('Voice off');}else if(cinema.phase==='ready')speak();
+}
+el('voice').addEventListener('click',toggleVoice);el('boot-voice').addEventListener('click',toggleVoice);
 el('repeat').addEventListener('click',()=>speak());
 el('export').addEventListener('click',()=>{el('seed').value=encodePlaySeed(state);el('archive').open=true;el('seed-status').textContent='Exported the exact committed state. Copy it before leaving this carrier.';});
 el('load').addEventListener('click',()=>{

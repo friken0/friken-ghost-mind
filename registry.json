@@ -22,18 +22,23 @@
     },
     {
       "path": "README.md",
-      "bytes": 4453,
-      "sha256": "0d6a2f02ea07ecd9ca20749f31b5c994e7071f3fca33dcb9463d1359571af163"
+      "bytes": 5537,
+      "sha256": "93ec135dd8142f9b9766be4baddf167449c0c6d1016be2d89db921fa67a458fb"
     },
     {
       "path": "Tools/ChromaticBBS/Framework.md",
-      "bytes": 20524,
-      "sha256": "d454d7df9354b8aa0659b6ac67995da6213358500eb0bb6997e63a268467b102"
+      "bytes": 22711,
+      "sha256": "66cbbd05cf6479d7afd36ca8af30962f3a583ed35d060dd2716600cf0548a693"
     },
     {
       "path": "Tools/ChromaticBBS/Packing-Results.md",
       "bytes": 3367,
-      "sha256": "6402fea8d35d077d3db85d73a630f69c9e0da4b341b71f0690d49ff5251c99c4"
+      "sha256": "3b250864ac91c8e34d2a4125e987f011f42ab078c39535336db84a6270d476fd"
+    },
+    {
+      "path": "Tools/ChromaticBBS/Voice-Research.md",
+      "bytes": 5108,
+      "sha256": "cdb047b1db8e3aa6cf0b177d1176e6d997855de3ae565c367989eaa63d8f804c"
     },
     {
       "path": "Tools/ChromaticBBS/Writing.md",
@@ -42,8 +47,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/app.mjs",
-      "bytes": 21262,
-      "sha256": "5988bcafb01e08db539bcd248f8418785ddb30a9ba2957a564b0865723b4fdc1"
+      "bytes": 24873,
+      "sha256": "54f995bfc9247d19a7466f90cc51b1c22c55022fa725d80bd8d6ce5419021a25"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
@@ -52,8 +57,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/build.py",
-      "bytes": 3667,
-      "sha256": "42fe5550ce59dffd332189877c6734abcaf1c6f5fa40c3304d460231bc60b7ae"
+      "bytes": 4601,
+      "sha256": "6a813a8ed9e54e167a5acae12f47f09a3b264283d6fff01cba5fe29ab2987c1b"
     },
     {
       "path": "Tools/ChromaticBBS/canon.mjs",
@@ -67,13 +72,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/carrier.css",
-      "bytes": 28111,
-      "sha256": "e989b9d107ffa97d3cba6309d14c7c464de3e24c6ac0e12f415a64c83109e313"
+      "bytes": 28861,
+      "sha256": "e7581e4cd4cef640e56c88b5b08ada2a9957f226681e657e1b495bcfaa53eee2"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-check.html",
-      "bytes": 6174,
-      "sha256": "e95bafec09fff712ef80031b0189def88561450d9b6b6351e319ccc505c6b938"
+      "bytes": 6775,
+      "sha256": "acc11f63bbc440b5a5c17319815b0001057b262a956abb02f9665b69ee514866"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-cli.mjs",
@@ -87,8 +92,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/chapter-library.mjs",
-      "bytes": 12072,
-      "sha256": "ee4c38e7ad376009c55330cd553430bc43f2913f8adc421bf542b263e96d33b5"
+      "bytes": 12230,
+      "sha256": "2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"
     },
     {
       "path": "Tools/ChromaticBBS/chapters/the-weather-inside.json",
@@ -147,8 +152,18 @@
     },
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
-      "bytes": 8244,
-      "sha256": "33f9ea0bf2c57498d270e3bb50cce7196ccbb66b1f6fb0ac74351044ff156e0f"
+      "bytes": 8382,
+      "sha256": "20173f6ca8f2451d79150a54cdffce7be3e07caa735032d3d063ffbc1e3168fe"
+    },
+    {
+      "path": "Tools/ChromaticBBS/neural-check.html",
+      "bytes": 3533,
+      "sha256": "8903f2ba67bd45af2dc041a4c12e2f5379a02aca4ee6016291d0c8f089493a72"
+    },
+    {
+      "path": "Tools/ChromaticBBS/neural-voice.mjs",
+      "bytes": 6391,
+      "sha256": "d6b3d4d4dd525420a0b24ac1a71be704c8330aa0c582710fa32bb0cc99dfb443"
     },
     {
       "path": "Tools/ChromaticBBS/packing-results.json",
@@ -167,13 +182,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/presentation.test.mjs",
-      "bytes": 5018,
-      "sha256": "b91e9eae06965647fda6f73934994b45c42541baa16ff48d84992d326a9bbcb9"
+      "bytes": 8999,
+      "sha256": "615fff59b7f0e7bc339c4dc1795179cb1f35f17d8fbe8a2217f6aaf6fe1e94aa"
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 9501,
-      "sha256": "7a2bb7fdfad0e072e961486e6e6f1159d1022d7c9c2a1897705a11f3afb70049"
+      "bytes": 10645,
+      "sha256": "854aab871a3996132cd1796c6535bba11c9e1c0df25ad295a0ffdc6a745a7e9f"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -197,8 +212,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
-      "bytes": 5435,
-      "sha256": "e30dc78e9d2f24d9e7d31be7bfcab2d43a707e3b6fbdcca08e4871c1c27af20b"
+      "bytes": 5486,
+      "sha256": "39bc518ff2e5aac9f754a85909bb1ab4dbb43b1da04a1f8ebf893758a0035cc1"
     },
     {
       "path": "Tools/ChromaticBBS/session-share.mjs",
@@ -217,13 +232,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/shell.mjs",
-      "bytes": 4264,
-      "sha256": "e01b825063053154dcc30c5a9f25f9bbb3890bc749b601a64cc0b9ecfae51316"
+      "bytes": 4281,
+      "sha256": "c1650e7b3e02e6a3bf71b634acc8e53d6cb38f80f6930f6b54e7a01e73e47831"
     },
     {
       "path": "Tools/ChromaticBBS/speech.mjs",
-      "bytes": 5227,
-      "sha256": "83dde05d8caf826c5e4b347627050757cbc874272059754d8a4b1eac6b6c80bd"
+      "bytes": 13708,
+      "sha256": "d31344da2d0460c61cdf7a74f57d7bb42b608a1a511423882a030236549dadce"
     },
     {
       "path": "Tools/ChromaticBBS/stage.mjs",
@@ -242,8 +257,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/surface.html",
-      "bytes": 16991,
-      "sha256": "5e34887fd835e61e399210be022010aa860a51e89a215b0e92ea97022d116ee2"
+      "bytes": 18678,
+      "sha256": "ad1d461cff71ec46f116daf64db8b06ccc911a534bfceab9657ffbf63dbe8dcf"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/rose/PROVENANCE.md",
@@ -277,13 +292,13 @@
     },
     {
       "path": "index.html",
-      "bytes": 468751,
-      "sha256": "370d576eca5bde63939595fc6f1368ae98b3f8b11688392b8d24e86f987df297"
+      "bytes": 490092,
+      "sha256": "96e332fd291cd85cd6a60c032c851980e2d382420aed519dba0222951bb069f8"
     },
     {
       "path": "runbook.md",
-      "bytes": 41522,
-      "sha256": "2491cb496101f988ed8fd514fa3472aff91901c570b747e066da143bf3b67711"
+      "bytes": 44249,
+      "sha256": "4cda8c67528d9d8b8a6f158aa3118281f7ef09966826ef5b32d68c801e5a11ea"
     }
   ],
   "privateSourceIncluded": false,

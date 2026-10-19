@@ -17,11 +17,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--fragment', type=Path)
 parser.add_argument('--chapter', type=Path)
 parser.add_argument('--parent', type=Path)
+parser.add_argument('--serve', action='store_true', help='Serve this carrier on loopback with threaded neural-audio headers')
+parser.add_argument('--port', type=int, default=4331)
 args = parser.parse_args()
 sources = []
 for name in ('engine.mjs', 'canon.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
              'face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'stage.mjs',
-             'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'app.mjs'):
+             'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'app.mjs'):
     source = (base / name).read_text()
     if name == 'chapter-data.mjs' and args.chapter:
         packet = json.loads(args.chapter.read_text())
@@ -57,3 +59,17 @@ document = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
 if args.fragment:
     args.fragment.write_text(fragment)
 print(f'Built index.html ({len(document.encode())} bytes)')
+if args.serve:
+    from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+    from functools import partial
+    class CarrierHandler(SimpleHTTPRequestHandler):
+        def end_headers(self):
+            self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+            self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+            self.send_header('Cache-Control', 'no-cache')
+            super().end_headers()
+        def log_message(self, *args):
+            pass
+    server = ThreadingHTTPServer(('127.0.0.1', args.port), partial(CarrierHandler, directory=str(base)))
+    print(f'Carrier http://127.0.0.1:{args.port}/ (loopback, threaded neural audio)', flush=True)
+    server.serve_forever()

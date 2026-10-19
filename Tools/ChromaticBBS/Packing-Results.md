@@ -36,15 +36,15 @@ Dictionary cost matters; opaque data is not free model context.
 
 | Representation | UTF-8 bytes | Exact decoded source? |
 |---|---:|---|
-| English assignment wrapper | 42,439 | Yes |
-| Canonical JSON wrapper | 42,195 | Yes |
-| DSL wrapper with complete legend | 42,370 | Yes |
-| zlib + Base64url | 25,888 | Yes |
-| Hex | 84,395 | Yes |
+| English assignment wrapper | 45,205 | Yes |
+| Canonical JSON wrapper | 44,961 | Yes |
+| DSL wrapper with complete legend | 45,136 | Yes |
+| zlib + Base64url | 27,531 | Yes |
+| Hex | 89,927 | Yes |
 
 This test preserves the complete existing runbook text in one field. It
 compares transports, not a new semantic rewrite of the prose. zlib transport
-saved 38.6% against its canonical JSON. Compression needs a real decoder;
+saved 38.8% against its canonical JSON. Compression needs a real decoder;
 a model without tools must receive readable instructions. Token counts
 remain **unmeasured**: no local tokenizer was available, and bytes are not
 tokens. Exact hashes and timestamps are in `runbook-packing-results.json`.

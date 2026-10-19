@@ -270,6 +270,14 @@ Narrator speech cannot drive Ghost's mouth. An actual Ghost utterance gate
 opens an approximate motion envelope; word boundaries add impulses. End,
 cancel, errors and visibility loss close it. This is not phoneme sync.
 
+Browser utterances pass through `speechText` after exact recorded-clip lookup.
+Uppercase emphasis such as WHO WAS HERE becomes ordinary spoken words;
+an explicit technical initialism vocabulary retains letter names (GPU, SDF,
+AI, DC, UI, BBS and related transport terms). Mixed-case names and explicitly
+dotted letters survive. This changes only speech input: displayed captions,
+choice receipts, saved state and recorded-caption keys retain exact bytes.
+Both narration and Ghost acknowledgement use the same pronunciation pass.
+
 `juice.mjs` owns the pointer-transparent electrical plane and committed
 resource deltas. Percentages and danger labels supplement colour; noise's
 danger direction is reversed. Animation and sound never change a resource.
@@ -373,3 +381,29 @@ run/RNG/score. Publication is a distinct world/history disclosure; summaries
 never imply that consent. Reviewed issue labels admit bounded data through
 the repository workflow. Scores remain unverified and synthetic fixtures are
 excluded. Mid-decision rewind is not implemented; chapter-start forks are.
+
+## Performed speech and visible endings / C26.4 correction
+
+The standalone default is now pinned Kokoro neural speech: George for Ghost,
+Heart for female narration. Voice Cast offers separate casts and an explicit
+Device route. See Voice-Research.md for sources, exact dependency identities,
+licences, measured playback witnesses and the missing Pocket model distinction.
+Neural dependencies download on first Read and are not in the portable kit.
+The loopback build server supplies isolation headers for threaded inference.
+
+Each original sentence keeps its caption offsets and gets an added real
+280 ms pause (380 ms after questions/exclamations, 520 ms for paragraphs).
+One upcoming neural sentence is prepared while the current audio plays.
+A full caption stays in the DOM and retains its layout; transparent unread
+ink reveals against the actual audio clock. Within-sentence alignment remains
+approximate. Show full text keeps listening; mute/new choice/hidden restores
+full ink and cancels playback, delayed speech and pending generation results.
+
+Completion is explicit: chapter number, saved decisions, actual ending, score,
+laws, scars and unanswered business. Prepare next chapter opens SAVE / SEED
+with its briefing and three steps. A missing canon choice is resolved there
+by the player's explicit adoption of that ending and ancestry; later pins
+clear and saved branches survive. Copy produces a plain BOOT instruction
+plus the full exact request. Paste to runbook chat; Ghost writes new chapter
+JSON; import it back. Preparing a request neither wakes a model nor publishes
+anything. An invalid seed stays at the handoff with a visible error.

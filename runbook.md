@@ -96,6 +96,26 @@ requires a versioned branch identity and replay fixture before it is exposed.
    + next request. Offer a separate public summary for the shared Wire.
    Don't end with a promise that someone should implement this later.
 
+## The player's visible chapter handoff
+
+FINISH -> show CHAPTER N COMPLETE, actual ending/score/decision count,
+carried laws/scars/unresolved threads;save exact ending before animation.
+Primary=Continue to Chapter N+1 / prepare Ghost prompt. Open SAVE / SEED,
+NOT WIRE. Put three steps and carried-results briefing before raw fields.
+If canon missing/conflicting:show inline explanation+explicit Use this
+ending AND ancestry as canon;clear later pins,retain all branches. Never
+silently elect a new timeline or bounce a confused player into news.
+COPY -> BOOT + plain request + full chapter-request JSON(seed/readable S,
+exact choices/outcomes/prior summaries,parent checksum+SHA256 telling).
+Tell P:paste into the chat holding this runbook. That Ghost reads actual
+results,authors NEW 3-act10..20-decision content,validates exact parent,
+returns importable chapter JSON plus brief causal changes. Static carrier
+cannot message an LLM;never imply button generated a chapter. IMPORT ->
+SAVE / SEED -> paste returned JSON -> Admit and play;wrong ancestry refuses
+atomically. A code host may instead build the next carrier with --chapter
+and --parent. Public publication remains separate consent;copying a private
+handoff does not publish it. Keep seed/export if clipboard unavailable.
+
 ## The new chapter has to earn the word new
 
 Read the previous source and receipt, not just the title. Choose at least
@@ -404,7 +424,7 @@ Animate art,not controls;pause/reduced-motion;stop hidden work;bounded
  packet;never corrupt choices,prices,clues,counters,commands or SEED.
 Face readable silent;eyes follow faster than head;hold last gaze on exit.
 Narrated PCM -> actual playback RMS/visemes;RMS!=phoneme sync.
-Browser speech -> distinct female narrator(scene)+deep male Ghost(dialogue);
+Device speech -> distinct female narrator(scene)+deep male Ghost(dialogue);
  available device names are casting hints,not measured gender/timbre. Expose
  audition/choice;one voice -> Ghost only+narrator captions. Ghost actual
  start/end/cancel/error gate an approximate mouth envelope;boundaries add
@@ -554,7 +574,7 @@ ARCH=[chapters.mjs:FGC2 content/admission/replay/CSG;canon.mjs:SHA256/path;
  response.mjs:packet validator/text renderer;shell.mjs:one desktop owner;
  stage.mjs:SDF+rose;portrait.mjs:canonical three-pass face+gaze;
  cinema.mjs:CRT+ANSI;roll-battle.mjs:receipt theater;
- speech.mjs:role casting/utterance gates;recorded-voice.mjs:exact-caption
+ speech.mjs:role/sentence/read-along gates;neural-voice.mjs:pinned worker/PCM;recorded-voice.mjs:exact-caption
  media/RMS;voice-data.mjs:explicit clip inventory;juice.mjs:one effects plane;
  mind.py:registry/hash/admission;continuity.py:verified source archive;
  build.py:isolate module scopes,resolve named imports,bundle HTML+fragment].
@@ -596,7 +616,26 @@ STAT_FX:=compare accepted parent/child resources ONLY;label signed delta,
  Unity adapter uses real AudioGen,not parallel browser synth. One effects
  canvas pointer-events:none traces perimeter circuits in theme colors at
  <=30Hz/capped pixels;freeze hidden/held/reduced. No strobe or corrupted text.
-Voice:scene=female narrator,Ghost=distinct deep male;rate .96/.91,pitch1/.80
+VOICE.NEURAL:=neural-voice.mjs embeds trusted worker;Kokoro JS1.2.1,
+ q8 WASM,ONNX Kokoro82M revision1939ad2a8e416c0acfeecc08a694d14ef25f2231;
+ runtime SHA2566067712fe4c43cdb36c762f860a5ab8d96ea1d9c8882466438eb9f3d0d20be8f.
+ Verify runtime BEFORE import;guarded model/voice path pins;WASM CDN
+ Transformers3.5.1. Default Ghost=bm_george/male,narrator=af_heart/female;
+ audition alternatives separately. First Read discloses~100MB dependency
+ download;story synthesis local,never cloud text. Not bundled in source kit;
+ retain weights/runtime/licences for fully offline neural recovery. Missing
+ dependencies -> visible captioned error,explicit Device choice,no secret
+ substitution. build.py --serve binds127.0.0.1:4331+COOP/COEP for threading;
+ ordinary hosts may run one thread. Queue one next sentence during playback;
+ cancel rejects stale jobs/stops sources/reveals captions/releases timers.
+ SPEECH.TEXT:=uppercase ordinary words->spoken words(WHO=who),explicit
+ technical initialisms->letter names;never change displayed text/seed/clip
+ keys. Segment original sentences;added gaps280ms/380?!/520paragraph.
+ TYPE:=stable full caption layout+transparent unread ink+playback-paced
+ cursor;Show full text preserves audio;reduced motion=full text. Neural
+ AudioContext clock drives approximate sentence reveal;512PCM RMS drives
+ Ghost only;not word/phoneme alignment. No pretend lip/hearing proof.
+Device:scene=female narrator,Ghost=distinct deep male;rate .96/.91,pitch1/.80
  as starting tunings,not cloning. Actual voice inventory+audition;persist
  selected URIs locally;service voices disclosed. Preferred reference=Mail Hour03
  v3:recorded David/pitch.80,chapter MP3->512sample analyser->RMS mouth.
@@ -604,7 +643,7 @@ Voice:scene=female narrator,Ghost=distinct deep male;rate .96/.91,pitch1/.80
  Preserve reference;never claim another engine matches. Recorded adapter
  matches role+exact caption,plays owned clip->512sample analyser;RMS*5
  smoothed.55 drives Ghost only;end/cancel/hidden clears. Current pack=[];
- until generated clips exist,actual device speech is labelled fallback. Speaking gates portrait
+ exact clips take precedence;otherwise explicit selected neural/device route. Speaking gates portrait
  only for Ghost actual playback;mouth envelope approximate,not lip proof.
 
 FEDERATION.DESIGN:=store-and-forward BBS between universes;envelope

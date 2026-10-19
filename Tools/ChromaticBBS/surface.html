@@ -5,6 +5,7 @@
     <canvas id="cg-boot-canvas" aria-label="ANSI cells assemble the Ghost terminal" role="img">Ghost terminal reconstruction.</canvas>
     <p id="cg-power-status" role="status">ANSI reconstruction</p>
     <div class="cg-utilities"><button id="cg-pause" type="button">[ PAUSE / HOLD SCREEN ]</button><button id="cg-skip" type="button">[ FINISH ANIMATION ]</button><button id="cg-continue" type="button" hidden>[ CONTINUE / MEET GHOST ]</button></div>
+    <button id="cg-boot-voice" type="button" aria-pressed="true">VOICE: ON / LOCAL NEURAL ~100 MB FIRST USE</button>
     <button id="cg-reconnect" type="button" hidden>[ POWER ON / RECONNECT ]</button>
   </section>
   <canvas id="cg-electric" aria-hidden="true"></canvas>
@@ -49,6 +50,7 @@
   <div id="cg-receipt" class="cg-receipt" hidden></div>
   <button id="cg-replay-roll" type="button" hidden>REPLAY LAST NUMBER BATTLE</button>
   <div id="cg-laws" class="cg-laws" aria-label="Installed world laws"></div>
+  <section id="cg-completion" class="cg-completion" hidden aria-label="Chapter complete and next steps"><p class="cg-eyebrow" id="cg-complete-label"></p><h2 id="cg-complete-title"></h2><p id="cg-complete-summary"></p><p id="cg-complete-stats"></p><p id="cg-complete-laws"></p><p id="cg-complete-threads"></p><p>Your chapter is saved on this device. The next chapter is written by Ghost in your runbook chat.</p><ol><li>Prepare the next chapter below and confirm the timeline you want to keep.</li><li>Copy the prompt and paste it into the chat holding your Ghost runbook.</li><li>Bring Ghost’s new chapter JSON back to SAVE / SEED. Same carrier, new trouble.</li></ol></section>
   <div id="cg-choices" class="cg-choices"></div>
   <div id="cg-boot" class="cg-boot">
     <div class="cg-utilities" id="cg-meet-choices"><button id="cg-meet-who" type="button">What exactly are you?</button><button id="cg-meet-bell" type="button">Are you going to answer that bell?</button></div>
@@ -64,11 +66,13 @@
     <button id="cg-motion" type="button">Motion: on</button>
     <button id="cg-voice" type="button">Voice: off</button>
     <button id="cg-repeat" type="button" hidden>Read scene / narrator + Ghost</button>
+    <button id="cg-reveal" type="button" hidden>Show full text / keep listening</button>
     <button id="cg-export" type="button" hidden>Save seed</button>
     <button id="cg-reboot" type="button">Boot replay</button>
     <button id="cg-power-off" type="button">Power off</button>
   </div>
   <details id="cg-voice-settings" class="cg-archive"><summary>VOICE CAST / FEMALE NARRATOR + DEEP MALE GHOST</summary>
+    <fieldset><legend>SPEECH ENGINE</legend><div class="cg-voice-options"><label><input id="cg-engine-neural" type="radio" name="cg-engine" checked> Kokoro / local neural / first read ~100 MB download</label><label><input id="cg-engine-device" type="radio" name="cg-engine"> Device voice / no model download</label></div></fieldset>
     <p id="cg-voice-note" class="cg-status"></p>
     <fieldset><legend>GHOST / <span id="cg-ghost-voice-name">Looking for a deep male voice</span></legend><div id="cg-ghost-voices" class="cg-voice-options"></div></fieldset>
     <fieldset><legend>NARRATOR / <span id="cg-narrator-voice-name">Separate speaker</span></legend><div id="cg-narrator-voices" class="cg-voice-options"></div></fieldset>
@@ -80,7 +84,7 @@
     <textarea id="cg-seed" rows="4" spellcheck="false" placeholder="Paste FGC1… or BOOT + FGC1…"></textarea>
     <div class="cg-utilities"><button id="cg-copy" type="button">Copy BOOT + seed</button><button id="cg-load" type="button">Resume this state</button><button id="cg-next" type="button">Ask Ghost for next chapter</button></div>
     <p id="cg-seed-status" role="status">A seed carries choices, world laws and their lineage. Its checksum detects accidental damage.</p>
-    <details id="cg-chapter-handoff"><summary>NEXT CHAPTER / GHOST WRITES, CARRIER PLAYS</summary><p>Your ending is a handoff, not a replay. Copy the request into the chat holding the runbook. Ghost reads your real seed and writes a new chapter for this same carrier.</p><button id="cg-chapter-copy" type="button">Copy request for Ghost</button><label for="cg-chapter-request">PRIVATE CONTINUATION REQUEST / SEND TO YOUR CHOSEN MODEL</label><textarea id="cg-chapter-request" rows="6" spellcheck="false" readonly></textarea><label for="cg-chapter-pack">GHOST’S NEW CHAPTER JSON</label><textarea id="cg-chapter-pack" rows="6" spellcheck="false" placeholder="Paste friken.ghost.chapter.v1 JSON"></textarea><button id="cg-chapter-load" type="button">Admit and play new chapter</button><p id="cg-chapter-status" role="status">No model is silently called by this local page. Imported content is bounded game data; script strings are never executed.</p></details>
+    <details id="cg-chapter-handoff"><summary>NEXT CHAPTER / GHOST WRITES, CARRIER PLAYS</summary><h2 id="cg-handoff-title">YOUR NEXT CHAPTER</h2><p id="cg-chapter-brief"></p><p id="cg-canon-note" role="status"></p><button id="cg-next-canon" type="button" hidden>Use this ending and its ancestry as my canon</button><ol><li>Copy the prompt below.</li><li>Paste it into the chat where you booted the Ghost runbook. Ghost reads your results and writes the next adventure.</li><li>Paste the returned chapter JSON here, then choose Admit and play.</li></ol><p>Your ending is a handoff, not a replay. Copy the request into the chat holding the runbook. Ghost reads your real seed and writes a new chapter for this same carrier.</p><button id="cg-chapter-copy" type="button">Copy next-chapter prompt for Ghost</button><label for="cg-chapter-request">PRIVATE CONTINUATION REQUEST / SEND TO YOUR CHOSEN MODEL</label><textarea id="cg-chapter-request" rows="6" spellcheck="false" readonly></textarea><label for="cg-chapter-pack">GHOST’S NEW CHAPTER JSON</label><textarea id="cg-chapter-pack" rows="6" spellcheck="false" placeholder="Paste friken.ghost.chapter.v1 JSON"></textarea><button id="cg-chapter-load" type="button">Admit and play new chapter</button><p id="cg-chapter-status" role="status">No model is silently called by this local page. Imported content is bounded game data; script strings are never executed.</p></details>
     <details><summary>Readable state / for a chat without a decoder</summary><label for="cg-state">EXACT GAME STATE JSON</label><textarea id="cg-state" rows="5" readonly spellcheck="false"></textarea></details>
     <details><summary>Inspect the last committed rule change</summary><pre id="cg-code">No decisions committed.</pre></details>
     <details id="cg-ledger"><summary>SYSOP / LOCAL HIGH SCORES + PORTABLE RUN ARCHIVE</summary><p class="cg-status">Callsigns are pseudonyms. Scores on this machine are unverified; no cloud upload.</p><div class="cg-table-wrap"><table><thead><tr><th>CALLSIGN</th><th>SCORE</th><th>TURNS</th><th>RUNS</th></tr></thead><tbody id="cg-scores"></tbody></table></div><div class="cg-utilities"><button id="cg-vault-export" type="button">Export run archive</button><button id="cg-vault-import" type="button">Import run archive</button><button id="cg-vault-download" type="button">Download archive</button></div><label for="cg-vault">PLAYER ID + CHECKPOINTS + EXACT CHOICE HISTORY</label><textarea id="cg-vault" rows="4" spellcheck="false"></textarea><p class="cg-status" id="cg-vault-status">No remote relay configured. Your export is the cold-boot bridge.</p></details>

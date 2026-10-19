@@ -12,7 +12,7 @@ export function mountCarrierShell(root){
   const world=root.querySelector('.cg-worldpane'),turn=root.querySelector('.cg-turnpane'),story=root.querySelector('.cg-story');
   world.prepend(frameHead('╔═ ARTIFACT / LIVE MANIFOLD ═╗'));turn.prepend(frameHead('╔═ ENCOUNTER / THE OTHER END OF THE LINE ═╗'));
   const scroll=node('div','cg-narrative');
-  for(const n of [el('decision'),story,el('receipt'),el('replay-roll'),el('laws')])scroll.append(n);
+  for(const n of [el('decision'),story,el('receipt'),el('replay-roll'),el('laws'),el('completion')])scroll.append(n);
   turn.insertBefore(scroll,el('choices'));turn.append(el('boot'));
   face.prepend(frameHead('╔═ GHOST / PRESENT ═╗'));aside.append(face,instruments);
   const diagnostics=node('details','cg-diagnostics'),summary=node('summary','');summary.textContent='CARRIER DIAGNOSTICS';diagnostics.append(summary,root.querySelector('.cg-bootlog'));aside.append(diagnostics);presence.remove();
