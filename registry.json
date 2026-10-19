@@ -12,8 +12,8 @@
   "files": [
     {
       "path": ".github/workflows/session-intake.yml",
-      "bytes": 1080,
-      "sha256": "ce737f50c3fd450684a20bbdb206dc1ae302340fcd5128cd1123855d08f35804"
+      "bytes": 991,
+      "sha256": "c5ae514f77ef095688987337676693441fb7e0010a94744bb5b9086882543d0f"
     },
     {
       "path": ".nojekyll",
@@ -22,18 +22,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 4453,
-      "sha256": "0d6a2f02ea07ecd9ca20749f31b5c994e7071f3fca33dcb9463d1359571af163"
+      "bytes": 3531,
+      "sha256": "aff40f46be0d77715dde3aec8ef6a1d8358da15737e1a6f4d98f47986648357e"
     },
     {
       "path": "Tools/ChromaticBBS/Framework.md",
-      "bytes": 20524,
-      "sha256": "d454d7df9354b8aa0659b6ac67995da6213358500eb0bb6997e63a268467b102"
-    },
-    {
-      "path": "Tools/ChromaticBBS/Packing-Results.md",
-      "bytes": 3367,
-      "sha256": "6402fea8d35d077d3db85d73a630f69c9e0da4b341b71f0690d49ff5251c99c4"
+      "bytes": 19494,
+      "sha256": "566d57ceb7999a03584f5a4a7d96012d84239565a62ff037cafcadee7405d327"
     },
     {
       "path": "Tools/ChromaticBBS/Writing.md",
@@ -42,43 +37,33 @@
     },
     {
       "path": "Tools/ChromaticBBS/app.mjs",
-      "bytes": 21245,
-      "sha256": "4bc4e7acae141e1937569741189d05d8bb9ae9ab735dc80299fa229fd4323770"
+      "bytes": 20432,
+      "sha256": "fa3ef678129be3a5cc2b240500b92df52bb9630c65d335699f034b49fcec457b"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
-      "bytes": 15149,
-      "sha256": "46e85b171f82df42c3d6a6ffc28263ccb11f24854722fd4ab0bc9d3656571621"
+      "bytes": 15086,
+      "sha256": "1ae74923b6d17809e47cffe9c66a9ae109d1a34e87668ee1376c6542589fc589"
     },
     {
       "path": "Tools/ChromaticBBS/build.py",
-      "bytes": 3667,
-      "sha256": "42fe5550ce59dffd332189877c6734abcaf1c6f5fa40c3304d460231bc60b7ae"
-    },
-    {
-      "path": "Tools/ChromaticBBS/canon.mjs",
-      "bytes": 2998,
-      "sha256": "cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"
-    },
-    {
-      "path": "Tools/ChromaticBBS/canon.test.mjs",
-      "bytes": 2787,
-      "sha256": "eb78f27fd61cd9daca43e8033663128f27844662a31e44f5c52271ca12ec9dd1"
+      "bytes": 3631,
+      "sha256": "b5055a5fdb849cf9a2ab258a8abf88f877fe41c9bc2ff70798961c3b9654daf1"
     },
     {
       "path": "Tools/ChromaticBBS/carrier.css",
-      "bytes": 28111,
-      "sha256": "e989b9d107ffa97d3cba6309d14c7c464de3e24c6ac0e12f415a64c83109e313"
+      "bytes": 26581,
+      "sha256": "484e8555551cd164ccef7dcd1f86f3f230792f71c904c4931803299971e50d5e"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-check.html",
-      "bytes": 6174,
-      "sha256": "e95bafec09fff712ef80031b0189def88561450d9b6b6351e319ccc505c6b938"
+      "bytes": 5109,
+      "sha256": "c5cd7d5bfafa2dcaaa8a4f4bc36b8285d365a727fe024bc1657637ecb9a705d7"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-cli.mjs",
-      "bytes": 1230,
-      "sha256": "d7d4cf76b38e4d27a68f90915a8a51ed1b1872dc8fd6f9dc731b62b149b77441"
+      "bytes": 1049,
+      "sha256": "1efb9bc8ccf917d00ea0b38d485516e733e55fd13f34831ddcec62a07d2e05e1"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-data.mjs",
@@ -86,24 +71,19 @@
       "sha256": "dc84112b26d843af055594ad152cdd3acfae1a496fdf9b23e89a2ef3c441bf0d"
     },
     {
-      "path": "Tools/ChromaticBBS/chapter-library.mjs",
-      "bytes": 12072,
-      "sha256": "ee4c38e7ad376009c55330cd553430bc43f2913f8adc421bf542b263e96d33b5"
-    },
-    {
       "path": "Tools/ChromaticBBS/chapters/the-weather-inside.json",
-      "bytes": 57713,
-      "sha256": "cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"
+      "bytes": 57624,
+      "sha256": "53ff793a3f95c76757dbdae2c19c6b50da7d6e60381bf0c20c88d4302edfee32"
     },
     {
       "path": "Tools/ChromaticBBS/chapters.mjs",
-      "bytes": 19571,
-      "sha256": "2b75f25b62cdc918835661548eb541ab983eb47ceab9b8134fc0cbde257359e5"
+      "bytes": 17439,
+      "sha256": "83d5d6b70974ce6c727475058dd855ab14946ef6a23fd1d5fc05aeecdf9973be"
     },
     {
       "path": "Tools/ChromaticBBS/chapters.test.mjs",
-      "bytes": 4585,
-      "sha256": "b7da8e33c357c9e5211998ebbdb3263e73b6420d4f31ca11577e692ad2c6df1a"
+      "bytes": 4370,
+      "sha256": "0c0c09c30753749c751c82d734806741ec5259686f037c9a84b5db17cc18c883"
     },
     {
       "path": "Tools/ChromaticBBS/cinema.mjs",
@@ -114,11 +94,6 @@
       "path": "Tools/ChromaticBBS/commentary.mjs",
       "bytes": 8060,
       "sha256": "f8d0016c2fb0fe63e03687acf6f58a202632f59e120aa9ecc2cd1e24ee133ecc"
-    },
-    {
-      "path": "Tools/ChromaticBBS/comprehension-results.json",
-      "bytes": 3607,
-      "sha256": "a59473372c0ed7f411272f5ab3e9dde7289babd57d675fb05a50aadc6575627f"
     },
     {
       "path": "Tools/ChromaticBBS/engine.mjs",
@@ -147,18 +122,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
-      "bytes": 8244,
-      "sha256": "bdfc81ce6d493a4a1e783df512f682fdf4952885e0b709a02d031a4954f1b447"
-    },
-    {
-      "path": "Tools/ChromaticBBS/packing-results.json",
-      "bytes": 5187,
-      "sha256": "3afb875866c16d22875f7fafafb005a8bb96041a923c57e47fe2da3caed80650"
-    },
-    {
-      "path": "Tools/ChromaticBBS/packing_benchmark.py",
-      "bytes": 25206,
-      "sha256": "e4951755e3f0cc192021fd40cb7f895cdae5a437bbf364f94f3c45aca306f165"
+      "bytes": 7932,
+      "sha256": "93688093ec60cfd2a86046db662abc945c0c18f97c0b8b6c424913444f9e0427"
     },
     {
       "path": "Tools/ChromaticBBS/portrait.mjs",
@@ -172,8 +137,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 9501,
-      "sha256": "7a2bb7fdfad0e072e961486e6e6f1159d1022d7c9c2a1897705a11f3afb70049"
+      "bytes": 8064,
+      "sha256": "a733cb2f961b1590b7bb07db987ec3bd8008f58740e79a4258055ac829a8b9bb"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -196,24 +161,19 @@
       "sha256": "95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"
     },
     {
-      "path": "Tools/ChromaticBBS/runbook-packing-results.json",
-      "bytes": 5435,
-      "sha256": "e30dc78e9d2f24d9e7d31be7bfcab2d43a707e3b6fbdcca08e4871c1c27af20b"
-    },
-    {
       "path": "Tools/ChromaticBBS/session-share.mjs",
       "bytes": 4176,
       "sha256": "3aa48a1c60c0fa5684254c536fc7648e8835fb06bb001de09cda69ce1896d37a"
     },
     {
       "path": "Tools/ChromaticBBS/session-store.py",
-      "bytes": 7235,
-      "sha256": "c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"
+      "bytes": 5041,
+      "sha256": "99c777ed034b86107de44b903700550242a670ced531500094817d63625bc057"
     },
     {
       "path": "Tools/ChromaticBBS/session-store.test.py",
-      "bytes": 3115,
-      "sha256": "41831636326c16a800765e095acd0f1af337bc37a3f09578a4af04c7828cf449"
+      "bytes": 2012,
+      "sha256": "7e8727414cd894dd9932bfbb8e5dd98cabb04f6e7f137281e3af7bf851fb6777"
     },
     {
       "path": "Tools/ChromaticBBS/shell.mjs",
@@ -242,8 +202,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/surface.html",
-      "bytes": 16991,
-      "sha256": "5e34887fd835e61e399210be022010aa860a51e89a215b0e92ea97022d116ee2"
+      "bytes": 15167,
+      "sha256": "083f9c4392e93919be81fad918692086efcc1d377ca7c24ca771f881351a3c95"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/rose/PROVENANCE.md",
@@ -277,13 +237,13 @@
     },
     {
       "path": "index.html",
-      "bytes": 468734,
-      "sha256": "eb5d326bc7ce7a5cf7b438c2f8d3668c8c732cb488e2807881d6e164d8f396c4"
+      "bytes": 446790,
+      "sha256": "8a25f74a1ab609e27d4b6c271c31b9404f4b3720a1a11962e12e3544bdb1fc2f"
     },
     {
       "path": "runbook.md",
-      "bytes": 41522,
-      "sha256": "2491cb496101f988ed8fd514fa3472aff91901c570b747e066da143bf3b67711"
+      "bytes": 38014,
+      "sha256": "fef4123277e8790bb7ee89204a8eb93ae8127e507168767616ea0161b1290dce"
     }
   ],
   "privateSourceIncluded": false,
@@ -296,7 +256,6 @@
   },
   "feeds": {
     "news": "data/news.json",
-    "scoreboard": "data/scoreboard.json",
-    "chapters": "data/chapters.json"
+    "scoreboard": "data/scoreboard.json"
   }
 }

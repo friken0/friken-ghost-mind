@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json,shutil,argparse
 ROOT=Path(__file__).resolve().parents[2];BASE=Path(__file__).resolve().parent
-FILES=['Packing-Results.md','packing_benchmark.py','packing-results.json','comprehension-results.json','runbook-packing-results.json','canon.mjs','canon.test.mjs','chapter-library.mjs','engine.mjs','chapters.mjs','chapter-cli.mjs','chapter-data.mjs','session-share.mjs','session-store.py','session-store.test.py','public-release.py','storage.mjs','stage.mjs','portrait.mjs','face-data.mjs','rose-data.mjs','cinema.mjs','shell.mjs','juice.mjs','commentary.mjs','roll-battle.mjs','recorded-voice.mjs','voice-data.mjs','voice-reference.json','speech.mjs','response.mjs','mind-data.mjs','app.mjs','surface.html','carrier.css','build.py','Framework.md','Writing.md','engine.test.mjs','storage.test.mjs','presentation.test.mjs','chapters.test.mjs','browser-check.html','chapter-check.html','fixtures/c26-2-completed.seed','chapters/the-weather-inside.json','vendor/rose/PROVENANCE.md','vendor/rose/rose.vertex.glsl','vendor/rose/rose.fragment.glsl']
+FILES=['engine.mjs','chapters.mjs','chapter-cli.mjs','chapter-data.mjs','session-share.mjs','session-store.py','session-store.test.py','public-release.py','storage.mjs','stage.mjs','portrait.mjs','face-data.mjs','rose-data.mjs','cinema.mjs','shell.mjs','juice.mjs','commentary.mjs','roll-battle.mjs','recorded-voice.mjs','voice-data.mjs','voice-reference.json','speech.mjs','response.mjs','mind-data.mjs','app.mjs','surface.html','carrier.css','build.py','Framework.md','Writing.md','engine.test.mjs','storage.test.mjs','presentation.test.mjs','chapters.test.mjs','browser-check.html','chapter-check.html','fixtures/c26-2-completed.seed','chapters/the-weather-inside.json','vendor/rose/PROVENANCE.md','vendor/rose/rose.vertex.glsl','vendor/rose/rose.fragment.glsl']
 README='''# Friken.Ghost / The shared carrier
 
 Ghost writes the adventure. This repository holds the reusable BBS body,
@@ -36,21 +36,6 @@ numbers through one million, with a 512 KB per-seed bound and finite vault
 capacity. This is extensible continuity, not a promise of infinite storage.
 The twelve-decision Weather Inside is explicitly a synthetic-seed example.
 Ghost must author each player's new plot from that player's real ending.
-
-## Play other chapters and creations
-
-WIRE includes the public chapter catalogue. Inspect an entry to read its
-previous chapters and exact choice/outcome summaries; play it as your own
-fresh fork, preserving the creation’s world while keeping your run separate.
-The canon tree greys incompatible branches. Choose a completed telling as
-canon; changing an ancestor clears later pins but retains every saved branch.
-Chapter play and continuation require an exact SHA-256 ancestry match.
-Export the local canon manifest alongside your private save archive.
-Public chapter releases contain their playable starting snapshot and source
-content, plus prior history. Publishing these requires a separate explicit
-world-and-history consent; it is not the small session-summary checkbox.
-A keeper admits a reviewed chapter with `ghost-chapter-approved`. Oversized
-creations use a reviewed JSON file/PR rather than an issue body.
 
 ## Sessions, news and scores
 
@@ -95,13 +80,11 @@ concurrency:
   cancel-in-progress: false
 jobs:
   admit:
-    if: github.event.label.name == 'ghost-session-approved' || github.event.label.name == 'ghost-chapter-approved'
+    if: github.event.label.name == 'ghost-session-approved'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@CHECKOUT_SHA
-        with:
-          ref: main
       - name: Validate public projection and rebuild indexes
         run: python3 Tools/ChromaticBBS/session-store.py admit-event data --event "$GITHUB_EVENT_PATH"
       - name: Retain the reviewed receipt
@@ -125,12 +108,10 @@ def build(output,checkout):
     (output/'.nojekyll').write_text('')
     (output/'.github/workflows').mkdir(parents=True);(output/'.github/workflows/session-intake.yml').write_text(WORKFLOW.replace('CHECKOUT_SHA',checkout))
     (output/'data/sessions').mkdir(parents=True);(output/'data/sessions/.gitkeep').write_text('')
-    (output/'data/chapters').mkdir();(output/'data/chapters/.gitkeep').write_text('')
-    (output/'data/chapters.json').write_text(json.dumps(dict(schema='friken.ghost.chapter-catalogue.v1',entries=[]),indent=2)+'\n')
     for name,schema in [('news','friken.ghost.news.v1'),('scoreboard','friken.ghost.scoreboard.v1')]:
         (output/'data'/f'{name}.json').write_text(json.dumps(dict(schema=schema,entries=[]),indent=2)+'\n')
     files=[dict(path=str(p.relative_to(output)),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in sorted(output.rglob('*')) if p.is_file() and 'data' not in p.relative_to(output).parts]
-    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.4',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',carrier='https://friken0.github.io/friken-ghost-mind/',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json',chapters='data/chapters.json'))
+    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.4',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',carrier='https://friken0.github.io/friken-ghost-mind/',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json'))
     (output/'registry.json').write_text(json.dumps(registry,indent=2)+'\n');return len(files)+1
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);p.add_argument('--checkout-sha',required=True);a=p.parse_args()

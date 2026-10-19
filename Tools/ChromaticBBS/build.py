@@ -19,9 +19,9 @@ parser.add_argument('--chapter', type=Path)
 parser.add_argument('--parent', type=Path)
 args = parser.parse_args()
 sources = []
-for name in ('engine.mjs', 'canon.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
+for name in ('engine.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
              'face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'stage.mjs',
-             'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'app.mjs'):
+             'cinema.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'app.mjs'):
     source = (base / name).read_text()
     if name == 'chapter-data.mjs' and args.chapter:
         packet = json.loads(args.chapter.read_text())
