@@ -1897,5 +1897,6 @@
     "scene": "The trench is cool. The small district has a valve of its own. There is weather where there was only a promised sky. The desert’s call remains in the queue. Your precise decisions, working laws and unanswered obligations travel in the seed; no future choice has been made for you.",
     "ghost": "We did not fix weather. We made one place able to share it without quietly eating its neighbours. That will do for tonight. Keep the seed. The desert knows our number."
   },
-  "roller": "balance"
+  "roller": "balance",
+  "parentTellingId": "a01a044f9547cf753f151eef506076ee5b6f0ed2156cd8f010008d6fe7aab08a"
 }

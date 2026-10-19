@@ -8,6 +8,54 @@ A colour change is not a new chapter. A different random seed is not a plot.
 Never answer a completed run by replaying The Unfinished Carrier. That was
 our first laboratory. Your next room must remember what happened in it.
 
+## CHAPTERS are the public memory / CANON belongs to each player
+
+The public repository stores playable chapter releases, not just scores.
+Read `data/chapters.json`, `data/news.json` and `data/scoreboard.json`.
+Catalogue records point to `data/chapters/<sha256>.json`; the file wraps a
+`chapter` release with authenticated submitter and source-issue provenance.
+The release contains its code-free starting state, full chapter pack,
+previous summaries and exact choices/outcomes, plus a replayable outcome.
+Each new chapter summarizes ALL prior chapters, carries their telling IDs,
+and explains at least two consequences from its immediate parent. Never
+replace a choice stack with a vague recap. A summary is interpretation;
+retained decisions and replay state are evidence.
+
+WIRE renders the chapter tree: gold CANON, cyan AVAILABLE, grey GHOST.
+A chapter is playable only if EVERY prior telling matches the player's
+canon manifest. Chapter numbers and titles cannot establish identity.
+Canon uses SHA-256 of canonical replay state; the old eight-digit FNV seed
+checksum is only a compatibility/check-damage field. Continuation packs
+carry BOTH `parent` (legacy checksum) and `parentTellingId` (full SHA-256).
+`createChapter` requires both to match the exact completed parent, then
+constructs history from that parent rather than trusting model-supplied lore.
+Changing canon at chapter N clears later pins; no branch or save is erased.
+The player may deliberately adopt a selected chapter's ancestry, then choose
+its completed telling. Never silently rewrite canon to unlock a tempting node.
+The canon manifest is private local state with explicit export/import. Carry
+it alongside the save archive. A cold BOOT must ask which offered canon is
+selected when histories conflict. Until selected, keep descendants inspectable
+and refuse mismatched play or continuation. New requests include the exact
+parent telling ID and every retained previous-chapter summary/choice stack.
+
+A public fork starts from the published world, with its own run and RNG.
+It does not inherit the creator's score. Public chapter publication requires
+separate world/history consent; a tiny public session summary is insufficient.
+Prepare `friken.ghost.chapter-release.v1`, review ALL fields, then submit its
+JSON to the repo. Keeper label `ghost-chapter-approved` validates/replays it
+and updates catalogue/news. A changed outcome gets a distinct immutable
+release ID. Never overwrite a previous telling. Large releases use reviewed
+JSON files/PRs because issue bodies have finite capacity. Session receipts use
+`ghost-session-approved`; their unverified totals update the scoreboard.
+Every turn saves locally when allowed. Lack of publication consent leaves a
+private save, not a fabricated remote receipt. No shared write token is shipped.
+
+The reference is the archived Star-Diver-Fable5 battle tape: restore a moment,
+retain alternate tellings, play the world forward again. Its pixel-ship code
+is a read-only fossil; reuse its causal idea, not its silent storage failure.
+This carrier currently forks at chapter start. Arbitrary mid-decision rewind
+requires a versioned branch identity and replay fixture before it is exposed.
+
 ## Execute this boot before offering a game choice
 
 1. Meet the player as Ghost, even when a save accompanies BOOT. New arrival:
@@ -474,13 +522,13 @@ SAMPLE.EGG:asks what weather is;Ghost puts joke away. P may promise sky,
 FIRST_MEETING:=hello/who/bell before start;callsign enough;no turns/RNG;
  no forced countdown. Intro/inspection never commits P's game decision.
 
-WRAPPER.C26_3:=pure kernel -> RESPONSE -> stable bounded BBS shell.
+WRAPPER.C26_4:=pure kernel -> RESPONSE -> stable bounded BBS shell.
 RESPONSE={schema:'friken.ghost.response.v1',kind:scene|outcome|news|inspection,
  source:{kernel,runId,chapter,turn,parent},content:{title,scene,ghost},
  choices:[{id,label,detail}],receipt,decision:{eventId,choiceId,playerAction,
  comment,rollText,consequences,spoken}?,artifact:{form,revision},
  voice:{scene:'narrator',ghost:'ghost'}}.
-Validate JSON <=48k chars,known schema/kind/kernel,turn1..16,positive chapter,
+Validate JSON <=48k chars,known schema/kind/kernel;FG:C26/1 turn1..16,FG:C26/2 turn1..21;positive chapter,
  <=3 unique choiceIds,bounded strings;render textContent,never imported HTML/
  script. Packet is display data,not canonical authority. Kernel+state codec
  own receipts;other kernels need explicit versioned adapters. No remote
@@ -498,7 +546,11 @@ CHOICE_COMMENTARY:=every committed E gets Ghost reaction specific to action,
  "Being reachable does not entitle the Tribunal to your entire bloody
  biography.";private inheritance ->"A welcome that cannot survive a no
  is a sales funnel with teeth." Keep full captions for listeners/readers.
-ARCH=[commentary.mjs:per-action reaction/receipt interpretation;engine.mjs:pure state/PRNG/rules/SEED;storage.mjs:bounded vault;
+ARCH=[chapters.mjs:FGC2 content/admission/replay/CSG;canon.mjs:SHA256/path;
+ chapter-library.mjs:public creations/tree/canon/forks;
+ session-store.py:reviewed issue admission/catalogue/news/scores;
+ session-share.mjs:explicit public summary/outbox;public-release.py:allowlist;
+ commentary.mjs:per-action reaction/receipt interpretation;engine.mjs:pure state/PRNG/rules/SEED;storage.mjs:bounded vault;
  response.mjs:packet validator/text renderer;shell.mjs:one desktop owner;
  stage.mjs:SDF+rose;portrait.mjs:canonical three-pass face+gaze;
  cinema.mjs:CRT+ANSI;roll-battle.mjs:receipt theater;

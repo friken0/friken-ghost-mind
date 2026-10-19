@@ -1,10 +1,11 @@
+import { mountChapterLibrary } from './chapter-library.mjs';
 import { mountSessionShare } from './session-share.mjs';
 import { authoredBoot } from './chapter-data.mjs';
 import { choiceCommentary } from './commentary.mjs';
 /* Local authored specimen. Explicit choices alone call the pure reducer.
  * Exported seeds are data. No imported field becomes code or HTML. */
 import { newGame } from './engine.mjs';
-import { playView, playChoose, encodePlaySeed, decodePlaySeed, createChapter, chapterRequest } from './chapters.mjs';
+import { canonicalData, playView, playChoose, encodePlaySeed, decodePlaySeed, createChapter, chapterRequest } from './chapters.mjs';
 import { mountStage } from './stage.mjs';
 import { mountPortrait } from './portrait.mjs';
 import { createVault } from './storage.mjs';
@@ -36,6 +37,7 @@ if(nativeStorage&&qaStore&&/^[a-z0-9-]{1,64}$/.test(qaStore)){
   nativeStorage={getItem:k=>actual.getItem(prefix+k),setItem:(k,v)=>actual.setItem(prefix+k,v),removeItem:k=>actual.removeItem(prefix+k)};
 }
 const vault=createVault(nativeStorage);
+function preferredResume(){const saved=vault.current();return preparedChapter?(saved?.pack&&canonicalData(saved.pack)===canonicalData(preparedChapter.pack)?saved:preparedChapter):saved;}
 let savedReceipt=null;
 const stage=mountStage(el('canvas'),message=>{el('art-status').textContent=message;});
 const portrait=mountPortrait(el('portrait'),message=>{el('face-status').textContent=message;});
@@ -43,6 +45,7 @@ let motionHeld=stage?.paused??matchMedia('(prefers-reduced-motion: reduce)').mat
 stage?.update(state);
 function note(message){el('status').textContent=message;}
 mountSessionShare(root,{state:()=>state,storage:nativeStorage,note});
+const chapterLibrary=mountChapterLibrary(root,{current:()=>state,storage:nativeStorage,localStates:()=>JSON.parse(vault.exportArchive()).runs.map(r=>decodePlaySeed(r.seed)),play(next){stopVoice();state=next;started=true;persist();carrierShell.home();draw();note('Public creation forked into your own saved run.');if(voice)speak();}});
 const juice=mountJuice(root);
 const speech=mountSpeech(root,{note,storage:nativeStorage,silent:checkMode||!!qaStore,pcm(value){portrait?.audioLevel(value);},talking(value){portrait?.talking(value);},pulse(){portrait?.pulse();}});
 function stopVoice(){speech.stop();}
@@ -78,7 +81,7 @@ el('station').addEventListener('toggle',()=>{root.dataset.station=el('station').
 el('lineage-panel').addEventListener('toggle',()=>{root.dataset.lineage=el('lineage-panel').open?'open':'closed';});
 function renderWire(){
   const registry=bundledMind.registry,feed=bundledMind.highlights;
-  el('wire-status').textContent='LOCAL BUNDLED MIRROR / SHARED WIRE VIA PUBLIC REPO / '+(feed.entries||[]).length+' DISPATCHES';
+  el('wire-status').textContent='BUNDLED BUILD HISTORY / CURRENT WIRE VIA PUBLIC REPO / '+(feed.entries||[]).length+' DISPATCHES';
   el('registry').textContent=JSON.stringify(registry,null,2);
   el('news-items').replaceChildren(...(feed.entries||[]).map(item=>{
     const article=document.createElement('article');
@@ -147,18 +150,18 @@ function draw(){
 }
 function act(id){
   if(battle.active)return;
-  try{const before=state.resources,next=playChoose(state,id);stopVoice();state=next;persist();draw();juice.transition(before,state.resources);note('Decision committed · '+(state.lastReceipt?.summary||'waiting for you'));if(state.lastReceipt?.roll){const decision=choiceCommentary(state.lastReceipt,state);battle.show(state.lastReceipt,decision);if(voice)speech.speak({scene:'',ghost:decision.spoken});}else if(voice)speak();}
+  try{chapterLibrary.assertPlayable(state);const before=state.resources,next=playChoose(state,id);stopVoice();state=next;persist();draw();juice.transition(before,state.resources);note('Decision committed · '+(state.lastReceipt?.summary||'waiting for you'));if(state.lastReceipt?.roll){const decision=choiceCommentary(state.lastReceipt,state);battle.show(state.lastReceipt,decision);if(voice)speech.speak({scene:'',ghost:decision.spoken});}else if(voice)speak();}
   catch(error){note('Decision refused: '+error.message);}
 }
 function seedText(){return el('seed').value.trim().replace(/^BOOT\s*\+?\s*/i,'');}
 function bootNext(code){
-  try{const parent=decodePlaySeed(code),request=chapterRequest(parent,{repository:'https://github.com/friken0/friken-ghost-mind',manifest:'https://raw.githubusercontent.com/friken0/friken-ghost-mind/main/registry.json'});el('chapter-request').value=JSON.stringify(request,null,2);carrierShell.open('archive');el('seed-status').textContent=parent.ending?'NEXT CHAPTER NEEDS GHOST. Copy the request into the runbook chat; import the new chapter JSON here. Your current ending stays saved.':'Return this request to Ghost to resume the exact pending decision. No new chapter has been created.';el('chapter-handoff').open=true;note('Waiting for a real new chapter from Ghost. No replay, no made-up model call.');}
-  catch(error){el('seed-status').textContent='Handoff refused: '+error.message;}
+  try{const parent=decodePlaySeed(code);chapterLibrary.assertContinuation(parent);const request=chapterRequest(parent,{repository:'https://github.com/friken0/friken-ghost-mind',manifest:'https://raw.githubusercontent.com/friken0/friken-ghost-mind/main/registry.json'});el('chapter-request').value=JSON.stringify(request,null,2);carrierShell.open('archive');el('seed-status').textContent=parent.ending?'NEXT CHAPTER NEEDS GHOST. Copy the request into the runbook chat; import the new chapter JSON here. Your current ending stays saved.':'Return this request to Ghost to resume the exact pending decision. No new chapter has been created.';el('chapter-handoff').open=true;note('Waiting for a real new chapter from Ghost. No replay, no made-up model call.');}
+  catch(error){el('seed-status').textContent='Handoff refused: '+error.message;carrierShell.open('wire');chapterLibrary.refresh();note('Choose your canon ending in WIRE, then request the next chapter.');}
 }
 el('chapter-copy').addEventListener('click',async()=>{try{if(!el('chapter-request').value)bootNext(encodePlaySeed(state));await navigator.clipboard.writeText('BOOT\n'+el('chapter-request').value);el('chapter-status').textContent='Copied. Paste into the chat holding the Ghost runbook; bring back its chapter JSON.';}catch(error){el('chapter-status').textContent='Select and copy the request below. '+error.message;}});
-el('chapter-load').addEventListener('click',()=>{try{const packet=JSON.parse(el('chapter-pack').value),parent=packet.chapter===1?null:state,next=createChapter(packet,parent,{handle:state.handle,entropy:crypto.getRandomValues(new Uint32Array(1))[0]});stopVoice();state=next;started=true;persist();carrierShell.home();draw();note('New model-authored chapter admitted. Same Ghost, new trouble.');if(voice)speak();}catch(error){el('chapter-status').textContent='Chapter refused; current save kept. '+error.message;}});
+el('chapter-load').addEventListener('click',()=>{try{const packet=JSON.parse(el('chapter-pack').value),parent=packet.chapter===1?null:state,next=createChapter(packet,parent,{handle:state.handle,entropy:crypto.getRandomValues(new Uint32Array(1))[0]});chapterLibrary.assertPlayable(next);stopVoice();state=next;started=true;persist();carrierShell.home();draw();note('New model-authored chapter admitted. Same Ghost, new trouble.');if(voice)speak();}catch(error){el('chapter-status').textContent='Chapter refused; current save kept. '+error.message;}});
 el('start').addEventListener('click',()=>{const entropy=crypto.getRandomValues(new Uint32Array(1))[0];state=preparedChapter||newGame({rngSeed:entropy,handle:el('handle').value.trim()||'DIVER'});started=true;persist();draw();note('Carrier connected · choose 1, 2 or 3');if(voice)speak();});
-el('resume').addEventListener('click',()=>{const saved=preparedChapter||vault.current();if(!saved)return;stopVoice();state=saved;started=true;draw();note('Carrier resumed. The math kept its fkn receipts.');});
+el('resume').addEventListener('click',()=>{const saved=preferredResume();if(!saved)return;stopVoice();state=saved;started=true;draw();note('Carrier resumed. The math kept its fkn receipts.');});
 el('motion').addEventListener('click',()=>{motionHeld=!motionHeld;juice.hold(motionHeld);battle.hold(motionHeld);stage?.hold(motionHeld);portrait?.hold(motionHeld);el('motion').textContent='Motion: '+(motionHeld?'held':'on');});
 el('motion').textContent='Motion: '+(motionHeld?'held':'on');
 el('voice').textContent='Voice: on';

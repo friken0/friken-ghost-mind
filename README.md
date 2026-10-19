@@ -32,6 +32,21 @@ capacity. This is extensible continuity, not a promise of infinite storage.
 The twelve-decision Weather Inside is explicitly a synthetic-seed example.
 Ghost must author each player's new plot from that player's real ending.
 
+## Play other chapters and creations
+
+WIRE includes the public chapter catalogue. Inspect an entry to read its
+previous chapters and exact choice/outcome summaries; play it as your own
+fresh fork, preserving the creation’s world while keeping your run separate.
+The canon tree greys incompatible branches. Choose a completed telling as
+canon; changing an ancestor clears later pins but retains every saved branch.
+Chapter play and continuation require an exact SHA-256 ancestry match.
+Export the local canon manifest alongside your private save archive.
+Public chapter releases contain their playable starting snapshot and source
+content, plus prior history. Publishing these requires a separate explicit
+world-and-history consent; it is not the small session-summary checkbox.
+A keeper admits a reviewed chapter with `ghost-chapter-approved`. Oversized
+creations use a reviewed JSON file/PR rather than an issue body.
+
 ## Sessions, news and scores
 
 Every accepted choice saves locally when the host permits storage. Export

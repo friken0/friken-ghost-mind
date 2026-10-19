@@ -356,3 +356,20 @@ prepares an issue, not a silent upload. A keeper-approved label invokes the
 schema-only session store, immutable receipt and news/score index rebuild.
 The public repository omits private archives and the full identity matrix.
 Public Wire reads are explicit. A failed read leaves the local game intact.
+
+## C26.4 canon and public chapters
+
+WIRE shows a bounded branching graph with exact-parent edges. Gold is the
+player's selected canon, cyan is compatible, grey is a surviving ghost branch.
+Inspecting never changes canon. Choosing an earlier completed telling clears
+later pins while retaining saves. Play/import/next require exact ancestry.
+Canonical replay state is SHA-256 fingerprinted; FNV remains seed compatibility
+only. Export the canon manifest alongside the private run archive.
+
+Each public chapter release includes its playable start, source pack, complete
+prior chapter summaries/choices and replay-validated result. Fetch records via
+the catalogue's path and read the `chapter` field. A public fork has separate
+run/RNG/score. Publication is a distinct world/history disclosure; summaries
+never imply that consent. Reviewed issue labels admit bounded data through
+the repository workflow. Scores remain unverified and synthetic fixtures are
+excluded. Mid-decision rewind is not implemented; chapter-start forks are.

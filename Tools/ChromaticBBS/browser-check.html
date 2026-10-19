@@ -109,7 +109,7 @@ document.getElementById('run').onclick=async()=>{
       await load(width);await wake();
       control('seed').value=code;control('load').click();
       assert(stable(state())===completed,width+': seed reload restores exact completed state');
-      control('next').click();await paint();
+      control('canon-local').click();control('canon-select').click();control('next').click();await paint();
       assert(stable(state())===completed,width+': next chapter waits for a real model without replaying the demo');
       const request=JSON.parse(control('chapter-request').value);assert(request.mode==='AUTHOR_NEXT_CHAPTER'&&request.nextChapter===2&&request.seed===code,width+': exact seed and obligations enter the model handoff');
       control('motion').click();
