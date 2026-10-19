@@ -1,4 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import crypto from 'node:crypto';import fs from 'node:fs';
+import {newGame} from './engine.mjs';
 import {sha256,canonStatus,selectCanon,validateCanon} from './canon.mjs';
 import {decodePlaySeed,createChapter,playChoose,playView,previousChapterSummary,tellingId} from './chapters.mjs';
 import {chapterRelease,validateChapterRelease,releaseResult} from './chapter-library.mjs';
@@ -8,3 +9,5 @@ test('SHA-256 matches independent native hashes including Unicode and long block
 test('canon requires every exact ancestor and changing an early pin clears descendants',()=>{const s=completed(),h=previousChapterSummary(parent),child=previousChapterSummary(s),canon=selectCanon([h,child]);assert.ok(canonStatus(s.pack.history,canon).ok);const alternate={...h,tellingId:'a'.repeat(64)};const changed=selectCanon([alternate]);assert.equal(changed.path.length,1);assert.equal(canonStatus(s.pack.history,changed).ok,false);assert.equal(canonStatus(s.pack.history,{schema:canon.schema,path:[]}).ok,false);assert.throws(()=>validateCanon({schema:canon.schema,path:[child]}),/unbroken/);});
 test('completed publication replays its full outcome and versions an initial release',()=>{const s=completed(),start=createChapter(pack,parent),a=chapterRelease(start,{consent:true,synthetic:true}),r=chapterRelease(s,{consent:true,synthetic:true});assert.notEqual(a.id,r.id);assert.deepEqual(releaseResult(r),s);assert.equal(r.history[0].tellingId,tellingId(parent));const bad=structuredClone(r);bad.outcome.choices[0].outcome='fail';assert.throws(()=>validateChapterRelease(bad),/replay/);assert.throws(()=>chapterRelease(s),/consent/);});
 test('same title and choices with a different roll source are distinct exact tellings',()=>{const a=createChapter(pack,parent,{entropy:1}),b=createChapter(pack,parent,{entropy:2});assert.notEqual(tellingId(a),tellingId(b));});
+
+test('the retained Chapter 1 intro is a public playable release with replayed choices',()=>{let s=newGame({rngSeed:37,handle:'SYNTHETIC-INTRO'});while(!s.ending)s=playChoose(s,playView(s).choices[0].id);const r=chapterRelease(s,{consent:true,synthetic:true});assert.deepEqual(releaseResult(r),s);assert.equal(r.history.length,0);assert.equal(r.outcome.choices.length,15);});

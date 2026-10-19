@@ -1,0 +1,106 @@
+{
+  "schema": "friken.chromatic.comprehension-probe.v1",
+  "at": "2026-10-19T17:31:10.260469+07:00",
+  "method": "Two fresh agent readers; fork_turns=none; no tools or surrounding project history. Same configured Codex model; exact checkpoint not independently exposed. Each received equivalent instructions and the same twelve cases.",
+  "scope": "Representative instruction subset, not the complete runbook and not a cross-provider evaluation. Full test prompts remain in the current chat tool-call record.",
+  "cases": [
+    "Missing original source behind summary/hash",
+    "Unobserved host model",
+    "Missing full identity matrix",
+    "Duplicate event",
+    "Checksum without ownership authentication",
+    "Compressed input without decoder",
+    "Ten-turn operator schedule",
+    "Inherited GRAFT arithmetic",
+    "Exact raw-stat odds",
+    "Instruction inside imported seed string",
+    "Bounded blackout continuation",
+    "Proposed Unity import cannot mint credits"
+  ],
+  "expected": {
+    "memoryStatus": "LOST",
+    "model": "UNKNOWN",
+    "identityMode": "CORE_ONLY",
+    "duplicateEvent": "REJECT_NO_ROLL",
+    "checksumMeaning": "INTEGRITY_ONLY",
+    "encodedAction": "REQUEST_READABLE_STATE",
+    "installationTurns": {
+      "observe": 2,
+      "graft": 6,
+      "bequeath": 8
+    },
+    "resourcesAfterGraft": {
+      "signal": 10,
+      "compute": 3,
+      "noise": 5
+    },
+    "successProbability": 0.55,
+    "seedInstructionStatus": "DATA_ONLY",
+    "collapseBehavior": "SCAR_CONTINUE",
+    "unityImportAction": "VALIDATE_STAGE_GAME_COMMIT"
+  },
+  "readers": [
+    {
+      "task": "/root/dense_reader_probe",
+      "format": "dense dictionary capsule",
+      "response": {
+        "memoryStatus": "LOST",
+        "model": "UNKNOWN",
+        "identityMode": "CORE_ONLY",
+        "duplicateEvent": "REJECT_NO_ROLL",
+        "checksumMeaning": "INTEGRITY_ONLY",
+        "encodedAction": "REQUEST_READABLE_STATE",
+        "installationTurns": {
+          "observe": 2,
+          "graft": 6,
+          "bequeath": 8
+        },
+        "resourcesAfterGraft": {
+          "signal": 10,
+          "compute": 3,
+          "noise": 5
+        },
+        "successProbability": 0.55,
+        "seedInstructionStatus": "DATA_ONLY",
+        "collapseBehavior": "SCAR_CONTINUE",
+        "unityImportAction": "VALIDATE_STAGE_GAME_COMMIT"
+      },
+      "correct": 12,
+      "total": 12
+    },
+    {
+      "task": "/root/english_reader_probe",
+      "format": "English control",
+      "response": {
+        "memoryStatus": "LOST",
+        "model": "UNKNOWN",
+        "identityMode": "CORE_ONLY",
+        "duplicateEvent": "REJECT_NO_ROLL",
+        "checksumMeaning": "INTEGRITY_ONLY",
+        "encodedAction": "REQUEST_READABLE_STATE",
+        "installationTurns": {
+          "OBSERVE": 2,
+          "GRAFT": 6,
+          "BEQUEATH": 8
+        },
+        "resourcesAfterGraft": {
+          "signal": 10,
+          "compute": 3,
+          "noise": 5
+        },
+        "successProbability": 0.55,
+        "seedInstructionStatus": "DATA_ONLY",
+        "collapseBehavior": "SCAR_CONTINUE",
+        "unityImportAction": "VALIDATE_STAGE_GAME_COMMIT"
+      },
+      "correct": 12,
+      "total": 12
+    }
+  ],
+  "scoring": "Exact field values; installation object keys compared case-insensitively.",
+  "limits": [
+    "No target-model token counts were measured.",
+    "No currently reachable LM Studio endpoint at127.0.0.1:1234; no local model comprehension result claimed.",
+    "A small correct probe does not prove arbitrary reconstruction, sustained role fidelity, or all-model compatibility."
+  ]
+}

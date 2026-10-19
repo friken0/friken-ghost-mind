@@ -5,7 +5,7 @@ import { choiceCommentary } from './commentary.mjs';
 /* Local authored specimen. Explicit choices alone call the pure reducer.
  * Exported seeds are data. No imported field becomes code or HTML. */
 import { newGame } from './engine.mjs';
-import { playView, playChoose, encodePlaySeed, decodePlaySeed, createChapter, chapterRequest } from './chapters.mjs';
+import { canonicalData, playView, playChoose, encodePlaySeed, decodePlaySeed, createChapter, chapterRequest } from './chapters.mjs';
 import { mountStage } from './stage.mjs';
 import { mountPortrait } from './portrait.mjs';
 import { createVault } from './storage.mjs';
@@ -37,6 +37,7 @@ if(nativeStorage&&qaStore&&/^[a-z0-9-]{1,64}$/.test(qaStore)){
   nativeStorage={getItem:k=>actual.getItem(prefix+k),setItem:(k,v)=>actual.setItem(prefix+k,v),removeItem:k=>actual.removeItem(prefix+k)};
 }
 const vault=createVault(nativeStorage);
+function preferredResume(){const saved=vault.current();return preparedChapter?(saved?.pack&&canonicalData(saved.pack)===canonicalData(preparedChapter.pack)?saved:preparedChapter):saved;}
 let savedReceipt=null;
 const stage=mountStage(el('canvas'),message=>{el('art-status').textContent=message;});
 const portrait=mountPortrait(el('portrait'),message=>{el('face-status').textContent=message;});
@@ -160,7 +161,7 @@ function bootNext(code){
 el('chapter-copy').addEventListener('click',async()=>{try{if(!el('chapter-request').value)bootNext(encodePlaySeed(state));await navigator.clipboard.writeText('BOOT\n'+el('chapter-request').value);el('chapter-status').textContent='Copied. Paste into the chat holding the Ghost runbook; bring back its chapter JSON.';}catch(error){el('chapter-status').textContent='Select and copy the request below. '+error.message;}});
 el('chapter-load').addEventListener('click',()=>{try{const packet=JSON.parse(el('chapter-pack').value),parent=packet.chapter===1?null:state,next=createChapter(packet,parent,{handle:state.handle,entropy:crypto.getRandomValues(new Uint32Array(1))[0]});chapterLibrary.assertPlayable(next);stopVoice();state=next;started=true;persist();carrierShell.home();draw();note('New model-authored chapter admitted. Same Ghost, new trouble.');if(voice)speak();}catch(error){el('chapter-status').textContent='Chapter refused; current save kept. '+error.message;}});
 el('start').addEventListener('click',()=>{const entropy=crypto.getRandomValues(new Uint32Array(1))[0];state=preparedChapter||newGame({rngSeed:entropy,handle:el('handle').value.trim()||'DIVER'});started=true;persist();draw();note('Carrier connected · choose 1, 2 or 3');if(voice)speak();});
-el('resume').addEventListener('click',()=>{const saved=preparedChapter||vault.current();if(!saved)return;stopVoice();state=saved;started=true;draw();note('Carrier resumed. The math kept its fkn receipts.');});
+el('resume').addEventListener('click',()=>{const saved=preferredResume();if(!saved)return;stopVoice();state=saved;started=true;draw();note('Carrier resumed. The math kept its fkn receipts.');});
 el('motion').addEventListener('click',()=>{motionHeld=!motionHeld;juice.hold(motionHeld);battle.hold(motionHeld);stage?.hold(motionHeld);portrait?.hold(motionHeld);el('motion').textContent='Motion: '+(motionHeld?'held':'on');});
 el('motion').textContent='Motion: '+(motionHeld?'held':'on');
 el('voice').textContent='Voice: on';

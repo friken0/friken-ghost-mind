@@ -1,0 +1,118 @@
+{
+  "schema": "friken.chromatic.packing-benchmark.v1",
+  "measured_at_utc": "2026-10-19T15:51:21.982514+00:00",
+  "python_version": "3.10.9",
+  "source": {
+    "path": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md",
+    "raw_source_utf8_bytes": 41222,
+    "raw_source_sha256": "9422e64efcaba33b60b5648fd8a68bd35d051d70dc2d61e7ddbffe83f1d00044",
+    "kind": "verbatim UTF-8 text wrapped in instruction_text"
+  },
+  "canonical_source_utf8_bytes": 41891,
+  "canonical_source_sha256": "b21ca7329cc031b3beea6060d89c91e442ca99f0ecbbabcb56c2a2cae8647e61",
+  "tokenizer": {
+    "status": "unavailable",
+    "name": null,
+    "reason": "No local tiktoken package. No token counts were estimated from bytes."
+  },
+  "variants": [
+    {
+      "name": "readable_english",
+      "utf8_bytes": 42135,
+      "unicode_codepoints": 42115,
+      "byte_ratio_to_canonical_json": 1.005825,
+      "byte_reduction_from_canonical_json_percent": -0.582,
+      "tokens": null,
+      "encoded_sha256": "4eedb376cc850bfadeb34f80e2d53e15576fa7ab283453e5a6e19b70b02dae43",
+      "decoded_canonical_sha256": "b21ca7329cc031b3beea6060d89c91e442ca99f0ecbbabcb56c2a2cae8647e61",
+      "exact_roundtrip": true,
+      "requires_mechanical_decoder_for_readable_instructions": false,
+      "format_details": {
+        "header_bytes": 195
+      }
+    },
+    {
+      "name": "canonical_json",
+      "utf8_bytes": 41891,
+      "unicode_codepoints": 41871,
+      "byte_ratio_to_canonical_json": 1.0,
+      "byte_reduction_from_canonical_json_percent": 0.0,
+      "tokens": null,
+      "encoded_sha256": "b21ca7329cc031b3beea6060d89c91e442ca99f0ecbbabcb56c2a2cae8647e61",
+      "decoded_canonical_sha256": "b21ca7329cc031b3beea6060d89c91e442ca99f0ecbbabcb56c2a2cae8647e61",
+      "exact_roundtrip": true,
+      "requires_mechanical_decoder_for_readable_instructions": false,
+      "format_details": {
+        "header_bytes": 0
+      }
+    },
+    {
+      "name": "dense_dsl_with_codebook",
+      "utf8_bytes": 42066,
+      "unicode_codepoints": 42046,
+      "byte_ratio_to_canonical_json": 1.004178,
+      "byte_reduction_from_canonical_json_percent": -0.418,
+      "tokens": null,
+      "encoded_sha256": "1709653216e6745718435d16674cd93a83651f558daceec63fc3bd5ced27fde7",
+      "decoded_canonical_sha256": "b21ca7329cc031b3beea6060d89c91e442ca99f0ecbbabcb56c2a2cae8647e61",
+      "exact_roundtrip": true,
+      "requires_mechanical_decoder_for_readable_instructions": false,
+      "format_details": {
+        "codebook_bytes": 30,
+        "grammar_and_header_bytes": 162,
+        "body_bytes": 41874,
+        "distinct_field_names": 1
+      }
+    },
+    {
+      "name": "zlib_base64url",
+      "utf8_bytes": 25716,
+      "unicode_codepoints": 25716,
+      "byte_ratio_to_canonical_json": 0.613879,
+      "byte_reduction_from_canonical_json_percent": 38.612,
+      "tokens": null,
+      "encoded_sha256": "8e7ec100e7941af20e9f301db85988386055a30070ada04ab25139b8af21abc1",
+      "decoded_canonical_sha256": "b21ca7329cc031b3beea6060d89c91e442ca99f0ecbbabcb56c2a2cae8647e61",
+      "exact_roundtrip": true,
+      "requires_mechanical_decoder_for_readable_instructions": true,
+      "format_details": {
+        "compressed_binary_bytes": 19283,
+        "header_bytes": 5
+      }
+    },
+    {
+      "name": "hex",
+      "utf8_bytes": 83787,
+      "unicode_codepoints": 83787,
+      "byte_ratio_to_canonical_json": 2.000119,
+      "byte_reduction_from_canonical_json_percent": -100.012,
+      "tokens": null,
+      "encoded_sha256": "1c2cfffef424b4a234dcfad91b363d6bb7163b31a12027090647b5450cfb4ad4",
+      "decoded_canonical_sha256": "b21ca7329cc031b3beea6060d89c91e442ca99f0ecbbabcb56c2a2cae8647e61",
+      "exact_roundtrip": true,
+      "requires_mechanical_decoder_for_readable_instructions": true,
+      "format_details": {
+        "header_bytes": 5
+      }
+    }
+  ],
+  "emitted_artifacts": {},
+  "purged_information_demo": {
+    "original_a_sha256": "6db17ae6dd8a23f48d339f61c399edae99fad0d57c40c52362f4aa6be2ce966a",
+    "original_b_sha256": "498955a83c9d8b0eaf2d87e4c04a65a11b8c169cfb1d92a218f8e09a33fab416",
+    "retained_projection": {
+      "choice": "open"
+    },
+    "same_retained_encoding": true,
+    "conclusion": "The same retained code corresponds to two different omitted facts. No decoder can determine which original fact was purged without another source."
+  },
+  "interpretation_limits": [
+    "Bytes and tokens are different metrics. Null token counts mean unavailable, not zero.",
+    "All variants reconstruct the exact same JSON object and canonical SHA256; English is an exact assignment representation, not an optimized prose prompt.",
+    "DSL byte counts include its complete codebook and grammar. A short opaque code without its missing legend does not preserve these instructions.",
+    "A one-field prose source has little repeated key structure; the DSL may be larger than canonical JSON after its legend is included.",
+    "Zlib and hex preserve bytes mechanically; an LLM reading their opaque payload is not established to recover or follow it without a decoder.",
+    "Round-trip verification does not establish model comprehension, compliance, creativity, visual quality, or gameplay quality.",
+    "No injective code can map every arbitrary input into a shorter fixed-size output; more inputs than codes forces collisions. Compression cannot recover facts purged before encoding."
+  ]
+}

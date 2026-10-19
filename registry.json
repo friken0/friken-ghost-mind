@@ -31,14 +31,19 @@
       "sha256": "d454d7df9354b8aa0659b6ac67995da6213358500eb0bb6997e63a268467b102"
     },
     {
+      "path": "Tools/ChromaticBBS/Packing-Results.md",
+      "bytes": 3367,
+      "sha256": "2033f4cbdb201c29ee4910e7f5f5bf7efc03b454a1644c8675ff721d23dca0dc"
+    },
+    {
       "path": "Tools/ChromaticBBS/Writing.md",
       "bytes": 9541,
       "sha256": "3fa8160547d8bccc8becdb3a31ca5471ad49c75b2a3758972bb8f345326f71f9"
     },
     {
       "path": "Tools/ChromaticBBS/app.mjs",
-      "bytes": 21056,
-      "sha256": "984f73dcea15113ab1d4bdbaf8730b57929c3b6a2c1fed95f1254c21529b77f3"
+      "bytes": 21243,
+      "sha256": "00fad74da04d830a10ddff5124bec2933a0cc39cb663c75266e5ccf9e3c84234"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
@@ -57,8 +62,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/canon.test.mjs",
-      "bytes": 2373,
-      "sha256": "d058741bb3bd2e5ce05e31cc7de38a1f84b00707f62cff74e834c95565896c0d"
+      "bytes": 2787,
+      "sha256": "eb78f27fd61cd9daca43e8033663128f27844662a31e44f5c52271ca12ec9dd1"
     },
     {
       "path": "Tools/ChromaticBBS/carrier.css",
@@ -111,6 +116,11 @@
       "sha256": "f8d0016c2fb0fe63e03687acf6f58a202632f59e120aa9ecc2cd1e24ee133ecc"
     },
     {
+      "path": "Tools/ChromaticBBS/comprehension-results.json",
+      "bytes": 3607,
+      "sha256": "a59473372c0ed7f411272f5ab3e9dde7289babd57d675fb05a50aadc6575627f"
+    },
+    {
       "path": "Tools/ChromaticBBS/engine.mjs",
       "bytes": 66073,
       "sha256": "dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"
@@ -138,7 +148,17 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 8201,
-      "sha256": "cc589950523fd4828568ca8ae7d69b3131ffe97741b484426abcf4654302c01d"
+      "sha256": "d1cd1dbeb0dc2ddbca9220a16df27c87d3d37a88590bb7bc96f5143036c72b0c"
+    },
+    {
+      "path": "Tools/ChromaticBBS/packing-results.json",
+      "bytes": 5187,
+      "sha256": "3afb875866c16d22875f7fafafb005a8bb96041a923c57e47fe2da3caed80650"
+    },
+    {
+      "path": "Tools/ChromaticBBS/packing_benchmark.py",
+      "bytes": 25206,
+      "sha256": "e4951755e3f0cc192021fd40cb7f895cdae5a437bbf364f94f3c45aca306f165"
     },
     {
       "path": "Tools/ChromaticBBS/portrait.mjs",
@@ -152,8 +172,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 9340,
-      "sha256": "606a1b8f699699728ec60304d516ff67f5a90a64f4ee8eef64b66eabc98a62b2"
+      "bytes": 9467,
+      "sha256": "41708a3c980b85b358c599d630d8ea27da11d63f079d08dac6c8d1177fbfd8f7"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -176,6 +196,11 @@
       "sha256": "95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"
     },
     {
+      "path": "Tools/ChromaticBBS/runbook-packing-results.json",
+      "bytes": 5435,
+      "sha256": "8d88e6851379189c9beca659d4db9ccfce0787f51d44fae8ca4085bd890dce0d"
+    },
+    {
       "path": "Tools/ChromaticBBS/session-share.mjs",
       "bytes": 4176,
       "sha256": "3aa48a1c60c0fa5684254c536fc7648e8835fb06bb001de09cda69ce1896d37a"
@@ -187,8 +212,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/session-store.test.py",
-      "bytes": 2012,
-      "sha256": "7e8727414cd894dd9932bfbb8e5dd98cabb04f6e7f137281e3af7bf851fb6777"
+      "bytes": 3115,
+      "sha256": "41831636326c16a800765e095acd0f1af337bc37a3f09578a4af04c7828cf449"
     },
     {
       "path": "Tools/ChromaticBBS/shell.mjs",
@@ -218,7 +243,7 @@
     {
       "path": "Tools/ChromaticBBS/surface.html",
       "bytes": 16991,
-      "sha256": "6779c18632343c89adc7a5f028c3bb5be105da341970382d36f2d44840f42dbd"
+      "sha256": "5e34887fd835e61e399210be022010aa860a51e89a215b0e92ea97022d116ee2"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/rose/PROVENANCE.md",
@@ -252,8 +277,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 468198,
-      "sha256": "aa8bf31e8edfce2e98d96c5dc5983f01b4d044653d6b9b19d5c7c248ed0312c3"
+      "bytes": 468384,
+      "sha256": "9951d4721cb8b49fc41aac1e91838ccf218f86942517a14b6f49412dc1a0792f"
     },
     {
       "path": "runbook.md",
