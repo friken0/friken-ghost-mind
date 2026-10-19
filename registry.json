@@ -12,8 +12,8 @@
   "files": [
     {
       "path": ".github/workflows/session-intake.yml",
-      "bytes": 1046,
-      "sha256": "83b58e2d9ac21973640f0f60d6ba2a1b3e8661335ea5dc6bf7b0f0624c24c74a"
+      "bytes": 1080,
+      "sha256": "ce737f50c3fd450684a20bbdb206dc1ae302340fcd5128cd1123855d08f35804"
     },
     {
       "path": ".nojekyll",
@@ -42,8 +42,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/app.mjs",
-      "bytes": 21243,
-      "sha256": "00fad74da04d830a10ddff5124bec2933a0cc39cb663c75266e5ccf9e3c84234"
+      "bytes": 21245,
+      "sha256": "4bc4e7acae141e1937569741189d05d8bb9ae9ab735dc80299fa229fd4323770"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
@@ -67,8 +67,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/carrier.css",
-      "bytes": 28028,
-      "sha256": "76722552944bb28fa457a7eeecf2645150d08207407c8680b45d55c99c75dc4b"
+      "bytes": 28111,
+      "sha256": "e989b9d107ffa97d3cba6309d14c7c464de3e24c6ac0e12f415a64c83109e313"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-check.html",
@@ -97,8 +97,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/chapters.mjs",
-      "bytes": 19405,
-      "sha256": "8e27434c290196c397df611fb630782940369f6b920893e873b2d32db050dff0"
+      "bytes": 19571,
+      "sha256": "2b75f25b62cdc918835661548eb541ab983eb47ceab9b8134fc0cbde257359e5"
     },
     {
       "path": "Tools/ChromaticBBS/chapters.test.mjs",
@@ -147,8 +147,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
-      "bytes": 8201,
-      "sha256": "d1cd1dbeb0dc2ddbca9220a16df27c87d3d37a88590bb7bc96f5143036c72b0c"
+      "bytes": 8244,
+      "sha256": "358537c325f0088ccdfe036b5c4323a5732d4e0e25a2a3206e75ba89f7e1de21"
     },
     {
       "path": "Tools/ChromaticBBS/packing-results.json",
@@ -172,8 +172,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 9467,
-      "sha256": "41708a3c980b85b358c599d630d8ea27da11d63f079d08dac6c8d1177fbfd8f7"
+      "bytes": 9501,
+      "sha256": "7a2bb7fdfad0e072e961486e6e6f1159d1022d7c9c2a1897705a11f3afb70049"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -277,8 +277,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 468384,
-      "sha256": "9951d4721cb8b49fc41aac1e91838ccf218f86942517a14b6f49412dc1a0792f"
+      "bytes": 468678,
+      "sha256": "293462a356314727bbd6b1f876d977f7cdea09781a5773aa31a2b50da0e565a8"
     },
     {
       "path": "runbook.md",

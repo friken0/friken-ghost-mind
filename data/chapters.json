@@ -2,6 +2,104 @@
   "schema": "friken.ghost.chapter-catalogue.v1",
   "entries": [
     {
+      "id": "the-weather-inside-26a5b839-6d2e76c3aef91c3c",
+      "title": "THE WEATHER INSIDE",
+      "summary": "Synthetic demonstration: Chapter 2 inherits the exact Chapter 1 choices. A customs officer discovers the ocean in his coat has become a weather problem.",
+      "chapter": 2,
+      "author": "friken0",
+      "path": "data/chapters/1d8bbe345242b64f39e8a94f49e40b405b3a944f66b4d8a255b339ab801945d3.json",
+      "history": [
+        {
+          "chapter": 1,
+          "id": "the-unfinished-carrier",
+          "sourceHash": "9c614395",
+          "tellingId": "07a64e9d69de2dd5ccb9d9c7393c8951f35a0863761d0ade51d3cd3d46ac79a4",
+          "summary": "The universe-bearing packet arrives through Prime’s old private route. Its first public notice says VISITORS WELCOME. Its second asks visitors to stop touching the moon. Iri’s Veelow egg asks the living a second question. 2 unresolved threads and 0 blackout scars remain in the next seed. The line stays open.",
+          "choices": [
+            {
+              "id": "t01.listen",
+              "label": "Answer the knocks",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t02.trust",
+              "label": "Let Pell navigate",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t03.name",
+              "label": "Give Kett your callsign",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t04.observe.witness",
+              "label": "OBSERVE · CALL REALITY’S BLUFF",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t05.brace",
+              "label": "Fix the privacy screen",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t06.keep",
+              "label": "Keep the imperfect original",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t07.spare",
+              "label": "Put Vark on the repair lead",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t08.hum",
+              "label": "Give the new voice a note to hold",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t09.graft.relay",
+              "label": "GRAFT · GROW A BOOTLEG ANTENNA",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t10.wire",
+              "label": "Ask Pogfrot for a protected route",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t11.gather",
+              "label": "Let Pell and Iri answer each other",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t12.bequeath.open",
+              "label": "BEQUEATH · PUBLIC WRITE ACCESS",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t13.hold",
+              "label": "Brace the gate beside Pogfrot",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t14.carry",
+              "label": "Prepare a private handoff",
+              "outcome": "chosen"
+            },
+            {
+              "id": "t15.carry",
+              "label": "Complete the private handoff",
+              "outcome": "chosen"
+            }
+          ]
+        }
+      ],
+      "completed": true,
+      "tellingId": "6d2e76c3aef91c3c83d3c8ded3386c4cefc5ba088fa9c942a3346c85c62d239d",
+      "source": "https://github.com/friken0/friken-ghost-mind/issues/2",
+      "synthetic": true
+    },
+    {
       "id": "the-unfinished-carrier-5d54aa88-07a64e9d69de2dd5",
       "title": "The Unfinished Carrier",
       "summary": "Synthetic demonstration of Chapter 1. This is a test telling, not a real player.",

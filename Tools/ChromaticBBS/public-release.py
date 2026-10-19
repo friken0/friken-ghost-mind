@@ -100,6 +100,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@CHECKOUT_SHA
+        with:
+          ref: main
       - name: Validate public projection and rebuild indexes
         run: python3 Tools/ChromaticBBS/session-store.py admit-event data --event "$GITHUB_EVENT_PATH"
       - name: Retain the reviewed receipt

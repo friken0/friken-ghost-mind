@@ -81,7 +81,7 @@ el('station').addEventListener('toggle',()=>{root.dataset.station=el('station').
 el('lineage-panel').addEventListener('toggle',()=>{root.dataset.lineage=el('lineage-panel').open?'open':'closed';});
 function renderWire(){
   const registry=bundledMind.registry,feed=bundledMind.highlights;
-  el('wire-status').textContent='LOCAL BUNDLED MIRROR / SHARED WIRE VIA PUBLIC REPO / '+(feed.entries||[]).length+' DISPATCHES';
+  el('wire-status').textContent='BUNDLED BUILD HISTORY / CURRENT WIRE VIA PUBLIC REPO / '+(feed.entries||[]).length+' DISPATCHES';
   el('registry').textContent=JSON.stringify(registry,null,2);
   el('news-items').replaceChildren(...(feed.entries||[]).map(item=>{
     const article=document.createElement('article');

@@ -236,6 +236,8 @@
 #chromatic-carrier .cg-canon-edges path{fill:none;stroke:var(--cg-ink);stroke-width:2}
 #chromatic-carrier .cg-canon-edges path[data-branch=ghost]{stroke:var(--cg-line);stroke-dasharray:3 5}
 #chromatic-carrier .cg-canon-node{white-space:pre-line;text-align:left;font-size:12px;min-height:100px;width:100%;border-radius:16px 16px 16px 2px;border-left:4px solid var(--cg-ink)}
-#chromatic-carrier .cg-canon-node[data-branch=canon]{color:var(--cg-gold);border-color:var(--cg-gold);box-shadow:inset 0 0 24px color-mix(in srgb,var(--cg-gold) 12%,transparent)}
+#chromatic-carrier .cg-canon-node[data-branch=canon]{color:var(--cg-warn);border-color:var(--cg-warn);box-shadow:inset 0 0 24px color-mix(in srgb,var(--cg-warn) 12%,transparent)}
 #chromatic-carrier .cg-canon-node[data-branch=ghost]{opacity:.48;filter:grayscale(1);border-style:dashed}
 #chromatic-carrier #cg-chapter-detail{white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto;border-left:2px solid var(--cg-ink);padding:10px}
+
+#chromatic-carrier .cg-canon-edges path[data-branch=canon]{stroke:var(--cg-warn)}

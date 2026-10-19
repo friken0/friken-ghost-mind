@@ -2,6 +2,15 @@
   "schema": "friken.ghost.news.v1",
   "entries": [
     {
+      "id": "the-weather-inside-26a5b839-6d2e76c3aef91c3c",
+      "title": "THE WEATHER INSIDE / PLAYABLE CHAPTER",
+      "summary": "Synthetic demonstration: Chapter 2 inherits the exact Chapter 1 choices. A customs officer discovers the ocean in his coat has become a weather problem.",
+      "player": "friken0",
+      "at": "2026-10-19T15:58:40.380815+00:00",
+      "source": "https://github.com/friken0/friken-ghost-mind/issues/2",
+      "synthetic": true
+    },
+    {
       "id": "the-unfinished-carrier-5d54aa88-07a64e9d69de2dd5",
       "title": "The Unfinished Carrier / PLAYABLE CHAPTER",
       "summary": "Synthetic demonstration of Chapter 1. This is a test telling, not a real player.",

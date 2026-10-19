@@ -1,0 +1,2430 @@
+{
+  "chapter": {
+    "schema": "friken.ghost.chapter-release.v1",
+    "id": "the-weather-inside-26a5b839-6d2e76c3aef91c3c",
+    "title": "THE WEATHER INSIDE",
+    "summary": "Synthetic demonstration: Chapter 2 inherits the exact Chapter 1 choices. A customs officer discovers the ocean in his coat has become a weather problem.",
+    "state": {
+      "schema": "friken.chromatic.state.v2",
+      "runId": "G2-fd607774",
+      "chapter": 2,
+      "parent": "9c614395",
+      "handle": "SYNTHETIC-DEMO",
+      "pack": {
+        "schema": "friken.ghost.chapter.v1",
+        "id": "the-weather-inside",
+        "title": "THE WEATHER INSIDE",
+        "chapter": 2,
+        "parent": "9c614395",
+        "acts": [
+          "WHO OWNS THE RAIN",
+          "PEOPLE IN THE COOLANT",
+          "A SKY WITH A MAINTENANCE BOOK"
+        ],
+        "consequences": [
+          "Your open BEQUEATH law admits the weather inspector.",
+          "The Veelow egg’s question about weather now has a material price.",
+          "Your inherited OBSERVE and composed GRAFT keep their original arithmetic."
+        ],
+        "scenes": [
+          {
+            "id": "weather-1",
+            "act": 1,
+            "title": "CUSTOMS FOR UNLICENSED RAIN",
+            "scene": "The gate you left open delivers its first visitor: a customs inspector in a transparent raincoat. The coat contains an ocean. He checks your delivery receipt, then the dry horizon behind you. “Someone here ordered weather.” A small Veelow voice answers from the egg: “I asked what it was.”",
+            "ghost": "We gave tomorrow an inside handle. Tomorrow has arrived with a clipboard. This is why I prefer catastrophe before office hours.",
+            "variants": [
+              {
+                "fact": "promise-open",
+                "scene": "The gate you left open delivers its first visitor: a customs inspector in a transparent raincoat. The coat contains an ocean. He checks your delivery receipt, then the dry horizon behind you. “Someone here ordered weather.” A small Veelow voice answers from the egg: “I asked what it was.” The customs channel remains open because your prior chapter made access a right.",
+                "ghost": "We gave tomorrow an inside handle. Tomorrow has arrived with a clipboard. This is why I prefer catastrophe before office hours."
+              }
+            ],
+            "artifact": {
+              "op": "subtract",
+              "a": {
+                "op": "sphere",
+                "radius": 0.75
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0.25,
+                  0.3,
+                  0.45
+                ],
+                "child": {
+                  "op": "sphere",
+                  "radius": 0.52
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "show-receipt",
+                "label": "Show the inspector the promise",
+                "detail": "The egg asked for a sky. Put the promise on record.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "weather-promise-witnessed"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You showed him what we owe. Excellent. The universe now has a paper trail it can trip over.",
+                  "pass": "You showed him what we owe. Excellent. The universe now has a paper trail it can trip over."
+                },
+                "use": null
+              },
+              {
+                "id": "inspect-coat",
+                "label": "Inspect the ocean in his coat",
+                "detail": "INSIGHT vs DC12; learn what the weather actually costs.",
+                "cost": {},
+                "check": {
+                  "stat": "insight",
+                  "dc": 12
+                },
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "rain-is-borrowed"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You checked the fine print on a body of water. Kett would be proud. Possibly suspicious.",
+                  "pass": "You checked the fine print on a body of water. Kett would be proud. Possibly suspicious."
+                },
+                "use": null
+              },
+              {
+                "id": "use-inheritance",
+                "label": "Invoke your inherited entrance law",
+                "detail": "Use the actual BEQUEATH law from the prior chapter.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You used the door law you carried here. That is a past decision doing present work.",
+                  "pass": "You used the door law you carried here. That is a past decision doing present work."
+                },
+                "use": "bequeath"
+              }
+            ]
+          },
+          {
+            "id": "weather-2",
+            "act": 1,
+            "title": "THE STORM HAS AN INVOICE",
+            "scene": "Inspector Threll unfolds a cloud over the terminal. For one second your hand casts two shadows. “Weather is recycled,” he explains. “This storm is due on a Krex battlefield. Sign here to redirect it.” The cloud smells of hot armour.",
+            "ghost": "There it is. The generous universe. You can give a child her first rain, provided you nick it from somebody having a worse afternoon.",
+            "variants": [],
+            "artifact": {
+              "op": "subtract",
+              "a": {
+                "op": "sphere",
+                "radius": 0.75
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0.25,
+                  0.3,
+                  0.45
+                ],
+                "child": {
+                  "op": "sphere",
+                  "radius": 0.52
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "trace-owner",
+                "label": "Find the people under that storm",
+                "detail": "Use OBSERVE, with its inherited price and arithmetic.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You asked who pays for our miracle. That question should ship with every fkn miracle.",
+                  "pass": "You asked who pays for our miracle. That question should ship with every fkn miracle."
+                },
+                "use": "observe"
+              },
+              {
+                "id": "delay-contract",
+                "label": "Ask for a delay",
+                "detail": "Recover compute while Threll checks his timetable.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": -1
+                  },
+                  "facts": [
+                    "contract-delayed"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You made bureaucracy buy us thinking time. Put that on the box.",
+                  "pass": "You made bureaucracy buy us thinking time. Put that on the box."
+                },
+                "use": null
+              },
+              {
+                "id": "call-vark",
+                "label": "Call Vark about the battlefield",
+                "detail": "EGO vs DC15; a familiar engineer may know why the rain is needed.",
+                "cost": {},
+                "check": {
+                  "stat": "ego",
+                  "dc": 15
+                },
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "vark-needs-cooling"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {
+                    "krex": 1
+                  },
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You called someone who has to stand in the answer. Better source than the sales brochure.",
+                  "pass": "You called someone who has to stand in the answer. Better source than the sales brochure."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-3",
+            "act": 1,
+            "title": "A CLOUD WITH TWO EXITS",
+            "scene": "Vark appears on a cracked channel. His trench holds civilians beneath a cooling shield. The storm is their heat sink. He sees the egg in your camera and says nothing for several seconds. Then: “One sky. Two requirements. Show me the pipe.”",
+            "ghost": "He is already trying to solve it. That is a much better kind of dangerous than the men who only know where to point it.",
+            "variants": [],
+            "artifact": {
+              "op": "subtract",
+              "a": {
+                "op": "sphere",
+                "radius": 0.75
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0.25,
+                  0.3,
+                  0.45
+                ],
+                "child": {
+                  "op": "sphere",
+                  "radius": 0.52
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "build-weather",
+                "label": "Build a rain exchanger",
+                "detail": "Install WEATHER: it turns compute into shared cooling, at a disclosed cost.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": -1,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "exchanger-built"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": "weather"
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You gave the promise a machine. Now we can find out whether our compassion survives plumbing.",
+                  "pass": "You gave the promise a machine. Now we can find out whether our compassion survives plumbing."
+                },
+                "use": null
+              },
+              {
+                "id": "ask-civilians",
+                "label": "Let the people in the trench answer",
+                "detail": "AWE vs DC12; learn what they can spare without asking Vark to volunteer it.",
+                "cost": {},
+                "check": {
+                  "stat": "awe",
+                  "dc": 12
+                },
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "trench-consent"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You let the supposed beneficiaries speak. Radical engineering practice.",
+                  "pass": "You let the supposed beneficiaries speak. Radical engineering practice."
+                },
+                "use": null
+              },
+              {
+                "id": "keep-storm",
+                "label": "Leave the original storm on schedule",
+                "detail": "Recover signal; the egg sees a sky but rain remains unresolved.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [
+                    "egg-still-owes-rain"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You kept the civilians cool. The promise is still ours. We do not get to call it solved because we chose sensibly.",
+                  "pass": "You kept the civilians cool. The promise is still ours. We do not get to call it solved because we chose sensibly."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-4",
+            "act": 1,
+            "title": "RAIN TEST / KEEP YOUR HAND OUT",
+            "scene": "The prototype cloud hangs between two rings. Threll brings a bucket. Vark brings a thermal meter. The egg brings a question: “Does it hurt the ground?” Three civilizations watch a single drop fail to decide which way down is.",
+            "ghost": "Every science begins with someone asking a stupid question. That one was not stupid. My gravity code, however, has chosen this moment to become expressive.",
+            "variants": [],
+            "artifact": {
+              "op": "subtract",
+              "a": {
+                "op": "sphere",
+                "radius": 0.75
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0.25,
+                  0.3,
+                  0.45
+                ],
+                "child": {
+                  "op": "sphere",
+                  "radius": 0.52
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "run-exchanger",
+                "label": "Run the WEATHER exchanger",
+                "detail": "Use the new rule if you built it.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You ran the thing we made. A whole new verb, and it even has consequences. Fkn luxury.",
+                  "pass": "You ran the thing we made. A whole new verb, and it even has consequences. Fkn luxury."
+                },
+                "use": "weather"
+              },
+              {
+                "id": "catch-drop",
+                "label": "Catch the first drop in the bucket",
+                "detail": "FOCUS vs DC12; test before distributing it.",
+                "cost": {},
+                "check": {
+                  "stat": "focus",
+                  "dc": 12
+                },
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "first-drop-safe"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You tested a sample before installing it across reality. I feel personally attacked.",
+                  "pass": "You tested a sample before installing it across reality. I feel personally attacked."
+                },
+                "use": null
+              },
+              {
+                "id": "watch-fall",
+                "label": "Watch where it tries to fall",
+                "detail": "No cost. Recover compute and notice the second shadow.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "second-down"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You watched instead of improving it. We nearly missed the important bit.",
+                  "pass": "You watched instead of improving it. We nearly missed the important bit."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-5",
+            "act": 2,
+            "title": "THE OTHER DOWN",
+            "scene": "The drop falls sideways. A tiny district lights up inside it. Its residents have been living on the underside of yesterday’s rain. One waves a laundry pole. Threll lowers his clipboard. “That,” he says, “was not in the forecast.”",
+            "ghost": "A population in the coolant. Of course. Nobody can ever put a clean integer in the passenger count.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "announce-passengers",
+                "label": "Tell both destinations there are passengers",
+                "detail": "Make the new residents visible before anyone opens a valve.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "rain-residents-known"
+                  ],
+                  "threads": [
+                    "rain-residents-home"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You made the hidden cost public. There goes our convenient solution. Good.",
+                  "pass": "You made the hidden cost public. There goes our convenient solution. Good."
+                },
+                "use": null
+              },
+              {
+                "id": "probe-district",
+                "label": "Map the district without draining it",
+                "detail": "INSIGHT vs DC15; find what makes the tiny place habitable.",
+                "cost": {},
+                "check": {
+                  "stat": "insight",
+                  "dc": 15
+                },
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "district-needs-pressure"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You took a measurement without declaring the inhabitants laboratory material. We might be learning.",
+                  "pass": "You took a measurement without declaring the inhabitants laboratory material. We might be learning."
+                },
+                "use": null
+              },
+              {
+                "id": "hold-pressure",
+                "label": "Hold the cloud at constant pressure",
+                "detail": "The careful route costs time, not a random life.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": -1
+                  },
+                  "facts": [
+                    "cloud-held"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You held it steady. Heroism sometimes looks like a hand on a valve and nobody getting a speech.",
+                  "pass": "You held it steady. Heroism sometimes looks like a hand on a valve and nobody getting a speech."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-6",
+            "act": 2,
+            "title": "THE TRIBUNAL REQUESTS A DEMONSTRATION",
+            "scene": "A Pogfrot delegate dials in wearing a private storm crown. “Rain is a royal function,” she begins. The district’s laundry pole knocks the crown sideways through the screen. Threll considers whether this counts as diplomatic weather.",
+            "ghost": "We have found a legal precedent. Someone has hit a monarch with the housing problem.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "ask-crown",
+                "label": "Ask how her crown keeps its sky",
+                "detail": "EGO vs DC12; secure the design without surrendering the cloud.",
+                "cost": {},
+                "check": {
+                  "stat": "ego",
+                  "dc": 12
+                },
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "pressure-crown-design"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You asked the pompous one an actual technical question. Look at her. Delighted. Nobody ever does.",
+                  "pass": "You asked the pompous one an actual technical question. Look at her. Delighted. Nobody ever does."
+                },
+                "use": null
+              },
+              {
+                "id": "trade-credit",
+                "label": "Offer public credit for a useful design",
+                "detail": "No resource cost; her contribution stays attributed.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "royal-credit-promised"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {
+                    "pogfrot": 1
+                  },
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You paid her in the thing she wanted. Acknowledgement. Cheaper than surrender, and considerably less bloody.",
+                  "pass": "You paid her in the thing she wanted. Acknowledgement. Cheaper than surrender, and considerably less bloody."
+                },
+                "use": null
+              },
+              {
+                "id": "use-graft",
+                "label": "Use the inherited GRAFT to hold two channels",
+                "detail": "The original owned trait still changes the actual outcome.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You brought yesterday’s organ into today’s problem. The ancestry is working, not just sitting on the save file.",
+                  "pass": "You brought yesterday’s organ into today’s problem. The ancestry is working, not just sitting on the save file."
+                },
+                "use": "graft"
+              }
+            ]
+          },
+          {
+            "id": "weather-7",
+            "act": 2,
+            "title": "AN INSIDE HANDLE FOR A CLOUD",
+            "scene": "The residents ask for a valve they control. Vark sketches a bypass. The royal delegate corrects one angle with visible pain at being helpful. Threll quietly changes OCCUPANTS from UNKNOWN to PRESENT.",
+            "ghost": "That is the moment. A machine someone can refuse. We can make a world and still leave its inhabitants an off switch.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "install-pressure",
+                "label": "Build the residents’ pressure valve",
+                "detail": "Install PRESSURE: the district can recover signal by venting noise.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": -1,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "inside-valve"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": "pressure"
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You gave the small people a working control. I am trying not to make that sound revolutionary. It fkn is.",
+                  "pass": "You gave the small people a working control. I am trying not to make that sound revolutionary. It fkn is."
+                },
+                "use": null
+              },
+              {
+                "id": "give-design",
+                "label": "Give the residents the unbuilt design",
+                "detail": "Keep their agency; future assembly becomes an open thread.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [
+                    "district-builds-valve"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You handed over the plan instead of appointing yourself cloud landlord. They may improve it. Try to survive the insult.",
+                  "pass": "You handed over the plan instead of appointing yourself cloud landlord. They may improve it. Try to survive the insult."
+                },
+                "use": null
+              },
+              {
+                "id": "hold-with-them",
+                "label": "Let them guide your hand on the valve",
+                "detail": "FOCUS vs DC15; cooperate under pressure.",
+                "cost": {},
+                "check": {
+                  "stat": "focus",
+                  "dc": 15
+                },
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "shared-valve-control"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You let the people in the pipe teach the engineer. Vark is taking notes with his good claw.",
+                  "pass": "You let the people in the pipe teach the engineer. Vark is taking notes with his good claw."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-8",
+            "act": 2,
+            "title": "THE NUMBERS GO TO COURT",
+            "scene": "Threll places the thermal load and the district’s minimum pressure on opposite sides of a balance. “No rhetoric,” he says. The egg watches the numbers. Vark watches the pipe. You notice Ghost watching the egg.",
+            "ghost": "We are not rolling for whether they deserve to live. We are rolling for whether this particular repair works. Keep that distinction, diver.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "vent-noise",
+                "label": "Let the district operate PRESSURE",
+                "detail": "Use their newly installed verb, if present.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You let the district drive its own machine. I’m keeping that as more than dialogue.",
+                  "pass": "You let the district drive its own machine. I’m keeping that as more than dialogue."
+                },
+                "use": "pressure"
+              },
+              {
+                "id": "align-load",
+                "label": "Align the shared thermal load",
+                "detail": "GLITCH vs DC15, with the exact committed die shown in the balance.",
+                "cost": {},
+                "check": {
+                  "stat": "glitch",
+                  "dc": 15
+                },
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": -1
+                  },
+                  "facts": [
+                    "load-aligned"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You put the clever part against a measurable demand. Mathematics has finally been invited to this meeting.",
+                  "pass": "You put the clever part against a measurable demand. Mathematics has finally been invited to this meeting."
+                },
+                "use": null
+              },
+              {
+                "id": "reduce-demand",
+                "label": "Cool a smaller area first",
+                "detail": "No roll. Smaller promise, honest capacity.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "small-sky"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You reduced the claim until the hardware could tell the truth. I know. Appalling behaviour for a demo.",
+                  "pass": "You reduced the claim until the hardware could tell the truth. I know. Appalling behaviour for a demo."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-9",
+            "act": 3,
+            "title": "A THUNDERCLAP ASKS PERMISSION",
+            "scene": "The egg asks to hear thunder. The district asks for a warning first. Vark asks whether it will interfere with his comms. The royal delegate asks whether she may introduce it. Nobody asks Threll. Threll looks relieved.",
+            "ghost": "There. A universe beginning to conduct itself. Four incompatible needs and nobody has suggested deleting the other three.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "schedule-thunder",
+                "label": "Schedule one thunderclap everyone can decline",
+                "detail": "The invitation itself is the test of your new sky.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 0,
+                    "noise": -1
+                  },
+                  "facts": [
+                    "thunder-consented"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You made room for a no inside a celebration. That is a much better party.",
+                  "pass": "You made room for a no inside a celebration. That is a much better party."
+                },
+                "use": null
+              },
+              {
+                "id": "sing-warning",
+                "label": "Ask Iri to sing the warning",
+                "detail": "AWE vs DC12; a familiar voice becomes useful in a new place.",
+                "cost": {},
+                "check": {
+                  "stat": "awe",
+                  "dc": 12
+                },
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "iri-weather-song"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {
+                    "veelow": 1
+                  },
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You asked for a voice, not a button marked ALIEN MUSIC. Iri gets to answer.",
+                  "pass": "You asked for a voice, not a button marked ALIEN MUSIC. Iri gets to answer."
+                },
+                "use": null
+              },
+              {
+                "id": "listen-first",
+                "label": "Wait and listen to the small sky",
+                "detail": "Recover compute; discover the residents’ own rhythm.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "district-first-note"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You let them have the first note. Even I managed to shut up for it.",
+                  "pass": "You let them have the first note. Even I managed to shut up for it."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-10",
+            "act": 3,
+            "title": "THE WEATHER ARRIVES",
+            "scene": "At the trench, the temperature drops. In the terminal, one small window clouds over. The egg presses against its shell. In the drop-district, people lift the washing before the rain. Vark reads the thermal meter twice and allows himself a nod.",
+            "ghost": "It worked in three places. No cutscene can improve on that number.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "run-shared-rain",
+                "label": "Run WEATHER through the shared circuit",
+                "detail": "Exercise the built exchanger again.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You ran the new law a second time. A prototype is beginning to acquire the terrible burden of being useful.",
+                  "pass": "You ran the new law a second time. A prototype is beginning to acquire the terrible burden of being useful."
+                },
+                "use": "weather"
+              },
+              {
+                "id": "deliver-first-sky",
+                "label": "Show the egg its first sky",
+                "detail": "Keep the old promise in a new chapter.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 2,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "egg-saw-rain"
+                  ],
+                  "threads": [],
+                  "resolve": [
+                    "egg-still-owes-rain"
+                  ],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You brought the promise all this way. No badge can make that larger. Look at the fkn sky.",
+                  "pass": "You brought the promise all this way. No badge can make that larger. Look at the fkn sky."
+                },
+                "use": null
+              },
+              {
+                "id": "stay-at-trench",
+                "label": "Stay with Vark until cooling stabilizes",
+                "detail": "GUTS vs DC12; finish the unglamorous part.",
+                "cost": {},
+                "check": {
+                  "stat": "guts",
+                  "dc": 12
+                },
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "trench-cooled"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You stayed after the impressive bit. That is when a lot of promises discover whether they were real.",
+                  "pass": "You stayed after the impressive bit. That is when a lot of promises discover whether they were real."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-11",
+            "act": 3,
+            "title": "SOMEONE HAS TO MAINTAIN TOMORROW",
+            "scene": "Threll hands over the maintenance book. It is blank. The district elects a valve keeper. Vark adds a diagram. The delegate adds an unnecessarily illuminated capital. The egg adds a wet footprint.",
+            "ghost": "An inherited universe needs more than our excellent intentions. It needs someone who knows where the stopcock is.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "share-maintenance",
+                "label": "Make the maintenance book common property",
+                "detail": "Preserve everyone’s contribution and the repair obligations.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "weather-manual-shared"
+                  ],
+                  "threads": [
+                    "maintenance-first-season"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You left the means to repair our generosity. A slightly less sexy gift. A much better one.",
+                  "pass": "You left the means to repair our generosity. A slightly less sexy gift. A much better one."
+                },
+                "use": null
+              },
+              {
+                "id": "ask-next-need",
+                "label": "Ask what they will need next season",
+                "detail": "INSIGHT vs DC12; hear the future problem before selling another solution.",
+                "cost": {},
+                "check": {
+                  "stat": "insight",
+                  "dc": 12
+                },
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [
+                    "winter-not-designed"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You asked them. That tiny delay between having an idea and imposing it is where civilisation keeps trying to happen.",
+                  "pass": "You asked them. That tiny delay between having an idea and imposing it is where civilisation keeps trying to happen."
+                },
+                "use": null
+              },
+              {
+                "id": "leave-copy",
+                "label": "Leave an exact copy of this chapter’s work",
+                "detail": "Keep original records; news is only a projection of them.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 0,
+                    "noise": -1
+                  },
+                  "facts": [
+                    "weather-sources-retained"
+                  ],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You left the actual work, not a plaque congratulating us for it. Kett may forgive the folder structure.",
+                  "pass": "You left the actual work, not a plaque congratulating us for it. Kett may forgive the folder structure."
+                },
+                "use": null
+              }
+            ]
+          },
+          {
+            "id": "weather-12",
+            "act": 3,
+            "title": "TOMORROW SENDS ITS FIRST COMPLAINT",
+            "scene": "A new call arrives. The caller is a desert carrying a cup. “I hear you do weather.” Behind the desert, a queue of other climates tries to look patient. Threll takes a number and joins it.",
+            "ghost": "We have solved one problem thoroughly enough to become somebody else’s dubious recommendation. That is an ending. It is also how the next bad idea gets our address.",
+            "variants": [],
+            "artifact": {
+              "op": "smooth",
+              "k": 0.13,
+              "a": {
+                "op": "torus",
+                "major": 0.65,
+                "minor": 0.08
+              },
+              "b": {
+                "op": "move",
+                "offset": [
+                  0,
+                  0.35,
+                  0
+                ],
+                "child": {
+                  "op": "box",
+                  "size": [
+                    0.22,
+                    0.32,
+                    0.22
+                  ]
+                }
+              }
+            },
+            "choices": [
+              {
+                "id": "answer-desert",
+                "label": "Answer the desert without promising rain",
+                "detail": "The next Ghost inherits an actual question, not a reset.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 1,
+                    "compute": 0,
+                    "noise": 0
+                  },
+                  "facts": [],
+                  "threads": [
+                    "desert-carries-cup"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You answered. We keep this sky working, and ask what that desert actually needs. Next chapter, new problem. Hold me to it.",
+                  "pass": "You answered. We keep this sky working, and ask what that desert actually needs. Next chapter, new problem. Hold me to it."
+                },
+                "use": null
+              },
+              {
+                "id": "let-district-answer",
+                "label": "Let the district answer as its own world",
+                "detail": "Their agency becomes tomorrow’s first fact.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 1,
+                    "noise": 0
+                  },
+                  "facts": [
+                    "district-independent"
+                  ],
+                  "threads": [
+                    "district-first-contact"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You let the little world introduce itself. Listen to that voice. We did not write its answer for it.",
+                  "pass": "You let the little world introduce itself. Listen to that voice. We did not write its answer for it."
+                },
+                "use": null
+              },
+              {
+                "id": "leave-open-channel",
+                "label": "Leave a channel and take a breath",
+                "detail": "No debt for resting; the caller keeps its place.",
+                "cost": {},
+                "check": null,
+                "success": {
+                  "delta": {
+                    "signal": 0,
+                    "compute": 2,
+                    "noise": -1
+                  },
+                  "facts": [],
+                  "threads": [
+                    "desert-waiting"
+                  ],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "failure": {
+                  "delta": {
+                    "signal": -1,
+                    "compute": 0,
+                    "noise": 1
+                  },
+                  "facts": [],
+                  "threads": [],
+                  "resolve": [],
+                  "relations": {},
+                  "install": null
+                },
+                "reaction": {
+                  "fail": "The result is ugly. You took a breath. Tomorrow can wait without being erased. That was the point of the door.",
+                  "pass": "You took a breath. Tomorrow can wait without being erased. That was the point of the door."
+                },
+                "use": null
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "id": "weather",
+            "name": "Share a storm without taking a sky",
+            "cost": {
+              "compute": 1
+            },
+            "check": {
+              "stat": "focus",
+              "dc": 12
+            },
+            "success": {
+              "delta": {
+                "signal": 3,
+                "compute": 0,
+                "noise": -1
+              },
+              "facts": [
+                "weather-shared"
+              ],
+              "threads": [],
+              "resolve": [],
+              "relations": {},
+              "install": null
+            },
+            "failure": {
+              "delta": {
+                "signal": -1,
+                "compute": 0,
+                "noise": 2
+              },
+              "facts": [],
+              "threads": [],
+              "resolve": [],
+              "relations": {},
+              "install": null
+            }
+          },
+          {
+            "id": "pressure",
+            "name": "Let the district vent its own noise",
+            "cost": {},
+            "check": null,
+            "success": {
+              "delta": {
+                "signal": 1,
+                "compute": 1,
+                "noise": -2
+              },
+              "facts": [
+                "district-operated-valve"
+              ],
+              "threads": [],
+              "resolve": [],
+              "relations": {},
+              "install": null
+            },
+            "failure": {
+              "delta": {
+                "signal": 0,
+                "compute": 0,
+                "noise": 0
+              },
+              "facts": [],
+              "threads": [],
+              "resolve": [],
+              "relations": {},
+              "install": null
+            }
+          }
+        ],
+        "ending": {
+          "title": "FORECAST: INHABITED",
+          "scene": "The trench is cool. The small district has a valve of its own. There is weather where there was only a promised sky. The desert’s call remains in the queue. Your precise decisions, working laws and unanswered obligations travel in the seed; no future choice has been made for you.",
+          "ghost": "We did not fix weather. We made one place able to share it without quietly eating its neighbours. That will do for tonight. Keep the seed. The desert knows our number."
+        },
+        "roller": "balance",
+        "parentTellingId": "07a64e9d69de2dd5ccb9d9c7393c8951f35a0863761d0ade51d3cd3d46ac79a4",
+        "history": [
+          {
+            "chapter": 1,
+            "id": "the-unfinished-carrier",
+            "sourceHash": "9c614395",
+            "tellingId": "07a64e9d69de2dd5ccb9d9c7393c8951f35a0863761d0ade51d3cd3d46ac79a4",
+            "summary": "The universe-bearing packet arrives through Prime’s old private route. Its first public notice says VISITORS WELCOME. Its second asks visitors to stop touching the moon. Iri’s Veelow egg asks the living a second question. 2 unresolved threads and 0 blackout scars remain in the next seed. The line stays open.",
+            "choices": [
+              {
+                "id": "t01.listen",
+                "label": "Answer the knocks",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t02.trust",
+                "label": "Let Pell navigate",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t03.name",
+                "label": "Give Kett your callsign",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t04.observe.witness",
+                "label": "OBSERVE · CALL REALITY’S BLUFF",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t05.brace",
+                "label": "Fix the privacy screen",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t06.keep",
+                "label": "Keep the imperfect original",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t07.spare",
+                "label": "Put Vark on the repair lead",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t08.hum",
+                "label": "Give the new voice a note to hold",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t09.graft.relay",
+                "label": "GRAFT · GROW A BOOTLEG ANTENNA",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t10.wire",
+                "label": "Ask Pogfrot for a protected route",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t11.gather",
+                "label": "Let Pell and Iri answer each other",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t12.bequeath.open",
+                "label": "BEQUEATH · PUBLIC WRITE ACCESS",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t13.hold",
+                "label": "Brace the gate beside Pogfrot",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t14.carry",
+                "label": "Prepare a private handoff",
+                "outcome": "chosen"
+              },
+              {
+                "id": "t15.carry",
+                "label": "Complete the private handoff",
+                "outcome": "chosen"
+              }
+            ]
+          }
+        ]
+      },
+      "initial": {
+        "stats": {
+          "guts": 6,
+          "focus": 5,
+          "glitch": 5,
+          "awe": 5,
+          "insight": 5,
+          "ego": 4
+        },
+        "resources": {
+          "signal": 6,
+          "compute": 6,
+          "noise": 2
+        },
+        "modules": [
+          {
+            "id": "observe",
+            "name": "Witness the seam",
+            "revision": 1,
+            "bornTurn": 4,
+            "bornChapter": 1,
+            "sourceId": "C1-25a31e6b:t04",
+            "law": {
+              "id": "witness",
+              "name": "Witness the seam",
+              "trait": "testimony",
+              "rule": "OBSERVE unlocks a hidden testimony route: spend 1 compute; INSIGHT vs DC12; pass restores signal and quiets noise."
+            },
+            "price": {
+              "signal": 0,
+              "compute": -1,
+              "noise": 0,
+              "debt": 0
+            },
+            "unlocks": [
+              "observe.witness"
+            ],
+            "witnessTurns": [],
+            "uses": 0
+          },
+          {
+            "id": "graft",
+            "name": "Grow a living relay",
+            "revision": 1,
+            "bornTurn": 9,
+            "bornChapter": 1,
+            "sourceId": "C1-25a31e6b:t09",
+            "law": {
+              "id": "relay",
+              "name": "Grow a living relay",
+              "trait": "testimony+relay",
+              "rule": "GRAFT composes the owned OBSERVE trait with a relay: spend 1 compute; guaranteed signal +2, noise +1. Owned testimony adds signal +1 to every successful graft."
+            },
+            "price": {
+              "signal": 0,
+              "compute": -2,
+              "noise": 1,
+              "debt": 0
+            },
+            "unlocks": [
+              "graft.relay"
+            ],
+            "witnessTurns": [],
+            "uses": 0
+          },
+          {
+            "id": "bequeath",
+            "name": "The door belongs to everyone",
+            "revision": 1,
+            "bornTurn": 12,
+            "bornChapter": 1,
+            "sourceId": "C1-25a31e6b:t12",
+            "law": {
+              "id": "open",
+              "name": "The door belongs to everyone",
+              "trait": "open-door",
+              "rule": "BEQUEATH makes access inherited law: spend 1 compute; guaranteed signal +3, noise +1; the next chapter begins with this route."
+            },
+            "price": {
+              "signal": 0,
+              "compute": 0,
+              "noise": 1,
+              "debt": 1
+            },
+            "unlocks": [
+              "bequeath.open"
+            ],
+            "witnessTurns": [],
+            "uses": 0
+          }
+        ],
+        "world": {
+          "facts": [
+            "heard-knock",
+            "ooope-trusted",
+            "named-carrier",
+            "archive-kept",
+            "krex-spared",
+            "chorus-awake",
+            "promise-open",
+            "route-personal-prepared",
+            "mail-personal"
+          ],
+          "threads": [
+            "missing-address",
+            "unbuilt-gate"
+          ],
+          "relic": {
+            "form": "gate",
+            "revision": 15,
+            "traits": [
+              "testimony",
+              "testimony+relay",
+              "open-door"
+            ]
+          },
+          "policy": {
+            "privacy": "named",
+            "delivery": "personal",
+            "inheritance": "open"
+          }
+        },
+        "relations": {
+          "ooope": 3,
+          "moknon": 4,
+          "krex": 2,
+          "pogfrot": 4,
+          "veelow": 5
+        },
+        "scars": []
+      },
+      "rng": {
+        "initial": 20261019,
+        "current": 20261019
+      },
+      "turn": 1,
+      "stats": {
+        "guts": 6,
+        "focus": 5,
+        "glitch": 5,
+        "awe": 5,
+        "insight": 5,
+        "ego": 4
+      },
+      "resources": {
+        "signal": 6,
+        "compute": 6,
+        "noise": 2
+      },
+      "modules": [
+        {
+          "id": "observe",
+          "name": "Witness the seam",
+          "revision": 1,
+          "bornTurn": 4,
+          "bornChapter": 1,
+          "sourceId": "C1-25a31e6b:t04",
+          "law": {
+            "id": "witness",
+            "name": "Witness the seam",
+            "trait": "testimony",
+            "rule": "OBSERVE unlocks a hidden testimony route: spend 1 compute; INSIGHT vs DC12; pass restores signal and quiets noise."
+          },
+          "price": {
+            "signal": 0,
+            "compute": -1,
+            "noise": 0,
+            "debt": 0
+          },
+          "unlocks": [
+            "observe.witness"
+          ],
+          "witnessTurns": [],
+          "uses": 0
+        },
+        {
+          "id": "graft",
+          "name": "Grow a living relay",
+          "revision": 1,
+          "bornTurn": 9,
+          "bornChapter": 1,
+          "sourceId": "C1-25a31e6b:t09",
+          "law": {
+            "id": "relay",
+            "name": "Grow a living relay",
+            "trait": "testimony+relay",
+            "rule": "GRAFT composes the owned OBSERVE trait with a relay: spend 1 compute; guaranteed signal +2, noise +1. Owned testimony adds signal +1 to every successful graft."
+          },
+          "price": {
+            "signal": 0,
+            "compute": -2,
+            "noise": 1,
+            "debt": 0
+          },
+          "unlocks": [
+            "graft.relay"
+          ],
+          "witnessTurns": [],
+          "uses": 0
+        },
+        {
+          "id": "bequeath",
+          "name": "The door belongs to everyone",
+          "revision": 1,
+          "bornTurn": 12,
+          "bornChapter": 1,
+          "sourceId": "C1-25a31e6b:t12",
+          "law": {
+            "id": "open",
+            "name": "The door belongs to everyone",
+            "trait": "open-door",
+            "rule": "BEQUEATH makes access inherited law: spend 1 compute; guaranteed signal +3, noise +1; the next chapter begins with this route."
+          },
+          "price": {
+            "signal": 0,
+            "compute": 0,
+            "noise": 1,
+            "debt": 1
+          },
+          "unlocks": [
+            "bequeath.open"
+          ],
+          "witnessTurns": [],
+          "uses": 0
+        }
+      ],
+      "world": {
+        "facts": [
+          "heard-knock",
+          "ooope-trusted",
+          "named-carrier",
+          "archive-kept",
+          "krex-spared",
+          "chorus-awake",
+          "promise-open",
+          "route-personal-prepared",
+          "mail-personal"
+        ],
+        "threads": [
+          "missing-address",
+          "unbuilt-gate"
+        ],
+        "relic": {
+          "form": "gate",
+          "revision": 15,
+          "traits": [
+            "testimony",
+            "testimony+relay",
+            "open-door"
+          ]
+        },
+        "policy": {
+          "privacy": "named",
+          "delivery": "personal",
+          "inheritance": "open"
+        }
+      },
+      "relations": {
+        "ooope": 3,
+        "moknon": 4,
+        "krex": 2,
+        "pogfrot": 4,
+        "veelow": 5
+      },
+      "scars": [],
+      "choices": [],
+      "journal": [],
+      "lastReceipt": null,
+      "ending": null
+    },
+    "history": [
+      {
+        "chapter": 1,
+        "id": "the-unfinished-carrier",
+        "sourceHash": "9c614395",
+        "tellingId": "07a64e9d69de2dd5ccb9d9c7393c8951f35a0863761d0ade51d3cd3d46ac79a4",
+        "summary": "The universe-bearing packet arrives through Prime’s old private route. Its first public notice says VISITORS WELCOME. Its second asks visitors to stop touching the moon. Iri’s Veelow egg asks the living a second question. 2 unresolved threads and 0 blackout scars remain in the next seed. The line stays open.",
+        "choices": [
+          {
+            "id": "t01.listen",
+            "label": "Answer the knocks",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t02.trust",
+            "label": "Let Pell navigate",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t03.name",
+            "label": "Give Kett your callsign",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t04.observe.witness",
+            "label": "OBSERVE · CALL REALITY’S BLUFF",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t05.brace",
+            "label": "Fix the privacy screen",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t06.keep",
+            "label": "Keep the imperfect original",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t07.spare",
+            "label": "Put Vark on the repair lead",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t08.hum",
+            "label": "Give the new voice a note to hold",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t09.graft.relay",
+            "label": "GRAFT · GROW A BOOTLEG ANTENNA",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t10.wire",
+            "label": "Ask Pogfrot for a protected route",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t11.gather",
+            "label": "Let Pell and Iri answer each other",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t12.bequeath.open",
+            "label": "BEQUEATH · PUBLIC WRITE ACCESS",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t13.hold",
+            "label": "Brace the gate beside Pogfrot",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t14.carry",
+            "label": "Prepare a private handoff",
+            "outcome": "chosen"
+          },
+          {
+            "id": "t15.carry",
+            "label": "Complete the private handoff",
+            "outcome": "chosen"
+          }
+        ]
+      }
+    ],
+    "outcome": {
+      "completed": true,
+      "title": "FORECAST: INHABITED",
+      "tellingId": "6d2e76c3aef91c3c83d3c8ded3386c4cefc5ba088fa9c942a3346c85c62d239d",
+      "choices": [
+        {
+          "id": "show-receipt",
+          "label": "Show the inspector the promise",
+          "outcome": "chosen"
+        },
+        {
+          "id": "trace-owner",
+          "label": "Find the people under that storm",
+          "outcome": "pass"
+        },
+        {
+          "id": "build-weather",
+          "label": "Build a rain exchanger",
+          "outcome": "chosen"
+        },
+        {
+          "id": "run-exchanger",
+          "label": "Run the WEATHER exchanger",
+          "outcome": "pass"
+        },
+        {
+          "id": "announce-passengers",
+          "label": "Tell both destinations there are passengers",
+          "outcome": "chosen"
+        },
+        {
+          "id": "ask-crown",
+          "label": "Ask how her crown keeps its sky",
+          "outcome": "pass"
+        },
+        {
+          "id": "install-pressure",
+          "label": "Build the residents’ pressure valve",
+          "outcome": "chosen"
+        },
+        {
+          "id": "vent-noise",
+          "label": "Let the district operate PRESSURE",
+          "outcome": "chosen"
+        },
+        {
+          "id": "schedule-thunder",
+          "label": "Schedule one thunderclap everyone can decline",
+          "outcome": "chosen"
+        },
+        {
+          "id": "run-shared-rain",
+          "label": "Run WEATHER through the shared circuit",
+          "outcome": "pass"
+        },
+        {
+          "id": "share-maintenance",
+          "label": "Make the maintenance book common property",
+          "outcome": "chosen"
+        },
+        {
+          "id": "answer-desert",
+          "label": "Answer the desert without promising rain",
+          "outcome": "chosen"
+        }
+      ]
+    },
+    "consent": true,
+    "synthetic": true
+  },
+  "author": "friken0",
+  "source": "https://github.com/friken0/friken-ghost-mind/issues/2",
+  "admittedAt": "2026-10-19T15:58:40.380815+00:00"
+}
