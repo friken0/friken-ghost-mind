@@ -47,8 +47,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/app.mjs",
-      "bytes": 24873,
-      "sha256": "54f995bfc9247d19a7466f90cc51b1c22c55022fa725d80bd8d6ce5419021a25"
+      "bytes": 24879,
+      "sha256": "b18d044d313397f1860c47e4cdb8707405640201672a7c15a8e6f7e2d576ed1c"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
@@ -153,7 +153,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 8382,
-      "sha256": "20173f6ca8f2451d79150a54cdffce7be3e07caa735032d3d063ffbc1e3168fe"
+      "sha256": "911fd840075d72a91c48d0297b32ef99c6af2946229c623af75d59967f688318"
     },
     {
       "path": "Tools/ChromaticBBS/neural-check.html",
@@ -292,8 +292,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 490092,
-      "sha256": "96e332fd291cd85cd6a60c032c851980e2d382420aed519dba0222951bb069f8"
+      "bytes": 490098,
+      "sha256": "c7d0d623ce73d7ad24807ad06e2b167ccd39b109537b6b399b55b867ea578cc1"
     },
     {
       "path": "runbook.md",

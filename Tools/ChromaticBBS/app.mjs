@@ -167,7 +167,7 @@ function seedText(){return el('seed').value.trim().replace(/^BOOT\s*\+?\s*/i,'')
 let handoffParent=null;
 function canonForHandoff(){
   try{chapterLibrary.assertContinuation(handoffParent);el('next-canon').hidden=true;el('canon-note').textContent='This exact ending is your canon. Its choices and outcomes are in the prompt.';return true;}
-  catch(error){el('next-canon').hidden=false;el('canon-note').textContent='Choose your timeline: '+error.message+' Use the button below to make this ending and all its carried ancestry canon. Later pins change; every saved branch survives.';return false;}
+  catch{el('next-canon').hidden=false;el('canon-note').textContent='Choose your timeline here: use the button below to keep this exact ending and its carried earlier chapters as canon. This replaces later canon pins; every saved branch survives.';return false;}
 }
 function bootNext(code){
   carrierShell.open('archive');el('chapter-handoff').open=true;el('archive').insertBefore(el('chapter-handoff'),el('archive').querySelector('label[for="cg-seed"]'));
