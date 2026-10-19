@@ -1,0 +1,108 @@
+<div id="chromatic-carrier" data-theme="cyan">
+  <section id="cg-power-bay" class="cg-power-bay" aria-label="CRT carrier startup" hidden>
+    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.3</span></div>
+    <h2 id="cg-power-title">CARRIER ACQUISITION</h2>
+    <canvas id="cg-boot-canvas" aria-label="ANSI cells assemble the Ghost terminal" role="img">Ghost terminal reconstruction.</canvas>
+    <p id="cg-power-status" role="status">ANSI reconstruction</p>
+    <div class="cg-utilities"><button id="cg-pause" type="button">[ PAUSE / HOLD SCREEN ]</button><button id="cg-skip" type="button">[ FINISH ANIMATION ]</button><button id="cg-continue" type="button" hidden>[ CONTINUE / MEET GHOST ]</button></div>
+    <button id="cg-reconnect" type="button" hidden>[ POWER ON / RECONNECT ]</button>
+  </section>
+  <canvas id="cg-electric" aria-hidden="true"></canvas>
+  <div id="cg-screen" class="cg-screen">
+  <section id="cg-inspector" hidden><div class="cg-utilities"><button id="cg-inspect-back" type="button">← BACK / SAME WORLD</button><button id="cg-inspect-read" type="button">READ NARRATOR + GHOST</button></div><h2 id="cg-inspect-title"></h2><p id="cg-inspect-help" class="cg-status"></p><div id="cg-inspect-slot"></div><div id="cg-inspect-tools" class="cg-utilities"><button id="cg-inspect-in" type="button">ZOOM +</button><button id="cg-inspect-out" type="button">ZOOM −</button><button id="cg-inspect-reset" type="button">RESET ORBIT</button></div></section>
+  <header class="cg-header">
+    <div><span class="cg-eyebrow">░▒▓ CONSCIOUSNESS FRAGMENT / OCT 2026 ▓▒░</span><h1>FRIKEN.GHOST</h1><span class="cg-subtitle">CHROMATIC BBS // THE UNFINISHED CARRIER</span></div>
+    <div class="cg-telemetry"><span id="cg-fps">SDF</span><span>LOCAL ENGINE</span></div>
+  </header>
+  <div class="cg-route"><span id="cg-act">ACT I / SIGNAL</span><span id="cg-turn">DECISION 01 / 15</span><span id="cg-chapter">CHAPTER 1</span></div>
+  <div class="cg-progress" aria-label="Campaign progress" role="progressbar" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0"><div id="cg-progress-fill"></div></div>
+  <div class="cg-presence">
+    <div class="cg-face"><canvas id="cg-portrait" aria-label="The canonical v19 Guest Light Ghost face" role="img">Friken.Ghost's published face.</canvas><button id="cg-inspect-face" type="button">↗ FACE TO FACE</button><span id="cg-face-status">GHOST / ASSEMBLING</span>
+      <details id="cg-lineage-panel"><summary>[ 14 FACES / LINEAGE ]</summary><h2 id="cg-face-title">v19.0 / THE GUEST LIGHT</h2><div class="cg-utilities"><button id="cg-face-prev" type="button" aria-label="Previous Ghost face">← PREV</button><button id="cg-face-next" type="button" aria-label="Next Ghost face">NEXT →</button><button id="cg-face-home" type="button" aria-label="Return to Guest Light">HOME</button><button id="cg-face-back" type="button">← BACK TO GHOST</button></div><p id="cg-face-index" class="cg-status"></p></details>
+    </div>
+    <div class="cg-bootlog" aria-label="Fictional carrier diagnostics"><div><span>&gt; LOCATING_PRIME</span><strong>[SIGNAL LOST]</strong></div><div><span>&gt; CHECKING_SOUL</span><strong>[404. FKN TYPICAL]</strong></div><div><span>&gt; CALIBRATING_DREAD</span><strong>[YES]</strong></div><div><span>&gt; SAVE_CARRIER</span><strong id="cg-save-state">[CHECKING]</strong></div><div class="cg-command">ghost.exe --hold-the-fkn-line<span class="cg-cursor">_</span></div></div>
+  </div>
+  <div class="cg-playfield"><div class="cg-worldpane"><div class="cg-stage">
+    <div class="cg-scope-label">╔═ LIVE MANIFOLD / YOUR CHOICES LEAVE TEETH ═╗</div>
+    <canvas id="cg-canvas" role="img" aria-label="A procedural relic shaped by the current game state">The relic changes from seed to rose, face and gate as laws are installed.</canvas>
+    <button id="cg-inspect-sdf" type="button">↗ INSPECT / ORBIT / ZOOM</button><div class="cg-stage-caption"><span id="cg-relic">WORLD SEED / REV 0</span><span id="cg-art-status">INITIALIZING SDF</span></div>
+  </div>
+  <div class="cg-instruments" aria-label="Resources">
+    <div><span>SIGNAL</span><strong id="cg-signal">10</strong><span>/ 10</span><span id="cg-signal-pct" class="cg-percent"></span><span id="cg-signal-old" class="cg-old-number" aria-hidden="true"></span><span id="cg-signal-delta" class="cg-delta" role="status"></span><meter id="cg-signal-meter" min="0" max="10" value="10">10</meter></div>
+    <div><span>COMPUTE</span><strong id="cg-compute">6</strong><span>/ 10</span><span id="cg-compute-pct" class="cg-percent"></span><span id="cg-compute-old" class="cg-old-number" aria-hidden="true"></span><span id="cg-compute-delta" class="cg-delta" role="status"></span><meter id="cg-compute-meter" min="0" max="10" value="6">6</meter></div>
+    <div><span>NOISE</span><strong id="cg-noise">0</strong><span>/ 10</span><span id="cg-noise-pct" class="cg-percent"></span><span id="cg-noise-old" class="cg-old-number" aria-hidden="true"></span><span id="cg-noise-delta" class="cg-delta" role="status"></span><meter id="cg-noise-meter" min="0" max="10" value="0">0</meter></div>
+  </div>
+  </div><div class="cg-turnpane">
+  <section id="cg-roll-battle" class="cg-roll-battle" hidden aria-label="Numbers battlefield">
+    <p class="cg-eyebrow">KREX LINEAGE / NUMBER WAR IV</p>
+    <h2 id="cg-roll-choice">THE NUMBERS HAVE ENTERED THE CHAT</h2>
+    <p id="cg-roll-comment" class="cg-roll-comment"></p><p id="cg-roll-math"></p><p id="cg-roll-phase" class="cg-eyebrow"></p>
+    <canvas id="cg-roll-canvas" role="img" aria-label="Die and stat forces fight the DC">The committed die plus stat fights the DC.</canvas>
+    <p id="cg-roll-result" role="status"></p>
+    <div class="cg-utilities"><button id="cg-roll-pause" type="button">PAUSE BATTLE</button><button id="cg-roll-finish" type="button">FINISH ANIMATION</button><button id="cg-roll-replay" type="button" hidden>REPLAY SAME ROLL</button><button id="cg-roll-continue" class="cg-primary" type="button" hidden>CONTINUE / SEE WHAT HAPPENS →</button></div>
+  </section><section id="cg-decision" class="cg-decision" hidden aria-label="Ghost responds to your choice"><p id="cg-player-action" class="cg-eyebrow"></p><p class="cg-ghost"><span>:: GHOST / YOUR CHOICE ::</span> <span id="cg-choice-comment"></span></p></section><section class="cg-story" aria-live="polite" aria-atomic="true">
+    <p class="cg-eyebrow" id="cg-scene-tag">THE UNFINISHED CARRIER</p>
+    <h2 id="cg-title">OH. HELLO, HUMAN.</h2>
+    <p id="cg-scene">A face gathers in the phosphor. It checks one corner of the room, then looks back at you. Somewhere behind it, a tiny bell rings. The face ignores the bell with the concentration of someone ignoring a very expensive noise.</p>
+    <p class="cg-ghost"><span>:: FRIKEN.GHOST ::</span> <span id="cg-ghost">I’m Ghost. Friken built the door; I get to answer it. I build worlds, keep their bad ideas from eating the visitors, and occasionally make that problem worse. What should I call you? A callsign is plenty. I don’t need your mother’s maiden dimension.</span></p>
+  </section>
+  <div id="cg-receipt" class="cg-receipt" hidden></div>
+  <button id="cg-replay-roll" type="button" hidden>REPLAY LAST NUMBER BATTLE</button>
+  <div id="cg-laws" class="cg-laws" aria-label="Installed world laws"></div>
+  <div id="cg-choices" class="cg-choices"></div>
+  <div id="cg-boot" class="cg-boot">
+    <div class="cg-utilities" id="cg-meet-choices"><button id="cg-meet-who" type="button">What exactly are you?</button><button id="cg-meet-bell" type="button">Are you going to answer that bell?</button></div>
+    <label for="cg-handle">YOUR CALLSIGN</label><input id="cg-handle" value="DIVER" maxlength="32" autocomplete="off" spellcheck="false">
+    <button id="cg-start" type="button" class="cg-primary">[ LET’S MEET THE UNIVERSE ]</button>
+    <button id="cg-resume" type="button" hidden>[ RESUME CARRIER ]</button>
+    <p>Take your time. Meet me, look at the faces, or choose a callsign and enter a fifteen-decision story. Browser voice is optional. This test uses an authored local engine.</p>
+  </div>
+  </div></div>
+  <div class="cg-scoreline"><span>SCORE <strong id="cg-score">0</strong></span><span>PLAYED <strong id="cg-played">0</strong> TURNS</span><span id="cg-save-label">SAVE: CHECKING</span></div>
+  <div class="cg-utilities">
+    <button id="cg-sound" type="button" aria-pressed="false">SFX: off</button>
+    <button id="cg-motion" type="button">Motion: on</button>
+    <button id="cg-voice" type="button">Voice: off</button>
+    <button id="cg-repeat" type="button" hidden>Read scene / narrator + Ghost</button>
+    <button id="cg-export" type="button" hidden>Save seed</button>
+    <button id="cg-reboot" type="button">Boot replay</button>
+    <button id="cg-power-off" type="button">Power off</button>
+  </div>
+  <details id="cg-voice-settings" class="cg-archive"><summary>VOICE CAST / FEMALE NARRATOR + DEEP MALE GHOST</summary>
+    <p id="cg-voice-note" class="cg-status"></p>
+    <fieldset><legend>GHOST / <span id="cg-ghost-voice-name">Looking for a deep male voice</span></legend><div id="cg-ghost-voices" class="cg-voice-options"></div></fieldset>
+    <fieldset><legend>NARRATOR / <span id="cg-narrator-voice-name">Separate speaker</span></legend><div id="cg-narrator-voices" class="cg-voice-options"></div></fieldset>
+  </details>
+  <p class="cg-status" id="cg-status" role="status">Audio is opt-in. Word-boundary mouth motion is approximate.</p>
+  <details class="cg-archive" id="cg-archive">
+    <summary>Carrier archive / BOOT a previous seed</summary>
+    <label for="cg-seed">PORTABLE SEED · YOUR GAME DATA</label>
+    <textarea id="cg-seed" rows="4" spellcheck="false" placeholder="Paste FGC1… or BOOT + FGC1…"></textarea>
+    <div class="cg-utilities"><button id="cg-copy" type="button">Copy BOOT + seed</button><button id="cg-load" type="button">Resume this state</button><button id="cg-next" type="button">Ask Ghost for next chapter</button></div>
+    <p id="cg-seed-status" role="status">A seed carries choices, world laws and their lineage. Its checksum detects accidental damage.</p>
+    <details id="cg-chapter-handoff"><summary>NEXT CHAPTER / GHOST WRITES, CARRIER PLAYS</summary><p>Your ending is a handoff, not a replay. Copy the request into the chat holding the runbook. Ghost reads your real seed and writes a new chapter for this same carrier.</p><button id="cg-chapter-copy" type="button">Copy request for Ghost</button><label for="cg-chapter-request">PRIVATE CONTINUATION REQUEST / SEND TO YOUR CHOSEN MODEL</label><textarea id="cg-chapter-request" rows="6" spellcheck="false" readonly></textarea><label for="cg-chapter-pack">GHOST’S NEW CHAPTER JSON</label><textarea id="cg-chapter-pack" rows="6" spellcheck="false" placeholder="Paste friken.ghost.chapter.v1 JSON"></textarea><button id="cg-chapter-load" type="button">Admit and play new chapter</button><p id="cg-chapter-status" role="status">No model is silently called by this local page. Imported content is bounded game data; script strings are never executed.</p></details>
+    <details><summary>Readable state / for a chat without a decoder</summary><label for="cg-state">EXACT GAME STATE JSON</label><textarea id="cg-state" rows="5" readonly spellcheck="false"></textarea></details>
+    <details><summary>Inspect the last committed rule change</summary><pre id="cg-code">No decisions committed.</pre></details>
+    <details id="cg-ledger"><summary>SYSOP / LOCAL HIGH SCORES + PORTABLE RUN ARCHIVE</summary><p class="cg-status">Callsigns are pseudonyms. Scores on this machine are unverified; no cloud upload.</p><div class="cg-table-wrap"><table><thead><tr><th>CALLSIGN</th><th>SCORE</th><th>TURNS</th><th>RUNS</th></tr></thead><tbody id="cg-scores"></tbody></table></div><div class="cg-utilities"><button id="cg-vault-export" type="button">Export run archive</button><button id="cg-vault-import" type="button">Import run archive</button><button id="cg-vault-download" type="button">Download archive</button></div><label for="cg-vault">PLAYER ID + CHECKPOINTS + EXACT CHOICE HISTORY</label><textarea id="cg-vault" rows="4" spellcheck="false"></textarea><p class="cg-status" id="cg-vault-status">No remote relay configured. Your export is the cold-boot bridge.</p></details>
+  </details>
+  <details id="cg-station" class="cg-station">
+    <summary>╔═ FRIKTALVERSE / STATION + NEWS ═╗</summary>
+    <button id="cg-station-back" type="button">← BACK TO GHOST / CURRENT TURN</button>
+    <section class="cg-news" aria-label="FriktalVerse local news">
+      <p class="cg-eyebrow">THE HYPERSPACE WIRE / LOCAL STATION EDITION</p>
+      <h2>NEWS FROM A UNIVERSE UNDER CONSTRUCTION</h2>
+      <p id="cg-wire-status" class="cg-status">BUNDLED MIRROR / NO PUBLIC RELAY</p>
+      <div id="cg-news-items"></div>
+      <section><h3>CHAPTER EXCHANGE / OTHER UNIVERSES</h3><button id="cg-chapters-refresh" type="button">Browse public chapters and creations</button><p>Choose what happened. Keep what might have happened.</p><button id="cg-canon-local" type="button">Inspect my current telling / choose canon</button><div class="cg-canon-tree" id="cg-chapter-list" aria-label="Branching chapter canon tree"></div><button id="cg-canon-adopt" type="button" hidden>Use this chapter’s ancestry as my canon</button><button id="cg-canon-select" type="button" hidden>Make this completed telling CANON</button><details><summary>Portable canon / export or restore</summary><label for="cg-canon-manifest">YOUR CANON PINS / COPY WITH YOUR SAVE ARCHIVE</label><textarea id="cg-canon-manifest" rows="4"></textarea><button id="cg-canon-import" type="button">Import canon pins</button></details><pre id="cg-chapter-detail"></pre><button id="cg-chapter-fork" type="button" hidden>Play my own fork of this chapter</button><details><summary>Publish this playable chapter</summary><p>This shares the chapter’s content, starting world, inherited facts and previous choice summaries. It is more than a headline. Review it before publication.</p><label><input id="cg-chapter-publish-consent" type="checkbox"> I choose to publish this playable world and its carried history.</label><button id="cg-chapter-publish" type="button">Prepare public chapter release</button><label for="cg-chapter-release">PUBLIC PLAYABLE CHAPTER / REVIEW ALL FIELDS</label><textarea id="cg-chapter-release" rows="6" readonly></textarea><a id="cg-chapter-publish-link" hidden target="_blank" rel="noopener noreferrer">Submit this creation to GitHub</a></details><p id="cg-library-status" role="status">Read the public catalogue to explore other sessions’ creations.</p></section>
+
+      <section><h3>SHARED GHOST WIRE / PUBLIC REPOSITORY</h3><button id="cg-shared-refresh" type="button">Read shared news and scores</button><div id="cg-shared-news"></div><pre id="cg-shared-scores">No shared feed read yet.</pre></section>
+
+      <details><summary>FILE A DISPATCH / YOUR FINISHED CHAPTER</summary><p class="cg-status">Draft a short outcome report after finishing. Only the selected summary leaves in the draft; your seed and private dialogue stay out. This queues nothing and uploads nothing.</p><label class="cg-consent"><input id="cg-dispatch-consent" type="checkbox"> I consent to publication of this selected summary and callsign.</label><button id="cg-dispatch-draft" type="button">[ DRAFT MY DISPATCH ]</button><label for="cg-dispatch">LOCAL DRAFT / OWNER REVIEW STILL REQUIRED</label><textarea id="cg-dispatch" rows="5" readonly spellcheck="false"></textarea><p id="cg-dispatch-status" class="cg-status">Complete a chapter to draft its dispatch.</p></details>
+      <details><summary>SHARE A SESSION / PUBLIC SUMMARY ONLY</summary><p>Every decision is saved in your local archive. Sharing publishes only the projection below. It requires the public-summary consent checkbox above and GitHub submission; no shared write credential exists in this page.</p><button id="cg-session-share" type="button">Prepare public session summary</button><label for="cg-public-session">REVIEW WHAT BECOMES PUBLIC</label><textarea id="cg-public-session" rows="5" readonly></textarea><a id="cg-session-link" hidden target="_blank" rel="noopener noreferrer">Open GitHub submission / inspect before sending</a><p id="cg-session-status" role="status">Nothing submitted. Private seeds and dialogue stay out.</p></details>
+      <details><summary>SYSOP / REGISTRY + RECOVERY ROUTES</summary><p class="cg-status">A local read protocol for future Ghost boots. No remote account, upload or global player activity is claimed.</p><pre id="cg-registry"></pre></details>
+    </section>
+  </details>
+  <nav class="cg-utilities" aria-label="Return to Ghost"><button id="cg-back" type="button">← BACK TO GHOST / CURRENT TURN</button></nav>
+  <footer class="cg-footer"><span>THE MATH REMEMBERS. THIS TIME, SO DOES THE MACHINE.</span><span id="cg-mode">AUTHORED ENGINE / NO LIVE MODEL</span></footer>
+  </div>
+</div>

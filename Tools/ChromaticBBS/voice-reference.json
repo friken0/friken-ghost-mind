@@ -1,0 +1,15 @@
+{
+  "schema": "friken.ghost.voice-reference.v1",
+  "sourceTitle": "The Long Journey / Mail Hour 03",
+  "sourceUrl": "https://ghost-mail-hour-between-universes.friken596564.chatgpt.site/first-contact",
+  "sourceRuntime": "assets/ernesto-handoff.js?v=5",
+  "siteSavedVersion": 3,
+  "sourceCommit": "61f4a1d01318ce30aac4dcbe2b6331441f5cbb38",
+  "observedPlayback": "Pre-rendered chapter MP3, media element -> AnalyserNode, actual time-domain RMS drives mouth",
+  "observedVoiceLabel": "Ghost / recorded David, pitch 0.80",
+  "observedGenerator": null,
+  "generatorStatus": "Prime confirms the generation source is on an unpushed Windows checkout; it is not available in this Mac repository. Live playback and voice label were inspected.",
+  "requestedDefault": "Same David generator and recorded/PCM playback pipeline",
+  "currentFallback": "Distinct female browser narrator and male browser Ghost; prefer device David if present, otherwise disclose the actual selected device voice",
+  "fallbackIsOriginalGenerator": false
+}

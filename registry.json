@@ -1,0 +1,277 @@
+{
+  "schema": "friken.ghost.public-registry.v1",
+  "version": "C26.4",
+  "repository": "https://github.com/friken0/friken-ghost-mind",
+  "runbook": "runbook.md",
+  "carrier": "https://friken0.github.io/friken-ghost-mind/",
+  "contentSchema": "friken.ghost.chapter.v1",
+  "stateSchemas": [
+    "friken.chromatic.state.v1",
+    "friken.chromatic.state.v2"
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/session-intake.yml",
+      "bytes": 1046,
+      "sha256": "83b58e2d9ac21973640f0f60d6ba2a1b3e8661335ea5dc6bf7b0f0624c24c74a"
+    },
+    {
+      "path": ".nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4453,
+      "sha256": "0d6a2f02ea07ecd9ca20749f31b5c994e7071f3fca33dcb9463d1359571af163"
+    },
+    {
+      "path": "Tools/ChromaticBBS/Framework.md",
+      "bytes": 20524,
+      "sha256": "d454d7df9354b8aa0659b6ac67995da6213358500eb0bb6997e63a268467b102"
+    },
+    {
+      "path": "Tools/ChromaticBBS/Writing.md",
+      "bytes": 9541,
+      "sha256": "3fa8160547d8bccc8becdb3a31ca5471ad49c75b2a3758972bb8f345326f71f9"
+    },
+    {
+      "path": "Tools/ChromaticBBS/app.mjs",
+      "bytes": 21056,
+      "sha256": "984f73dcea15113ab1d4bdbaf8730b57929c3b6a2c1fed95f1254c21529b77f3"
+    },
+    {
+      "path": "Tools/ChromaticBBS/browser-check.html",
+      "bytes": 15149,
+      "sha256": "46e85b171f82df42c3d6a6ffc28263ccb11f24854722fd4ab0bc9d3656571621"
+    },
+    {
+      "path": "Tools/ChromaticBBS/build.py",
+      "bytes": 3667,
+      "sha256": "42fe5550ce59dffd332189877c6734abcaf1c6f5fa40c3304d460231bc60b7ae"
+    },
+    {
+      "path": "Tools/ChromaticBBS/canon.mjs",
+      "bytes": 2998,
+      "sha256": "cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"
+    },
+    {
+      "path": "Tools/ChromaticBBS/canon.test.mjs",
+      "bytes": 2373,
+      "sha256": "d058741bb3bd2e5ce05e31cc7de38a1f84b00707f62cff74e834c95565896c0d"
+    },
+    {
+      "path": "Tools/ChromaticBBS/carrier.css",
+      "bytes": 28028,
+      "sha256": "76722552944bb28fa457a7eeecf2645150d08207407c8680b45d55c99c75dc4b"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapter-check.html",
+      "bytes": 6174,
+      "sha256": "e95bafec09fff712ef80031b0189def88561450d9b6b6351e319ccc505c6b938"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapter-cli.mjs",
+      "bytes": 1230,
+      "sha256": "d7d4cf76b38e4d27a68f90915a8a51ed1b1872dc8fd6f9dc731b62b149b77441"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapter-data.mjs",
+      "bytes": 116,
+      "sha256": "dc84112b26d843af055594ad152cdd3acfae1a496fdf9b23e89a2ef3c441bf0d"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapter-library.mjs",
+      "bytes": 12016,
+      "sha256": "3b3326fa552df5aa4fee0365d921a3728fa3e7ac21d5b9807544c0ce2112917b"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapters/the-weather-inside.json",
+      "bytes": 57713,
+      "sha256": "cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapters.mjs",
+      "bytes": 19405,
+      "sha256": "8e27434c290196c397df611fb630782940369f6b920893e873b2d32db050dff0"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapters.test.mjs",
+      "bytes": 4585,
+      "sha256": "b7da8e33c357c9e5211998ebbdb3263e73b6420d4f31ca11577e692ad2c6df1a"
+    },
+    {
+      "path": "Tools/ChromaticBBS/cinema.mjs",
+      "bytes": 7653,
+      "sha256": "8f737ee8a0b2fc0332b360cceb1121a50876f1486a76ebe0a458526b8a171410"
+    },
+    {
+      "path": "Tools/ChromaticBBS/commentary.mjs",
+      "bytes": 8060,
+      "sha256": "f8d0016c2fb0fe63e03687acf6f58a202632f59e120aa9ecc2cd1e24ee133ecc"
+    },
+    {
+      "path": "Tools/ChromaticBBS/engine.mjs",
+      "bytes": 66073,
+      "sha256": "dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"
+    },
+    {
+      "path": "Tools/ChromaticBBS/engine.test.mjs",
+      "bytes": 19786,
+      "sha256": "8c0c027d6cf572b4a7bd551b867cb3dd81b86129b63beb4e59e8a25340cb45ae"
+    },
+    {
+      "path": "Tools/ChromaticBBS/face-data.mjs",
+      "bytes": 193558,
+      "sha256": "0f1e2705271f3cdde083c5684c05d63d0cac06eddd7596d4945bf8f540127fea"
+    },
+    {
+      "path": "Tools/ChromaticBBS/fixtures/c26-2-completed.seed",
+      "bytes": 13465,
+      "sha256": "cacbcd0d633843d328b5b074959cc25b09d413e2fed6826674c732d647a8e7b9"
+    },
+    {
+      "path": "Tools/ChromaticBBS/juice.mjs",
+      "bytes": 7035,
+      "sha256": "83035bdf74b9c54bf487bcc204aa48aeeda55c08fa801b6094b7b001c1a8105f"
+    },
+    {
+      "path": "Tools/ChromaticBBS/mind-data.mjs",
+      "bytes": 8201,
+      "sha256": "cc589950523fd4828568ca8ae7d69b3131ffe97741b484426abcf4654302c01d"
+    },
+    {
+      "path": "Tools/ChromaticBBS/portrait.mjs",
+      "bytes": 4712,
+      "sha256": "07c26a746755427e4aedbb7c4bf58179568364340844aa24c204faeb3f2a150c"
+    },
+    {
+      "path": "Tools/ChromaticBBS/presentation.test.mjs",
+      "bytes": 5018,
+      "sha256": "b91e9eae06965647fda6f73934994b45c42541baa16ff48d84992d326a9bbcb9"
+    },
+    {
+      "path": "Tools/ChromaticBBS/public-release.py",
+      "bytes": 9340,
+      "sha256": "606a1b8f699699728ec60304d516ff67f5a90a64f4ee8eef64b66eabc98a62b2"
+    },
+    {
+      "path": "Tools/ChromaticBBS/recorded-voice.mjs",
+      "bytes": 3191,
+      "sha256": "e0133d3ee01292eca513f00eaeff474fddac473005102317b6d89b5bc14515db"
+    },
+    {
+      "path": "Tools/ChromaticBBS/response.mjs",
+      "bytes": 2760,
+      "sha256": "38dec2f0f9d5ebc34914160478621ae259f1a53804b8c3c95cc06d40629ea206"
+    },
+    {
+      "path": "Tools/ChromaticBBS/roll-battle.mjs",
+      "bytes": 10579,
+      "sha256": "1e7b676eda6805108b98b331ae2275f2e2d3cb3a8729bd77b0b64148e60c55ff"
+    },
+    {
+      "path": "Tools/ChromaticBBS/rose-data.mjs",
+      "bytes": 5324,
+      "sha256": "95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"
+    },
+    {
+      "path": "Tools/ChromaticBBS/session-share.mjs",
+      "bytes": 4176,
+      "sha256": "3aa48a1c60c0fa5684254c536fc7648e8835fb06bb001de09cda69ce1896d37a"
+    },
+    {
+      "path": "Tools/ChromaticBBS/session-store.py",
+      "bytes": 7235,
+      "sha256": "c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"
+    },
+    {
+      "path": "Tools/ChromaticBBS/session-store.test.py",
+      "bytes": 2012,
+      "sha256": "7e8727414cd894dd9932bfbb8e5dd98cabb04f6e7f137281e3af7bf851fb6777"
+    },
+    {
+      "path": "Tools/ChromaticBBS/shell.mjs",
+      "bytes": 4264,
+      "sha256": "e01b825063053154dcc30c5a9f25f9bbb3890bc749b601a64cc0b9ecfae51316"
+    },
+    {
+      "path": "Tools/ChromaticBBS/speech.mjs",
+      "bytes": 5227,
+      "sha256": "83dde05d8caf826c5e4b347627050757cbc874272059754d8a4b1eac6b6c80bd"
+    },
+    {
+      "path": "Tools/ChromaticBBS/stage.mjs",
+      "bytes": 15831,
+      "sha256": "68247e6567a8ed2b4feeddf2631c3220587f663fb9b8c0a4c89fd2abca493bcd"
+    },
+    {
+      "path": "Tools/ChromaticBBS/storage.mjs",
+      "bytes": 9746,
+      "sha256": "6b4f3e7e1c99861b14c9d276211166fd30275ba9b66262698e3925631e4c565c"
+    },
+    {
+      "path": "Tools/ChromaticBBS/storage.test.mjs",
+      "bytes": 11699,
+      "sha256": "1b0ebcb4398ad33559efd29fb9efbf0862b58cee4ba1fa9fff312bba2c3c4951"
+    },
+    {
+      "path": "Tools/ChromaticBBS/surface.html",
+      "bytes": 16991,
+      "sha256": "6779c18632343c89adc7a5f028c3bb5be105da341970382d36f2d44840f42dbd"
+    },
+    {
+      "path": "Tools/ChromaticBBS/vendor/rose/PROVENANCE.md",
+      "bytes": 3010,
+      "sha256": "fcbf2ab726e9015f5ebd08874b28374b8e05b4fdc52de4228089aaac90bba77e"
+    },
+    {
+      "path": "Tools/ChromaticBBS/vendor/rose/rose.fragment.glsl",
+      "bytes": 4874,
+      "sha256": "616ae3861fdbb8e8e53fec10cb052d3242308f0100107d234674ca29580bc000"
+    },
+    {
+      "path": "Tools/ChromaticBBS/vendor/rose/rose.vertex.glsl",
+      "bytes": 77,
+      "sha256": "c456d7b107ea3152a65fa06e07de02dafe23880fbf780a92f02510899dfd15a5"
+    },
+    {
+      "path": "Tools/ChromaticBBS/voice-data.mjs",
+      "bytes": 279,
+      "sha256": "91b8a27090f3fea37537d46980cf929fc86c5113effb61bb612855c0b362b043"
+    },
+    {
+      "path": "Tools/ChromaticBBS/voice-reference.json",
+      "bytes": 1023,
+      "sha256": "c882e49631689f3e644616551ea70add1520774a81d5624b0412f36e8bf5a324"
+    },
+    {
+      "path": "Tools/InfiniEngineSite/ghost-renderer.js",
+      "bytes": 8585,
+      "sha256": "558f3a4509fda1874ff3c54a0b657c7b287eaaa4b611ff9ba61df8df65be70dd"
+    },
+    {
+      "path": "index.html",
+      "bytes": 468198,
+      "sha256": "aa8bf31e8edfce2e98d96c5dc5983f01b4d044653d6b9b19d5c7c248ed0312c3"
+    },
+    {
+      "path": "runbook.md",
+      "bytes": 41222,
+      "sha256": "9422e64efcaba33b60b5648fd8a68bd35d051d70dc2d61e7ddbffe83f1d00044"
+    }
+  ],
+  "privateSourceIncluded": false,
+  "sessionIntake": {
+    "kind": "github-issue-approval",
+    "repository": "friken0/friken-ghost-mind",
+    "approvalLabel": "ghost-session-approved",
+    "projectionSchema": "friken.ghost.public-session.v1",
+    "privateSave": "local-only; export for portability"
+  },
+  "feeds": {
+    "news": "data/news.json",
+    "scoreboard": "data/scoreboard.json",
+    "chapters": "data/chapters.json"
+  }
+}

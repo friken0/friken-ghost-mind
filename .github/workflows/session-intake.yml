@@ -1,0 +1,26 @@
+name: Admit reviewed Ghost session
+on:
+  issues:
+    types: [labeled]
+permissions:
+  contents: write
+concurrency:
+  group: ghost-session-admission
+  cancel-in-progress: false
+jobs:
+  admit:
+    if: github.event.label.name == 'ghost-session-approved' || github.event.label.name == 'ghost-chapter-approved'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Validate public projection and rebuild indexes
+        run: python3 Tools/ChromaticBBS/session-store.py admit-event data --event "$GITHUB_EVENT_PATH"
+      - name: Retain the reviewed receipt
+        run: |
+          git config user.name 'Friken Ghost Wire'
+          git config user.email 'ghost-wire@users.noreply.github.com'
+          git add data
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record reviewed Ghost session and refresh shared Wire' -m 'Retain the source issue and consented public projection. Scores remain unverified.'
+          git push
