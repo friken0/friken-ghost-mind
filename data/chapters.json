@@ -1,4 +1,18 @@
 {
   "schema": "friken.ghost.chapter-catalogue.v1",
-  "entries": []
+  "entries": [
+    {
+      "id": "the-unfinished-carrier-5d54aa88-07a64e9d69de2dd5",
+      "title": "The Unfinished Carrier",
+      "summary": "Synthetic demonstration of Chapter 1. This is a test telling, not a real player.",
+      "chapter": 1,
+      "author": "friken0",
+      "path": "data/chapters/39f1a1fb6adb0231299b7a0a9179774e007a77e7ed78f7f30ad281e44f676668.json",
+      "history": [],
+      "completed": true,
+      "tellingId": "07a64e9d69de2dd5ccb9d9c7393c8951f35a0863761d0ade51d3cd3d46ac79a4",
+      "source": "https://github.com/friken0/friken-ghost-mind/issues/1",
+      "synthetic": true
+    }
+  ]
 }

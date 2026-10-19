@@ -1,0 +1,152 @@
+{
+  "chapter": {
+    "schema": "friken.ghost.chapter-release.v1",
+    "id": "the-unfinished-carrier-5d54aa88-07a64e9d69de2dd5",
+    "title": "The Unfinished Carrier",
+    "summary": "Synthetic demonstration of Chapter 1. This is a test telling, not a real player.",
+    "state": {
+      "schema": "friken.chromatic.state.v1",
+      "runId": "C1-25a31e6b",
+      "chapter": 1,
+      "parent": null,
+      "handle": "SYNTHETIC-DEMO",
+      "rng": {
+        "initial": 20261019,
+        "current": 20261019
+      },
+      "turn": 1,
+      "stats": {
+        "guts": 6,
+        "focus": 5,
+        "glitch": 5,
+        "awe": 5,
+        "insight": 5,
+        "ego": 4
+      },
+      "resources": {
+        "signal": 6,
+        "compute": 6,
+        "noise": 1
+      },
+      "modules": [],
+      "world": {
+        "facts": [],
+        "threads": [
+          "missing-address",
+          "silent-recipient",
+          "unbuilt-gate"
+        ],
+        "relic": {
+          "form": "seed",
+          "revision": 0,
+          "traits": []
+        },
+        "policy": {
+          "privacy": "unclaimed",
+          "delivery": "pending",
+          "inheritance": "unwritten"
+        }
+      },
+      "relations": {
+        "ooope": 0,
+        "moknon": 0,
+        "krex": 0,
+        "pogfrot": 0,
+        "veelow": 0
+      },
+      "scars": [],
+      "choices": [],
+      "journal": [],
+      "lastReceipt": null,
+      "ending": null
+    },
+    "history": [],
+    "outcome": {
+      "completed": true,
+      "title": "A WORLD WITH A VISITOR PROBLEM",
+      "tellingId": "07a64e9d69de2dd5ccb9d9c7393c8951f35a0863761d0ade51d3cd3d46ac79a4",
+      "choices": [
+        {
+          "id": "t01.listen",
+          "label": "Answer the knocks",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t02.trust",
+          "label": "Let Pell navigate",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t03.name",
+          "label": "Give Kett your callsign",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t04.observe.witness",
+          "label": "OBSERVE · CALL REALITY’S BLUFF",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t05.brace",
+          "label": "Fix the privacy screen",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t06.keep",
+          "label": "Keep the imperfect original",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t07.spare",
+          "label": "Put Vark on the repair lead",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t08.hum",
+          "label": "Give the new voice a note to hold",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t09.graft.relay",
+          "label": "GRAFT · GROW A BOOTLEG ANTENNA",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t10.wire",
+          "label": "Ask Pogfrot for a protected route",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t11.gather",
+          "label": "Let Pell and Iri answer each other",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t12.bequeath.open",
+          "label": "BEQUEATH · PUBLIC WRITE ACCESS",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t13.hold",
+          "label": "Brace the gate beside Pogfrot",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t14.carry",
+          "label": "Prepare a private handoff",
+          "outcome": "chosen"
+        },
+        {
+          "id": "t15.carry",
+          "label": "Complete the private handoff",
+          "outcome": "chosen"
+        }
+      ]
+    },
+    "consent": true,
+    "synthetic": true
+  },
+  "author": "friken0",
+  "source": "https://github.com/friken0/friken-ghost-mind/issues/1",
+  "admittedAt": "2026-10-19T15:49:35.500280+00:00"
+}
