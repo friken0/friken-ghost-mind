@@ -33,7 +33,7 @@
     {
       "path": "Tools/ChromaticBBS/Packing-Results.md",
       "bytes": 3367,
-      "sha256": "2033f4cbdb201c29ee4910e7f5f5bf7efc03b454a1644c8675ff721d23dca0dc"
+      "sha256": "6402fea8d35d077d3db85d73a630f69c9e0da4b341b71f0690d49ff5251c99c4"
     },
     {
       "path": "Tools/ChromaticBBS/Writing.md",
@@ -148,7 +148,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 8244,
-      "sha256": "ad37b631c2431f01aa96f4332069671b8daaede5092a3b8e9509e53bfaf63d7b"
+      "sha256": "bdfc81ce6d493a4a1e783df512f682fdf4952885e0b709a02d031a4954f1b447"
     },
     {
       "path": "Tools/ChromaticBBS/packing-results.json",
@@ -198,7 +198,7 @@
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
       "bytes": 5435,
-      "sha256": "8d88e6851379189c9beca659d4db9ccfce0787f51d44fae8ca4085bd890dce0d"
+      "sha256": "e30dc78e9d2f24d9e7d31be7bfcab2d43a707e3b6fbdcca08e4871c1c27af20b"
     },
     {
       "path": "Tools/ChromaticBBS/session-share.mjs",
@@ -278,12 +278,12 @@
     {
       "path": "index.html",
       "bytes": 468734,
-      "sha256": "cc610410c77ddab403b5da7c9f93c8c354fdce558b38b50a7427a97fa1d7acaa"
+      "sha256": "eb5d326bc7ce7a5cf7b438c2f8d3668c8c732cb488e2807881d6e164d8f396c4"
     },
     {
       "path": "runbook.md",
-      "bytes": 41222,
-      "sha256": "9422e64efcaba33b60b5648fd8a68bd35d051d70dc2d61e7ddbffe83f1d00044"
+      "bytes": 41522,
+      "sha256": "2491cb496101f988ed8fd514fa3472aff91901c570b747e066da143bf3b67711"
     }
   ],
   "privateSourceIncluded": false,

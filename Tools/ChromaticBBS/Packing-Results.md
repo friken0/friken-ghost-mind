@@ -36,11 +36,11 @@ Dictionary cost matters; opaque data is not free model context.
 
 | Representation | UTF-8 bytes | Exact decoded source? |
 |---|---:|---|
-| English assignment wrapper | 42,135 | Yes |
-| Canonical JSON wrapper | 41,891 | Yes |
-| DSL wrapper with complete legend | 42,066 | Yes |
-| zlib + Base64url | 25,716 | Yes |
-| Hex | 83,787 | Yes |
+| English assignment wrapper | 42,439 | Yes |
+| Canonical JSON wrapper | 42,195 | Yes |
+| DSL wrapper with complete legend | 42,370 | Yes |
+| zlib + Base64url | 25,888 | Yes |
+| Hex | 84,395 | Yes |
 
 This test preserves the complete existing runbook text in one field. It
 compares transports, not a new semantic rewrite of the prose. zlib transport

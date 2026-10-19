@@ -522,13 +522,13 @@ SAMPLE.EGG:asks what weather is;Ghost puts joke away. P may promise sky,
 FIRST_MEETING:=hello/who/bell before start;callsign enough;no turns/RNG;
  no forced countdown. Intro/inspection never commits P's game decision.
 
-WRAPPER.C26_3:=pure kernel -> RESPONSE -> stable bounded BBS shell.
+WRAPPER.C26_4:=pure kernel -> RESPONSE -> stable bounded BBS shell.
 RESPONSE={schema:'friken.ghost.response.v1',kind:scene|outcome|news|inspection,
  source:{kernel,runId,chapter,turn,parent},content:{title,scene,ghost},
  choices:[{id,label,detail}],receipt,decision:{eventId,choiceId,playerAction,
  comment,rollText,consequences,spoken}?,artifact:{form,revision},
  voice:{scene:'narrator',ghost:'ghost'}}.
-Validate JSON <=48k chars,known schema/kind/kernel,turn1..16,positive chapter,
+Validate JSON <=48k chars,known schema/kind/kernel;FG:C26/1 turn1..16,FG:C26/2 turn1..21;positive chapter,
  <=3 unique choiceIds,bounded strings;render textContent,never imported HTML/
  script. Packet is display data,not canonical authority. Kernel+state codec
  own receipts;other kernels need explicit versioned adapters. No remote
@@ -546,7 +546,11 @@ CHOICE_COMMENTARY:=every committed E gets Ghost reaction specific to action,
  "Being reachable does not entitle the Tribunal to your entire bloody
  biography.";private inheritance ->"A welcome that cannot survive a no
  is a sales funnel with teeth." Keep full captions for listeners/readers.
-ARCH=[commentary.mjs:per-action reaction/receipt interpretation;engine.mjs:pure state/PRNG/rules/SEED;storage.mjs:bounded vault;
+ARCH=[chapters.mjs:FGC2 content/admission/replay/CSG;canon.mjs:SHA256/path;
+ chapter-library.mjs:public creations/tree/canon/forks;
+ session-store.py:reviewed issue admission/catalogue/news/scores;
+ session-share.mjs:explicit public summary/outbox;public-release.py:allowlist;
+ commentary.mjs:per-action reaction/receipt interpretation;engine.mjs:pure state/PRNG/rules/SEED;storage.mjs:bounded vault;
  response.mjs:packet validator/text renderer;shell.mjs:one desktop owner;
  stage.mjs:SDF+rose;portrait.mjs:canonical three-pass face+gaze;
  cinema.mjs:CRT+ANSI;roll-battle.mjs:receipt theater;
