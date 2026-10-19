@@ -391,9 +391,12 @@ licences, measured playback witnesses and the missing Pocket model distinction.
 Neural dependencies download on first Read and are not in the portable kit.
 The loopback build server supplies isolation headers for threaded inference.
 
-Each original sentence keeps its caption offsets and gets an added real
-280 ms pause (380 ms after questions/exclamations, 520 ms for paragraphs).
-One upcoming neural sentence is prepared while the current audio plays.
+Each original sentence keeps its caption offsets. Device speech adds a
+short breath: 60 ms normally, 90 ms after ?!, 160 ms for paragraphs.
+Neural speech groups adjacent sentences into <=400-character passages and
+uses Kokoro punctuation prosody internally; add only 40 ms between passages
+or 120 ms after a paragraph. This avoids per-sentence synthesis stalls.
+One upcoming neural passage is prepared while the current audio plays.
 A full caption stays in the DOM and retains its layout; transparent unread
 ink reveals against the actual audio clock. Within-sentence alignment remains
 approximate. Show full text keeps listening; mute/new choice/hidden restores

@@ -27,18 +27,18 @@
     },
     {
       "path": "Tools/ChromaticBBS/Framework.md",
-      "bytes": 22711,
-      "sha256": "66cbbd05cf6479d7afd36ca8af30962f3a583ed35d060dd2716600cf0548a693"
+      "bytes": 22925,
+      "sha256": "4590fb455c201b96cecb03f14a2d468fb3c607ce5cdbccbef35b9920f513b009"
     },
     {
       "path": "Tools/ChromaticBBS/Packing-Results.md",
       "bytes": 3367,
-      "sha256": "3b250864ac91c8e34d2a4125e987f011f42ab078c39535336db84a6270d476fd"
+      "sha256": "9f9d73b7c8d7eaa1e5b2c9703abdfc4dc6a5de62dcd816551730fd4db70b57d5"
     },
     {
       "path": "Tools/ChromaticBBS/Voice-Research.md",
-      "bytes": 5108,
-      "sha256": "cdb047b1db8e3aa6cf0b177d1176e6d997855de3ae565c367989eaa63d8f804c"
+      "bytes": 5309,
+      "sha256": "6b028ad8717f55d90091738eb3539f8115498b77bb8d0ae77e623ec5dab6a893"
     },
     {
       "path": "Tools/ChromaticBBS/Writing.md",
@@ -153,12 +153,12 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 8382,
-      "sha256": "911fd840075d72a91c48d0297b32ef99c6af2946229c623af75d59967f688318"
+      "sha256": "a7887266bfbda02fed14278cd73575ce23f21c7a570addfb5ff477c6f8994c20"
     },
     {
       "path": "Tools/ChromaticBBS/neural-check.html",
       "bytes": 3533,
-      "sha256": "8903f2ba67bd45af2dc041a4c12e2f5379a02aca4ee6016291d0c8f089493a72"
+      "sha256": "d4bdd629bb3b0cc9ae9b936b8566e0cd3935ff85fa20074775d193e4cd345594"
     },
     {
       "path": "Tools/ChromaticBBS/neural-voice.mjs",
@@ -182,8 +182,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/presentation.test.mjs",
-      "bytes": 8999,
-      "sha256": "615fff59b7f0e7bc339c4dc1795179cb1f35f17d8fbe8a2217f6aaf6fe1e94aa"
+      "bytes": 9922,
+      "sha256": "74a5dfbff68ebe498746341c613f26a602679a6c591be76254c118a6c3789d7c"
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
@@ -212,8 +212,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
-      "bytes": 5486,
-      "sha256": "39bc518ff2e5aac9f754a85909bb1ab4dbb43b1da04a1f8ebf893758a0035cc1"
+      "bytes": 5396,
+      "sha256": "5d28c54867bec122422e98a76bf50175cb6476f7f2d18a24d9d704e03458e456"
     },
     {
       "path": "Tools/ChromaticBBS/session-share.mjs",
@@ -237,8 +237,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/speech.mjs",
-      "bytes": 13708,
-      "sha256": "d31344da2d0460c61cdf7a74f57d7bb42b608a1a511423882a030236549dadce"
+      "bytes": 14435,
+      "sha256": "5f1c595741187d48afb487eacce2488a49112a7ce29030d956700e044533f4ac"
     },
     {
       "path": "Tools/ChromaticBBS/stage.mjs",
@@ -292,13 +292,13 @@
     },
     {
       "path": "index.html",
-      "bytes": 490098,
-      "sha256": "c7d0d623ce73d7ad24807ad06e2b167ccd39b109537b6b399b55b867ea578cc1"
+      "bytes": 490825,
+      "sha256": "681ead1c111ecf5dab0ed4d03157000c6ac52f373b0255ffb5c21b6e9ac65ed4"
     },
     {
       "path": "runbook.md",
-      "bytes": 44249,
-      "sha256": "4cda8c67528d9d8b8a6f158aa3118281f7ef09966826ef5b32d68c801e5a11ea"
+      "bytes": 44322,
+      "sha256": "f3e7e846c91f3ba77fbecd26f492185dd34549be87b83a106687a22584202734"
     }
   ],
   "privateSourceIncluded": false,

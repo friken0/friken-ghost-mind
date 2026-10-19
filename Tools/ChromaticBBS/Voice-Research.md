@@ -60,8 +60,11 @@ sentence while the current one plays, and cancellation discards stale work.
 speech.mjs separates uppercase display emphasis from speech pronunciation.
 WHO becomes a word; explicit technical initialisms keep letter names.
 Original exact captions, seed bytes and recorded-clip lookup keys survive.
-Sentences have a real 280 ms added gap; questions/exclamations get 380 ms,
-paragraphs 520 ms. Stop, mute, new choices and hidden pages cancel the gap.
+After Prime rejected the long pauses, neural speech coalesces sentences into
+bounded 400-character passages so Kokoro owns internal punctuation timing.
+Only 40 ms is added between passages, 120 ms at paragraph boundaries. Device
+speech adds 60 ms normally, 90 ms after ?!, 160 ms at paragraphs. Stop, mute,
+new choices and hidden pages cancel the gap.
 The neural route uses the actual audio clock for progressive ink and actual
 512-sample PCM for Ghost's mouth. The reveal is approximate within each
 sentence, not a claim of forced word alignment or phoneme synchronization.

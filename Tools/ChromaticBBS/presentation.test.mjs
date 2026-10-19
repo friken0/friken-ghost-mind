@@ -79,10 +79,10 @@ test('both browser voices receive speech normalization without altering captions
     const root={append(){},querySelector(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);}};
     const speech=mountSpeech(root,{note(){},pulse(){},talking(){},storage:{getItem:()=>JSON.stringify({engine:'device'})}});
     const frame={scene:'WHO WAS HERE?',ghost:'The GPU knows WHO.',decision:{spoken:'You chose WHO GETS TOMORROW.'}},before=JSON.stringify(frame);
-    speech.speak(frame);await new Promise(resolve=>setTimeout(resolve,1400));
+    speech.speak(frame);await new Promise(resolve=>setTimeout(resolve,450));
     assert.deepEqual(spoken.map(line=>line.text),['You chose who gets tomorrow.','who was here?','The G P U knows who.']);
     assert.deepEqual(spoken.map(line=>line.voice.voiceURI),['dan','sam','dan']);
-    assert.ok(beginnings[1]-beginnings[0]>=250&&beginnings[2]-beginnings[1]>=250,'sentences have an actual pause, not cosmetic punctuation');
+    assert.ok(beginnings[1]-beginnings[0]>=40&&beginnings[1]-beginnings[0]<200&&beginnings[2]-beginnings[1]>=60&&beginnings[2]-beginnings[1]<220,'sentence breaths are short and real');
     assert.equal(JSON.stringify(frame),before);assert.equal(speechSegments(frame,castVoices(voices))[1].text,'WHO WAS HERE?');
     spoken.length=0;speech.speak({scene:'One sentence. Another sentence.',ghost:''});speech.stop();await new Promise(resolve=>setTimeout(resolve,350));assert.equal(spoken.length,1,'cancelling during the sentence gap never queues later speech');
   }finally{
@@ -93,7 +93,7 @@ test('both browser voices receive speech normalization without altering captions
 test('sentence pacing preserves original offsets, decimals and in-word periods',()=>{
  const text='Hello, Friken.Ghost. WHO WAS HERE? Version 5.1 stays.';
  const units=speechUnits(text);assert.deepEqual(units.map(u=>u.text),['Hello, Friken.Ghost.','WHO WAS HERE?','Version 5.1 stays.']);
- for(const u of units){assert.equal(text.slice(u.start,u.end).trim(),u.text);assert.ok(u.pause>=250);}
+ for(const u of units){assert.equal(text.slice(u.start,u.end).trim(),u.text);assert.ok(u.pause>=40&&u.pause<=160);}
  assert.ok(units[1].pause>units[0].pause);
 });
 
@@ -102,4 +102,15 @@ test('long imported sentences retain all text through bounded neural chunks',()=
  const units=speechUnits(text);assert.ok(units.length>2);assert.ok(units.every(u=>u.text.length<=400));
  assert.equal(units.map(u=>u.text).join(' ').replace(/\s+/g,' '),text.trim().replace(/\s+/g,' '));
  for(const u of units)assert.equal(text.slice(u.start,u.end).trim(),u.text);
+});
+
+// This is the regression: a period must not force another neural inference.
+test('neural passages keep natural sentence prosody, paragraph breaks and exact bounded source',()=>{
+ const text='WHO gets tomorrow? The universe filed an objection. I ate the form.';
+ const units=speechUnits(text,{coalesce:true});assert.equal(units.length,1);assert.equal(units[0].text,text);assert.equal(units[0].pause,40);
+ const paragraphs=text+'\n\nA second speaker waits.';
+ const split=speechUnits(paragraphs,{coalesce:true});assert.equal(split.length,2);assert.equal(split[0].pause,120);
+ const long=('The corridor remembers your answer. ').repeat(40);
+ for(const u of speechUnits(long,{coalesce:true})){assert.ok(u.text.length<=400);assert.equal(long.slice(u.start,u.end).trim(),u.text);}
+ assert.equal(speechUnits(long,{coalesce:true}).map(u=>u.text).join(' '),long.trim());
 });

@@ -28,7 +28,7 @@ document.querySelector('#run').onclick=async()=>{
   }
   if(!peak||!frames||starts!==1)throw Error('Missing real Ghost PCM or wrong-role mouth gate');
   const units=speechUnits('Hello, Friken.Ghost. WHO WAS HERE? Version 5.1 stays.');
-  if(units.length!==3||units[0].pause<250)throw Error('Sentence segmentation/pause failed');
+  if(units.length!==3||units[0].pause>100)throw Error('Sentence segmentation/pause failed');
   line('PASS / real neural audio / two voices / Ghost-only PCM / peak '+peak.toFixed(3)+' / '+frames+' sampled frames / sentence pause '+units[0].pause+'ms');
  }catch(error){line('FAIL / '+error.message);}finally{document.querySelector('#run').disabled=false;voice.stop();}
 };

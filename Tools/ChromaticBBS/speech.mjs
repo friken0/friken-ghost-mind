@@ -30,7 +30,7 @@ export function speechText(text){
   });
 }
 // Sentence offsets refer to original captions, not the pronunciation rewrite.
-export function speechUnits(text){
+export function speechUnits(text,{coalesce=false}={}){
   const units=[];
   for(const sentence of new Intl.Segmenter('en',{granularity:'sentence'}).segment(text)){
     const raw=sentence.segment;let at=0;
@@ -38,10 +38,20 @@ export function speechUnits(text){
       let end=Math.min(raw.length,at+400);
       if(end<raw.length){const space=raw.slice(at,end).lastIndexOf(' ');if(space>0)end=at+space+1;}
       const value=raw.slice(at,end),trimmed=value.trim();
-      units.push({text:trimmed,start:sentence.index+at+value.indexOf(trimmed),end:sentence.index+end,pause:end<raw.length?120:/\n\s*\n/.test(value)?520:/[!?][”"’')]*\s*$/.test(value)?380:280});at=end;
+      units.push({text:trimmed,start:sentence.index+at+value.indexOf(trimmed),end:sentence.index+end,pause:end<raw.length?20:/\n\s*\n/.test(value)?160:/[!?][”"’')]*\s*$/.test(value)?90:60});at=end;
     }
   }
-  return units;
+  for(let i=0;i<units.length;i++)if(/\n\s*\n/.test(text.slice(units[i].start,units[i+1]?.start??text.length)))units[i].pause=160;
+  if(!coalesce)return units;
+  // Kokoro owns punctuation prosody within a passage. Avoid a new inference
+  // request (and double pause) at every period; retain paragraphs and offsets.
+  const passages=[];
+  for(const unit of units){
+    const prior=passages.at(-1),combined=prior?text.slice(prior.start,unit.end).trimEnd():'';
+    if(prior&&prior.pause<160&&combined.length<=400){prior.text=combined;prior.end=unit.end;prior.pause=unit.pause;}
+    else passages.push({...unit});
+  }
+  return passages.map(unit=>({...unit,pause:unit.pause===160?120:40}));
 }
 function captionOffset(text,spokenIndex){
   let spoken=0;
@@ -113,7 +123,7 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false}){
     const token=generation,segments=speechSegments(frame,casting);readAlong.prepare(segments,true);
     async function run(){
       try{
-        const tasks=segments.flatMap(segment=>recorded.has(segment.role,segment.text)?[{segment,clip:true}]:speechUnits(segment.text).map(unit=>({segment,unit})));
+        const tasks=segments.flatMap(segment=>recorded.has(segment.role,segment.text)?[{segment,clip:true}]:speechUnits(segment.text,{coalesce:preferred.engine==='neural'}).map(unit=>({segment,unit})));
         let prepared=null;
         if(preferred.engine==='neural'&&tasks.some(t=>!t.clip))await neural.unlock();
         const prepare=task=>neural.prepare(speechText(task.unit.text),{voice:preferred[task.segment.role+'Neural']||neuralCast[task.segment.role][0][0],speed:task.segment.role==='ghost'?.94:.98});

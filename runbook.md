@@ -630,7 +630,8 @@ VOICE.NEURAL:=neural-voice.mjs embeds trusted worker;Kokoro JS1.2.1,
  cancel rejects stale jobs/stops sources/reveals captions/releases timers.
  SPEECH.TEXT:=uppercase ordinary words->spoken words(WHO=who),explicit
  technical initialisms->letter names;never change displayed text/seed/clip
- keys. Segment original sentences;added gaps280ms/380?!/520paragraph.
+ keys. Device gaps60ms/90?!/160paragraph. Neural:coalesce same-paragraph
+ sentences<=400chars;native punctuation prosody;gap40ms/120paragraph.
  TYPE:=stable full caption layout+transparent unread ink+playback-paced
  cursor;Show full text preserves audio;reduced motion=full text. Neural
  AudioContext clock drives approximate sentence reveal;512PCM RMS drives
