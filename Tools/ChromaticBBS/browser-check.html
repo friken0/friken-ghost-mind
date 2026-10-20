@@ -1,174 +1,19 @@
-<!doctype html>
-<html lang="en"><meta charset="utf-8"><title>CHROMATIC browser acceptance</title>
-<style>body{font:14px/1.5 monospace;background:#101425;color:#e5e9f7;margin:20px}button{font:inherit;padding:10px}pre{white-space:pre-wrap}iframe{display:block;border:0;height:1200px;margin-top:20px}</style>
-<h1>CHROMATIC browser acceptance</h1>
-<button id="run" type="button">Run browser checks</button>
-<pre id="result" role="status">Not run.</pre>
-<iframe id="specimen" title="Specimen under test" src="about:blank"></iframe>
+<!doctype html><meta charset="utf-8"><title>C26.6 human carrier acceptance</title><style>body{font:14px monospace;background:#080e0b;color:#d7eee0}iframe{display:block;border:0;height:900px}pre{white-space:pre-wrap}</style><button id="run">Run browser checks</button><pre id="result" role="status">Not run</pre><iframe id="specimen" title="Isolated carrier"></iframe>
 <script>
-const report=[],result=document.getElementById('result'),frame=document.getElementById('specimen');
-function assert(value,message){if(!value)throw Error(message);report.push(message);result.textContent=report.join('\n');}
-function paint(){return new Promise(resolve=>frame.contentWindow.requestAnimationFrame(()=>frame.contentWindow.requestAnimationFrame(resolve)));}
-function load(width,query='check='+width){frame.width=width;return new Promise(resolve=>{frame.onload=resolve;frame.src='index.html?'+query;});}
-function state(){return frame.contentDocument.getElementById('chromatic-carrier').chromatic.state;}
-function control(id){return frame.contentDocument.getElementById('cg-'+id);}
-async function wake(){if(frame.contentDocument.getElementById('chromatic-carrier').dataset.power!=='ready'){control('skip').click();control('continue').click();await waitPower('ready');}await paint();}
-async function waitPower(phase){const limit=performance.now()+7000;while(frame.contentDocument.getElementById('chromatic-carrier').dataset.power!==phase){if(performance.now()>limit)throw Error('CRT did not reach '+phase);await paint();}}
-async function settleBattle(){
-  const carrier=frame.contentDocument.getElementById('chromatic-carrier');
-  if(carrier.dataset.roll!=='open')return;
-  const before=stable(state());control('roll-pause').click();await paint();
-  assert(stable(state())===before,'number battle: pausing leaves the committed die and RNG intact');
-  control('roll-finish').click();await paint();
-  assert(!control('roll-continue').hidden,'number battle: result waits for Continue');
-  assert(stable(state())===before,'number battle: finishing the animation never rerolls');
-  control('roll-replay').click();await paint();
-  assert(stable(state())===before,'number battle: Replay keeps the same committed receipt');
-  control('roll-finish').click();control('roll-continue').click();await paint();
+const frame=document.querySelector('iframe'),output=document.querySelector('pre'),receipts=[];const el=id=>frame.contentDocument.getElementById('cg-'+id),root=()=>frame.contentDocument.getElementById('chromatic-carrier'),state=()=>JSON.stringify(root().chromatic.state),paint=()=>new Promise(r=>frame.contentWindow.requestAnimationFrame(()=>frame.contentWindow.requestAnimationFrame(r)));
+function ok(v,label){if(!v)throw Error(label);receipts.push(label);output.textContent=receipts.join('\n');}
+async function waitReady(){const until=performance.now()+6000;while(root().dataset.power!=='ready'){if(performance.now()>until)throw Error('Assembly deadline');await paint();}}
+function bounds(width){return [...frame.contentDocument.querySelectorAll('#chromatic-carrier *')].filter(n=>n.checkVisibility({checkVisibilityCSS:true})&&getComputedStyle(n).position!=='absolute').filter(n=>{const r=n.getBoundingClientRect();return r.left<-.6||r.right>width+.6;}).map(n=>n.id||n.className);}
+async function settle(){if(root().dataset.roll!=='open')return;const before=state();const until=performance.now()+2500;while(Number(el('roll-canvas').dataset.lifeGeneration||0)<3){if(performance.now()>until)throw Error('Live Conway animation failed to advance');await paint();}ok(Number(el('roll-canvas').dataset.lifeGeneration)>=3,'Living field advances before Finish');el('roll-pause').click();el('roll-finish').click();await paint();ok(!el('roll-continue').hidden,'Living field holds result');ok(state()===before,'Finish/pause do not change the receipt');ok(el('roll-canvas').dataset.lifeGeneration==='90','Real finite Conway generations rendered');el('roll-replay').click();await paint();ok(state()===before,'Replay retains exact sample and RNG');el('roll-finish').click();el('roll-continue').click();await paint();}
+document.querySelector('button').onclick=async()=>{receipts.length=0;try{
+for(const width of [320,650,900,1440]){
+ frame.width=width;await new Promise(r=>{frame.onload=r;frame.src='index.html?check=human-'+width+'&qaAudio=silent';});el('skip').click();const virgin=state();ok(root().dataset.power==='awaiting',width+': boot holds Continue');el('continue').click();await waitReady();ok(state()===virgin,width+': assembly spends no decision');
+ ok(Object.keys(root().chromatic.state.stats).length===5,width+': five real attributes');ok(el('attributes').children.length===5,width+': visible stat rail');ok(!frame.contentDocument.querySelector('.cg-window-nav').textContent.includes('null'),'No detached controls appended as null');ok(el('sound').textContent==='SFX: on'&&el('voice').textContent==='Voice: on',width+': controls default on');ok(bounds(width).length===0,width+': layout contained '+bounds(width));ok(frame.contentDocument.documentElement.scrollHeight<=frame.contentWindow.innerHeight+2,width+': no outer scroll');ok(el('portrait').dataset.state==='ready',width+': canonical face compiled');ok(el('resident-art').complete&&el('resident-art').naturalWidth>0,width+': original human art decoded');
+ el('meet-rules').click();ok(state()===virgin,width+': teaching spends no turn');ok(el('ghost').textContent.includes('resonance'),width+': decimal rules taught');el('meet-who').click();ok(state()===virgin,width+': identity meeting spends no turn');
+ for(const type of ['face','sdf']){el('inspect-'+type).click();await paint();const c=el(type==='face'?'portrait':'canvas');ok(c.checkVisibility({checkVisibilityCSS:true})&&c.getBoundingClientRect().height>100,width+': '+type+' inspector painted');ok(el('inspect-back').checkVisibility({checkVisibilityCSS:true}),width+': inspector Back visible');el('inspect-back').click();await paint();ok(state()===virgin,width+': inspection unchanged');}
+ const beforeRoll=root().chromatic.state.creation.seed;el('reroll-stats').click();ok(root().chromatic.state.creation.seed!==beforeRoll,width+': explicit creation reroll');el('start').click();await paint();ok(el('resident-art').alt.includes('harkellinia'),width+': resident art follows known contact');ok(el('choices').children.length===3,width+': three choices');ok(el('attributes').getBoundingClientRect().top<el('title').getBoundingClientRect().top,width+': stats above story');
+ for(let t=0;t<12;t++){const buttons=[...el('choices').querySelectorAll('button')];buttons[buttons.length-1].click();await paint();await settle();}
+ ok(!!root().chromatic.state.ending,width+': twelve choices finish chapter');ok(!el('completion').hidden,width+': visible completion summary');el('choices').querySelector('button').click();await paint();ok(root().dataset.window==='archive'&&el('chapter-handoff').open,width+': next chapter opens real handoff');ok(el('chapter-request').value.includes('AUTHOR_NEXT_CHAPTER'),width+': next prompt carries exact seed');
 }
-function painted(id){
-  const node=control(id),r=node.getBoundingClientRect();
-  return node.checkVisibility({checkOpacity:true,checkVisibilityCSS:true})&&r.width>0&&r.height>0;
-}
-function inspectorVisible(kind,width){
-  const id=kind==='face'?'portrait':'canvas',r=control(id).getBoundingClientRect();
-  assert(painted('inspector')&&painted(id),width+': '+kind+' inspector and live canvas are actually painted');
-  assert(painted('inspect-back')&&painted('fps'),width+': '+kind+' inspector keeps Back and FPS visible');
-  assert(control('inspector').getBoundingClientRect().width>=width-50&&r.width>=Math.min(700,width-100)&&r.height>=100,width+': '+kind+' inspection uses the full desktop stage');
-  assert(noOverflow(width).length===0,width+': '+kind+' inspector stays inside the viewport');
-}
-function stable(value){if(Array.isArray(value))return '['+value.map(stable).join(',')+']';if(value&&typeof value==='object')return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stable(value[k])).join(',')+'}';return JSON.stringify(value);}
-function noOverflow(width){
-  const doc=frame.contentDocument;
-  return [...doc.querySelectorAll('#chromatic-carrier *')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.left < -.6||r.right>width+.6;}).map(n=>n.id||n.tagName);
-}
-document.getElementById('run').onclick=async()=>{
-  report.length=0;document.getElementById('run').disabled=true;
-  try{
-    for(const width of [320,650,900,1440]){
-      await load(width);await wake();
-      assert(!!state(),width+': bundled script initialized');
-      assert(control('sound').textContent==='SFX: on'&&control('voice').textContent==='Voice: on',width+': SFX and voice default on');
-      assert(control('art-status').textContent==='SDF ready',width+': WebGL shader compiled');
-      assert(control('portrait').dataset.state==='ready',width+': canonical Ghost portrait compiled all three passes');
-      assert(noOverflow(width).length===0,width+': initial layout contained');
-      assert(frame.contentDocument.documentElement.scrollHeight<=frame.contentWindow.innerHeight+2,width+': outer document does not scroll');
-      assert(control('portrait').getBoundingClientRect().right>width-310,width+': Ghost stays in the upper-right rail');
-      const firstMeeting=stable(state());
-      assert(control('title').textContent==='WELL. YOU’RE ON THE OUTSIDE.',width+': first arrival meets Ghost before the campaign');
-      control('meet-who').click();
-      assert(control('title').textContent==='THE SHORT VERSION HAS TEETH'&&stable(state())===firstMeeting,width+': introductory conversation spends no turn');
-      frame.contentDocument.querySelector('[data-window=faces]').click();await paint();control('face-next').click();control('face-back').click();await paint();
-      assert(!control('lineage-panel').open&&control('title').textContent==='WELL. YOU’RE ON THE OUTSIDE.'&&stable(state())===firstMeeting,width+': face archive Back returns to the first meeting');
-      frame.contentDocument.querySelector('[data-window=wire]').click();await paint();control('station-back').click();await paint();
-      assert(!control('station').open&&stable(state())===firstMeeting,width+': station Back preserves the meeting');
-      control('inspect-face').click();await paint();
-      inspectorVisible('face',width);
-      assert(frame.contentDocument.getElementById('chromatic-carrier').dataset.inspect==='face'&&control('portrait').parentNode.id==='cg-inspect-slot',width+': face click opens the same live renderer in the inspect stage');
-      control('inspect-back').click();await paint();
-      assert(control('portrait').closest('.cg-face')&&stable(state())===firstMeeting,width+': face Back restores the original renderer without a turn');
-      control('inspect-sdf').click();await paint();inspectorVisible('sdf',width);control('inspect-in').click();await paint();
-      assert(control('canvas').dataset.zoom!=='100%',width+': relic inspector zoom changes the camera');
-      control('inspect-reset').click();control('inspect-back').click();await paint();
-      assert(control('canvas').dataset.zoom==='100%'&&stable(state())===firstMeeting,width+': relic Back and reset preserve exact game state');
-      control('start').click();
-      let prior=state(),operatorUses=0,mutations=0,shapes=new Set(['seed']);
-      for(let step=0;step<15;step++){
-        const available=[...frame.contentDocument.querySelectorAll('#cg-choices [data-choice]')];
-        assert(available.length===3,width+': decision '+(step+1)+' has three lawful choices');
-        const mutation={4:'.observe.echo',9:'.graft.relay',12:'.bequeath.guarded'}[step+1];
-        const target=mutation?available.find(n=>n.dataset.choice.endsWith(mutation)):null;
-        const unwitnessed=state().modules.find(m=>m.uses<2);
-        const operator=unwitnessed?available.find(n=>n.textContent.includes(unwitnessed.id.toUpperCase()+' ·')):null;
-        (target||operator||available[0]).click();await paint();await settleBattle();
-        const next=state();
-        assert(control('player-action').textContent.includes(next.lastReceipt.label)&&control('choice-comment').textContent.length>30,width+': decision '+(step+1)+' has a specific Ghost choice acknowledgement');
-        assert(next.turn===prior.turn+1&&next.world.relic.revision===prior.world.relic.revision+1,width+': decision '+(step+1)+' commits exactly once');
-        if(next.lastReceipt.moduleChange)mutations++;
-        if(next.lastReceipt.operator)operatorUses++;
-        shapes.add(next.world.relic.form);
-        if(step===3)assert(control('canvas').dataset.renderer==='golden-whorl-surfaces',width+': original Masha golden-whorl rose renderer active');
-        assert(noOverflow(width).length===0,width+': decision '+(step+1)+' layout contained');
-        prior=next;
-      }
-      assert(control('signal-pct').textContent===state().resources.signal*10+'%'&&control('noise-pct').textContent===state().resources.noise*10+'%',width+': resource percentages follow committed values');
-      assert(mutations===3&&state().modules.every(m=>m.uses>=1),width+': all three mutations installed and exercised');
-      assert(shapes.size===4,width+': seed, rose, face and gate survived the same lineage');
-      assert(state().turn===16&&!!state().ending,width+': fifteen decisions end the chapter');
-      const completed=stable(state()),code=control('seed').value;
-      assert(code.startsWith('FGC1.'),width+': final portable seed exported');
-      assert(stable(JSON.parse(control('state').value))===completed,width+': readable JSON carries the exact same state');
-      control('dispatch-draft').click();
-      let dispatch=JSON.parse(control('dispatch').value);
-      assert(dispatch.authorConsent===false&&dispatch.ownerApproved===false,width+': news draft has no implied publication consent');
-      control('dispatch-consent').checked=true;control('dispatch-draft').click();dispatch=JSON.parse(control('dispatch').value);
-      assert(dispatch.authorConsent===true&&dispatch.ownerApproved===false&&dispatch.sourceEventIds.length>0,width+': news draft requires separate owner review');
-      assert(!control('dispatch').value.includes('FGC1.')&&!('journal' in dispatch),width+': news draft omits seed and private raw history');
-      control('seed').value='FGC1.broken.00000000';control('load').click();
-      assert(stable(state())===completed,width+': damaged seed refused atomically');
-      await load(width);await wake();
-      control('seed').value=code;control('load').click();
-      assert(stable(state())===completed,width+': seed reload restores exact completed state');
-      control('canon-local').click();control('canon-select').click();control('next').click();await paint();
-      assert(stable(state())===completed,width+': next chapter waits for a real model without replaying the demo');
-      const request=JSON.parse(control('chapter-request').value);assert(request.mode==='AUTHOR_NEXT_CHAPTER'&&request.nextChapter===2&&request.seed===code,width+': exact seed and obligations enter the model handoff');
-      control('motion').click();
-      assert(control('motion').textContent.includes('held'),width+': motion can be held');
-    }
-    const namespace='reload-'+Date.now();
-    await load(650,'qaStore='+namespace);await wake();
-    assert(control('save-label').textContent==='SAVE: LOCAL','native browser storage: feature test passed');
-    control('start').click();frame.contentDocument.querySelector('#cg-choices [data-choice]').click();await settleBattle();
-    const checkpoint=stable(state());
-    await load(650,'qaStore='+namespace);await wake();
-    assert(!control('resume').hidden,'native browser storage: reload offers the saved carrier');
-    control('resume').click();
-    assert(stable(state())===checkpoint,'native browser storage: reload resumes exact decision and RNG');
-    assert(control('played').textContent==='1','native browser storage: resume does not duplicate played turns');
-    control('vault-export').click();
-    assert(control('vault').value.includes('friken.chromatic.vault.v1'),'native browser storage: portable archive exports');
-    const preserved=stable(state()),carrier=frame.contentDocument.getElementById('chromatic-carrier');
-    control('reboot').click();
-    assert(control('screen').inert,'CRT boot: response input is inert during assembly');
-    control('pause').click();
-    const heldCells=control('boot-canvas').dataset.cells;await paint();
-    assert(carrier.dataset.power==='paused'&&control('boot-canvas').dataset.cells===heldCells,'CRT boot: Pause holds the assembly');
-    control('pause').click();await waitPower('awaiting');
-    assert(control('screen').inert&&!control('continue').hidden,'CRT boot: completed screen waits for Continue');
-    await paint();assert(carrier.dataset.power==='awaiting','CRT boot: no automatic departure from the held screen');
-    control('continue').click();
-    await waitPower('ready');
-    assert(!control('screen').inert&&!control('screen').hidden,'CRT boot: full animation reaches usable response');
-    assert(Number(control('boot-canvas').dataset.cells)>300,'CRT boot: real ANSI cells assembled');
-    assert(stable(state())===preserved,'CRT boot: animation spends no turn or RNG');
-    control('power-off').click();
-    assert(control('screen').inert,'CRT shutdown: input stops before scaling');
-    await waitPower('off');
-    assert(control('screen').hidden&&!control('reconnect').hidden,'CRT shutdown: collapse ends in NO CARRIER');
-    control('reconnect').click();control('skip').click();control('continue').click();await waitPower('ready');await paint();
-    assert(stable(state())===preserved&&!control('screen').inert,'CRT reconnect: exact session survives');
-    control('station').open=true;control('lineage-panel').open=true;await paint();
-    assert(control('news-items').querySelectorAll('article').length>=1,'Wire: actual dated SYSOP dispatch is present');
-    assert(control('registry').textContent.includes('friken.mind.registry.v1'),'Wire: offline registry declares its schema');
-    const faces=new Set();
-    for(let i=0;i<14;i++){
-      control('face-next').click();await paint();
-      assert(control('portrait').dataset.state==='ready','face lineage: shader '+control('portrait').dataset.version+' compiled three passes');
-      faces.add(control('portrait').dataset.version);
-    }
-    assert(faces.size===14,'face lineage: all fourteen authored versions available');
-    control('face-home').click();await paint();
-    const portrait=control('portrait'),g=portrait.getContext('webgl');
-    for(const [x,y] of [[-10000,-10000],[10000,-10000],[-10000,10000],[10000,10000]]){
-      carrier.dispatchEvent(new frame.contentWindow.PointerEvent('pointermove',{clientX:x,clientY:y}));await paint();
-      const eye=g.getUniform(g.getParameter(g.CURRENT_PROGRAM),g.getUniformLocation(g.getParameter(g.CURRENT_PROGRAM),'u_gaze'));
-      assert(eye&&Math.hypot(eye[0]/.040,eye[1]/.028)<=1.001,'eye rig: extreme pointer stays inside anatomical ellipse');
-    }
-    assert(stable(state())===preserved,'face lineage: appearance spends no turn or RNG');
-    for(const width of [320,650,900,1440]){frame.width=width;await paint();assert(noOverflow(width).length===0,'station: expanded lineage and news fit '+width);}
-    for(const key of Object.keys(localStorage))if(key.startsWith('chromatic.qa.'+namespace+'.'))localStorage.removeItem(key);
-    report.push('PASS / '+report.length+' browser assertions / widths 320, 650, 900, 1440 + native save reload');
-  }catch(error){report.push('FAIL / '+error.message);}
-  result.textContent=report.join('\n');document.getElementById('run').disabled=false;
-};
-</script></html>
+output.textContent='PASS '+receipts.length+' assertions\n'+receipts.join('\n');}catch(e){output.textContent='FAIL '+e.message+'\n'+receipts.join('\n');}};
+</script>

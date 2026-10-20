@@ -1,22 +1,12 @@
-/* One presentation-only effects plane. Sound is opt-in, local standalone
- * synthesis; a future Unity adapter must route cues to FriktalAudioGen. */
-export function mountJuice(root){
+/* One presentation-only effects plane. Audio defaults on through the shared standalone mixer; a future Unity adapter must route cues to FriktalAudioGen. */
+export function mountJuice(root,{audio:bus}={}){
   const get=id=>root.querySelector('#cg-'+id),canvas=get('electric'),ctx=canvas.getContext('2d'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  let sound=true,audio=null,raf=0,last=0,phase=0,held=false;
+  let sound=true,raf=0,last=0,phase=0,held=false;
   const timers=new Map();
-  function cue(gain){
-    if(!sound||!audio)return;
-    const at=audio.currentTime,osc=audio.createOscillator(),volume=audio.createGain();osc.type=gain?'sine':'triangle';osc.frequency.setValueAtTime(gain?260:130,at);osc.frequency.exponentialRampToValueAtTime(gain?780:50,at+.16);volume.gain.setValueAtTime(.035,at);volume.gain.exponentialRampToValueAtTime(.001,at+.22);osc.connect(volume);volume.connect(audio.destination);osc.start(at);osc.stop(at+.24);
-  }
-  async function unlock(){
-    if(!sound)return;
-    try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw Error('No audio engine');audio??=new Audio();await audio.resume();}
-    catch{get('sound').textContent='SFX: on / unlock needed';}
-  }
+  function cue(gain){if(sound)bus?.cue(gain);}
+  async function unlock(){try{await bus?.unlock();}catch{get('sound').textContent='SFX: on / touch to enable';}}
   function soundLabel(){get('sound').textContent='SFX: '+(sound?'on':'off');get('sound').setAttribute('aria-pressed',String(sound));}
-  get('sound').addEventListener('click',async()=>{sound=!sound;soundLabel();if(sound){await unlock();cue(true);}else await audio?.suspend();});
-  root.addEventListener('pointerdown',()=>{if(sound&&(!audio||audio.state!=='running'))void unlock();},{capture:true});
-  root.addEventListener('keydown',()=>{if(sound&&(!audio||audio.state!=='running'))void unlock();},{capture:true});
+  get('sound').addEventListener('click',async()=>{sound=!sound;bus?.sfx(sound);soundLabel();if(sound){await unlock();cue(true);}});
   soundLabel();
   function resource(key,value){
     const pct=value*10,health=key==='noise'?100-pct:pct,card=get(key).parentElement;

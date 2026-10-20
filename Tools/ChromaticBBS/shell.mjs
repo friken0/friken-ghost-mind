@@ -1,4 +1,4 @@
-/* Single bounded BBS desktop. Existing nodes move; renderers stay alive. */
+/* One bounded carrier. Score owns the top; transmission and story share a room. */
 export function mountCarrierShell(root){
   const el=id=>root.querySelector('#cg-'+id),screen=el('screen');
   function node(tag,cls){const n=document.createElement(tag);n.className=cls;return n;}
@@ -10,31 +10,24 @@ export function mountCarrierShell(root){
   const playfield=root.querySelector('.cg-playfield'),presence=root.querySelector('.cg-presence'),face=root.querySelector('.cg-face'),instruments=root.querySelector('.cg-instruments');
   const frameHead=(label)=>{const h=node('div','cg-window-head');h.textContent=label;return h;};
   const world=root.querySelector('.cg-worldpane'),turn=root.querySelector('.cg-turnpane'),story=root.querySelector('.cg-story');
-  world.prepend(frameHead('╔═ ARTIFACT / LIVE MANIFOLD ═╗'));turn.prepend(frameHead('╔═ ENCOUNTER / THE OTHER END OF THE LINE ═╗'));
-  const scroll=node('div','cg-narrative');
-  for(const n of [el('decision'),story,el('receipt'),el('replay-roll'),el('laws'),el('completion')])scroll.append(n);
-  turn.insertBefore(scroll,el('choices'));turn.append(el('boot'));
-  face.prepend(frameHead('╔═ GHOST / PRESENT ═╗'));aside.append(face,instruments);
+  world.prepend(frameHead('ARTIFACT OBSERVATORY'));turn.prepend(frameHead('ENCOUNTER / INCOMING TRANSMISSION'));
+  const scroll=node('div','cg-narrative'),encounter=node('div','cg-encounter-body');
+  const resident=node('figure','cg-resident');resident.id='cg-resident';const img=document.createElement('img');img.id='cg-resident-art';img.alt='';img.hidden=true;const caption=node('figcaption','');caption.id='cg-resident-caption';resident.append(img,caption);encounter.append(resident);
+  const prose=node('div','cg-prose');for(const n of [el('decision'),story,el('receipt'),el('replay-roll'),el('laws'),el('completion')])prose.append(n);encounter.append(prose);scroll.append(encounter);
+  turn.insertBefore(scroll,el('choices'));const moves=frameHead('YOUR NEXT MOVE');moves.classList.add('cg-moves-head');turn.insertBefore(moves,el('choices'));turn.append(el('boot'));
+  face.prepend(frameHead('GHOST / LIVE'));aside.append(face,el('music-console'),world);
   const diagnostics=node('details','cg-diagnostics'),summary=node('summary','');summary.textContent='CARRIER DIAGNOSTICS';diagnostics.append(summary,root.querySelector('.cg-bootlog'));aside.append(diagnostics);presence.remove();
   const toolrow=[...screen.children].find(n=>n.classList.contains('cg-utilities'));
   if(toolrow){toolrow.classList.add('cg-audio-tools');aside.append(toolrow);}
   const status=el('status');aside.append(status);
   for(const p of Object.values(panels)){p.hidden=true;drawer.append(p);}
-  function home(){root.dataset.window='encounter';playfield.hidden=false;drawer.hidden=true;for(const p of Object.values(panels))p.hidden=true;for(const b of nav.children)b.setAttribute('aria-pressed',String(b.dataset.window==='encounter'));}
-  function open(name){if(name==='encounter'){home();return;}playfield.hidden=true;drawer.hidden=false;for(const [id,p]of Object.entries(panels)){p.hidden=id!==name;if(id===name)p.open=true;}root.dataset.window=name;for(const b of nav.children)b.setAttribute('aria-pressed',String(b.dataset.window===name));drawer.scrollTop=0;console.warn('[Chromatic shell] window height',drawer.getBoundingClientRect().height);}
+  function home(){root.dataset.window='encounter';playfield.hidden=false;drawer.hidden=true;for(const p of Object.values(panels))p.hidden=true;for(const b of nav.querySelectorAll('[data-window]'))b.setAttribute('aria-pressed',String(b.dataset.window==='encounter'));}
+  function open(name){if(name==='encounter'){home();return;}playfield.hidden=true;drawer.hidden=false;for(const [id,p]of Object.entries(panels)){p.hidden=id!==name;if(id===name)p.open=true;}root.dataset.window=name;for(const b of nav.querySelectorAll('[data-window]'))b.setAttribute('aria-pressed',String(b.dataset.window===name));drawer.scrollTop=0;}
   for(const [id,title]of [['encounter','ENCOUNTER'],['faces','FACES'],['archive','SAVE / SEED'],['wire','WIRE'],['cast','VOICE CAST']]){const b=node('button','');b.type='button';b.dataset.window=id;b.textContent=title;b.addEventListener('click',()=>open(id));nav.append(b);}
-  drawerBack.addEventListener('click',home);
-  left.append(el('inspector'),playfield,drawer);desktop.append(left,aside);
-  const header=root.querySelector('.cg-header');header.after(nav);
-  const progress=root.querySelector('.cg-progress');progress.after(desktop);
-  const back=root.querySelector('nav[aria-label="Return to Ghost"]');back?.remove();
-  root.querySelector('.cg-scoreline').classList.add('cg-bottom-status');
-  // Existing action buttons retain their handlers; open their destination.
-  el('export').addEventListener('click',()=>open('archive'));
-  el('start').addEventListener('click',home);el('resume').addEventListener('click',home);el('load').addEventListener('click',home);el('next').addEventListener('click',home);
-  const compact=node('div','cg-compact-dock');screen.insertBefore(compact,root.querySelector('.cg-bottom-status'));
-  const mobile=matchMedia('(max-width:450px)');
-  function adapt(){compact.append(instruments);if(mobile.matches){compact.append(toolrow);}else{aside.insertBefore(toolrow,status);}}
-  mobile.addEventListener('change',adapt);adapt();
-  home();return {home,open};
+  drawerBack.addEventListener('click',home);left.append(el('inspector'),playfield,drawer);desktop.append(left,aside);
+  const header=root.querySelector('.cg-header');header.insertBefore(nav,header.querySelector('.cg-telemetry')); root.querySelector('.cg-progress').after(desktop);
+  root.querySelector('nav[aria-label="Return to Ghost"]')?.remove();
+  const top=node('section','cg-top-stats');top.setAttribute('aria-label','Score and ship resources');const score=root.querySelector('.cg-scoreline');score.classList.add('cg-score-board');const meta=node('div','cg-stat-meta');meta.append(el('turn'),el('chapter'));const attrs=node('div','cg-attribute-strip');attrs.id='cg-attributes';attrs.setAttribute('aria-label','Your character attributes');top.append(score,instruments,meta,attrs);screen.prepend(top);
+  el('export').addEventListener('click',()=>open('archive'));for(const id of ['start','resume','load','next'])el(id).addEventListener('click',home);
+  for(const id of ['voice','sound'])nav.append(el(id));home();return {home,open};
 }

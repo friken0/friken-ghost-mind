@@ -1,3 +1,4 @@
+import {mountAudio,normalizeVoice} from './audio.mjs';
 /* Browser neural route. Trusted, pinned Kokoro runtime; chapter data never
  * becomes code. Weights download on first read, inference stays in the worker. */
 export const neuralCast={ghost:[['bm_george','George / British male'],['am_michael','Michael / American male'],['am_fenrir','Fenrir / American male']],narrator:[['af_heart','Heart / American female'],['bf_emma','Emma / British female'],['af_bella','Bella / American female']]};
@@ -26,14 +27,15 @@ function neuralWorker(config){
   async function drain(){
     if(running)return;running=true;
     while(latest){const job=latest;latest=null;
-      try{const engine=await load(),audio=await engine.generate(job.text,{voice:job.voice,speed:job.speed});
+      try{const engine=await load();postMessage({type:'status',text:'Kokoro / generating '+job.voice+' locally / captions available'});const audio=await engine.generate(job.text,{voice:job.voice,speed:job.speed});
         postMessage({type:'audio',id:job.id,samples:audio.audio,sampleRate:audio.sampling_rate},[audio.audio.buffer]);
       }catch(error){postMessage({type:'error',id:job.id,message:error.message});}
     }running=false;
   }
   onmessage=event=>{if(event.data.type==='cancel'){latest=null;return;}if(event.data.type==='generate'){latest=event.data;void drain();}};
 }
-export function mountNeuralVoice({status,level,talking}){
+export function mountNeuralVoice({status,level,talking,audio}){
+  audio??=mountAudio(null);
   let worker=null,epoch=0,request=0,pending=null,context=null,source=null,analyser=null,raf=0,finish=null;
   function ensureWorker(){
     if(worker)return;
@@ -49,11 +51,10 @@ export function mountNeuralVoice({status,level,talking}){
   }
   function stop(){epoch++;worker?.postMessage({type:'cancel'});pending?.reject(Error('cancelled'));pending=null;
     if(source){source.onended=null;try{source.stop();}catch{}source.disconnect();source=null;}
-    cancelAnimationFrame(raf);raf=0;level?.(0);talking?.(false);finish?.();finish=null;
+    cancelAnimationFrame(raf);raf=0;level?.(0);talking?.(false);audio.speaking(false);finish?.();finish=null;
   }
   async function unlock(){
-    const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw Error('Local neural audio is unavailable');
-    context??=new Audio();await context.resume();
+    const graph=await audio.unlock();context=graph.context;return graph;
   }
   async function prepare(text,{voice,speed=1}){
     ensureWorker();if(pending)throw Error('Neural queue already has a prepared sentence');
@@ -64,14 +65,15 @@ export function mountNeuralVoice({status,level,talking}){
   async function play(message,{role,onStart,onProgress}){
     const own=epoch;if(message.epoch!==own)return;await unlock();if(epoch!==own)return;
     const samples=message.samples;if(!(samples instanceof Float32Array)||!samples.length||samples.length>24000*90||message.sampleRate!==24000)throw Error('Invalid neural audio buffer');
-    const buffer=context.createBuffer(1,samples.length,message.sampleRate);buffer.copyToChannel(samples,0);
+    const normal=normalizeVoice(samples);audio.voiceReceipt(role,{inputRms:normal.inputRms,outputRms:normal.outputRms,gain:normal.gain});
+    const buffer=context.createBuffer(1,samples.length,message.sampleRate);buffer.copyToChannel(normal.samples,0);
     analyser??=context.createAnalyser();analyser.fftSize=512;
-    source=context.createBufferSource();source.buffer=buffer;source.connect(analyser);analyser.disconnect();analyser.connect(context.destination);
+    source=context.createBufferSource();source.buffer=buffer;source.connect(analyser);analyser.disconnect();analyser.connect(audio.graph().voice);
     const started=context.currentTime,pcm=new Float32Array(512);
     await new Promise(resolve=>{
-      finish=resolve;source.onended=()=>{if(epoch===own){cancelAnimationFrame(raf);raf=0;source?.disconnect();source=null;level?.(0);talking?.(false);onProgress?.(1);}finish=null;resolve();};
+      finish=resolve;source.onended=()=>{if(epoch===own){cancelAnimationFrame(raf);raf=0;source?.disconnect();source=null;level?.(0);talking?.(false);audio.speaking(false);onProgress?.(1);}finish=null;resolve();};
       function tick(){if(epoch!==own)return;analyser.getFloatTimeDomainData(pcm);let energy=0;for(const v of pcm)energy+=v*v;level?.(role==='ghost'?Math.min(1,Math.sqrt(energy/pcm.length)*5):0);onProgress?.(Math.min(1,(context.currentTime-started)/buffer.duration));raf=requestAnimationFrame(tick);}
-      source.start();talking?.(role==='ghost');onStart?.();tick();
+      source.start();audio.speaking(true);talking?.(role==='ghost');onStart?.();tick();
     });
   }
   async function speak(text,options){await unlock();const message=await prepare(text,options);await play(message,options);}

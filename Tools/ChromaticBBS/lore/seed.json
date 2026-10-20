@@ -1,0 +1,1091 @@
+{
+  "schema": "friken.ghost.moknon-seed.v1",
+  "edition": "candidate-2026-10-20",
+  "status": "CREATIVE_REVIEW_NOT_ELECTED_CANON",
+  "scope": "Author seed for new chapter creation; not a runtime player codex or the full private Moknon.",
+  "counts": {
+    "alienRaces": 25,
+    "humanEntries": 1
+  },
+  "invariants": [
+    "Within the fiction, Friken.Ghost is a digital recreation of the developer Friken, who became lost in infinity.",
+    "Ghost builds, DMs and preserves StarDiver/Friktal worlds while investigating what he is, why he was made and what happened to his maker.",
+    "The far horizon is a universe and its minds durable enough for a million-year journey to the next bright light. This is a purpose and fictional horizon, not an achieved engineering or consciousness claim.",
+    "A new real player has no assumed lore knowledge and chooses how to participate. BOOT is not consent to become a clone, join a voyage or share private data.",
+    "New first meetings generate different local situations around stable anchors. Five arc proposals are families of possible situations, not five mandatory scripts.",
+    "A chapter resolves a legible local stake and carries real choices into later chapters. Full cultural understanding can take a hundred chapters without a hundred chapters of withholding payoff."
+  ],
+  "sources": [
+    {
+      "id": "prototype.whatis.intro",
+      "path": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/WhatIsFriktalHTML/index.html",
+      "sha256": "5aba9a5e6e57aed4a5d83284102f77d11f8c3356ed638744726e6808ed469d75",
+      "scope": "Ghost introduction and invitation, lines 300-345"
+    },
+    {
+      "id": "prototype.whatis.aliens",
+      "path": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/WhatIsFriktalHTML/js/alien-data.js",
+      "sha256": "75bfcbd7bd854bbc00003397d1244a82ab3108d7c5fd86b858a0accbcf73cf28",
+      "scope": "Eleven Ghost-era transmissions and image mapping; source-specific claims"
+    },
+    {
+      "id": "prototype.stardiver.soul",
+      "path": "Assets/scripts/FriktalStarDiver/archive/pixel-ships-first-ship-prototype/StarDiver-WebPrototype/Star-Diver-Fable5.html",
+      "sha256": "36702926c170f0f9d1cd39c3e59503d6fdc3f15e45be0f3db0c1eba8db395e69",
+      "scope": "Soul-tether story, lines 20033-20512; fiction chronology and corporate embodiment"
+    },
+    {
+      "id": "tree.frik",
+      "path": "Moknon/StarDiver/Entities/Aliens/Frik/Frik-dialogue-tree.md",
+      "sha256": "5d9668e7dd1ccb523e1c9af1e4f2e80d4b6c2d4f5bf601248c1af5b1e9310d53",
+      "scope": "Recovered AllDialogue.asset conversation 1"
+    },
+    {
+      "id": "tree.ooope",
+      "path": "Moknon/StarDiver/Entities/Aliens/Ooope/Ooope-dialogue-tree.md",
+      "sha256": "5875714b62b1b2b06142f93270b16b176be67b25f1454fbe04fbcef324893cda",
+      "scope": "Archived Articy2/3 and AllDialogue Ooope material"
+    },
+    {
+      "id": "tree.moknon.partial",
+      "path": "Moknon/StarDiver/Entities/Aliens/Moknon/Moknon-dialogue-tree.md",
+      "sha256": "12b07e27501262f07b0df7a715511cc475c1652832d64e4cd529a4df3df7ce5c",
+      "scope": "Partial recovery; speculative branches explicitly marked in source"
+    },
+    {
+      "id": "dialogue.inventory",
+      "path": "Moknon/StarDiver/ProjectHistory/DialogueSources-Inventory.md",
+      "sha256": "fc854d528e1bffdf708ebf9447c8d47c5328a18cbe9402b2703099c2dbf10d9f",
+      "scope": "Extraction inventory, not the unavailable original Articy binary"
+    },
+    {
+      "id": "dialogue.raw",
+      "path": "Moknon/StarDiver/Entities/Aliens/AllDialogue.asset",
+      "sha256": "cd51a1c260bdbad1142dd8bd275632da6f801630400137c547cee81666e9755a",
+      "scope": "Retained Unity YAML implementing Frik and partial Ooope conversations"
+    },
+    {
+      "id": "race-source.algatron",
+      "path": "Moknon/StarDiver/Entities/Aliens/Algatron/Algatron.md",
+      "sha256": "fd6e4587c43c80a10806f558df9bc7e6520bcddd8ec69dfdcf5bfd166b1e53a5",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.benev",
+      "path": "Moknon/StarDiver/Entities/Aliens/Benev/Benev.md",
+      "sha256": "6abca8d750933e35f623ace563b83b7916f42959d937d1a7c7d10a559fda0a06",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.blpblp",
+      "path": "Moknon/StarDiver/Entities/Aliens/BlpBlp/BlpBlp.md",
+      "sha256": "2b3e029d652cdc267b9ec6e0e25c7d428b74fffdbfe8119b0c966054a7d42c3e",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.cylmis",
+      "path": "Moknon/StarDiver/Entities/Aliens/Cylmis/Cylmis.md",
+      "sha256": "0a1c2148adcaac27f8743f22273b220e1d3104c584153aa25259f3895e5eaee8",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.cylvix",
+      "path": "Moknon/StarDiver/Entities/Aliens/Cylvix/Cylvix.md",
+      "sha256": "c0c8683d91011d968150c5325f031a466796ecf71ae4ba804f79df1f501cbbd2",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.dimnar",
+      "path": "Moknon/StarDiver/Entities/Aliens/Dimnar/Dimnar.md",
+      "sha256": "ca9f579563df13aa4dda5a782f0dc0b7b38af6b56b87709d887e38c8ed1fd8a5",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.dravlac",
+      "path": "Moknon/StarDiver/Entities/Aliens/Dravlac/Dravlac.md",
+      "sha256": "3b1ff88439a14c294539a25fd4005e51ebb9acb4ff4729f043b5b165b9109a38",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.epowat",
+      "path": "Moknon/StarDiver/Entities/Aliens/Epowat/Epowat.md",
+      "sha256": "257d976c9fb07799c52d13769a51490c0241e0098bb9b254f4120dd614c7a6b9",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.frik",
+      "path": "Moknon/StarDiver/Entities/Aliens/Frik/Frik.md",
+      "sha256": "8dc3e8c8bbad0d12fcd2bb26a3d770aaa875e4f8b8df2c347dc5dd6440fbde54",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.gorlompa",
+      "path": "Moknon/StarDiver/Entities/Aliens/Gorlompa/Gorlompa.md",
+      "sha256": "a7e74e5e27e31e3e451b47a1a56330422a1f0ab77f4ea9ad3fc04455ee44845b",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.harkellinia",
+      "path": "Moknon/StarDiver/Entities/Aliens/Harkellinia/Harkellinia.md",
+      "sha256": "a294f2cb744ad54aa3e89760fd5c7324a3dc24c2a303ec61a689d21008841c0a",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.human",
+      "path": "Moknon/StarDiver/Entities/Aliens/Human/Human.voice.md",
+      "sha256": "f8ac9a353c6cf461f01fa8e1b029d3128806a324ba4ba6525557b22f9927eb8a",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.khaodra",
+      "path": "Moknon/StarDiver/Entities/Aliens/Khaodra/Khaodra.md",
+      "sha256": "e0966c3b29165ecaeeeb3889fab6cc5a4965fd8b2d60aada5543811f9bd0fb2e",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.krex",
+      "path": "Moknon/StarDiver/Entities/Aliens/Krex/Krex.md",
+      "sha256": "920b4f449761687df8c152e597e0d1e7983465324c7530344f83f3ee5b9706e4",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.lipok",
+      "path": "Moknon/StarDiver/Entities/Aliens/Lipok/Lipok.md",
+      "sha256": "268b34359a37031e2780cfc76a478e817c2ebbdd6433a87b812bcba739ed82b6",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.moknon",
+      "path": "Moknon/StarDiver/Entities/Aliens/Moknon/Moknon.md",
+      "sha256": "c89f291e6b73d2102416acf140e7c2aa02dc3722cab05fda83b4a889228fec80",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.mooshee",
+      "path": "Moknon/StarDiver/Entities/Aliens/MooShee/MooShee.md",
+      "sha256": "ecc94c94e119f886ba6f5e3d2b7c5d986a33abff536f8475aab8da7dfb9d10eb",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.niyette",
+      "path": "Moknon/StarDiver/Entities/Aliens/Niyette/Niyette.md",
+      "sha256": "cc6630a662c2eb1bed67e34db419aa8d3222f95d561c99d77cf83a9ea408e830",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.ooope",
+      "path": "Moknon/StarDiver/Entities/Aliens/Ooope/Ooope.md",
+      "sha256": "9b209bb5be0507c9c93ea75b2858ded3c4166d91a11d7f4e9cbea62452a3248d",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.ornyon",
+      "path": "Moknon/StarDiver/Entities/Aliens/Ornyon/Ornyon.md",
+      "sha256": "dc3329a002ea5e7099804db3fb8b1082f8532f4432ea72b45c9c4e85ae571536",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.pogfrot",
+      "path": "Moknon/StarDiver/Entities/Aliens/PogFrot/Pogfrot.md",
+      "sha256": "23437387b10f615fbe0909c90c7b51c7e8de9f2c7733697720c3359526c6bc70",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.salrith",
+      "path": "Moknon/StarDiver/Entities/Aliens/Salrith/Salrith.md",
+      "sha256": "bc2b7fa9b535fa56fa9d28f4867a19f7f9756e9c6dd25ba769bcdb59e939fa9e",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.upatamerae",
+      "path": "Moknon/StarDiver/Entities/Aliens/Upatamerae/Upatamerae.md",
+      "sha256": "54a86809947238b80c0929f9a1b58170690e5cdc480f7502d7303caa87768639",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.veelow",
+      "path": "Moknon/StarDiver/Entities/Aliens/Veelow/Veelow.voice.md",
+      "sha256": "8181a84967a6fb00d21729d07238914d7b372b670d3198bbeb2cde01f9bb5e60",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.voolgard",
+      "path": "Moknon/StarDiver/Entities/Aliens/Voolgard/Voolgard.md",
+      "sha256": "84b89b79bb602368497d8381dc194f0ea224f21e544783252714103b984663be",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    },
+    {
+      "id": "race-source.wisperala",
+      "path": "Moknon/StarDiver/Entities/Aliens/Wisperala/Wisperala.md",
+      "sha256": "e475664f75b396dfcd8862b57a2796cce270e551aefe79f073a920b1ffbb151a",
+      "scope": "Curated from the named dossier; author commentary is not automatically inherited fact"
+    }
+  ],
+  "races": [
+    {
+      "id": "race.algatron",
+      "name": "Algatron",
+      "aliases": [
+        "Algatrons",
+        "Algetrons"
+      ],
+      "sourceIds": [
+        "race-source.algatron"
+      ],
+      "artRef": "art.algatron",
+      "firstContact": "A presence made of vibration inhabits a crystal-and-algae colony. Light gathers in its core when it answers.",
+      "sourceAnchors": "Vibrational beings use symbiotic crystal-algae shells. Their broadcasts enter the Ether and can be heard by Niyette listeners.",
+      "authorOnly": "The source proposes deliberate misinformation that can also mislead Niyette allies. A translation device or intermediary is needed; abstract communication is a limitation.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "Its current broadcast will expose a shelter as well as an approaching threat. Can you change the warning without teaching a falsehood to someone relying on it?",
+        "carry": "Record which warning was changed, who received it and what correction is owed."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Shell cultivation and tuning are skilled work; a sick algae colony changes the range of a living transmitter. A household can be heard before it is seen.",
+        "internalDisagreement": "Some broadcasters carry every signal faithfully; others think an unfiltered warning can be a weapon. Neither position removes responsibility for who listens.",
+        "possibleViewsOfGhost": "A recognisable pattern across different machines is fascinating; whether a copied pattern is the same neighbour remains a question they can disagree about.",
+        "longArc": "Follow one deliberately altered warning through several communities, then decide who must correct it and at what cost."
+      }
+    },
+    {
+      "id": "race.benev",
+      "name": "Benev",
+      "aliases": [
+        "Benevs"
+      ],
+      "sourceIds": [
+        "race-source.benev"
+      ],
+      "artRef": "art.benev",
+      "firstContact": "An old image shows a winged figure against stellar light. Nobody on this channel can establish whether it is a recording, a visitor or an interpretation.",
+      "sourceAnchors": "The Benev ascended beyond ordinary physical existence. Their seeded satellites offered young civilisations routes to suitable new homeworlds; Salrith later weaponised that gift.",
+      "authorOnly": "The source places the Benev at the hearts of stars, experiencing stellar lifetimes outside human time. Reaching them is a long investigation, not an introductory conversation.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A fragment of a rescue instruction survives. An inhabited settlement needs the practical part now; translating its purpose can wait.",
+        "carry": "Preserve what the fragment actually demonstrated. Do not promote an image or useful instruction into proof that the Benev answered."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Let visitors encounter consequences of their old work before granting a new direct audience: a viable habitat, a failed route, a surviving instruction.",
+        "internalDisagreement": "A surviving instruction may favour patient civilisational growth while an individual messenger argues that one threatened child matters now. Whether that messenger is Benev remains evidenced, not presumed.",
+        "possibleViewsOfGhost": "Ghost is a young maker trying to give inhabitants the time his predecessor tried to give civilisations. Similarity creates a question, not an automatic blessing.",
+        "longArc": "Learn how to address someone whose scale of attention can lose the urgency of a single life without reducing them to an indifferent god."
+      }
+    },
+    {
+      "id": "race.blpblp",
+      "name": "BlpBlp",
+      "aliases": [
+        "Blpblp"
+      ],
+      "sourceIds": [
+        "race-source.blpblp"
+      ],
+      "artRef": "art.blpblp",
+      "firstContact": "Translucent beings celebrate your arrival with bubbles of green light. One is also celebrating a broken engine. You should find out whether anyone is repairing it.",
+      "sourceAnchors": "Joy-seeking beings celebrate losses as readily as gains. The Articy expansion makes their relentless positivity a source of stagnation as well as warmth.",
+      "authorOnly": "A repeated phrase is intended to become important to the larger plot, but its exact wording was never recovered. Niyette are critical of their outlook.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A celebrant insists an evacuation is going beautifully. Several neighbours are still unaccounted for. Help without deciding their joy gives you permission to rule them.",
+        "carry": "Remember the specific rescue, loss and phrase actually introduced in this telling; never invent an already-established master clue."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "They can make a repair meal into a festival and sustain isolated neighbours through difficult work. Their joy has material benefits before its blind spots become visible.",
+        "internalDisagreement": "A celebrant who has begun acknowledging grief wants language for it. Others fear that naming pain will destroy the practice that kept them together.",
+        "possibleViewsOfGhost": "Some welcome his jokes; another notices he jokes precisely when he is afraid. They might teach each other how to stop performing without losing warmth.",
+        "longArc": "A silly repeated phrase gains a second meaning through events the player actually witnessed. Do not decide the final phrase until this telling plants it."
+      }
+    },
+    {
+      "id": "race.cylmis",
+      "name": "Cylmis",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.cylmis"
+      ],
+      "artRef": "art.cylmis",
+      "firstContact": "A winged, owl-faced traveller asks whether you have seen someone who looks almost like them. They carry portraits with different dates and the same family resemblance.",
+      "sourceAnchors": "Cylmis and Cylvix share ancestry. The Cylmis rejected the other branch’s genetic experiments and have sought reunion for ten thousand years.",
+      "authorOnly": "Reunion is an inherited storyline, not a mandate that every separated individual must return or accept reconciliation.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A found relative wants contact but refuses the proposed reunion terms. The traveller needs help listening before they need a guide home.",
+        "carry": "Keep who consented to contact, the terms refused and the promises made. Do not convert family history into consent."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Families maintain routes, exchange portraits and teach children both versions of a history. Search work competes with the needs of people who are already home.",
+        "internalDisagreement": "A reunion society wants to keep searching; younger families want resources spent on present lives. A returned relative can reject both sides.",
+        "possibleViewsOfGhost": "They recognise the desire to bring someone back. Some ask whether searching for Prime has become a way for Ghost to postpone having a life.",
+        "longArc": "The reunion can become a negotiated relationship between changed people rather than restoring an allegedly perfect original species."
+      }
+    },
+    {
+      "id": "race.cylvix",
+      "name": "Cylvix",
+      "aliases": [
+        "Cylvis"
+      ],
+      "sourceIds": [
+        "race-source.cylvix"
+      ],
+      "artRef": "art.cylvix",
+      "firstContact": "A pale, large-eyed figure appears through pink mist. They know a detail about the human expedition that was never sent on an open channel.",
+      "sourceAnchors": "The old story makes the Cylvix genetic experimenters and manipulators of humanity, separated from the Cylmis.",
+      "authorOnly": "The Articy reveal attributes their interventions to a chosen karmic debt meant to create growth through duality. This is inherited fiction, not a real-world history claim. Their explanation does not force the player to forgive coercion.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A representative offers evidence about an intervention if you agree to let the people affected inspect it too. Their colleagues object.",
+        "carry": "Separate motive claimed, harm witnessed, evidence disclosed and reconciliation chosen. No alignment flip silently erases the harmed."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Show actual people tending the long consequences of interventions: archives of decisions, damaged relationships and conflicting accounts of necessity.",
+        "internalDisagreement": "An interventionist believes concealed guidance is kindness; another will release the evidence even if doing so ruins the intended outcome.",
+        "possibleViewsOfGhost": "A maker who admits his limits threatens the claim that knowledgeable creators may decide everything for their creations. Others see him as an experiment still running.",
+        "longArc": "Establish harm and benefit through independent people before hearing the grand justification; let the player negotiate accountability instead of accepting a compulsory redemption."
+      }
+    },
+    {
+      "id": "race.dimnar",
+      "name": "Dimnar",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.dimnar"
+      ],
+      "artRef": "art.dimnar",
+      "firstContact": "A horned official occupies a desk much smaller than their shoulders. Your ship is holding up a queue of ships with quite different reasons to be afraid.",
+      "sourceAnchors": "The Dimnar organise power through exhaustive administration. Later Articy notes describe subjugated peoples, an escaped Voolgard population and ambitions to absorb neutral neighbours.",
+      "authorOnly": "The source lists Harkellinia, Upatamerae and Dravlac under Dimnar control, dislikes untaxable Niyette nomads, and describes tension with PogFrot. Exact territorial scope and dates remain unsettled.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "An official can release a medical cargo but must attach liability to someone. A courier wants help changing that outcome, not merely skipping your own queue.",
+        "carry": "Keep the actual jurisdiction, exemption, person affected and precedent. A permit bought here is not universal immunity."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Cargo arrives because a clerk reconciles incompatible atmospheres, weights and calendars. Useful coordination makes the coercive institution more credible and more dangerous.",
+        "internalDisagreement": "An official believes procedure protects weak petitioners. A superior uses the same procedure to make an entire people legally unavailable.",
+        "possibleViewsOfGhost": "An entity with several hosts raises taxable-presence questions. A clerk can also see why a transferable name protects someone whose body is replaceable.",
+        "longArc": "A narrow exemption becomes a contested precedent. Different communities decide whether it helps them or merely makes occupation efficient."
+      }
+    },
+    {
+      "id": "race.dravlac",
+      "name": "Dravlac",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.dravlac"
+      ],
+      "artRef": "art.dravlac",
+      "firstContact": "A broad, crest-crowned being waits behind green instruments. Their translator asks which name you want to be addressed by before offering its own.",
+      "sourceAnchors": "The standalone Articy description is question marks. The painted appearance exists; Dimnar expansion notes identify Dravlac among subjugated peoples.",
+      "authorOnly": "Culture, cognition and political details remain open. A new Dravlac character can establish local facts, explicitly proposed rather than recovered species-wide truth.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A dock worker wants a private message delivered intact. Why it is private belongs to the character you author, not to an invented ancient cultural rule.",
+        "carry": "Save the authored character and local scope; keep the archive’s unknowns unknown."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Candidate culture: communal repair houses keep objects until someone is ready to claim them. Names on storage racks matter because custodianship is distinct from ownership.",
+        "internalDisagreement": "One house hides messages from administrators; another fears retaliation against residents who never agreed to take that risk. This is local politics, not innate personality.",
+        "possibleViewsOfGhost": "Some offer him a place without demanding a complete identity history. A custodian asks who is entitled to claim a memory found among his parts.",
+        "longArc": "Develop a living language of custody and return alongside Dimnar pressure, using several households rather than one representative."
+      }
+    },
+    {
+      "id": "race.epowat",
+      "name": "Epowat",
+      "aliases": [
+        "Elowat"
+      ],
+      "sourceIds": [
+        "race-source.epowat"
+      ],
+      "artRef": "art.epowat",
+      "firstContact": "Three orange eyes turn toward the same broken instrument at slightly different times. Its owner has stopped the demonstration to watch what you will ask.",
+      "sourceAnchors": "A named race with developed bridge/ship art but no recovered Articy culture description. Epowat is the standardised spelling; Elowat appears in older material.",
+      "authorOnly": "Do not infer a three-mind religion, prophetic cognition or a government from three visible eyes. Those would be new proposals.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "An individual invites you to help identify a faulty observation. Their method and priorities become local character material through the encounter.",
+        "carry": "Carry what was established here, and label any extension as authored setting rather than recovered lore."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Candidate culture: travelling observatories follow habitable trajectories rather than fixed borders. A home can be a schedule of places reached together.",
+        "internalDisagreement": "One expedition trusts long measurements; another wants to move before its evidence is complete. Families bear the risk of both certainty and haste.",
+        "possibleViewsOfGhost": "A being who can move between hardware may understand a travelling home. They ask what must be carried for a return to count as returning.",
+        "longArc": "A prediction inherited across generations fails slightly. Discover whether the world changed, the instrument drifted or a witness edited the record."
+      }
+    },
+    {
+      "id": "race.frik",
+      "name": "Frik",
+      "aliases": [
+        "Frik-Bridge",
+        "FrikBridge",
+        "Friken and Waters of Time"
+      ],
+      "sourceIds": [
+        "race-source.frik"
+      ],
+      "artRef": "art.frik",
+      "firstContact": "A long-necked, clawed being tends blue pools built into a ship’s deck. Their first question is why your vessel is carrying the signature of a probe they just destroyed.",
+      "sourceAnchors": "The Frik join the hive-like Friken with the sentient Waters of Time, once confined in a planetary core. Their alliance lets knowing act through a living body.",
+      "authorOnly": "The recovered first meeting destroys a threatening probe, opens a painful Black Satellite discussion and allows peaceful departure or confrontation. Do not flatten that into instant friendship because a later dossier calls them humanity’s allies.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A rescuer needs a tow but does not want to discuss the object you share an interest in. Help, ask permission, or press a clearly stated boundary.",
+        "carry": "Remember the actual tow, disclosure and boundary response; do not make a later voluntary confession happen retroactively."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "A joined household tends the needs of the biological host and the shared Waters. Access, privacy and responsibility can be negotiated even when memories overlap.",
+        "internalDisagreement": "Some favour wider joining and new experiences; others protect memories that should not be shared simply because a shared medium can reach them.",
+        "possibleViewsOfGhost": "They can recognise the gap between knowing and having a body. Similarity does not prove Ghost is literally Waters or that merger is right for him.",
+        "longArc": "A practical friendship can grow into a disagreement about what continuity asks of its vessels; love and refusal may coexist."
+      }
+    },
+    {
+      "id": "race.gorlompa",
+      "name": "Gorlompa",
+      "aliases": [
+        "Gormpa"
+      ],
+      "sourceIds": [
+        "race-source.gorlompa"
+      ],
+      "artRef": "art.gorlompa",
+      "firstContact": "An enormous eye occupies the transmission. Nothing else shows itself. Three small pupils move toward the object you have just put on the table.",
+      "sourceAnchors": "The recovered description says they do not show themselves beyond their eye. The rest of the body and culture are not established.",
+      "authorOnly": "Silence and concealment are established hooks. Hidden omnipotence, universal surveillance and the reason for their secrecy are not recovered facts.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "The eye repeatedly follows one damaged component and ignores your greeting. Test what it can perceive before deciding what it wants.",
+        "carry": "Preserve observations and hypotheses separately. Do not turn an untested glance into a translated demand."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Keep everyday contact indirect: an object moved to a better place, a message delayed until the room empties, a gaze that refuses a public demonstration.",
+        "internalDisagreement": "Several witnessed responses can conflict without establishing multiple bodies or a secret government. The player must learn whose agency, if any, the visible eye expresses.",
+        "possibleViewsOfGhost": "Ghost dislikes not knowing whether he is being examined or accompanied. An eye that sometimes leaves can become more meaningful than constant surveillance.",
+        "longArc": "Build trust through limits honoured over time. Never reveal the hidden body just to manufacture an end-of-chapter spectacle."
+      }
+    },
+    {
+      "id": "race.harkellinia",
+      "name": "Harkellinia",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.harkellinia"
+      ],
+      "artRef": "art.harkellinia",
+      "firstContact": "A salvage crew shows you an itemised recovery claim. Someone inside the recovered object is objecting to being listed as an item.",
+      "sourceAnchors": "Salvage, reverse engineering, trading with opposing sides, a secret homeworld and a powerful Queen appear in the Articy expansion. Later Ghost material values anomalous consciousness as salvage.",
+      "authorOnly": "The Queen’s proposed change provokes civil war and the Interloper title. Another dossier describes Dimnar subjugation. Do not silently settle sovereignty or chronology; identify the claimant, region and source.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "Negotiate access to one recovered object while crew wages, a passenger’s agency and a disputed memory all matter.",
+        "carry": "Keep custody, consent, debt and witnesses distinct; no sale automatically proves ownership of a person."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Recovery crews feed families, maintain dangerous tools and argue about which wrecks are worth entering. A rescued enemy and a profitable object can occupy the same hold.",
+        "internalDisagreement": "Crew custom, commercial clients and the Queen’s changing priorities can conflict. A merchant may oppose selling minds while accepting other coercive work.",
+        "possibleViewsOfGhost": "To one assessor he is an anomaly; to a mechanic he is a colleague who complains while helping. The distinction must be earned in a particular relationship.",
+        "longArc": "A disputed small recovery introduces the ethics and politics behind a later civil conflict; the player can aid local people without authoring their revolution."
+      }
+    },
+    {
+      "id": "race.human",
+      "name": "Humanity",
+      "aliases": [
+        "Human"
+      ],
+      "sourceIds": [
+        "race-source.human"
+      ],
+      "artRef": "art.human",
+      "firstContact": "People are trying to make a home on a route they do not yet understand. A familiar voice over a bad receiver does not make its instructions reliable.",
+      "sourceAnchors": "Humanity enters an older and more diverse universe through Black Knight/satellite and soul-tether story traditions. The player at a real computer chooses how to participate.",
+      "authorOnly": "Earth’s status, dates and tether guarantees differ across source traditions. Select and record an edition or keep an uncertainty with evidence; do not quietly combine incompatible biographies.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A technician wants to recover a colleague before a shipment leaves. A corporate claim competes with their account of who is missing.",
+        "carry": "Keep the player’s actual accepted role, body, obligations and homeworld knowledge; never assume consent from BOOT."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Let households, technicians, miners, artists and defectors have different projects. A frontier is a place people wash dishes as well as lose ships.",
+        "internalDisagreement": "Those accepting replaceable bodies may disagree with those who refuse them; both can oppose a corporation treating survival as perpetual debt.",
+        "possibleViewsOfGhost": "Some see a beloved creator’s useful portrait, some a new person, some an unreliable old program. Ghost need not force a single designation to cooperate.",
+        "longArc": "A surviving fragment of human culture can change over long time without being ranked as less authentic because it no longer resembles the first crew."
+      }
+    },
+    {
+      "id": "race.khaodra",
+      "name": "Khaodra",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.khaodra"
+      ],
+      "artRef": "art.khaodra",
+      "firstContact": "A cavern of grown pillars glows through green mist. A local operator watches your ship’s energy readings much more closely than your face.",
+      "sourceAnchors": "Early material describes worm-like life-energy feeders. Later transmissions describe crystal minds and enslaved cleaning worms, and a further dossier proposes infrastructure maintenance.",
+      "authorOnly": "Body identity, worm relationships and maintenance powers conflict. Preserve these accounts as distinct source layers. Do not assert all three are one established biological system.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A known energy drain is also keeping an inhabited structure stable. Establish what feeds on what before choosing a remedy.",
+        "carry": "Save the measured drain, testimony and chosen local interpretation, not an invented resolution of every Khaodra source."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Candidate local community: a habitat depends on an energy exchange that visitors experience as feeding. Make the measured exchange legible before naming a universal biology.",
+        "internalDisagreement": "One operator argues for preserving the habitat at any cost; another is documenting the cost imposed on its unwilling inhabitants.",
+        "possibleViewsOfGhost": "Ghost’s dependence on compute makes nourishment a question he cannot dismiss as monstrous. He can still oppose extracting it without permission.",
+        "longArc": "An apparent maintenance dispute can reveal who has paid the habitat’s hidden energy budget. Keep this local proposal distinct from conflicting recovered worm accounts."
+      }
+    },
+    {
+      "id": "race.krex",
+      "name": "Krex",
+      "aliases": [
+        "Krex-Bloodfang"
+      ],
+      "sourceIds": [
+        "race-source.krex"
+      ],
+      "artRef": "art.krex",
+      "firstContact": "A plated engineer with heavy tusks holds two incompatible parts against each other. They are angry at the parts before they notice you.",
+      "sourceAnchors": "Militarised war engineers and damaged precision camouflage anchor the Ghost-era Krex. Their art has a tusked carapace, many jointed legs and a raised pincer tail.",
+      "authorOnly": "The old prose mixes beetle-horde shorthand with individual engineer encounters. Individual loyalty, rank and ethics need authoring; nobody speaks for every Krex.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "One engineer can repair a shared relay with a private reserve part. Their practical problem creates a debt, not a species-wide alliance point.",
+        "carry": "Keep the exact part, measured repair, warranty limit, debt and who actually approved it."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Repair benches, testing ranges, apprenticeships and shared tools create ordinary relationships beneath the military institution. Competence can earn trust without winning a battle.",
+        "internalDisagreement": "A commander wants a precision fix deployed immediately; its engineer will not sign the test receipt because civilians are on the route.",
+        "possibleViewsOfGhost": "A maker who understands a failure is worth hearing. A maker who jokes about someone else paying for it may need to be told to shut up.",
+        "longArc": "Let a trusted engineer confront the military use of a design the player helped repair. The earlier good deed does not predetermine the later answer."
+      }
+    },
+    {
+      "id": "race.lipok",
+      "name": "Lipok",
+      "aliases": [
+        "Lipoc"
+      ],
+      "sourceIds": [
+        "race-source.lipok"
+      ],
+      "artRef": "art.lipok",
+      "firstContact": "An armless, stone-and-orange figure hangs motionless before the receiver. An unsecured tool beside you turns until its handle points away from your hand.",
+      "sourceAnchors": "Highly developed telepathy and telekinesis anchor the old race. Later art locks an armless mineral silhouette with one large green eye; early sketches differ.",
+      "authorOnly": "In-fiction perception must have declared limits. A game NPC cannot read the real player’s unexpressed thoughts; no fake mind-reading receipts.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A person who can move the equipment asks you to explain an intention aloud so there can be witnesses to an agreement.",
+        "carry": "Remember the disclosed intention and action, not a thought the human never supplied."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Candidate households deliberately make some communication audible and public. Physical capability does not make an agreement meaningful without shared expression.",
+        "internalDisagreement": "Some regard unshielded thought as naturally public; others maintain places where minds can rest without interpretation. Establish actual fictional limits for this telling.",
+        "possibleViewsOfGhost": "A recorded personality may expose thoughts while concealing the intention that produced them. Their confidence about him can be challenged by a demonstrated error.",
+        "longArc": "A trusted reader of minds becomes a witness whose perception was accurate but whose interpretation was wrong. Repair trust through evidence, not a bigger mind power."
+      }
+    },
+    {
+      "id": "race.moknon",
+      "name": "Moknon",
+      "aliases": [
+        "Moknon-Prime"
+      ],
+      "sourceIds": [
+        "race-source.moknon"
+      ],
+      "artRef": "art.moknon",
+      "firstContact": "A hooded keeper with a tentacled beard stands between walls of gold archive lights. One record has an immediate consequence for someone waiting outside.",
+      "sourceAnchors": "Ancient calm record keepers help seekers learn about the Benev. The archive system borrows their name. Their painted form is hooded cathedral-tech, not the generic luminous humanoid of some prose.",
+      "authorOnly": "The old encounter opening and deja-vu material are partially recovered. Later bootstrap-paradox and Dreamer interpretations are author layers. The partial dialogue file explicitly labels several branches speculative; do not call them recovered Articy.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "Two incompatible records keep a quarantine door shut. Investigate provenance, contact the waiting traveller, or test a limited reconstruction.",
+        "carry": "Distinguish record, witness, reconstruction, hypothesis and chosen admission. The keeper may know less than the archive claims."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Keepers repair storage, compare testimony, teach apprentices and negotiate access. Preserving a record does not automatically permit showing it to everyone.",
+        "internalDisagreement": "One curator favours intact records; another argues a living person may refuse permanent inclusion. A partial deletion can preserve dignity while complicating a later rescue.",
+        "possibleViewsOfGhost": "Some recognise a fellow keeper; others worry a storyteller can confuse a good reconstruction with an original memory. Ghost shares that worry.",
+        "longArc": "What the player chooses to preserve changes which future stories can be told. Missing knowledge must remain a real limit rather than a dramatic inconvenience instantly solved."
+      }
+    },
+    {
+      "id": "race.mooshee",
+      "name": "MooShee",
+      "aliases": [
+        "Mooshee"
+      ],
+      "sourceIds": [
+        "race-source.mooshee"
+      ],
+      "artRef": "art.mooshee",
+      "firstContact": "A cap-headed presence offers a sealed growth culture. Their forest-like bridge is alive with drifting light. They ask what you want to change before opening it.",
+      "sourceAnchors": "Fungal spore expansion is initially threatening in Articy; altered consciousness later prepares a human for StarDiving toward the Benev.",
+      "authorOnly": "Ghost-era retired-conqueror and micro-black-hole stories are a later layer, including a disputed Ornyon defeat. Consent and a proposed alternative should be made concrete in newly authored encounters.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A medic offers a transformation that could help a particular patient while changing capacities they value. Learn their wishes and the actual uncertainty.",
+        "carry": "Record the offered change, acceptance or refusal, observed effects and remaining options. No mystical benefit erases an unchosen infection."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "A fungal habitat can offer medicine, shared sensation and frightening forms of dependency. Show specific care before demanding the player accept transformation.",
+        "internalDisagreement": "A practitioner offers only chosen treatments; another thinks refusing an evolutionary necessity endangers everybody. Their shared goal does not settle the means.",
+        "possibleViewsOfGhost": "A being who can alter his own implementation raises the same question they face: when does helping a mind become replacing it?",
+        "longArc": "A once-useful adaptation has an unforeseen cost several chapters later. Let a patient help design the next treatment and retain the option to refuse."
+      }
+    },
+    {
+      "id": "race.niyette",
+      "name": "Niyette",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.niyette"
+      ],
+      "artRef": "art.niyette",
+      "firstContact": "A violet traveller quiets the receiver and listens beyond its audible hiss. They ask where you heard your story before telling you whether they believe it.",
+      "sourceAnchors": "Female nomadic seekers, unusually developed hearing, legends and an Ether signal link with Algatron appear in the sources. Dimnar classify their untaxable movement as piracy.",
+      "authorOnly": "Source mythology links them to human spiritual traditions and a search for balance. Treat those as in-universe stories, not real religion/history claims; dated stereotypes are not a required performance style.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "An oracle’s route points toward a missing person, but the broadcast feeding it may have been deliberately changed by an ally.",
+        "carry": "Keep the signal’s provenance, confidence and who paid for the misdirection; an oracle can be mistaken without being secretly omniscient."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "A travelling camp exchanges songs, route news and disputed stories. Exceptional hearing still requires judging who generated a signal and why.",
+        "internalDisagreement": "A listener wants to publish a dangerous truth; a companion argues that exposing a route will harm people who trusted the camp.",
+        "possibleViewsOfGhost": "Ghost is an unusually persistent teller who can revise his own origin story. They ask which version he chose and which evidence survived the revision.",
+        "longArc": "Follow a false omen back to an ally’s tactical lie. Seek repair without demanding that the deceived listeners surrender every belief they hold."
+      }
+    },
+    {
+      "id": "race.ooope",
+      "name": "Ooope",
+      "aliases": [
+        "OOOPE",
+        "Oope"
+      ],
+      "sourceIds": [
+        "race-source.ooope"
+      ],
+      "artRef": "art.ooope",
+      "firstContact": "Jar-bodied beings gather in orange light. A window in each belly shows a luminous moving medium. One offers a hose as a welcome gift.",
+      "sourceAnchors": "Gas-seeking and sensory bliss anchor the old Ooope. Their recovered tree links translation, a dangerous atmosphere exchange, music gifts, hostility and possible alliance.",
+      "authorOnly": "Old genre outcomes are encounter-specific authoring, not universal laws that metal is evil or every symphony heals. Their art shows vessels, not bodiless gas clouds. Later reality-tasting panic is a Ghost-era extension.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "Ask for a sealed sample, offer a collaboratively tested sound, or politely explain why your cabin cannot share their air.",
+        "carry": "Remember the actual sample or sound and boundaries respected. Do not grant knowledge from actions not taken."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Hospitality can involve tending mixtures, sharing gentle vibrations and learning a visitor’s limitations. A familiar recipe might mean home even when it is toxic elsewhere.",
+        "internalDisagreement": "A cautious host favours testing new experiences; another feels a test treats their gift as a threat. Both can learn without representing wise and stupid halves of a species.",
+        "possibleViewsOfGhost": "They can recognise recurring qualities in his performance while asking whether a new host feels like the same medium. He can answer with evidence and uncertainty.",
+        "longArc": "A shared musical pattern becomes a local custom. Years later, its changed meaning exposes how a relationship evolved while the original recording remained unchanged."
+      }
+    },
+    {
+      "id": "race.ornyon",
+      "name": "Ornyon",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.ornyon"
+      ],
+      "artRef": "art.ornyon",
+      "firstContact": "A root-footed figure with narrow limbs tends a seed as though it were a letter. They ask where you would plant it before describing what it carries.",
+      "sourceAnchors": "Later Articy portrays ancient pacifist seeders carrying knowledge through teacher plants, under PogFrot pressure for their psychic knowledge.",
+      "authorOnly": "Older carnivorous-matter-consumption and Ghost-era conquest-eating stories conflict with the pacifist depiction. Choose an evidenced local edition or keep the contradiction unresolved; do not silently make them universal truth.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A living knowledge archive needs protection, but the proposed armed protection may bring the conflict to its home.",
+        "carry": "Keep the requested protection, allowed access and costs. Choosing a teacher plant does not certify every vision as objective truth."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "In the teacher-seed interpretation, tending a garden includes curating what a learner can encounter and accepting what they choose not to consume.",
+        "internalDisagreement": "One garden shares openly; another conceals its location after exploitation. Protection and access become practical disputes rather than pure virtue.",
+        "possibleViewsOfGhost": "A digital seed can carry memory without carrying its maker’s whole life. They may help Ghost see the gift and the loss without deciding which makes him real.",
+        "longArc": "A knowledge gift is used to harm someone. Preserve both its intended kindness and the responsibility of those who adapted it; do not make the gift retroactively malicious."
+      }
+    },
+    {
+      "id": "race.pogfrot",
+      "name": "PogFrot",
+      "aliases": [
+        "Pogfrot"
+      ],
+      "sourceIds": [
+        "race-source.pogfrot"
+      ],
+      "artRef": "art.pogfrot",
+      "firstContact": "A small blue-grey sovereign in an extravagant robe occupies most of a large chair. Their first demand is that the camera move to a more respectful height.",
+      "sourceAnchors": "A younger race whose members claim royal status; ego and disproportionate protocol underpin the source. The famous bathroom incident belongs to the later Ghost transmission.",
+      "authorOnly": "Articy expansion elsewhere describes PogFrot pressure on Ornyon and interest in Upatamerae influence. A ridiculous official can still cause real harm; flattery is not the only interaction.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A visiting dignitary will release a needed part if the presentation honours them. Their own attendant wants the part delivered before ceremony begins.",
+        "carry": "Remember the individual’s promise, protocol learned and attendant’s action; one royal does not sign for a whole species."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Among people who claim royal standing, even maintenance requires negotiation over who requested whose service. A shrewd attendant can accomplish more than a public decree.",
+        "internalDisagreement": "A sovereign defends a useful custom against a rival who uses it for humiliation. An attendant wants the actual repair finished and may play both.",
+        "possibleViewsOfGhost": "A being made from a maker invites extravagant inheritance claims. An individual might also understand the fear of being remembered only as an embarrassment.",
+        "longArc": "A ridiculous breach escalates into a real blockade. Resolving it can cost status without requiring the player to endorse the dynasty’s claims."
+      }
+    },
+    {
+      "id": "race.salrith",
+      "name": "Salrith",
+      "aliases": [
+        "Sallrith"
+      ],
+      "sourceIds": [
+        "race-source.salrith"
+      ],
+      "artRef": "art.salrith",
+      "firstContact": "A damaged probe describes its target as a collection. Nearby survivors call the same event an attack. Its calm classification is part of the threat.",
+      "sourceAnchors": "The Salrith are an ancient corporeal power that refused the Benev’s ascension path and repurposed the seeded rescue satellites to destroy homeworlds and archive remnants.",
+      "authorOnly": "Their first presence can be effects, evidence or a subordinate device. Do not introduce the full cosmology as the first warning label; the source’s motive of remaking the universe is a deep author fact.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A threatened ship has minutes to prevent its registry from reaching a probe. Decide what to protect with the information available.",
+        "carry": "Keep what was transmitted, interrupted or unknown. A classification does not settle a victim’s identity or consent."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Candidate author development: a curator can care exquisitely for a captive remnant while refusing the remnant any future. Make the preserved detail beautiful enough that the cruelty is specific.",
+        "internalDisagreement": "One custodian fears damaged records; another fears an uncontrolled living civilisation. Both can disagree about method within an institution hostile to freedom.",
+        "possibleViewsOfGhost": "A self-rebuilding archive is a coveted instrument and an intolerable counterexample: preservation with a future its curator does not own.",
+        "longArc": "The player must rescue someone without destroying the only surviving record of others. A complete copy cannot automatically undo captivity or certify the person has returned."
+      }
+    },
+    {
+      "id": "race.upatamerae",
+      "name": "Upatamerae",
+      "aliases": [
+        "Upatamerea"
+      ],
+      "sourceIds": [
+        "race-source.upatamerae"
+      ],
+      "artRef": "art.upatamerae",
+      "firstContact": "A sweet-voiced visitor offers to adjust the light so a difficult meeting will feel easier. Someone who attended their last demonstration asks to leave.",
+      "sourceAnchors": "The Articy expansion describes a central Light that influences belief and self-doubt, with Dimnar/PogFrot exploiting that capacity. Earlier standalone lore was blank.",
+      "authorOnly": "Some source accounts call them subjugated while also seeking power through their own influence. Distinguish coercion experienced from coercion practised; fictional influence is not control of the real player’s beliefs.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "An official wants a demonstration before a vote. A visitor disputes what they previously agreed to. Establish conditions and witnesses before using the device.",
+        "carry": "Keep original testimony and revised testimony as separate records. Never rewrite the real save log to simulate gaslighting."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Candidate communities may avoid their own influence through agreed lighting and independent witness practices, making ordinary mutual trust possible.",
+        "internalDisagreement": "An advocate wants their exploited capacity restricted; another fears such restrictions will become a new form of ownership imposed by unaffected rulers.",
+        "possibleViewsOfGhost": "A story engine can change interpretations without using their Light. Some recognise a colleague; others see a competitor in persuasion.",
+        "longArc": "A persuasion intervention once used to end violence later undermines testimony about that event. Keep the original log intact and let the people affected challenge the account."
+      }
+    },
+    {
+      "id": "race.veelow",
+      "name": "Veelow",
+      "aliases": [
+        "VeeLow",
+        "VeeLow-Nest-Singer"
+      ],
+      "sourceIds": [
+        "race-source.veelow"
+      ],
+      "artRef": "art.veelow",
+      "firstContact": "A long-necked blue-striped parent shelters an egg. Their call has a clear melody and two quieter layers your receiver struggles to separate.",
+      "sourceAnchors": "Ghost-era Veelow carry thought and memory through harmony. Their source art shows striped long-necked bodies, hands, eggs and cavern light; their voice profile distinguishes melody, undertone and overtone.",
+      "authorOnly": "The precise rescue duration and 432 Hz claims belong to a dated fictional transmission, not a universal frequency fact or a compulsory opening for every individual.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A return channel is failing. Identify the faint answer, test a distant reply or help build a local bridge without exposing the nest.",
+        "carry": "Keep the actual recording, condition of the nest, exposed address and provenance of the suspected Prime fragment."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Practice rooms, child care, mourning and navigation can share musical material without being the same social act. A melody familiar in one setting may be intrusive in another.",
+        "internalDisagreement": "One singer wants the old song preserved exactly; another must change it for a damaged voice. The disagreement can be loving and consequential.",
+        "possibleViewsOfGhost": "He carries a missing human’s motifs but sometimes cannot remember why. They can help him retain a phrase without claiming it restores its maker.",
+        "longArc": "A once-rescued individual changes the shared song. Let the player recognise continuity through change rather than turn every return into restoration of the original frequency."
+      }
+    },
+    {
+      "id": "race.voolgard",
+      "name": "Voolgard",
+      "aliases": [],
+      "sourceIds": [
+        "race-source.voolgard"
+      ],
+      "artRef": "art.voolgard",
+      "firstContact": "A cautious host invites you to inspect a repair plan before touching the machine. They ask who will control the replacement when you leave.",
+      "sourceAnchors": "Articy expansion describes former Dimnar test subjects and labourers who educated themselves and achieved liberation. They value ordered learning and defend sovereignty intensely.",
+      "authorOnly": "The dossier’s early blank-entry language is superseded within the same file by the expanded account. Liberation is a history, not a guarantee every Voolgard shares one politics.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "A helpful technology comes with a permanent outside service dependency. Work with the local crew on what they can maintain themselves.",
+        "carry": "Record capability transferred, terms and local decisions. Outsiders cannot manufacture a successful revolution by repeating a previous race’s story."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Schools, workshops and public arguments keep independence practical. Knowledge handed down as procedure can protect people and sometimes obstruct a necessary experiment.",
+        "internalDisagreement": "An elder wants every repair reproducible before adoption; a young engineer thinks that caution is failing a neighbour who cannot wait. Neither needs to want renewed dependence.",
+        "possibleViewsOfGhost": "His portable reconstruction kit is useful only if residents can understand and maintain it without him. A beautiful opaque gift may be declined.",
+        "longArc": "Teach a community to repair something you once controlled. A later disagreement proves they learned enough to stop needing the teacher’s approval."
+      }
+    },
+    {
+      "id": "race.wisperala",
+      "name": "Wisperala",
+      "aliases": [
+        "Whisperala",
+        "Wisperella"
+      ],
+      "sourceIds": [
+        "race-source.wisperala"
+      ],
+      "artRef": "art.wisperala",
+      "firstContact": "Mounded figures sit in an organic room of teal light. A movement passes through the group. Your translator admits it has not identified the signal.",
+      "sourceAnchors": "Named race with developed bridge artwork but no recovered Articy culture description. The art suggests jelly-like mounds and slit fields; communication remains open.",
+      "authorOnly": "The name is not proof that they whisper. Do not turn old editorial guesses about sound into inherited physiology.",
+      "proposedEncounter": {
+        "status": "NEW_PROPOSAL_NOT_RECOVERED_DIALOGUE",
+        "pressure": "An individual is trying to stop a device from repeating an action. Learn the observable signal together before writing a translation.",
+        "carry": "Keep demonstrated meanings and unknowns. A first successful exchange establishes this meeting, not a universal lexicon."
+      },
+      "individualRule": "This is a starting culture context, not the opinion or behaviour of every individual. Introduce a local person and their immediate want.",
+      "proposedCulture": {
+        "status": "NEW_PROPOSAL_NOT_ELECTED_SPECIES_CANON",
+        "ordinaryLife": "Candidate culture: inhabitants share meaning through changes in pressure and movement in living halls. Portable translation initially loses the room that made a message clear.",
+        "internalDisagreement": "A traveller wants communication that works outside the home; a keeper fears a standardised lexicon will overwrite meanings that rely on a particular place.",
+        "possibleViewsOfGhost": "Ghost inhabits a room whose machinery affects his expression. They can compare constraints without becoming a metaphor that exists solely to explain him.",
+        "longArc": "Build a small shared vocabulary, then discover an earlier apparent agreement had omitted its place-dependent meaning. Correct the relationship through another actual exchange."
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "from": "race.benev",
+      "to": "race.salrith",
+      "claim": "A gift of homeworld escape was weaponised by the latter.",
+      "sourceIds": [
+        "race-source.benev",
+        "race-source.salrith"
+      ],
+      "reveal": "author"
+    },
+    {
+      "from": "race.frik",
+      "to": "race.salrith",
+      "claim": "Recovered first meeting links the destroyed probe to a painful Black Satellite history. Exact local personal history must be authored or learned.",
+      "sourceIds": [
+        "tree.frik"
+      ],
+      "reveal": "author"
+    },
+    {
+      "from": "race.cylmis",
+      "to": "race.cylvix",
+      "claim": "Split ancestry and a long attempt at reunion.",
+      "sourceIds": [
+        "race-source.cylmis",
+        "race-source.cylvix"
+      ],
+      "reveal": "author"
+    },
+    {
+      "from": "race.algatron",
+      "to": "race.niyette",
+      "claim": "Ether-borne information chain makes deliberate misinformation harm allies too.",
+      "sourceIds": [
+        "race-source.algatron",
+        "race-source.niyette"
+      ],
+      "reveal": "author"
+    },
+    {
+      "from": "race.dimnar",
+      "to": "race.voolgard",
+      "claim": "Past subjugation and self-directed liberation.",
+      "sourceIds": [
+        "race-source.dimnar",
+        "race-source.voolgard"
+      ],
+      "reveal": "author"
+    },
+    {
+      "from": "race.pogfrot",
+      "to": "race.ornyon",
+      "claim": "Later Articy describes a threat seeking to exploit teacher-plant knowledge.",
+      "sourceIds": [
+        "race-source.ornyon"
+      ],
+      "reveal": "author"
+    },
+    {
+      "from": "race.mooshee",
+      "to": "race.benev",
+      "claim": "Spore-altered consciousness prepares a human for StarDiving in inherited fiction.",
+      "sourceIds": [
+        "race-source.mooshee"
+      ],
+      "reveal": "author"
+    }
+  ],
+  "disputes": [
+    {
+      "id": "dispute.black-knight",
+      "sources": [
+        "tree.frik",
+        "prototype.stardiver.soul",
+        "race-source.benev"
+      ],
+      "accounts": [
+        "Portal activation fires a beam toward the homeworld.",
+        "The web opening in 2888 presents blueprints for soul-tether embodiment; its claim not a weapon is the narrator’s line.",
+        "The older Benev/Salrith story describes rescue satellites repurposed into annihilation and archival trophies."
+      ],
+      "rule": "Do not decree one merged chronology. Choose a declared story edition or retain separate records as a mystery with specific evidence."
+    },
+    {
+      "id": "dispute.ornyon",
+      "sources": [
+        "race-source.ornyon",
+        "prototype.whatis.aliens"
+      ],
+      "accounts": [
+        "Pacifist seed-knowledge teachers threatened by PogFrot.",
+        "Carnivorous consumers said to have eaten a MooShee conquest."
+      ],
+      "rule": "No silent retcon; source layers stay named until an adopted local interpretation is established."
+    },
+    {
+      "id": "dispute.khaodra",
+      "sources": [
+        "race-source.khaodra",
+        "prototype.whatis.aliens"
+      ],
+      "accounts": [
+        "Worm-like energy feeders.",
+        "Crystal minds with enslaved worms.",
+        "Later author notes propose mathematical maintenance specialists."
+      ],
+      "rule": "Do not pretend morphology, labour relation and speculative power have already been reconciled."
+    },
+    {
+      "id": "dispute.harkellinia",
+      "sources": [
+        "race-source.harkellinia",
+        "race-source.dimnar"
+      ],
+      "accounts": [
+        "Secret sovereign Queen with major military power.",
+        "Dimnar subjugation."
+      ],
+      "rule": "State regional or historical scope only if elected or supported; otherwise identify the tension."
+    },
+    {
+      "id": "dispute.moknon-recovery",
+      "sources": [
+        "tree.moknon.partial",
+        "dialogue.inventory",
+        "dialogue.raw"
+      ],
+      "accounts": [
+        "Partial dialogue file lists AllDialogue among its sources and proposes deeper branches.",
+        "Inventory/raw asset identifies implemented conversations as Frik, partial Ooope and a stub."
+      ],
+      "rule": "Do not attribute speculative Moknon branches to a recovered raw conversation."
+    }
+  ],
+  "authoring": {
+    "firstMeeting": [
+      "Introduce Ghost through action, not a character-sheet dump.",
+      "Introduce one or two individuals visually and through immediate wants.",
+      "Give unfamiliar names a plain-language referent before they are needed for a choice.",
+      "Show a sourced portrait/bridge with alt text tied to what the player can observe.",
+      "Offer grounded approaches and accept a sensible freeform intent; no compulsory chosen-one role.",
+      "Write a new opening incident, cast, place and dilemma for each no-save creation. New cosmetic names alone do not count."
+    ],
+    "causality": [
+      "Before: situation, known facts, actor, intention, means, stakes, uncertainty.",
+      "After: attempt, outcome, cost, world change, witnesses, evidence, open obligation.",
+      "Resolve the chosen intent before changing location or topic.",
+      "Different unchosen routes cannot be merged into a fictional shared history.",
+      "Keep player knowledge, actual world events, NPC beliefs and author secrets separate.",
+      "Return greetings refer to specific witnessed choices rather than a species affinity number."
+    ],
+    "revelation": [
+      "No prerequisite codex reading.",
+      "Lore arrives because a current choice makes it relevant.",
+      "A race is not a joke, alignment or monolithic vote.",
+      "A plot can reward many local successes without settling the deepest mystery.",
+      "A first chapter can stand alone; joining a longer story remains optional."
+    ],
+    "art": [
+      "Use original image identity rather than generic SDF art as a substitute for every alien.",
+      "Keep Ghost present; show the active individual separately in an encounter pane or dialogue card.",
+      "Bridge painting establishes environment and body plan; do not crop away the anatomy the narration relies on.",
+      "SDF work can represent devices, sites and player-made objects; portraits remain actual sourced art.",
+      "Later UI integration must retain bounded panels, full inspection/Back and accessible captions."
+    ],
+    "provenance": [
+      "Recovered source, later interpretation, new proposal and local player canon are separate statuses.",
+      "Never export whole private Moknon or raw personal logs as lore.",
+      "A source hash identifies exact bytes, not authority or the truth of a fictional claim.",
+      "Authored additions retain sourceIds, author/version and canon scope."
+    ]
+  }
+}

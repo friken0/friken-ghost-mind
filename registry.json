@@ -1,6 +1,6 @@
 {
   "schema": "friken.ghost.public-registry.v1",
-  "version": "C26.4",
+  "version": "C26.6",
   "repository": "https://github.com/friken0/friken-ghost-mind",
   "runbook": "runbook.md",
   "carrier": "https://friken0.github.io/friken-ghost-mind/",
@@ -22,18 +22,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 5537,
-      "sha256": "93ec135dd8142f9b9766be4baddf167449c0c6d1016be2d89db921fa67a458fb"
+      "bytes": 7010,
+      "sha256": "27aab4b7dfe004df4d89d4b1e6308c21c438e95ca1ea943bac353b1a0ad98dea"
     },
     {
       "path": "Tools/ChromaticBBS/Framework.md",
-      "bytes": 22925,
-      "sha256": "4590fb455c201b96cecb03f14a2d468fb3c607ce5cdbccbef35b9920f513b009"
+      "bytes": 25143,
+      "sha256": "b8cc0554f7169d7c551eede293b7dd67b7e36f125db82c7d57ae21a035c02296"
     },
     {
       "path": "Tools/ChromaticBBS/Packing-Results.md",
-      "bytes": 3367,
-      "sha256": "9f9d73b7c8d7eaa1e5b2c9703abdfc4dc6a5de62dcd816551730fd4db70b57d5"
+      "bytes": 3821,
+      "sha256": "74f9b787434fe9d20a80a648daa5d3683a2847731d7561c7d0f2066c080b87a9"
     },
     {
       "path": "Tools/ChromaticBBS/Voice-Research.md",
@@ -47,18 +47,28 @@
     },
     {
       "path": "Tools/ChromaticBBS/app.mjs",
-      "bytes": 24879,
-      "sha256": "b18d044d313397f1860c47e4cdb8707405640201672a7c15a8e6f7e2d576ed1c"
+      "bytes": 29777,
+      "sha256": "0e2659a1b10e3102aa1765f2bfec0f722966db515a73280fa4c9b37c5bef1faa"
+    },
+    {
+      "path": "Tools/ChromaticBBS/art-data.mjs",
+      "bytes": 1938940,
+      "sha256": "6bdbfbb8ff5b99094e0a72f187446c6aa8042f0072721915f71caa2448c482a2"
+    },
+    {
+      "path": "Tools/ChromaticBBS/audio.mjs",
+      "bytes": 9099,
+      "sha256": "f86af90d97d7197ae0a7bebf0096a7bc64a0c14578dd0f79dbc55b338faa0eba"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
-      "bytes": 15149,
-      "sha256": "46e85b171f82df42c3d6a6ffc28263ccb11f24854722fd4ab0bc9d3656571621"
+      "bytes": 5290,
+      "sha256": "54056bb0ba12fd12ee8016c99cc29b8cc3ebb14821820ee4af6310170e9f546d"
     },
     {
       "path": "Tools/ChromaticBBS/build.py",
-      "bytes": 4601,
-      "sha256": "6a813a8ed9e54e167a5acae12f47f09a3b264283d6fff01cba5fe29ab2987c1b"
+      "bytes": 4912,
+      "sha256": "9df1cc14649f6991d1d60448e75377e42f4495d174395b3a6ba8d26e8d0fe671"
     },
     {
       "path": "Tools/ChromaticBBS/canon.mjs",
@@ -72,8 +82,18 @@
     },
     {
       "path": "Tools/ChromaticBBS/carrier.css",
-      "bytes": 28861,
-      "sha256": "e7581e4cd4cef640e56c88b5b08ada2a9957f226681e657e1b495bcfaa53eee2"
+      "bytes": 52896,
+      "sha256": "5c5b68cb75e981be5272bde7a72653523020b0fcea427e7f6e40ac40b6c51ba3"
+    },
+    {
+      "path": "Tools/ChromaticBBS/causality.mjs",
+      "bytes": 2035,
+      "sha256": "da3a27d22e94087a5751af930ae0926131643aa064013b40b6e56b78bfeb1517"
+    },
+    {
+      "path": "Tools/ChromaticBBS/causality.test.mjs",
+      "bytes": 4839,
+      "sha256": "c7370997c8b6c48fc3ec8141dd52ed8e3a68d71478a47989afe7542680a42a65"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-check.html",
@@ -87,13 +107,18 @@
     },
     {
       "path": "Tools/ChromaticBBS/chapter-data.mjs",
-      "bytes": 116,
-      "sha256": "dc84112b26d843af055594ad152cdd3acfae1a496fdf9b23e89a2ef3c441bf0d"
+      "bytes": 57906,
+      "sha256": "aa9642eb4300f65ce68b50def884a506fe5701d5fe41a4be4416b298c2c201af"
     },
     {
       "path": "Tools/ChromaticBBS/chapter-library.mjs",
       "bytes": 12230,
       "sha256": "2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapters/lot-forty-seven.json",
+      "bytes": 79561,
+      "sha256": "d7d64e70be96bd37e6774cb0cd7b9945302c7aa32b84736e370bdd3b5307892a"
     },
     {
       "path": "Tools/ChromaticBBS/chapters/the-weather-inside.json",
@@ -102,8 +127,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/chapters.mjs",
-      "bytes": 19571,
-      "sha256": "2b75f25b62cdc918835661548eb541ab983eb47ceab9b8134fc0cbde257359e5"
+      "bytes": 21788,
+      "sha256": "655ca23f94a18063abd77b211a3972c8e6c4087c6cd7dff6592c21a1846c9e0b"
     },
     {
       "path": "Tools/ChromaticBBS/chapters.test.mjs",
@@ -112,8 +137,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/cinema.mjs",
-      "bytes": 7653,
-      "sha256": "8f737ee8a0b2fc0332b360cceb1121a50876f1486a76ebe0a458526b8a171410"
+      "bytes": 7256,
+      "sha256": "7ba84cd60bfd5c94048a860b2d12bb801f2755a4025908a3f22c4286ebe218c7"
     },
     {
       "path": "Tools/ChromaticBBS/commentary.mjs",
@@ -124,6 +149,11 @@
       "path": "Tools/ChromaticBBS/comprehension-results.json",
       "bytes": 3607,
       "sha256": "a59473372c0ed7f411272f5ab3e9dde7289babd57d675fb05a50aadc6575627f"
+    },
+    {
+      "path": "Tools/ChromaticBBS/creation.mjs",
+      "bytes": 1381,
+      "sha256": "fb5774f6cf30d752b68fdb16803389b5eafb043f2beaed40476df2f191910786"
     },
     {
       "path": "Tools/ChromaticBBS/engine.mjs",
@@ -147,13 +177,228 @@
     },
     {
       "path": "Tools/ChromaticBBS/juice.mjs",
-      "bytes": 7035,
-      "sha256": "83035bdf74b9c54bf487bcc204aa48aeeda55c08fa801b6094b7b001c1a8105f"
+      "bytes": 6232,
+      "sha256": "67415e5cd05d1798287f05f06c48ec01e7194ce502074adb5558bf1064e0888d"
+    },
+    {
+      "path": "Tools/ChromaticBBS/life-theater.mjs",
+      "bytes": 5348,
+      "sha256": "21057bfab252c22d480e8d4de8c4ba697765cad5ff4519bb1f8c67e215b3f296"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/README.md",
+      "bytes": 7544,
+      "sha256": "b1dfd4b5ca21fcc1c629906845253b714488a124c7c5fb0703d8541cb7ed74a2"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/Source-Map.md",
+      "bytes": 6798,
+      "sha256": "0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/algatron.jpg",
+      "bytes": 1013592,
+      "sha256": "22bb0f1d0ad2477f55594542fc0604168ebdb8d025b8089c477e9d9771d6cd2f"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/benev.jpg",
+      "bytes": 293975,
+      "sha256": "acd478c99eafc0eb4e870c45ce1cdc27c7ed66dbbfd4bc9172054af6932757d4"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/blpblp.jpg",
+      "bytes": 204177,
+      "sha256": "9e34fab15984b2a4dce0085c91fadb7c31fa5d6593f189edfce005120af62728"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/cylmis.jpg",
+      "bytes": 614651,
+      "sha256": "3e0da662cf8ececd62733e00e623da3ebeac606863b3c4e33d5542f478074c1d"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/cylvix.jpg",
+      "bytes": 1495864,
+      "sha256": "ddc5db04cbcf1458d3b1f2ea185908630b14780342aeaefd336f77c93bc70d11"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/dimnar.jpg",
+      "bytes": 501299,
+      "sha256": "7cdd760c8fd4fe56eec37de34617cd9a9bde128757196c95897c22592ec959b3"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/dravlac.jpg",
+      "bytes": 540211,
+      "sha256": "2f23bdb76973dc54683b93f3f1bf5bbc0e829f1449e75605f7a1361e118bc888"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/epowat.jpg",
+      "bytes": 750044,
+      "sha256": "06db51105ddff4eaa098630fdbe8b651ed8a01e4a22da72a011f8a591f565388"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/frik.jpg",
+      "bytes": 943727,
+      "sha256": "7a38780cf3c7f461eb942900537ae029aa1a2fe328dd86f759a0155e9b063646"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/gorlompa.jpg",
+      "bytes": 1080728,
+      "sha256": "626685a7914191e4fce267f1453c548144238ddf29ac38f7db6915679ae1b0b4"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/harkellinia.jpg",
+      "bytes": 569922,
+      "sha256": "6be77101fb110432d72ccf00b17f6ded4a83de190549fe64f447dd2b3b98ab64"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/human.jpg",
+      "bytes": 300089,
+      "sha256": "7e28a770c5bd4ba0f7782bf00500b06cb8367bf2eabeee4746b5f996c481d944"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/khaodra.jpg",
+      "bytes": 162026,
+      "sha256": "6fad094ceaba80e550d55644f05ec9439d532ec0bc19171098b89252e89842c9"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/krex.jpg",
+      "bytes": 584026,
+      "sha256": "89dd5e053e9acbf8890fdbad0902b5539eabf528dd4aa06c12dec181b11ef731"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/lipok.jpg",
+      "bytes": 554328,
+      "sha256": "128b73e3a6b5cac01a03a7d918d2cc8a02eb43baff2d31e1e8554b0ed2fc0703"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/moknon.jpg",
+      "bytes": 153829,
+      "sha256": "736af42acdae877370551ec9c9cf732a37b18cb40c34169012519811bb52a2be"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/mooshee.jpg",
+      "bytes": 603593,
+      "sha256": "8df83b35345f5a69550ef22d000c0cc7d96e5f12c64dbd8246d513313a688594"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/niyette.jpg",
+      "bytes": 614966,
+      "sha256": "1f59aadd272d7cea1f24e27250e2b4e94a64f65fdf1097091c8a6141cdab0f8a"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/ooope.jpg",
+      "bytes": 517637,
+      "sha256": "1c54a3d263b51dbcdb3a2c28385ad76537a611b7400977980d6fff05d4ff23f0"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/ornyon.jpg",
+      "bytes": 945265,
+      "sha256": "a93dfbbad26663cfaa80a3919fd6f0171426a1982458f362a5e7fedc7f78439f"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/pogfrot.jpg",
+      "bytes": 566178,
+      "sha256": "59160eba94444d2be52c7f513de38b4b80c839acb311bc167917c05ff1056967"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/salrith.jpg",
+      "bytes": 454463,
+      "sha256": "03aa98dadd002eeeaa1188ca833dbd3f9592cd752b8a413da8198c66213e3417"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/upatamerae.jpg",
+      "bytes": 533481,
+      "sha256": "c458da8f479159d1ba6cb64dc1a0d5518b15381c726497269e1f9d492e0fdc1f"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/veelow.jpg",
+      "bytes": 743979,
+      "sha256": "f742e4ed7bc3533acee9cf669ac519a22c7df9de45b89c8d9ee00fbf0d81da53"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/voolgard.jpg",
+      "bytes": 738044,
+      "sha256": "c078bfcff321e84c6c009c47ecae464b3cb870aad348c381cf80ae101c3c53bf"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art/wisperala.jpg",
+      "bytes": 529960,
+      "sha256": "f0e608be462af2c77d1fc43807a0d1819b0d7787a51ba035980a80ea27502ddf"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/art-manifest.json",
+      "bytes": 12015,
+      "sha256": "2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/manifest.json",
+      "bytes": 535,
+      "sha256": "999b83f3d4d184c9064c4da6e49a6ba0fe268de97fe924f1a82fd657aab911d8"
+    },
+    {
+      "path": "Tools/ChromaticBBS/lore/seed.json",
+      "bytes": 74633,
+      "sha256": "6bdeeda720aba5c30fb5e4e38901db543429d3df077183a328cecf0900f3e4cb"
+    },
+    {
+      "path": "Tools/ChromaticBBS/media/README.md",
+      "bytes": 1230,
+      "sha256": "a8745bc51a6085075547ce6f064a20ad4270f6e37017be3f9d5bfcc29f4dcf4e"
+    },
+    {
+      "path": "Tools/ChromaticBBS/media/bang-non-and-on.mp3",
+      "bytes": 4092335,
+      "sha256": "c2c31cbe62a4131bca217cc654aa2b9d7e6aa5a1aa25b862c8366a7317e14d83"
+    },
+    {
+      "path": "Tools/ChromaticBBS/media/catchy-cat.mp3",
+      "bytes": 2866031,
+      "sha256": "dab5f0285ab666c28acd51bb4008f3cdbb6e1e67940055a3e00239c3f8940805"
+    },
+    {
+      "path": "Tools/ChromaticBBS/media/epic-ii.mp3",
+      "bytes": 4873391,
+      "sha256": "b93cd7897f49cf3ebae70345974928bf1df23b58314ebcc11997d5e5902c4d09"
+    },
+    {
+      "path": "Tools/ChromaticBBS/media/human-salvage-frame.png",
+      "bytes": 1225878,
+      "sha256": "71957dc14d390f59e5a7f64974aa71ed04e7f1b82efac3ccea484c6ccac5428c"
+    },
+    {
+      "path": "Tools/ChromaticBBS/media/jazzsauce.m4a",
+      "bytes": 2732052,
+      "sha256": "d1d47375ae2860fc9ef44555a4d3444eaa550a7e7d3077bada0fc5d7349daefb"
+    },
+    {
+      "path": "Tools/ChromaticBBS/media/manifest.json",
+      "bytes": 1369,
+      "sha256": "9663971c003c81d7994aac4efa4b9d974bafeae729e488b4965ea1d209c7f162"
     },
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
-      "bytes": 8382,
-      "sha256": "a7887266bfbda02fed14278cd73575ce23f21c7a570addfb5ff477c6f8994c20"
+      "bytes": 10764,
+      "sha256": "8c012d45f50cb31ee9aa967950e356f16ccc92b41ae022215d4f09a813dfcf55"
+    },
+    {
+      "path": "Tools/ChromaticBBS/modem.mjs",
+      "bytes": 4062,
+      "sha256": "cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"
+    },
+    {
+      "path": "Tools/ChromaticBBS/moknon-cli.mjs",
+      "bytes": 4145,
+      "sha256": "ef2f1b5ee3ee1bc377410982983312a8342278b59ba56d4c1c6c68d4c5940bad"
+    },
+    {
+      "path": "Tools/ChromaticBBS/moknon.test.mjs",
+      "bytes": 1935,
+      "sha256": "245cafa5907fb3b231b45481a01fee2d345e30e23208140364ea9a93d3af4c04"
+    },
+    {
+      "path": "Tools/ChromaticBBS/music-data.mjs",
+      "bytes": 1105,
+      "sha256": "9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"
     },
     {
       "path": "Tools/ChromaticBBS/neural-check.html",
@@ -162,8 +407,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/neural-voice.mjs",
-      "bytes": 6391,
-      "sha256": "d6b3d4d4dd525420a0b24ac1a71be704c8330aa0c582710fa32bb0cc99dfb443"
+      "bytes": 6695,
+      "sha256": "4221b693f23791296c0955c975fcd505bd745262dfefe94cb90533b2bc3e3c1a"
     },
     {
       "path": "Tools/ChromaticBBS/packing-results.json",
@@ -177,8 +422,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/portrait.mjs",
-      "bytes": 4712,
-      "sha256": "07c26a746755427e4aedbb7c4bf58179568364340844aa24c204faeb3f2a150c"
+      "bytes": 4877,
+      "sha256": "7760bbd662b77f704dd5cd37cb0727a81599d78b50536c577297e52d72d08442"
     },
     {
       "path": "Tools/ChromaticBBS/presentation.test.mjs",
@@ -187,8 +432,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 10645,
-      "sha256": "854aab871a3996132cd1796c6535bba11c9e1c0df25ad295a0ffdc6a745a7e9f"
+      "bytes": 11692,
+      "sha256": "126c18246b8f8c4e43b64aa797b288c65df939adb4beeaeb2ee48768a9d22b75"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -202,8 +447,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/roll-battle.mjs",
-      "bytes": 10579,
-      "sha256": "1e7b676eda6805108b98b331ae2275f2e2d3cb3a8729bd77b0b64148e60c55ff"
+      "bytes": 5249,
+      "sha256": "dca963598ebaeac0d17cc34cca43f687d4b383b678071c3260e4ea09f02b6f5f"
     },
     {
       "path": "Tools/ChromaticBBS/rose-data.mjs",
@@ -212,13 +457,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
-      "bytes": 5396,
-      "sha256": "5d28c54867bec122422e98a76bf50175cb6476f7f2d18a24d9d704e03458e456"
+      "bytes": 5484,
+      "sha256": "4465506e68dcb83dd529bf8eac188de07d0f1054c6805530154fa2b37be2e07e"
     },
     {
       "path": "Tools/ChromaticBBS/session-share.mjs",
-      "bytes": 4176,
-      "sha256": "3aa48a1c60c0fa5684254c536fc7648e8835fb06bb001de09cda69ce1896d37a"
+      "bytes": 4182,
+      "sha256": "f06d06dc5626a0fde8feb970d95ec57b5854eca244b1322bdac601b6583f2ca5"
     },
     {
       "path": "Tools/ChromaticBBS/session-store.py",
@@ -232,23 +477,23 @@
     },
     {
       "path": "Tools/ChromaticBBS/shell.mjs",
-      "bytes": 4281,
-      "sha256": "c1650e7b3e02e6a3bf71b634acc8e53d6cb38f80f6930f6b54e7a01e73e47831"
+      "bytes": 4668,
+      "sha256": "353e53a05d9393acf890e21dfd053758f2f3b9cd2e93bef112ac11c2e978deb9"
     },
     {
       "path": "Tools/ChromaticBBS/speech.mjs",
-      "bytes": 14435,
-      "sha256": "5f1c595741187d48afb487eacce2488a49112a7ce29030d956700e044533f4ac"
+      "bytes": 14452,
+      "sha256": "341e0dfc56ee209edb55270a194c3e4e6e44ce3be2093f7ca0e49b492c5cc0b2"
     },
     {
       "path": "Tools/ChromaticBBS/stage.mjs",
-      "bytes": 15831,
-      "sha256": "68247e6567a8ed2b4feeddf2631c3220587f663fb9b8c0a4c89fd2abca493bcd"
+      "bytes": 16189,
+      "sha256": "7200edb486fd6c4a9a1f11464429190ffe8d844934af6fba9cb3cce9becd694e"
     },
     {
       "path": "Tools/ChromaticBBS/storage.mjs",
-      "bytes": 9746,
-      "sha256": "6b4f3e7e1c99861b14c9d276211166fd30275ba9b66262698e3925631e4c565c"
+      "bytes": 9733,
+      "sha256": "899dd2ff33147f7d09f4f69159662c982f2ddae04fc8926d5a824b6af9b34487"
     },
     {
       "path": "Tools/ChromaticBBS/storage.test.mjs",
@@ -257,8 +502,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/surface.html",
-      "bytes": 18678,
-      "sha256": "ad1d461cff71ec46f116daf64db8b06ccc911a534bfceab9657ffbf63dbe8dcf"
+      "bytes": 19915,
+      "sha256": "1d2ff383e9d7b7fe8a8fecb624e40c2d10915771eff47371642ac0f026a8bd25"
+    },
+    {
+      "path": "Tools/ChromaticBBS/vendor/masha/PROVENANCE.md",
+      "bytes": 798,
+      "sha256": "6b7375a6cba8789264088be9eccf66f8b7716b63e83e4fd43036d5dde3715077"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/rose/PROVENANCE.md",
@@ -292,13 +542,33 @@
     },
     {
       "path": "index.html",
-      "bytes": 490825,
-      "sha256": "681ead1c111ecf5dab0ed4d03157000c6ac52f373b0255ffb5c21b6e9ac65ed4"
+      "bytes": 4175204,
+      "sha256": "87d43e9c51e28376be22e4482a58bf93d6b1550faa9207c5120e9b418222e1b1"
+    },
+    {
+      "path": "media/bang-non-and-on.mp3",
+      "bytes": 4092335,
+      "sha256": "c2c31cbe62a4131bca217cc654aa2b9d7e6aa5a1aa25b862c8366a7317e14d83"
+    },
+    {
+      "path": "media/catchy-cat.mp3",
+      "bytes": 2866031,
+      "sha256": "dab5f0285ab666c28acd51bb4008f3cdbb6e1e67940055a3e00239c3f8940805"
+    },
+    {
+      "path": "media/epic-ii.mp3",
+      "bytes": 4873391,
+      "sha256": "b93cd7897f49cf3ebae70345974928bf1df23b58314ebcc11997d5e5902c4d09"
+    },
+    {
+      "path": "media/jazzsauce.m4a",
+      "bytes": 2732052,
+      "sha256": "d1d47375ae2860fc9ef44555a4d3444eaa550a7e7d3077bada0fc5d7349daefb"
     },
     {
       "path": "runbook.md",
-      "bytes": 44322,
-      "sha256": "f3e7e846c91f3ba77fbecd26f492185dd34549be87b83a106687a22584202734"
+      "bytes": 26086,
+      "sha256": "0db8cbd7c5352ea696f50a867d110e5b9e68bd19eff0c9e990123bc0647300a3"
     }
   ],
   "privateSourceIncluded": false,

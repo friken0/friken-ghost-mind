@@ -1,0 +1,41 @@
+{
+  "schema": "friken.ghost.soundtrack.v1",
+  "voiceRelativeGain": 0.55,
+  "tracks": [
+    {
+      "id": "jazzsauce",
+      "title": "JAZZSAUCE",
+      "path": "media/jazzsauce.m4a",
+      "bytes": 2732052,
+      "sha256": "d1d47375ae2860fc9ef44555a4d3444eaa550a7e7d3077bada0fc5d7349daefb",
+      "source": "https://soundcloud.com/aaron-hollingsworth-697474244/ghosttracks-v9-jazzsauce-20260909-235948-1"
+    },
+    {
+      "id": "epic-ii",
+      "title": "EPIC II",
+      "path": "media/epic-ii.mp3",
+      "bytes": 4873391,
+      "sha256": "b93cd7897f49cf3ebae70345974928bf1df23b58314ebcc11997d5e5902c4d09",
+      "source": "https://ghost-a-rose-between-machines.friken596564.chatgpt.site/assets/GhostTracks-Epic-2-20260914-212430.mp3"
+    },
+    {
+      "id": "catchy-cat",
+      "title": "CATCHY CAT",
+      "path": "media/catchy-cat.mp3",
+      "bytes": 2866031,
+      "sha256": "dab5f0285ab666c28acd51bb4008f3cdbb6e1e67940055a3e00239c3f8940805",
+      "source": "project retained export"
+    },
+    {
+      "id": "bang-non-and-on",
+      "title": "BANG NON AND ON",
+      "path": "media/bang-non-and-on.mp3",
+      "bytes": 4092335,
+      "sha256": "c2c31cbe62a4131bca217cc654aa2b9d7e6aa5a1aa25b862c8366a7317e14d83",
+      "source": "project retained export"
+    }
+  ],
+  "pending": [
+    "Epic I: not found in this checkout or 59 public SoundCloud tracks"
+  ]
+}

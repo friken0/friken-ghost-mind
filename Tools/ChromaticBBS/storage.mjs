@@ -1,3 +1,4 @@
+import {rollScore} from './causality.mjs';
 /**
  * A local, portable save vault. No cookies, network, fingerprint or login.
  * Seeds retain exact checkpoint data; derived run totals are never trusted on
@@ -53,7 +54,7 @@ function runMetadata(state, id, seed = encodePlaySeed(state)) {
   playerId(id);
   const turns = state.journal.length;
   const checks = state.journal.reduce((score, receipt) => score +
-    (receipt.roll?.success ? ({ 12: 5, 15: 10, 18: 20 }[receipt.roll.dc] || 0) : 0), 0);
+    rollScore(receipt.roll), 0);
   // Inherited scars were already charged in their own chapters.
   const scars = state.scars.filter(scar => scar.chapter === state.chapter).length;
   return {

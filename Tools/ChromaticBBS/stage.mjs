@@ -11,6 +11,7 @@ export function mountStage(canvas, report = () => {}) {
 uniform vec2 resolution,gaze,orbit;
 uniform float clock,form,noise,seed,mouth,branch,wounds,zoom;
 uniform vec3 ink,accent;
+uniform vec4 cymatics;
 float smoothMin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
 mat2 rot(float a){return mat2(cos(a),-sin(a),sin(a),cos(a));}
 float ellipse(vec3 p,vec3 r){float k0=length(p/r),k1=length(p/(r*r));return k0*(k0-1.)/max(k1,.0001);}
@@ -56,6 +57,7 @@ float gate(vec3 p){
   return smoothMin(d,heart,.12);
 }
 float field(vec3 p){
+  p*=1.-cymatics.x*.08;
   p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);
   p.yz*=rot(orbit.y+gaze.y*.11);
   float seedShape=length(p)-.28+.012*sin(p.x*18.)*sin(p.y*18.);
@@ -93,7 +95,7 @@ void main(){
     vec3 base=mix(ink,accent,.5+.5*sin(p.y*6.+p.x*3.+clock*.08));
     col=(base*.45+spectral*.3)*(.16+diff*.76)*shade;
     col+=ink*rim*.7+vec3(1.)*pow(max(0.,dot(reflect(-l,n),-rd)),40.)*.65;
-    col+=accent*.05*sin(p.y*100.+clock*.3);
+    col+=accent*(.05+cymatics.y*.25)*sin(p.y*100.+clock*.3)+ink*(cymatics.z*.10+cymatics.w*.15);
   }
   col+=ink*min(.1,nearGlow*.004);
   col*=.96+.04*sin(gl_FragCoord.y*1.7);
@@ -132,8 +134,9 @@ void main(){
   const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
   const attr = gl.getAttribLocation(program, 'p');gl.enableVertexAttribArray(attr);gl.vertexAttribPointer(attr,2,gl.FLOAT,false,0,0);
-  let uniforms = Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit'].map(k=>[k,gl.getUniformLocation(program,k)]));
+  let uniforms = Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics'].map(k=>[k,gl.getUniformLocation(program,k)]));
   const roseUniforms=Object.fromEntries(['uResolution','uPointer','uModes','uTime','uAudio','cgBranch','cgScars','cgNoise','cgZoom','cgOrbit'].map(k=>[k,gl.getUniformLocation(roseProgram,k)]));
+  let audioBands=[0,0,0,0];
   let recipeKey=null;
   function setRecipe(recipe){
     const key=recipe?contentChecksum(recipe):null;if(key===recipeKey)return;
@@ -144,7 +147,7 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
     const source=recipe?fragment.slice(0,begin)+body+fragment.slice(end):fragment;
     const next=gl.createProgram();try{gl.attachShader(next,compile(gl.VERTEX_SHADER,vertex));gl.attachShader(next,compile(gl.FRAGMENT_SHADER,source));gl.linkProgram(next);if(!gl.getProgramParameter(next,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(next));}catch(error){gl.deleteProgram(next);throw error;}
     gl.deleteProgram(program);program=next;recipeKey=key;canvas.dataset.recipe=key||'legacy';
-    uniforms=Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit'].map(k=>[k,gl.getUniformLocation(program,k)]));
+    uniforms=Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics'].map(k=>[k,gl.getUniformLocation(program,k)]));
   }
   let state=null, currentForm=-1, targetForm=-1, pose=[0,0], target=[0,0], mouthLevel=0;
   let paused=matchMedia('(prefers-reduced-motion: reduce)').matches, raf=0, last=0, elapsed=0;
@@ -172,10 +175,11 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
       gl.uniform1f(roseUniforms.cgZoom,zoom);gl.uniform2f(roseUniforms.cgOrbit,...orbit);
       gl.uniform2f(roseUniforms.uResolution,w,h);gl.uniform2f(roseUniforms.uPointer,...pose);
       gl.uniform2f(roseUniforms.uModes,3+branchValue,5+branchValue);
-      gl.uniform1f(roseUniforms.uTime,elapsed);gl.uniform4f(roseUniforms.uAudio,0,0,0,0);
+      gl.uniform1f(roseUniforms.uTime,elapsed);gl.uniform4f(roseUniforms.uAudio,...audioBands);
       gl.uniform1f(roseUniforms.cgBranch,branchValue);gl.uniform1f(roseUniforms.cgScars,state?.scars.length||0);
       gl.uniform1f(roseUniforms.cgNoise,(state?.resources.noise||0)/10);
     }else{
+    gl.uniform4f(uniforms.cymatics,...audioBands);
     gl.uniform1f(uniforms.zoom,zoom);gl.uniform2f(uniforms.orbit,...orbit);
     gl.uniform2f(uniforms.resolution,w,h);gl.uniform2f(uniforms.gaze,...pose);
     gl.uniform1f(uniforms.clock,elapsed);gl.uniform1f(uniforms.form,currentForm);
@@ -222,6 +226,7 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
   report('SDF ready');wake();
   return {
     zoom:zoomBy,reset,
+    cymatics(bands){audioBands=bands.map(x=>Math.max(0,Math.min(1,Number(x)||0)));canvas.dataset.cymatics=audioBands.map(x=>x.toFixed(3)).join(',');},
     update(next){const node=next.pack?.scenes[Math.min(next.turn-1,next.pack.scenes.length-1)];try{setRecipe(node?.artifact||null);}catch(error){report('Generated SDF refused: '+error.message);return;}state=next;targetForm=({seed:-1,rose:0,face:1,gate:2})[next.world.relic.form];
       report(next.pack?'MODEL CSG / READY':next.world.relic.form==='rose'?'GOLDEN WHORLS / READY':'SDF ready');
       const palettes=[[[.23,.95,.91],[.96,.22,.62]],[[.85,.4,1],[.15,.95,.8]],[[1,.65,.23],[.5,.6,1]]];

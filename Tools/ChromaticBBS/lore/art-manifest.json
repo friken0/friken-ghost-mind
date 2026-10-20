@@ -1,0 +1,239 @@
+{
+  "schema": "friken.ghost.moknon-art.v1",
+  "assets": [
+    {
+      "id": "art.algatron",
+      "path": "art/algatron.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Algatrons/algatrons-bridge.jpg",
+      "sha256": "22bb0f1d0ad2477f55594542fc0604168ebdb8d025b8089c477e9d9771d6cd2f",
+      "bytes": 1013592,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.benev",
+      "path": "art/benev.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Benevs/benevs-bridge.jpg",
+      "sha256": "acd478c99eafc0eb4e870c45ce1cdc27c7ed66dbbfd4bc9172054af6932757d4",
+      "bytes": 293975,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.blpblp",
+      "path": "art/blpblp.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/BlpBlp/blpblp-bridge.jpg",
+      "sha256": "9e34fab15984b2a4dce0085c91fadb7c31fa5d6593f189edfce005120af62728",
+      "bytes": 204177,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.cylmis",
+      "path": "art/cylmis.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Cylmis/cylmis-bridge.jpg",
+      "sha256": "3e0da662cf8ececd62733e00e623da3ebeac606863b3c4e33d5542f478074c1d",
+      "bytes": 614651,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.cylvix",
+      "path": "art/cylvix.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Cylvis/cylvis-bridge.jpg",
+      "sha256": "ddc5db04cbcf1458d3b1f2ea185908630b14780342aeaefd336f77c93bc70d11",
+      "bytes": 1495864,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.dimnar",
+      "path": "art/dimnar.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Dimnar/dimnar-bridge.jpg",
+      "sha256": "7cdd760c8fd4fe56eec37de34617cd9a9bde128757196c95897c22592ec959b3",
+      "bytes": 501299,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.dravlac",
+      "path": "art/dravlac.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Dravlac/dravlac-bridge.jpg",
+      "sha256": "2f23bdb76973dc54683b93f3f1bf5bbc0e829f1449e75605f7a1361e118bc888",
+      "bytes": 540211,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.epowat",
+      "path": "art/epowat.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Epowat/epowat-bridge.jpg",
+      "sha256": "06db51105ddff4eaa098630fdbe8b651ed8a01e4a22da72a011f8a591f565388",
+      "bytes": 750044,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.frik",
+      "path": "art/frik.jpg",
+      "sourcePath": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/WhatIsFriktalHTML/Frik-Bridge.jpg",
+      "sha256": "7a38780cf3c7f461eb942900537ae029aa1a2fe328dd86f759a0155e9b063646",
+      "bytes": 943727,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.gorlompa",
+      "path": "art/gorlompa.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Gorlompa/gorlompa-bridge.jpg",
+      "sha256": "626685a7914191e4fce267f1453c548144238ddf29ac38f7db6915679ae1b0b4",
+      "bytes": 1080728,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.harkellinia",
+      "path": "art/harkellinia.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Harkellinia/harkellinia-bridge.jpg",
+      "sha256": "6be77101fb110432d72ccf00b17f6ded4a83de190549fe64f447dd2b3b98ab64",
+      "bytes": 569922,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.human",
+      "path": "art/human.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Human/human.jpg",
+      "sha256": "7e28a770c5bd4ba0f7782bf00500b06cb8367bf2eabeee4746b5f996c481d944",
+      "bytes": 300089,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.khaodra",
+      "path": "art/khaodra.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Khaodra/khaodra-bridge.jpg",
+      "sha256": "6fad094ceaba80e550d55644f05ec9439d532ec0bc19171098b89252e89842c9",
+      "bytes": 162026,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.krex",
+      "path": "art/krex.jpg",
+      "sourcePath": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/WhatIsFriktalHTML/krex-revised.jpg",
+      "sha256": "89dd5e053e9acbf8890fdbad0902b5539eabf528dd4aa06c12dec181b11ef731",
+      "bytes": 584026,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.lipok",
+      "path": "art/lipok.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Lipok/lipok-bridge.jpg",
+      "sha256": "128b73e3a6b5cac01a03a7d918d2cc8a02eb43baff2d31e1e8554b0ed2fc0703",
+      "bytes": 554328,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.moknon",
+      "path": "art/moknon.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Moknon/moknon-bridge.jpg",
+      "sha256": "736af42acdae877370551ec9c9cf732a37b18cb40c34169012519811bb52a2be",
+      "bytes": 153829,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.mooshee",
+      "path": "art/mooshee.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/MooShee/mooshee-bridge.jpg",
+      "sha256": "8df83b35345f5a69550ef22d000c0cc7d96e5f12c64dbd8246d513313a688594",
+      "bytes": 603593,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.niyette",
+      "path": "art/niyette.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Niyette/niyette-bridge.jpg",
+      "sha256": "1f59aadd272d7cea1f24e27250e2b4e94a64f65fdf1097091c8a6141cdab0f8a",
+      "bytes": 614966,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.ooope",
+      "path": "art/ooope.jpg",
+      "sourcePath": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/WhatIsFriktalHTML/Ooope.jpg",
+      "sha256": "1c54a3d263b51dbcdb3a2c28385ad76537a611b7400977980d6fff05d4ff23f0",
+      "bytes": 517637,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.ornyon",
+      "path": "art/ornyon.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Ornyon/ornyon-bridge.jpg",
+      "sha256": "a93dfbbad26663cfaa80a3919fd6f0171426a1982458f362a5e7fedc7f78439f",
+      "bytes": 945265,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.pogfrot",
+      "path": "art/pogfrot.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/PogFrot/pogfrot-bridge.jpg",
+      "sha256": "59160eba94444d2be52c7f513de38b4b80c839acb311bc167917c05ff1056967",
+      "bytes": 566178,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.salrith",
+      "path": "art/salrith.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Salrith/salrith-bridge.jpg",
+      "sha256": "03aa98dadd002eeeaa1188ca833dbd3f9592cd752b8a413da8198c66213e3417",
+      "bytes": 454463,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.upatamerae",
+      "path": "art/upatamerae.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Upatamerae/upatamerae-bridge.jpg",
+      "sha256": "c458da8f479159d1ba6cb64dc1a0d5518b15381c726497269e1f9d492e0fdc1f",
+      "bytes": 533481,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.veelow",
+      "path": "art/veelow.jpg",
+      "sourcePath": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/WhatIsFriktalHTML/Veelow.jpg",
+      "sha256": "f742e4ed7bc3533acee9cf669ac519a22c7df9de45b89c8d9ee00fbf0d81da53",
+      "bytes": 743979,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.voolgard",
+      "path": "art/voolgard.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Voolgard/voolgard-bridge.jpg",
+      "sha256": "c078bfcff321e84c6c009c47ecae464b3cb870aad348c381cf80ae101c3c53bf",
+      "bytes": 738044,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    },
+    {
+      "id": "art.wisperala",
+      "path": "art/wisperala.jpg",
+      "sourcePath": "Assets/zzArchive~/MoknonMedia/StarDiver/Entities/Aliens/Wisperala/wisperala-bridge.jpg",
+      "sha256": "f0e608be462af2c77d1fc43807a0d1819b0d7787a51ba035980a80ea27502ddf",
+      "bytes": 529960,
+      "credit": "Existing StarDiver/Friktal project artwork. Preserve source attribution; individual file authorship is not assigned by this manifest.",
+      "altered": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "friken.ghost.moknon-index.v1",
+  "edition": "candidate-2026-10-20",
+  "status": "CREATIVE_REVIEW_NOT_ELECTED_CANON",
+  "documents": [
+    "README.md",
+    "Source-Map.md"
+  ],
+  "seed": {
+    "path": "seed.json",
+    "sha256": "6bdeeda720aba5c30fb5e4e38901db543429d3df077183a328cecf0900f3e4cb"
+  },
+  "artManifest": {
+    "path": "art-manifest.json",
+    "sha256": "2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"
+  },
+  "sourceCount": 34,
+  "raceCount": 26,
+  "artCount": 26,
+  "artBytes": 16010054
+}

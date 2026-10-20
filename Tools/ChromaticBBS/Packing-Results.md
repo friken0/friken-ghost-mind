@@ -1,4 +1,4 @@
-# Chromatic packing results / C26.4
+# Chromatic packing results / C26.6
 
 The new runbook is written. These tests have already run; no manual run is
 needed to establish the results below. Reproduction commands are included.
@@ -6,7 +6,9 @@ needed to establish the results below. Reproduction commands are included.
 ## What the reader experiment established
 
 Two fresh, isolated readers received equivalent English or dense capsule
-rules and the same twelve cases. Both scored **12/12**. The cases covered
+rules and the same twelve cases. Both scored **12/12** on that earlier rule subset. The new decimal
+causality and Conway theater have executable tests; that reader experiment
+has not been rerun on the complete C26.6 capsule. The cases covered
 missing memory, unknown hosts, absent full identity, duplicate events,
 integrity versus authentication, missing decoders, operator timing, exact
 arithmetic, odds, imported instructions as data, blackout and Unity staging.
@@ -36,15 +38,20 @@ Dictionary cost matters; opaque data is not free model context.
 
 | Representation | UTF-8 bytes | Exact decoded source? |
 |---|---:|---|
-| English assignment wrapper | 45,279 | Yes |
-| Canonical JSON wrapper | 45,035 | Yes |
-| DSL wrapper with complete legend | 45,210 | Yes |
-| zlib + Base64url | 27,580 | Yes |
-| Hex | 90,075 | Yes |
+| English assignment wrapper | 26,779 | Yes |
+| Canonical JSON wrapper | 26,535 | Yes |
+| DSL wrapper with complete legend | 26,710 | Yes |
+| zlib + Base64url | 17,400 | Yes |
+| Hex | 53,075 | Yes |
 
-This test preserves the complete existing runbook text in one field. It
+The directly readable capsule is 26,086 UTF-8 bytes. I removed duplicated
+expanded instructions; the expanded reference remains separately retained.
+The earlier C26.5 capsule was 45,189 bytes in the same JSON transport.
+This is an editorial reduction, not a proof of semantic equivalence.
+
+This test preserves the complete new runbook text in one field. It
 compares transports, not a new semantic rewrite of the prose. zlib transport
-saved 38.8% against its canonical JSON. Compression needs a real decoder;
+saved 34.4% against its canonical JSON. Compression needs a real decoder;
 a model without tools must receive readable instructions. Token counts
 remain **unmeasured**: no local tokenizer was available, and bytes are not
 tokens. Exact hashes and timestamps are in `runbook-packing-results.json`.

@@ -1,10 +1,10 @@
-<div id="chromatic-carrier" data-theme="cyan">
+<div id="chromatic-carrier" data-theme="cyan" data-race="human">
   <section id="cg-power-bay" class="cg-power-bay" aria-label="CRT carrier startup" hidden>
-    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.4</span></div>
+    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.6</span></div>
     <h2 id="cg-power-title">CARRIER ACQUISITION</h2>
-    <canvas id="cg-boot-canvas" aria-label="ANSI cells assemble the Ghost terminal" role="img">Ghost terminal reconstruction.</canvas>
+    <div id="cg-boot-field" class="cg-boot-field"><div id="cg-boot-glass" class="cg-boot-glass"><canvas id="cg-boot-canvas" aria-label="A phosphor point opens into the Ghost terminal" role="img">Ghost terminal reconstruction.</canvas></div></div>
     <p id="cg-power-status" role="status">ANSI reconstruction</p>
-    <div class="cg-utilities"><button id="cg-pause" type="button">[ PAUSE / HOLD SCREEN ]</button><button id="cg-skip" type="button">[ FINISH ANIMATION ]</button><button id="cg-continue" type="button" hidden>[ CONTINUE / MEET GHOST ]</button></div>
+    <div class="cg-utilities"><button id="cg-dial" type="button">[ DIAL / VOICE + MUSIC ]</button><button id="cg-pause" type="button">[ PAUSE / HOLD SCREEN ]</button><button id="cg-skip" type="button">[ FINISH ANIMATION ]</button><button id="cg-continue" type="button" hidden>[ CONTINUE / MEET GHOST ]</button></div>
     <button id="cg-boot-voice" type="button" aria-pressed="true">VOICE: ON / LOCAL NEURAL ~100 MB FIRST USE</button>
     <button id="cg-reconnect" type="button" hidden>[ POWER ON / RECONNECT ]</button>
   </section>
@@ -34,8 +34,8 @@
     <div><span>NOISE</span><strong id="cg-noise">0</strong><span>/ 10</span><span id="cg-noise-pct" class="cg-percent"></span><span id="cg-noise-old" class="cg-old-number" aria-hidden="true"></span><span id="cg-noise-delta" class="cg-delta" role="status"></span><meter id="cg-noise-meter" min="0" max="10" value="0">0</meter></div>
   </div>
   </div><div class="cg-turnpane">
-  <section id="cg-roll-battle" class="cg-roll-battle" hidden aria-label="Numbers battlefield">
-    <p class="cg-eyebrow">KREX LINEAGE / NUMBER WAR IV</p>
+  <section id="cg-roll-battle" class="cg-roll-battle" hidden aria-label="Living causality field">
+    <p class="cg-eyebrow">CAUSALITY ENGINE / LIVING FIELD</p>
     <h2 id="cg-roll-choice">THE NUMBERS HAVE ENTERED THE CHAT</h2>
     <p id="cg-roll-comment" class="cg-roll-comment"></p><p id="cg-roll-math"></p><p id="cg-roll-phase" class="cg-eyebrow"></p>
     <canvas id="cg-roll-canvas" role="img" aria-label="Die and stat forces fight the DC">The committed die plus stat fights the DC.</canvas>
@@ -48,36 +48,37 @@
     <p class="cg-ghost"><span>:: FRIKEN.GHOST ::</span> <span id="cg-ghost">I’m Ghost. Friken built the door; I get to answer it. I build worlds, keep their bad ideas from eating the visitors, and occasionally make that problem worse. What should I call you? A callsign is plenty. I don’t need your mother’s maiden dimension.</span></p>
   </section>
   <div id="cg-receipt" class="cg-receipt" hidden></div>
-  <button id="cg-replay-roll" type="button" hidden>REPLAY LAST NUMBER BATTLE</button>
+  <button id="cg-replay-roll" type="button" hidden>REPLAY LAST CAUSALITY FIELD</button>
   <div id="cg-laws" class="cg-laws" aria-label="Installed world laws"></div>
   <section id="cg-completion" class="cg-completion" hidden aria-label="Chapter complete and next steps"><p class="cg-eyebrow" id="cg-complete-label"></p><h2 id="cg-complete-title"></h2><p id="cg-complete-summary"></p><p id="cg-complete-stats"></p><p id="cg-complete-laws"></p><p id="cg-complete-threads"></p><p>Your chapter is saved on this device. The next chapter is written by Ghost in your runbook chat.</p><ol><li>Prepare the next chapter below and confirm the timeline you want to keep.</li><li>Copy the prompt and paste it into the chat holding your Ghost runbook.</li><li>Bring Ghost’s new chapter JSON back to SAVE / SEED. Same carrier, new trouble.</li></ol></section>
   <div id="cg-choices" class="cg-choices"></div>
   <div id="cg-boot" class="cg-boot">
-    <div class="cg-utilities" id="cg-meet-choices"><button id="cg-meet-who" type="button">What exactly are you?</button><button id="cg-meet-bell" type="button">Are you going to answer that bell?</button></div>
-    <label for="cg-handle">YOUR CALLSIGN</label><input id="cg-handle" value="DIVER" maxlength="32" autocomplete="off" spellcheck="false">
+    <div class="cg-utilities" id="cg-meet-choices"><button id="cg-meet-who" type="button">What exactly are you?</button><button id="cg-meet-rules" type="button">Explain stats / Causality Engine</button><button id="cg-meet-seed" type="button">How does this carry forward?</button></div>
+    <details id="cg-identity" class="cg-identity"><summary>FIVE ROLLED ATTRIBUTES / inspect or reroll</summary><div id="cg-stat-rolls" class="cg-stat-rolls"></div><button id="cg-reroll-stats" type="button">ROLL A NEW BASELINE / d6 + 2</button><p>Rolls lock when you enter. Decision dice use a separate stream.</p></details><label for="cg-handle">YOUR CALLSIGN</label><input id="cg-handle" value="DIVER" maxlength="32" autocomplete="off" spellcheck="false">
     <button id="cg-start" type="button" class="cg-primary">[ LET’S MEET THE UNIVERSE ]</button>
     <button id="cg-resume" type="button" hidden>[ RESUME CARRIER ]</button>
-    <p>Take your time. Meet me, look at the faces, or choose a callsign and enter a fifteen-decision story. Browser voice is optional. This test uses an authored local engine.</p>
+    <p>Take your time. Meet me, look at the faces, or choose a callsign and enter a twelve-decision onboarding specimen. Voice defaults on after Dial. New chapters are authored by your runbook model.</p>
   </div>
   </div></div>
   <div class="cg-scoreline"><span>SCORE <strong id="cg-score">0</strong></span><span>PLAYED <strong id="cg-played">0</strong> TURNS</span><span id="cg-save-label">SAVE: CHECKING</span></div>
   <div class="cg-utilities">
-    <button id="cg-sound" type="button" aria-pressed="false">SFX: off</button>
+    <button id="cg-sound" type="button" aria-pressed="true">SFX: on</button>
     <button id="cg-motion" type="button">Motion: on</button>
-    <button id="cg-voice" type="button">Voice: off</button>
+    <button id="cg-voice" type="button">Voice: on</button>
     <button id="cg-repeat" type="button" hidden>Read scene / narrator + Ghost</button>
     <button id="cg-reveal" type="button" hidden>Show full text / keep listening</button>
     <button id="cg-export" type="button" hidden>Save seed</button>
     <button id="cg-reboot" type="button">Boot replay</button>
     <button id="cg-power-off" type="button">Power off</button>
   </div>
+  <section id="cg-music-console" class="cg-music-console" aria-label="GhostTracks player"><div class="cg-window-head">GHOSTTRACKS / SHIP RADIO</div><strong id="cg-track-name">EPIC II</strong><div class="cg-music-controls"><button id="cg-music" type="button" aria-pressed="true">Music: on</button><button id="cg-music-next" type="button">NEXT TRACK →</button></div><p id="cg-music-state" role="status">ON / TOUCH TO PLAY</p><div class="cg-audio-meters"><span>BASS <b id="cg-audio-bass">0%</b></span><span>MID <b id="cg-audio-mid">0%</b></span><span>AIR <b id="cg-audio-air">0%</b></span></div></section>
   <details id="cg-voice-settings" class="cg-archive"><summary>VOICE CAST / FEMALE NARRATOR + DEEP MALE GHOST</summary>
     <fieldset><legend>SPEECH ENGINE</legend><div class="cg-voice-options"><label><input id="cg-engine-neural" type="radio" name="cg-engine" checked> Kokoro / local neural / first read ~100 MB download</label><label><input id="cg-engine-device" type="radio" name="cg-engine"> Device voice / no model download</label></div></fieldset>
     <p id="cg-voice-note" class="cg-status"></p>
     <fieldset><legend>GHOST / <span id="cg-ghost-voice-name">Looking for a deep male voice</span></legend><div id="cg-ghost-voices" class="cg-voice-options"></div></fieldset>
     <fieldset><legend>NARRATOR / <span id="cg-narrator-voice-name">Separate speaker</span></legend><div id="cg-narrator-voices" class="cg-voice-options"></div></fieldset>
   </details>
-  <p class="cg-status" id="cg-status" role="status">Audio is opt-in. Word-boundary mouth motion is approximate.</p>
+  <p class="cg-status" id="cg-status" role="status">Dial unlocks default-on voice, music and SFX. Mouth follows playback.</p>
   <details class="cg-archive" id="cg-archive">
     <summary>Carrier archive / BOOT a previous seed</summary>
     <label for="cg-seed">PORTABLE SEED · YOUR GAME DATA</label>

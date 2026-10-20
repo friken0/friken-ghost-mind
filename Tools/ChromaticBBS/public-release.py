@@ -3,6 +3,7 @@ from pathlib import Path
 import hashlib,json,shutil,argparse
 ROOT=Path(__file__).resolve().parents[2];BASE=Path(__file__).resolve().parent
 FILES=['Packing-Results.md','packing_benchmark.py','packing-results.json','comprehension-results.json','runbook-packing-results.json','canon.mjs','canon.test.mjs','chapter-library.mjs','engine.mjs','chapters.mjs','chapter-cli.mjs','chapter-data.mjs','session-share.mjs','session-store.py','session-store.test.py','public-release.py','storage.mjs','stage.mjs','portrait.mjs','face-data.mjs','rose-data.mjs','cinema.mjs','shell.mjs','juice.mjs','commentary.mjs','roll-battle.mjs','recorded-voice.mjs','voice-data.mjs','voice-reference.json','speech.mjs', 'neural-voice.mjs','response.mjs','mind-data.mjs','app.mjs','surface.html','carrier.css','build.py','Framework.md','Writing.md','engine.test.mjs','storage.test.mjs','presentation.test.mjs','chapters.test.mjs','browser-check.html','neural-check.html','Voice-Research.md','chapter-check.html','fixtures/c26-2-completed.seed','chapters/the-weather-inside.json','vendor/rose/PROVENANCE.md','vendor/rose/rose.vertex.glsl','vendor/rose/rose.fragment.glsl']
+FILES += ['creation.mjs', 'causality.mjs', 'causality.test.mjs', 'life-theater.mjs', 'audio.mjs', 'modem.mjs', 'music-data.mjs', 'art-data.mjs', 'chapters/lot-forty-seven.json', 'media/human-salvage-frame.png', 'media/README.md', 'media/manifest.json', 'moknon-cli.mjs', 'moknon.test.mjs', 'lore/README.md', 'lore/seed.json', 'lore/manifest.json', 'lore/art-manifest.json', 'lore/Source-Map.md', 'vendor/masha/PROVENANCE.md']
 README='''# Friken.Ghost / The shared carrier
 
 Ghost writes the adventure. This repository holds the reusable BBS body,
@@ -138,9 +139,14 @@ def build(output,checkout):
     for name in FILES:
         target=output/'Tools/ChromaticBBS'/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(BASE/name,target)
     target=output/'Tools/InfiniEngineSite/ghost-renderer.js';target.parent.mkdir(parents=True);shutil.copyfile(ROOT/'Tools/InfiniEngineSite/ghost-renderer.js',target)
+    for record in json.loads((BASE/'media/manifest.json').read_text())['tracks']:
+        for prefix in [output,output/'Tools/ChromaticBBS']:
+            target=prefix/record['path'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(BASE/record['path'],target)
+    for source in (BASE/'lore/art').glob('*.jpg'):
+        target=output/'Tools/ChromaticBBS/lore/art'/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
     shutil.copyfile(BASE/'index.html',output/'index.html')
     shutil.copyfile(ROOT/'Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md',output/'runbook.md')
-    (output/'README.md').write_text(README)
+    (output/'README.md').write_text((BASE/'README.md').read_text()+'\nPublic boot instructions: [runbook.md](runbook.md).\nPublic player carrier: https://friken0.github.io/friken-ghost-mind/.\n')
     (output/'.nojekyll').write_text('')
     (output/'.github/workflows').mkdir(parents=True);(output/'.github/workflows/session-intake.yml').write_text(WORKFLOW.replace('CHECKOUT_SHA',checkout))
     (output/'data/sessions').mkdir(parents=True);(output/'data/sessions/.gitkeep').write_text('')
@@ -149,7 +155,7 @@ def build(output,checkout):
     for name,schema in [('news','friken.ghost.news.v1'),('scoreboard','friken.ghost.scoreboard.v1')]:
         (output/'data'/f'{name}.json').write_text(json.dumps(dict(schema=schema,entries=[]),indent=2)+'\n')
     files=[dict(path=str(p.relative_to(output)),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in sorted(output.rglob('*')) if p.is_file() and 'data' not in p.relative_to(output).parts]
-    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.4',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',carrier='https://friken0.github.io/friken-ghost-mind/',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json',chapters='data/chapters.json'))
+    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.6',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',carrier='https://friken0.github.io/friken-ghost-mind/',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json',chapters='data/chapters.json'))
     (output/'registry.json').write_text(json.dumps(registry,indent=2)+'\n');return len(files)+1
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);p.add_argument('--checkout-sha',required=True);a=p.parse_args()

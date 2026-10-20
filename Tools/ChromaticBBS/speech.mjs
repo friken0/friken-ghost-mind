@@ -73,7 +73,7 @@ export function mountReadAlong(root){
   function prepare(segments,defer=false){
     finish();revealed=false;
     if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
-    if(defer){queued=segments;if(button)button.hidden=false;return;}
+    if(defer){prepare(segments,false);return;}
     for(const segment of segments){
       const node=get(segment.field);if(!node||!node.textContent)continue;
       const full=node.textContent,offset=segment.text.indexOf(full);if(offset<0)continue;
@@ -88,13 +88,13 @@ export function mountReadAlong(root){
   }
   return {prepare,progress,finish,begin(){if(queued&&!revealed){const segments=queued;prepare(segments);}}};
 }
-export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false}){
+export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
   const get=id=>root.querySelector('#cg-'+id),supported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
   let enabled=true,generation=0,settle=null,timer=0,preferred={},casting={ghost:null,narrator:null};
   try{const saved=JSON.parse(storage?.getItem('friken.chromatic.voices.v1')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))preferred=saved;}catch{}
   preferred.engine=preferred.engine==='device'?'device':'neural';
   const readAlong=mountReadAlong(root);
-  const neural=mountNeuralVoice({status(message){get('voice-note').textContent=message;note(message);},level:pcm,talking});
+  const neural=mountNeuralVoice({status(message){get('voice-note').textContent=message;note(message);},level:pcm,talking,audio});
   const save=()=>{try{storage?.setItem('friken.chromatic.voices.v1',JSON.stringify(preferred));}catch{}};
   const recorded=mountRecordedVoice(root,recordedVoiceClips,{note,level(value){pcm?.(value);},gate(){talking?.(false);}});
   function stop(){generation++;clearTimeout(timer);timer=0;neural.stop();readAlong.finish();if(supported)speechSynthesis.cancel();recorded.stop();settle?.();settle=null;talking?.(false);}
@@ -165,5 +165,5 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false}){
   if(supported)speechSynthesis.addEventListener('voiceschanged',refresh);
   get('voice-settings').addEventListener('toggle',()=>{if(get('voice-settings').open){refresh();console.warn('[Chromatic speech] voice settings height',get('voice-settings').getBoundingClientRect().height);}});
   refresh();
-  return {speak,stop,toggle(){if(preferred.engine==='device'&&!supported&&!recordedVoiceClips.length){note('This host has no browser voice or recorded pack · captions remain.');return false;}enabled=!enabled;if(!enabled)stop();return enabled;},get enabled(){return enabled;}};
+  return {speak,stop,unlock:()=>neural.unlock(),toggle(){if(preferred.engine==='device'&&!supported&&!recordedVoiceClips.length){note('This host has no browser voice or recorded pack · captions remain.');return false;}enabled=!enabled;if(!enabled)stop();return enabled;},get enabled(){return enabled;}};
 }

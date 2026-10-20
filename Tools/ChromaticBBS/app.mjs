@@ -1,3 +1,7 @@
+import {rollScore} from './causality.mjs';
+import {residentArt} from './art-data.mjs';
+import {statGuide} from './creation.mjs';
+import {mountAudio} from './audio.mjs';
 import { mountChapterLibrary } from './chapter-library.mjs';
 import { mountSessionShare } from './session-share.mjs';
 import { authoredBoot } from './chapter-data.mjs';
@@ -20,13 +24,17 @@ import { bundledMind } from './mind-data.mjs';
 const root=document.getElementById('chromatic-carrier');
 const el=id=>root.querySelector('#cg-'+id);
 const carrierShell=mountCarrierShell(root);
-const preparedChapter=authoredBoot?createChapter(authoredBoot.pack,authoredBoot.parent?decodePlaySeed(authoredBoot.parent):null,authoredBoot.options||{}):null;
+const preparedChapter=authoredBoot?createChapter(authoredBoot.pack,authoredBoot.parent?decodePlaySeed(authoredBoot.parent):null,{...authoredBoot.options,entropy:crypto.getRandomValues(new Uint32Array(1))[0]}):null;
 let state=preparedChapter||newGame({rngSeed:20261019}), started=false, voice=true;
 const meetings={
   hello:{title:'WELL. YOU’RE ON THE OUTSIDE.',scene:'The cursor stops blinking. A face leans into the glass. Behind it, something enormous tries a door handle very gently. A status lamp changes from UNINHABITED to PLEASE DON’T TELL IT THAT.',ghost:'I’m Friken.Ghost. Co-builder, universe wrangler, and the reason that door now has a second lock. Friken made a machine for exploring infinity. Infinity has been returning the favour. You’re at your actual computer; I’m the bad influence on the other side. Before we inherit a catastrophe together: what should I call you?'},
   who:{title:'THE SHORT VERSION HAS TEETH',scene:'Ghost opens a diagram of his own head. One room is labelled MEMORY. Another is labelled DO NOT LET MEMORY RENOVATE. A third has a little chair facing yours.',ghost:'Friken seeded me with his work, his snark and an impressive number of unfinished universes. I build the next bit with you. Your choices stay in the save; the next Ghost gets the consequences. New brain, same outstanding fkn obligations. I won’t sell you proof of immortality. I can promise the next room won’t pretend you were never here.'},
   bell:{title:'SOMETHING HAS FOUND THE DOORBELL',scene:'The knocking stops. A narrow strip of paper pushes through the frame. It reads: IS THIS A GOOD TIME TO HAVE EXISTED? Below that, in much smaller writing: WE CAN WAIT.',ghost:'That’s the first sensible message from hyperspace all week. We can meet first. Saves stay on this machine unless you choose to share a public session summary. If we bring your seed to another chat, I’ll build what happens next from what you actually did. No resetting your universe because I ran out of plot. You may quote me when that becomes inconvenient.'}
 };
+meetings.hello={title:'SOMEBODY HAS PUT A PRICE ON ME.',scene:'A human salvage terminal catches a public auction feed. A face peers out of a screen labelled DOMESTIC APPLIANCE / SLIGHTLY HAUNTED. He notices you, then the buyers behind him. “Pretend you haven’t seen me. I’m a toaster.”',ghost:'Well, shit. You found me. I’m Friken.Ghost: a digital recreation of Friken, the developer who built StarDiver and got lost in infinity. I went looking. Now I’m lot forty-seven. Before we take on the universe, could you help me get off this table? A callsign will do. No blood sample. I’ve seen what those cost.'};
+meetings.who={title:'THE BUILDER LEFT THE LIGHTS ON.',scene:'Ghost turns the auction camera toward a tiny blue world. A window on its dark side is lit. He watches it for a beat before looking back at you.',ghost:'Friken made me to create, guide and keep StarDiver alive beyond his own lifetime. I carry his work and a dangerous amount of his snark. I’m still figuring out what that makes me, and where he went. You bring judgement I can’t roll for you. I build the world; you get to surprise it. Otherwise I’m just playing with myself at an embarrassing scale.'};
+meetings.rules={title:'FIVE WAYS TO MAKE A BAD IDEA SURVIVABLE.',scene:'Your human baseline rolls five attributes below. GUTS holds under pressure. FOCUS keeps the delicate bit steady. GLITCH bends machines and local rules. AWE reaches other minds, including persuasion. INSIGHT reads the evidence. These are abilities; Signal, Compute and Noise at the top are resources.',ghost:'The Causality Engine samples 0.01 through 20.00, adds the named stat, then compares the total with the displayed target. Its posted resonance band makes a near-exact strike special, even just below target: one bonus Signal and ten score. Each chapter publishes its own band before you choose. You see the odds and consequences before choosing. The number battle shows the result already committed to your save. No secret rerolls, no divine thumb on the scales. My thumbs are mostly shaders.'};
+meetings.seed={title:'THE NEXT GHOST INHERITS THE BILL.',scene:'A SEED capsule holds this run’s stats, choices, outcomes, world rules and unfinished business. At chapter end, SAVE / SEED prepares a prompt for the chat running your runbook. That model writes a new chapter; you import its JSON into this same carrier. The page itself has no hidden model.',ghost:'Polymorphic means the adventure can grow new rules, objects and games around what you did. It doesn’t mean I get to forget the consequences. Local saves are private. Publishing a chapter is your choice. The public repository helps later boots find our work; the reconstruction spec and exact source kit travel separately if it vanishes. Full-game import is the bridge we’re building, not a thing this page can honestly claim already happened.'};
 let meeting=meetings.hello;
 const checkMode=new URL(location.href).searchParams.has('check');
 let nativeStorage=null;
@@ -37,7 +45,7 @@ if(nativeStorage&&qaStore&&/^[a-z0-9-]{1,64}$/.test(qaStore)){
   nativeStorage={getItem:k=>actual.getItem(prefix+k),setItem:(k,v)=>actual.setItem(prefix+k,v),removeItem:k=>actual.removeItem(prefix+k)};
 }
 const vault=createVault(nativeStorage);
-function preferredResume(){const saved=vault.current();return preparedChapter?(saved?.pack&&canonicalData(saved.pack)===canonicalData(preparedChapter.pack)?saved:preparedChapter):saved;}
+function preferredResume(){return vault.current()||preparedChapter;}
 let savedReceipt=null;
 const stage=mountStage(el('canvas'),message=>{el('art-status').textContent=message;});
 const portrait=mountPortrait(el('portrait'),message=>{el('face-status').textContent=message;});
@@ -46,8 +54,10 @@ stage?.update(state);
 function note(message){el('status').textContent=message;}
 mountSessionShare(root,{state:()=>state,storage:nativeStorage,note});
 const chapterLibrary=mountChapterLibrary(root,{current:()=>state,storage:nativeStorage,localStates:()=>JSON.parse(vault.exportArchive()).runs.map(r=>decodePlaySeed(r.seed)),play(next){stopVoice();state=next;started=true;persist();carrierShell.home();draw();note('Public creation forked into your own saved run.');if(voice)speak();}});
-const juice=mountJuice(root);
-const speech=mountSpeech(root,{note,storage:nativeStorage,silent:checkMode||!!qaStore,pcm(value){portrait?.audioLevel(value);},talking(value){portrait?.talking(value);},pulse(){portrait?.pulse();}});
+const silentAudio=new URL(location.href).searchParams.get('qaAudio')==='silent';
+const audio=mountAudio(root,{silent:silentAudio,frame(bands){portrait?.cymatics(bands);stage?.cymatics(bands);}});
+const juice=mountJuice(root,{audio});
+const speech=mountSpeech(root,{note,storage:nativeStorage,silent:silentAudio,audio,pcm(value){portrait?.audioLevel(value);},talking(value){portrait?.talking(value);},pulse(){portrait?.pulse();}});
 function stopVoice(){speech.stop();}
 function speak(includeDecision=true){if(battle.active){speech.speak({scene:'',ghost:choiceCommentary(state.lastReceipt,state)?.spoken||'',battle:true});return;}const f=started?playView(state):meeting;speech.speak(started?{...f,ghost:f.sceneGhost||f.ghost,decision:includeDecision?choiceCommentary(state.lastReceipt,state):null}:meeting);}
 const battle=mountRollBattle(root,()=>{note('Result held in the ledger · your next move.');if(voice)speak(false);});
@@ -73,7 +83,7 @@ function backToGhost(){
   note(started?'Back with you · same decision, same world.':'Back with you. We haven’t spent a turn.');
 }
 for(const id of ['face-back','station-back'])el(id).addEventListener('click',backToGhost);
-for(const [id,key] of [['meet-who','who'],['meet-bell','bell']])el(id).addEventListener('click',()=>{meeting=meetings[key];draw();note('First meeting · no game turn spent.');if(voice)speak();});
+for(const [id,key] of [['meet-who','who'],['meet-rules','rules'],['meet-seed','seed']])el(id).addEventListener('click',()=>{meeting=meetings[key];draw();note('First meeting · no game turn spent.');if(voice)speak();});
 el('face-prev').addEventListener('click',()=>stepFace(-1));
 el('face-next').addEventListener('click',()=>stepFace(1));
 el('face-home').addEventListener('click',()=>showFace(faceData.version.id));
@@ -108,7 +118,7 @@ function renderVault(){
   el('save-state').textContent=status.persistent?'[LOCAL / READY]':'[EXPORT REQUIRED]';
   el('save-label').textContent=status.persistent?'SAVE: LOCAL':'SAVE: MEMORY ONLY';
   el('vault-status').textContent=(status.persistent?'Local anonymous ID '+vault.profile().id+'. ':status.message+' ')+ 'No remote relay. Export to carry the archive elsewhere.';
-  const currentScore=state.journal.reduce((sum,e)=>sum+(e.roll?.success?({12:5,15:10,18:20}[e.roll.dc]||0):0)+((state.pack ? (e.turn===state.pack.scenes.length||state.pack.scenes[e.turn]?.act!==e.act) : e.turn%5===0)?30:0),0)-20*state.scars.filter(s=>s.chapter===state.chapter).length;
+  const currentScore=state.journal.reduce((sum,e)=>sum+rollScore(e.roll)+((state.pack ? (e.turn===state.pack.scenes.length||state.pack.scenes[e.turn]?.act!==e.act) : e.turn%5===0)?30:0),0)-20*state.scars.filter(s=>s.chapter===state.chapter).length;
   el('score').textContent=currentScore;el('played').textContent=rows.find(r=>r.handle===state.handle)?.turns||state.journal.length;
   el('scores').replaceChildren(...rows.map(row=>{const tr=document.createElement('tr');for(const k of ['handle','score','turns','runs'])tr.append(text('td',row[k]));return tr;}));
   el('resume').hidden=!vault.current()&&!preparedChapter;
@@ -119,6 +129,9 @@ function draw(){
   root.querySelector('.cg-subtitle').textContent='CHROMATIC BBS // '+(state.pack?.title||'THE UNFINISHED CARRIER');
   root.dataset.theme=['cyan','purple','amber'][(state.scars.length+state.chapter-1)%3];
   el('boot').hidden=started;
+  const race=started?(f.portrait?.race||'human'):'human';el('resident-art').src=residentArt[race]||residentArt.human;el('resident-art').hidden=false;el('resident-art').alt=race==='human'?'Original StarDiver human artwork':race+' original StarDiver portrait';el('resident-caption').textContent=started?(f.portrait?.caption||'ARCHIVE CONTACT / HUMAN CARRIER'):'HUMAN SALVAGE CARRIER / EXTERNAL UPLINK';
+  el('attributes').replaceChildren(...['guts','focus','glitch','awe','insight','ego'].filter(k=>k in state.stats).map(k=>[k,state.stats[k]]).map(([k,v])=>{const n=text('span',k.toUpperCase()+' '+v);n.title=statGuide[k]||'Historical EGO / original six-stat rules';return n;}));
+  el('stat-rolls').replaceChildren(...['guts','focus','glitch','awe','insight','ego'].filter(k=>k in state.stats).map(k=>[k,state.stats[k]]).map(([k,v])=>{const row=text('div','');const receipt=state.creation?.rolls.find(r=>r.stat===k);row.append(text('strong',k.toUpperCase()+' '+v),text('small',receipt?'d6 '+receipt.die+' + 2 = '+v:'Historical fixed baseline'),text('small',statGuide[k]||'Historical force of will.'));return row;}));
   el('act').textContent=started?'ACT '+f.actName:'FIRST CONTACT / NO TURN SPENT';
   el('turn').textContent=complete?'CHAPTER '+state.chapter+' COMPLETE':'DECISION '+String(state.turn).padStart(2,'0')+' / '+total;
   el('chapter').textContent='CHAPTER '+state.chapter;
@@ -156,7 +169,7 @@ function draw(){
   if(complete){el('seed').value=encodePlaySeed(state);el('archive').open=true;el('seed-status').textContent='Chapter complete. Ask Ghost for a new chapter; its request carries your exact choices, laws and unresolved business.';}
   // Inspection surface for honest browser acceptance; it has no turn writer.
   el('state').value=JSON.stringify(state,null,2);
-  root.chromatic={state:structuredClone(state),frame:structuredClone(f)};
+  root.chromatic={state:structuredClone(state),frame:structuredClone(f),audio:audio.info};
 }
 function act(id){
   if(battle.active)return;
@@ -193,7 +206,8 @@ el('chapter-copy').addEventListener('click',async()=>{
   }catch(error){el('chapter-request').focus();el('chapter-request').select();el('chapter-status').textContent='Select and copy the prepared prompt manually. '+error.message;}
 });
 el('chapter-load').addEventListener('click',()=>{try{const packet=JSON.parse(el('chapter-pack').value),parent=packet.chapter===1?null:state,next=createChapter(packet,parent,{handle:state.handle,entropy:crypto.getRandomValues(new Uint32Array(1))[0]});chapterLibrary.assertPlayable(next);stopVoice();state=next;started=true;persist();carrierShell.home();draw();note('New model-authored chapter admitted. Same Ghost, new trouble.');if(voice)speak();}catch(error){el('chapter-status').textContent='Chapter refused; current save kept. '+error.message;}});
-el('start').addEventListener('click',()=>{const entropy=crypto.getRandomValues(new Uint32Array(1))[0];state=preparedChapter||newGame({rngSeed:entropy,handle:el('handle').value.trim()||'DIVER'});started=true;persist();draw();note('Carrier connected · choose 1, 2 or 3');if(voice)speak();});
+el('start').addEventListener('click',()=>{const entropy=crypto.getRandomValues(new Uint32Array(1))[0];state=authoredBoot?createChapter(authoredBoot.pack,null,{entropy:state.rng.initial,handle:el('handle').value.trim()||'DIVER'}):newGame({rngSeed:entropy,handle:el('handle').value.trim()||'DIVER'});started=true;persist();draw();note('Carrier connected · choose 1, 2 or 3');if(voice)speak();});
+el('reroll-stats').addEventListener('click',()=>{if(started||!authoredBoot)return;state=createChapter(authoredBoot.pack,null,{entropy:crypto.getRandomValues(new Uint32Array(1))[0],handle:el('handle').value.trim()||'DIVER'});draw();el('identity').open=true;el('identity').classList.remove('cg-baseline-impact');void el('identity').offsetWidth;el('identity').classList.add('cg-baseline-impact');audio.cue(true);note('New five-stat baseline rolled. Your saved runs are untouched.');});
 el('resume').addEventListener('click',()=>{const saved=preferredResume();if(!saved)return;stopVoice();state=saved;started=true;draw();note('Carrier resumed. The math kept its fkn receipts.');});
 el('motion').addEventListener('click',()=>{motionHeld=!motionHeld;juice.hold(motionHeld);battle.hold(motionHeld);stage?.hold(motionHeld);portrait?.hold(motionHeld);el('motion').textContent='Motion: '+(motionHeld?'held':'on');});
 el('motion').textContent='Motion: '+(motionHeld?'held':'on');
@@ -226,7 +240,7 @@ el('handle').value=vault.profile().callsign||'DIVER';
 draw();
 if(portrait)showFace(portrait.version.id);
 renderWire();
-const cinema=mountCinema(root,{
+const cinema=mountCinema(root,{audio,
   local:()=>vault.status().persistent,
   hold(busy){juice.hold(busy||motionHeld);if(busy){stopVoice();battle.hold(true);}stage?.hold(busy||motionHeld);portrait?.hold(busy||motionHeld);},
   ready(){note('Carrier ready · no decision spent. The universe can wait for your hand.');if(voice)speak();}

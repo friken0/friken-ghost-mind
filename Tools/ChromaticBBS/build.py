@@ -21,9 +21,9 @@ parser.add_argument('--serve', action='store_true', help='Serve this carrier on 
 parser.add_argument('--port', type=int, default=4331)
 args = parser.parse_args()
 sources = []
-for name in ('engine.mjs', 'canon.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
+for name in ('music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','creation.mjs','causality.mjs','engine.mjs', 'canon.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
              'face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'stage.mjs',
-             'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'app.mjs'):
+             'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'app.mjs'):
     source = (base / name).read_text()
     if name == 'chapter-data.mjs' and args.chapter:
         packet = json.loads(args.chapter.read_text())
@@ -47,8 +47,11 @@ for name in ('engine.mjs', 'canon.mjs', 'chapters.mjs', 'storage.mjs', '../Infin
     if re.search(r'^\s*(import|export)\b', source, re.M):
         raise ValueError(f'Unbundled module syntax in {name}')
     sources.append('carrierModules[' + json.dumps(posixpath.normpath(name)) + '] = (() => {\n' + source + '\nreturn {' + ','.join(exports) + '};\n})();')
+import base64
+frame_uri='data:image/png;base64,'+base64.b64encode((base/'media/human-salvage-frame.png').read_bytes()).decode()
+css=(base/'carrier.css').read_text().replace('url("media/human-salvage-frame.png")','url("'+frame_uri+'")')
 fragment = ((base / 'surface.html').read_text() + '\n<style>\n' +
-            (base / 'carrier.css').read_text() + '\n</style>\n<script>\n' +
+            css + '\n</style>\n<script>\n' +
             '(() => {\nconst carrierModules={};\n' + '\n'.join(sources) + '\n})();\n</script>\n')
 document = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'

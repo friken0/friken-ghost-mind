@@ -1,4 +1,4 @@
-# CHROMATIC C26.4 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.6 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -7,33 +7,68 @@ freeze its reconstruction instructions into the runbook. This edition is a
 working candidate. It is not the final visual acceptance or a deployed
 greater-mind service.
 
-## The response ritual
+## C26.6 / the human salvage carrier
 
-`OFF -> IGNITE -> ANSI ASSEMBLY -> RESPONSE -> COLLAPSE -> OFF`
+I use Prime’s chosen Salvage Carrier layout, with transmission and story
+inside one encounter frame. Original resident art sits beside the prose;
+choices dock below; Ghost, radio and the artifact occupy the right rail.
+SCORE/resources own the absolute top, with five character attributes beneath.
+The human chassis ships first. Alien-specific frames are future skins over
+the same geometry and verbs, not five competing frameworks.
 
-`cinema.mjs` owns this state machine. Boot expands from a phosphor point to
-a horizontal line, then a screen. A finite terminal cell compositor draws
-the diagnostic frame. The actual carrier arrives in stable sections.
-Shutdown reverses the geometry. Replay and reconnect retain the exact game
-state; none calls the reducer or consumes RNG. Controls are inert while
-their screen is being transformed and become usable only at rest.
+The connection starts at DIAL. One gesture unlocks the shared audio context.
+The retained Masha 1 modem synthesizes 17.6 seconds of telephone-era tones:
+dial tone, DTMF, ringback, answer tone, FSK, probes and training. ANSI lines
+arrive during that connection. This is an audible approximation, not an
+interoperable modem. Pause holds the actual audio offset and visual clock.
+Finish leads to a held Continue. Continue assembles frames, instruments,
+presence and content over 2.9 seconds. The full UI is not painted before its
+reveal. Shutdown keeps the central CRT collapse. Neither ritual spends a turn.
 
-Space/Escape or the skip button finishes boot. Reduced motion bypasses the
-cinema. Hidden boot work ends instead of running an unattended animation.
-Audio stops before shutdown. The disconnected state still offers power on.
-There is no flashing strobe, forced sound or browser permission request.
+## Five stats and a living causality field
 
-This reconstructs Prime's remembered TV-off behavior. The exact old response
-collapse source was not found. The preserved v5.1/played sources provide
-flicker, glitch, spiral and arrival effects; production BBS provides the
-serial/cascade/dither/snow cell-reveal precedent. I did not relabel new code
-as recovered historical code.
+Fresh human creation rolls five d6+2 attributes: GUTS, FOCUS, GLITCH, AWE,
+INSIGHT. Its receipt and separate seed survive the exact replay codec.
+AWE includes persuasion. Historical six-stat saves keep EGO and their rules.
+The pre-entry baseline can reroll; entering locks it. Returning chapters
+inherit it. An incompatible conversion needs a versioned migration.
 
-All response types should use the same carrier: DM turn, journal page,
-artifact inspection, news edition, incoming caller and reconstruction
-receipt. Their data changes; the power cycle, type, controls, face rig,
-status language and disclosure behavior stay familiar. A host adapter owns
-chat delivery. Clicking an offline specimen is not a new model reply.
+Causality v1 samples one of 2,000 hundredths in 0.01..20.00, adds the raw
+stat and tests a target in 1..28. Integer cents avoid float-boundary errors.
+Each pack posts its inclusive resonance band and bounded reward before play.
+The current band extends 0.20 below and 0.30 above target. A resonance hit
+passes even just below target, adds one Signal and ten score. The ordinary
+check reward and exact reward derive from the same receipt everywhere.
+
+`life-theater.mjs` owns a finite 48x24 toroidal Conway colony. The sample
+gathers, the player stat feeds it, and the surge tests the visible threshold.
+Gold marks the resonance window; a precise hit blooms. This is a visual
+replay of committed arithmetic. Cell evolution does not secretly determine
+or reroll the result. Pause, Finish, Replay and reduced motion retain it.
+The rejected diamond/square army drawing is removed.
+
+## One real audio graph
+
+`audio.mjs` owns the context, independent voice/music/SFX buses and measured
+FFT. Both voices normalize toward active RMS 0.14 with bounded gain and a
+soft limiter. Music normalizes toward that reference then plays at 0.55;
+it drops to 0.10 during the modem. JazzSauce was recovered as the publicly
+streamable AAC performance, copied without re-encoding. Epic II came from
+Masha 1. Catchy Cat and Bang Non And On are retained originals. Epic I is
+still absent. Source URLs, byte identities and formats are in the manifest.
+
+The actual mixed signal supplies bass, mid, air and attack to the rose,
+SDFs and authored Ghost faces. Ghost mouth follows Ghost speech PCM only.
+Recorded browser evidence measured narrator RMS 0.1324 and Ghost 0.1347;
+this is a playback measurement, not a human preference verdict. Device
+speech remains its explicit host route; it cannot supply PCM to this graph.
+
+Voice, SFX and music default on after browser unlock. `?check` now controls
+storage isolation only. `?qaAudio=silent` explicitly mutes an automated test.
+The old preview query accidentally muted real TTS; that hidden mute is gone.
+Model downloads and synthesis may take time. Waiting captions stay readable;
+once playback starts, the text reveals with the audio clock. No blank scene
+while the model works. Show full text leaves playback running.
 
 ## Use the actual best work
 
@@ -62,9 +97,9 @@ reconstruction receipts.
 
 The rose adaptation explicitly binds three game inputs: observation changes
 petal count and interference modes, scars remove a persistent region, and
-noise disturbs height. Its original audio vector stays zero without actual
-audio analysis. We do not simulate music measurements. Browser speech uses
-approximate word boundaries for mouth impulses on the Ghost portrait.
+noise disturbs height. Its audio vector now receives the measured shared mixer bands. The portrait
+uses actual neural PCM for mouth energy; device word boundaries remain an
+approximate, separately selected host route.
 
 ## The first greater-mind store
 

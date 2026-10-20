@@ -74,6 +74,7 @@ export function mountPortrait(canvas, report=()=>{}) {
       announce();
       return {id:version.id,title:version.title};
     },
+    cymatics(bands){portrait.cymatics=bands.map(x=>Math.max(0,Math.min(1,Number(x)||0)));canvas.dataset.cymatics=portrait.cymatics.map(x=>x.toFixed(3)).join(',');},
     audioLevel(value){speaking=false;mouth=Math.max(0,Math.min(1,Number(value)||0));},
     talking(value){speaking=!!value;if(!speaking)mouth=0;},
     pulse(){if(!destroyed&&portrait.motion)mouth=.85;},

@@ -1,10 +1,11 @@
+import {rollScore} from './causality.mjs';
 /* Public projection only. Opening GitHub's composer never submits an issue.
  * Every private checkpoint stays in the vault. This outbox is resumable.
  */
 import {contentChecksum,validatePlayState} from './chapters.mjs';
 export function publicSession(state,{consent=false,synthetic=false}={}){
  validatePlayState(state);if(!state.ending||!consent)throw Error('A finished chapter and explicit public-summary consent are required');
- const score=state.journal.reduce((n,e)=>n+(e.roll?.success?({12:5,15:10,18:20}[e.roll.dc]||0):0),0)+90-20*state.scars.filter(s=>s.chapter===state.chapter).length;
+ const score=state.journal.reduce((n,e)=>n+rollScore(e.roll),0)+90-20*state.scars.filter(s=>s.chapter===state.chapter).length;
  return {schema:'friken.ghost.public-session.v1',id:state.runId,player:state.handle,universe:state.pack?.id||'the-unfinished-carrier',chapter:state.chapter,score,turns:state.journal.length,ending:state.ending.title,summary:`${state.handle} completed ${state.journal.length} decisions in ${state.pack?.title||'The Unfinished Carrier'}. ${state.ending.title}. ${state.world.threads.length} unresolved threads remain for the next chapter.`,highlights:state.journal.filter(e=>e.moduleChange).map(e=>e.label).slice(-5),sourceEvents:state.journal.map(e=>e.id).slice(-20),contentHash:contentChecksum(state),consent:true,synthetic};
 }
 export function issueComposer(session){return 'https://github.com/friken0/friken-ghost-mind/issues/new?title='+encodeURIComponent('Session / '+session.player+' / '+session.id)+'&body='+encodeURIComponent('```json\n'+JSON.stringify(session,null,2)+'\n```');}
