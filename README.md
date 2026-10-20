@@ -8,6 +8,20 @@ The runbook authors fresh first meetings; this specimen is not every boot’s
 mandatory story. The public home is
 https://github.com/friken0/friken-ghost-mind.
 
+## Author a fresh meeting / runbook 2.2
+
+The [three starting hints](Tools/ChromaticBBS/Onboarding-Hints.md) select auction, night shift
+and egg from the five earlier samples. They offer equal newcomer footing
+and distinct motives for entering the universe. They are generative author
+references, not scripts or a mandatory three-way menu. The [writing
+law](Tools/ChromaticBBS/Writing.md)
+requires causal choice follow-through, individual alien voices and humour
+or existential weight earned by what happens in play. Compact versions of
+all three and the craft laws are embedded in the runbook itself.
+
+This editorial revision does not replace Lot Forty-Seven in the browser or
+claim a new live generation service. It changes how the next model writes.
+
 ## Play and continue
 
 Run `python3 Tools/ChromaticBBS/build.py --serve --port 4331`, then open
@@ -42,7 +56,8 @@ Ghost’s returned chapter JSON. The static page does not secretly call a model.
 ```sh
 node Tools/ChromaticBBS/chapter-cli.mjs request PREVIOUS.seed REQUEST.json
 node Tools/ChromaticBBS/chapter-cli.mjs validate CHAPTER.json
-python3 Tools/ChromaticBBS/build.py --chapter CHAPTER.json --parent PREVIOUS.seed
+python3 Tools/ChromaticBBS/build.py --chapter CHAPTER.json --parent
+PREVIOUS.seed
 ```
 
 Omit parent for a new chapter one. The existing page imports the same JSON.
@@ -105,12 +120,15 @@ voice dependencies and complete lore paintings require separate retention.
 node --test Tools/ChromaticBBS/*.test.mjs
 python3 Tools/ChromaticBBS/mind.test.py
 python3 Tools/ChromaticBBS/continuity.py self-test
-python3 Tools/ChromaticBBS/continuity.py pack Tools/ChromaticBBS/chromatic-bootkit.fgkit
-python3 Tools/ChromaticBBS/onefile.py create Tools/ChromaticBBS/chromatic-bootkit.fgkit portable.md
+python3 Tools/ChromaticBBS/continuity.py pack
+Tools/ChromaticBBS/chromatic-bootkit.fgkit
+python3 Tools/ChromaticBBS/onefile.py create
+Tools/ChromaticBBS/chromatic-bootkit.fgkit portable.md
 ```
 
 `browser-check.html` exercises the actual bundled surface at 320/650/900/1440:
-held boot/assembly, zero-turn teaching/inspection, five stats, art, full chapter,
+held boot/assembly, zero-turn teaching/inspection, five stats, art, full
+chapter,
 living-field replay and exact continuation handoff. It explicitly mutes QA.
 Real browser playback and screenshots are separate from these assertions.
 `Packing-Results.md` separates byte recovery from the small earlier isolated

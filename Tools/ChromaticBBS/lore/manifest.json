@@ -8,7 +8,7 @@
   ],
   "seed": {
     "path": "seed.json",
-    "sha256": "6bdeeda720aba5c30fb5e4e38901db543429d3df077183a328cecf0900f3e4cb"
+    "sha256": "4535a0599b8fe3295cf02ab370e97ced8bea92eab016bca01a430eaa2590abc7"
   },
   "artManifest": {
     "path": "art-manifest.json",

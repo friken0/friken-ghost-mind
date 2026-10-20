@@ -4,6 +4,7 @@ import hashlib,json,shutil,argparse
 ROOT=Path(__file__).resolve().parents[2];BASE=Path(__file__).resolve().parent
 FILES=['Packing-Results.md','packing_benchmark.py','packing-results.json','comprehension-results.json','runbook-packing-results.json','canon.mjs','canon.test.mjs','chapter-library.mjs','engine.mjs','chapters.mjs','chapter-cli.mjs','chapter-data.mjs','session-share.mjs','session-store.py','session-store.test.py','public-release.py','storage.mjs','stage.mjs','portrait.mjs','face-data.mjs','rose-data.mjs','cinema.mjs','shell.mjs','juice.mjs','commentary.mjs','roll-battle.mjs','recorded-voice.mjs','voice-data.mjs','voice-reference.json','speech.mjs', 'neural-voice.mjs','response.mjs','mind-data.mjs','app.mjs','surface.html','carrier.css','build.py','Framework.md','Writing.md','engine.test.mjs','storage.test.mjs','presentation.test.mjs','chapters.test.mjs','browser-check.html','neural-check.html','Voice-Research.md','chapter-check.html','fixtures/c26-2-completed.seed','chapters/the-weather-inside.json','vendor/rose/PROVENANCE.md','vendor/rose/rose.vertex.glsl','vendor/rose/rose.fragment.glsl']
 FILES += ['creation.mjs', 'causality.mjs', 'causality.test.mjs', 'life-theater.mjs', 'audio.mjs', 'modem.mjs', 'music-data.mjs', 'art-data.mjs', 'chapters/lot-forty-seven.json', 'media/human-salvage-frame.png', 'media/README.md', 'media/manifest.json', 'moknon-cli.mjs', 'moknon.test.mjs', 'lore/README.md', 'lore/seed.json', 'lore/manifest.json', 'lore/art-manifest.json', 'lore/Source-Map.md', 'vendor/masha/PROVENANCE.md']
+FILES += ['Onboarding-Hints.md', 'Onboarding-Arcs.md', 'Onboarding-Arcs.Design-v1.md', 'Onboarding-Research.md']
 README='''# Friken.Ghost / The shared carrier
 
 Ghost writes the adventure. This repository holds the reusable BBS body,
@@ -146,7 +147,7 @@ def build(output,checkout):
         target=output/'Tools/ChromaticBBS/lore/art'/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
     shutil.copyfile(BASE/'index.html',output/'index.html')
     shutil.copyfile(ROOT/'Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md',output/'runbook.md')
-    (output/'README.md').write_text((BASE/'README.md').read_text()+'\nPublic boot instructions: [runbook.md](runbook.md).\nPublic player carrier: https://friken0.github.io/friken-ghost-mind/.\n')
+    (output/'README.md').write_text((BASE/'README.md').read_text().replace('](Onboarding-Hints.md)', '](Tools/ChromaticBBS/Onboarding-Hints.md)').replace('](Writing.md)', '](Tools/ChromaticBBS/Writing.md)')+'\nPublic boot instructions: [runbook.md](runbook.md).\nPublic player carrier: https://friken0.github.io/friken-ghost-mind/.\n')
     (output/'.nojekyll').write_text('')
     (output/'.github/workflows').mkdir(parents=True);(output/'.github/workflows/session-intake.yml').write_text(WORKFLOW.replace('CHECKOUT_SHA',checkout))
     (output/'data/sessions').mkdir(parents=True);(output/'data/sessions/.gitkeep').write_text('')

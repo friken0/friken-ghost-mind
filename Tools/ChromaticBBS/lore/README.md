@@ -11,7 +11,9 @@ character arc. Those new cultural additions remain labelled proposals.
 It is not the whole
 private Moknon, and no proposed first chapter has been elected canon.
 
-Start with [the five arc proposals](../Onboarding-Arcs.md). C26.6 now uses
+Start with [the three generative hints](../Onboarding-Hints.md) and the
+[current writing law](../Writing.md). The earlier five samples remain
+comparison material. C26.6 uses
 Lot Forty-Seven as an authored onboarding specimen, with original Human,
 Harkellinia and Krex art. The complete lookup is an authoring tool; it does
 not dump unknown cultures into a newcomer’s knowledge or elect the proposed
@@ -77,12 +79,11 @@ art manifest and causal/revelation laws. The extended kit supplies fuller
 author notes and paintings. A future public release should advertise
 this kit in its verified registry, not merely print a hopeful URL.
 
-This candidate is currently in the local repository and the accompanying
-ZIP. It has **not** been added to the public release allowlist, source
-recovery capsule or live encounter renderer. I am keeping the first
-request honest: five options and usable seed material before selecting
-and implementing an onboarding direction. No missing remote file is
-presented here as an available service.
+The public release includes the lore text, all 26 original paintings,
+three opening hints and writing contract. Its registry gives exact hashes.
+The private source-recovery kit retains the author text and current live
+art; the separate onboarding ZIP retains all paintings. The browser's
+three resident portraits are a subset, not a full interactive race codex.
 
 The source map preserves disagreements and gaps. Full private logs,
 personal biography and the full personality matrix are not required to

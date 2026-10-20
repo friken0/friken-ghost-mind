@@ -22,8 +22,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 7010,
-      "sha256": "27aab4b7dfe004df4d89d4b1e6308c21c438e95ca1ea943bac353b1a0ad98dea"
+      "bytes": 7763,
+      "sha256": "f73b6dc52f2587f131c037df98b7940ecd5cc281d66a83ef616f853c06160220"
     },
     {
       "path": "Tools/ChromaticBBS/Framework.md",
@@ -31,9 +31,29 @@
       "sha256": "b8cc0554f7169d7c551eede293b7dd67b7e36f125db82c7d57ae21a035c02296"
     },
     {
+      "path": "Tools/ChromaticBBS/Onboarding-Arcs.Design-v1.md",
+      "bytes": 27133,
+      "sha256": "10cb98b4aaa0de23f330ab289bac2fa4315dd31512046ebaf1487b9fa05c5450"
+    },
+    {
+      "path": "Tools/ChromaticBBS/Onboarding-Arcs.md",
+      "bytes": 22992,
+      "sha256": "900c3302d8abd5fe6f3dba1937c7ac61a88c91c609e8af655f15ca42148d1158"
+    },
+    {
+      "path": "Tools/ChromaticBBS/Onboarding-Hints.md",
+      "bytes": 14233,
+      "sha256": "1f5ac6fdb9adfe2dd648a7f009f29a9541f941e1ef784ca92de2b5c907781562"
+    },
+    {
+      "path": "Tools/ChromaticBBS/Onboarding-Research.md",
+      "bytes": 9571,
+      "sha256": "cef503e63ceefdc83f1135bdb3341ad0d2469f64922f081c9a6419c13e514900"
+    },
+    {
       "path": "Tools/ChromaticBBS/Packing-Results.md",
-      "bytes": 3821,
-      "sha256": "74f9b787434fe9d20a80a648daa5d3683a2847731d7561c7d0f2066c080b87a9"
+      "bytes": 4021,
+      "sha256": "ecefc50029f8144c7e54db0528cf33b0fca16cb0493abc1581374694bc6dcc17"
     },
     {
       "path": "Tools/ChromaticBBS/Voice-Research.md",
@@ -42,8 +62,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Writing.md",
-      "bytes": 9541,
-      "sha256": "3fa8160547d8bccc8becdb3a31ca5471ad49c75b2a3758972bb8f345326f71f9"
+      "bytes": 11461,
+      "sha256": "d74e53249642b0e7964a1d1cdcc9b4826e41db1e464764bf9c09af6ffeef7055"
     },
     {
       "path": "Tools/ChromaticBBS/app.mjs",
@@ -187,8 +207,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/lore/README.md",
-      "bytes": 7544,
-      "sha256": "b1dfd4b5ca21fcc1c629906845253b714488a124c7c5fb0703d8541cb7ed74a2"
+      "bytes": 7614,
+      "sha256": "f5ff7a7e91e35d00b2fbb024fde324871d2c2906a425b7fbae93d1d0bf2b8d85"
     },
     {
       "path": "Tools/ChromaticBBS/lore/Source-Map.md",
@@ -333,12 +353,12 @@
     {
       "path": "Tools/ChromaticBBS/lore/manifest.json",
       "bytes": 535,
-      "sha256": "999b83f3d4d184c9064c4da6e49a6ba0fe268de97fe924f1a82fd657aab911d8"
+      "sha256": "cc34e7d3b0cd654751cbfe97369be2289eff4b284b3586cde4c4703d9299a34e"
     },
     {
       "path": "Tools/ChromaticBBS/lore/seed.json",
-      "bytes": 74633,
-      "sha256": "6bdeeda720aba5c30fb5e4e38901db543429d3df077183a328cecf0900f3e4cb"
+      "bytes": 74771,
+      "sha256": "4535a0599b8fe3295cf02ab370e97ced8bea92eab016bca01a430eaa2590abc7"
     },
     {
       "path": "Tools/ChromaticBBS/media/README.md",
@@ -377,8 +397,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
-      "bytes": 10764,
-      "sha256": "8c012d45f50cb31ee9aa967950e356f16ccc92b41ae022215d4f09a813dfcf55"
+      "bytes": 11316,
+      "sha256": "eaf6d02aafa2efe9b04b4c56ab0b0ac6fb7cdbed5a25d7d39c6c460c7bf055df"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -432,8 +452,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 11692,
-      "sha256": "126c18246b8f8c4e43b64aa797b288c65df939adb4beeaeb2ee48768a9d22b75"
+      "bytes": 11945,
+      "sha256": "27c6b73878e0d5494b91c6137ac2e0cd24e641085489a89f0bb773ee409e83b7"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -457,8 +477,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
-      "bytes": 5484,
-      "sha256": "4465506e68dcb83dd529bf8eac188de07d0f1054c6805530154fa2b37be2e07e"
+      "bytes": 5485,
+      "sha256": "435ef217e73677d2799777bb0da1520080f031f2e45059bba044b2f1197a1eaa"
     },
     {
       "path": "Tools/ChromaticBBS/session-share.mjs",
@@ -542,8 +562,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 4175204,
-      "sha256": "87d43e9c51e28376be22e4482a58bf93d6b1550faa9207c5120e9b418222e1b1"
+      "bytes": 4175756,
+      "sha256": "c72308897b282337144f2e1da565ea2fb485ca8de8e9083b7ecea3c5aeff3fb8"
     },
     {
       "path": "media/bang-non-and-on.mp3",
@@ -567,8 +587,8 @@
     },
     {
       "path": "runbook.md",
-      "bytes": 26086,
-      "sha256": "0db8cbd7c5352ea696f50a867d110e5b9e68bd19eff0c9e990123bc0647300a3"
+      "bytes": 34568,
+      "sha256": "850637ca2ad1f79aac09f7354b7dbd4265435ca134a460ece096aa7e7252c90d"
     }
   ],
   "privateSourceIncluded": false,
