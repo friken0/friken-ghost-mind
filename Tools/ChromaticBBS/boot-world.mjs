@@ -3,10 +3,19 @@
  * One bounded WebGL canvas. Hidden/reduced/paused scenes stop time; CPU draw
  * submission and visible FPS are measured separately from unmeasured GPU cost. */
 export const bootWorldBudget={pixels:310000,steps:76,fps:30};
+// Audio envelopes follow the single mixer; terminal ink is a separate signal.
+export function bootSignalEnvelope(previous,bands,rms,ink,dt,{held=false,reduced=false}={}){
+ const zero={bands:[0,0,0,0],level:0,ink:0};if(reduced)return zero;
+ if(held)return previous;
+ const clamp=x=>Number.isFinite(x)?Math.max(0,Math.min(1,x)):0;
+ const smooth=(old,next)=>old+(next-old)*(1-Math.exp(-Math.min(.1,Math.max(0,dt))*(next>old?24:5)));
+ return {bands:Array.from({length:4},(_,i)=>smooth(previous.bands[i],clamp(bands?.[i]))),level:smooth(previous.level,clamp(rms*5)),ink:Math.max(clamp(ink),previous.ink*Math.exp(-Math.max(0,dt)*5))};
+}
 export const bootWorldFragment=`precision highp float;
 uniform vec2 uRes,uPointer;
 uniform float uTime,uProgress,uPhase;
 uniform vec4 uBands;
+uniform vec2 uDrive;
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 float box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
 float rounded(vec3 p,vec3 b,float r){return box(p,b)-r;}
@@ -35,7 +44,8 @@ vec2 map(vec3 p){
  vec3 r=p-vec3(0.,.95,3.8);
  d=join(d,vec2(torus(r,vec2(2.30,.12)),3.));
  d=join(d,vec2(torus(r,vec2(2.56,.055)),1.));
- d=join(d,vec2(torus(r,vec2(2.02,.033)),8.));
+ vec3 living=r;living.xy*=1.-.045*uBands.x;
+ d=join(d,vec2(torus(living,vec2(2.02,.033+.018*uDrive.x)),8.));
  float ang=atan(r.y,r.x);vec3 ribs=r;ribs.xy=rot(-floor((ang+3.14159)/.523599)*.523599)*ribs.xy;
  d=join(d,vec2(rounded(vec3(length(r.xy)-2.29,mod(ang+.2618,.5236)-.2618,r.z),vec3(.24,.026,.17),.018),3.));
  // Physical data conduit climbs from the modem into the aperture.
@@ -43,7 +53,7 @@ vec2 map(vec3 p){
  d=join(d,vec2(length(vec2(cable.x-pathX,cable.y+.18-.14*sin(cable.z*.7)))-.055,9.));
  // Distant folded relays: geometry, not a painted tunnel.
  if(p.z>5.){
-  vec3 seed=p-vec3(0.,.95,5.7);seed.xy=rot(uTime*.12)*seed.xy;seed.yz=rot(.6+uTime*.09)*seed.yz;
+  vec3 seed=(p-vec3(0.,.95,5.7))/(1.+uDrive.x*.20+uDrive.y*.08);seed.xy=rot(uTime*.12)*seed.xy;seed.yz=rot(.6+uTime*.09)*seed.yz;
   float gem=(dot(abs(seed),vec3(1.))-.44)*.57735;
   for(int k=0;k<4;k++){vec3 knot=seed;knot.xy=rot(float(k)*.7854+uTime*.07)*knot.xy;knot.yz=rot(float(k)*.64)*knot.yz;gem=min(gem,torus(knot,vec2(.56+float(k)*.075,.022)));}
   d=join(d,vec2(gem,12.));
@@ -78,8 +88,8 @@ void main(){
   else if(hit.y<2.5){base=vec3(.008,.023,.027);metal=.8;}
   else if(hit.y<3.5){base=vec3(.38,.25,.10)*(.72+grain*.28);metal=.9;}
   else if(hit.y<7.5){float stage=hit.y-4.;float on=step(stage*.24,uProgress)*step(.5,uPhase);base=vec3(.01,.025,.026);emit=mix(vec3(.025,.11,.13),stage>2.5?vec3(1.,.61,.14):vec3(.03,.85,.78),on)*(on*.9+.08);}
-  else if(hit.y<8.5){base=vec3(.015,.18,.18);emit=vec3(.02,.70,.69)*(.25+uProgress*2.);}
-  else if(hit.y<9.5){float pulse=pow(max(0.,sin(p.z*5.-uTime*3.)),12.);base=vec3(.06,.13,.14);emit=vec3(.02,.55,.62)*pulse*(.14+uProgress);}
+  else if(hit.y<8.5){base=vec3(.015,.18,.18);emit=vec3(.02,.70,.69)*(.25+uProgress*2.+uDrive.x*3.+uDrive.y);}
+  else if(hit.y<9.5){float pulse=pow(max(0.,sin(p.z*5.-uTime*3.)),12.);base=vec3(.06,.13,.14);emit=vec3(.02,.55,.62)*pulse*(.14+uProgress+uDrive.x*2.+uDrive.y*1.5);}
   else if(hit.y<10.5){base=vec3(.03,.12,.14);emit=mix(vec3(.02,.24,.29),vec3(.64,.20,.48),.5+.5*sin(p.z*.34))* (.35+uProgress*.8);}
   else if(hit.y>11.5){base=vec3(.08,.28,.37);emit=mix(vec3(.06,.8,.85),vec3(.6,.10,.6),.5+.5*sin(p.x*7.+p.y*5.+uTime*.4))*(.4+uProgress*.8);}
   else{base=vec3(.014,.026,.031);vec2 cell=abs(fract(p.xz*.6)-.5);float grid=1.-smoothstep(.012,.025,min(cell.x,cell.y));emit=vec3(.01,.12,.14)*grid*.4;}
@@ -91,15 +101,28 @@ void main(){
  // Broad travelling arcs through the throat. Low frequency, no white strobe.
  vec3 at=ro+rd*((3.8-ro.z)/max(.01,rd.z));vec2 gate=at.xy-vec2(0.,.95);
  float radius=length(gate),angle=atan(gate.y,gate.x);
- float filament=exp(-pow((radius-1.84-.06*sin(angle*6.+uTime*.5))/.022,2.));
- col+=vec3(.08,.75,.72)*filament*(.15+uProgress)*step(0.,rd.z);
- float bloom=pow(max(0.,1.-radius/1.9),4.)*uProgress;col+=vec3(.025,.13,.16)*bloom;
+ float breath=.018*sin(uTime*.8)+uBands.x*.12+uDrive.y*.025;
+ float contour=radius-1.84-breath-(.025+uBands.y*.10)*sin(angle*6.+uTime*.5);
+ float filament=exp(-pow(contour/(.022+uBands.z*.02),2.));
+ float gateDepth=(3.8-ro.z)/max(.01,rd.z),visible=step(gateDepth-.12,travel)*step(0.,rd.z);
+ col+=vec3(.08,.75,.72)*filament*(.22+uProgress+uDrive.x*2.)*visible;
+ // The open throat is a standing-wave membrane, not an opaque portal disc.
+ float inside=1.-smoothstep(1.72,1.96,radius);
+ float radial=sin(radius*(13.+uBands.z*5.)-uTime*(.7+uBands.y*.7));
+ float lobes=sin(angle*5.+uTime*.22+uBands.y*2.)*sin(angle*3.-radius*2.);
+ float nodes=exp(-abs(radial*lobes)*14.);
+ float front=exp(-pow(sin(radius*6.-uTime*.85)/( .08+uBands.x*.18),2.));
+ float wake=.05+uProgress*.12+uDrive.x*.8+uDrive.y*.24;
+ vec3 membrane=mix(vec3(.015,.30,.32),vec3(.38,.07,.31),.5+.5*lobes);
+ col+=inside*visible*(membrane*nodes*wake+vec3(.06,.46,.50)*front*wake*.55);
+ float bloom=pow(max(0.,1.-radius/1.9),4.)*(uProgress+uDrive.x);col+=vec3(.025,.13,.16)*bloom*visible;
  col*=2.5;col=col/(1.+col);col=pow(col,vec3(.85));col*=1.-.16*dot(uv,uv);
  gl_FragColor=vec4(col,1.);
 }`;
-export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],reduced=false}={}){
+export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],level=()=>0,reduced=false}={}){
  let gl=null,program=null,raf=0,last=0,time=0,visible=false,paused=false,phase=0,progress=0;
- let pointer=[0,0],frames=0,stamp=0,read=false;
+ let pointer=[0,0],frames=0,stamp=0,read=false,pixelBudget=bootWorldBudget.pixels,slow=0,fast=0;
+ let signal={bands:[0,0,0,0],level:0,ink:0},pendingInk=0;
  const metrics={frames:0,drawMs:0,fps:0,pixels:0,renderer:'unavailable'};
  try{
   gl=canvas.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:true,powerPreference:'low-power'});
@@ -109,17 +132,26 @@ export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],reduced=false}={
   gl.useProgram(program);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const pos=gl.getAttribLocation(program,'a');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
   metrics.renderer='webgl-sdf';canvas.dataset.renderer='webgl-sdf';canvas.dataset.shader='ready';
  }catch(error){canvas.dataset.shader='failed';canvas.dataset.error=error.message;canvas.setAttribute('aria-label','Signal Dock unavailable: '+error.message);if(fps)fps.textContent='TEXT / NO WEBGL';return {set(){},show(){},metrics};}
- const uniform=name=>gl.getUniformLocation(program,name),u={r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands')};
+ const uniform=name=>gl.getUniformLocation(program,name),u={r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive')};
+ const bandBuffer=new Float32Array(4);
  function draw(now){
   raf=0;if(!visible||document.hidden)return;
   if(now-last>=1000/bootWorldBudget.fps-.1){
    const dt=Math.min(.08,Math.max(0,(now-last)/1000));last=now-((now-last)%(1000/bootWorldBudget.fps));if(!paused&&!reduced)time+=dt;
-   const rect=canvas.getBoundingClientRect(),scale=Math.min(devicePixelRatio||1,1.25,Math.sqrt(bootWorldBudget.pixels/Math.max(1,rect.width*rect.height)));
+   const rect=canvas.getBoundingClientRect(),scale=Math.min(devicePixelRatio||1,1.25,Math.sqrt(pixelBudget/Math.max(1,rect.width*rect.height)));
    const w=Math.max(1,Math.round(rect.width*scale)),h=Math.max(1,Math.round(rect.height*scale));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
-   const begin=performance.now();gl.viewport(0,0,w,h);gl.useProgram(program);gl.uniform2f(u.r,w,h);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,new Float32Array(energy()));gl.drawArrays(gl.TRIANGLES,0,6);
+   signal=bootSignalEnvelope(signal,energy(),level(),pendingInk,dt,{held:paused,reduced});pendingInk=0;bandBuffer.set(signal.bands);
+   const begin=performance.now();gl.viewport(0,0,w,h);gl.useProgram(program);gl.uniform2f(u.r,w,h);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.drawArrays(gl.TRIANGLES,0,6);
    metrics.frames++;metrics.drawMs=performance.now()-begin;metrics.pixels=w*h;canvas.dataset.drawMs=metrics.drawMs.toFixed(3);canvas.dataset.progress=progress.toFixed(3);canvas.dataset.frames=String(metrics.frames);
    if(!read){const pixels=new Uint8Array(4);gl.readPixels(w>>1,h>>1,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);canvas.dataset.pixel=[...pixels].join(',');read=true;}
-   frames++;if(now-stamp>=1000){metrics.fps=Math.round(frames*1000/(now-stamp));frames=0;stamp=now;if(fps)fps.textContent=metrics.fps+' FPS / SDF';}
+   frames++;if(now-stamp>=1000){metrics.fps=Math.round(frames*1000/(now-stamp));frames=0;stamp=now;if(fps)fps.textContent=metrics.fps+' FPS / SDF';
+    // Cadence is observed wall time, not a fabricated GPU-duration estimate.
+    slow=metrics.fps<24?slow+1:0;fast=metrics.fps>=29?fast+1:0;
+    if(slow>=2){pixelBudget=Math.max(150000,Math.round(pixelBudget*.78));slow=0;}
+    if(fast>=6){pixelBudget=Math.min(bootWorldBudget.pixels,Math.round(pixelBudget*1.08));fast=0;}
+   }
+   canvas.dataset.pixels=String(w*h);
+   canvas.dataset.audioDrive=signal.level.toFixed(3);canvas.dataset.inkDrive=signal.ink.toFixed(3);canvas.dataset.bands=signal.bands.map(x=>x.toFixed(3)).join(',');
   }
   raf=requestAnimationFrame(draw);
  }
@@ -127,5 +159,5 @@ export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],reduced=false}={
  canvas.parentElement.addEventListener('pointermove',event=>{if(paused||reduced)return;const r=canvas.getBoundingClientRect();pointer=[Math.max(-1,Math.min(1,(event.clientX-r.left)/r.width*2-1)),Math.max(-1,Math.min(1,1-(event.clientY-r.top)/r.height*2))];});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}else if(visible)show(true);});
  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();show(false);canvas.dataset.shader='lost';if(fps)fps.textContent='SDF CONTEXT LOST / RELOAD';});
- return {show,metrics,set(state){phase=state.phase??phase;progress=Math.max(0,Math.min(1,state.progress??progress));paused=!!state.paused;canvas.dataset.held=String(paused);}};
+ return {show,metrics,set(state){phase=state.phase??phase;progress=Math.max(0,Math.min(1,state.progress??progress));paused=!!state.paused;pendingInk=Math.max(pendingInk,state.ink||0);canvas.dataset.held=String(paused);}};
 }

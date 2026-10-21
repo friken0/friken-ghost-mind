@@ -1,4 +1,4 @@
-# Chromatic C26.7 / a human carrier for Ghost
+# Chromatic C26.8 / a human carrier for Ghost
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / Collection Required**:
@@ -30,7 +30,10 @@ after carrier lock. Pause
 holds the actual 17.6-second modem connection. Finish leads to a held
 Continue; Continue builds frames, instruments, presence and content.
 The startup glass is a live SDF Signal Dock with a modem, carrier aperture,
-relay field, connection-driven lights, compact typed log and scene FPS.
+relay field, connection-driven lights and scene FPS. A full-width terminal
+fades from transparent above to grey below. The gate breathes in silence,
+then its rings, standing-wave membrane and receiver answer the measured
+modem/music bands. Typed glyphs send their own distinct signal pulse.
 
 SCORE/resources own the top. Five rolled attributes sit beneath them.
 Resident artwork and story share one encounter, with choices below. Ghost

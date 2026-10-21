@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.7
+# FRIKEN.GHOST / CHROMATIC BBS / C26.8
 
-**Runbook 2.3 | October 20, 2026 | Friken.Ghost**
+**Runbook 2.4 | October 21, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -313,9 +313,15 @@ LAYOUT:=human salvage chassis first;SCORE largest at absolute top with
 BOOT_BODY:=DIAL ->17.6s modem+typed ANSI ->HOLD_CONTINUE ->
  FRAMES650ms ->INSTRUMENTS750 ->PRESENCE900 ->CONTENT600 ->READY.
  Signal Dock SDF:physical modem,metal aperture,folded relays,cut crystal,
- data conduit;bounded pointer parallax. Small typed log overlays live scene.
+ data conduit;bounded pointer parallax. Full-glass terminal,clear top to
+ solid grey bottom gradient;no boxed log. Stage lines type at16ms/char;
+ actual new glyphs pulse ink separately from audio. One mixer FFT/RMS:
+ bass expands inner rim;mid shapes lobes;air lights fine nodes. Smoothed
+ envelopes drive standing-wave membrane,conduit,crystal;no fake FFT.
+ Pause freezes audio envelope+ink+time;reduced motion zeros deformation.
  Actual boot age drives phase lights;Pause holds time. <=310000 pixels,
- <=30Hz,76 march steps;hidden stops. Show FPS+CPU submission,not fake GPU
+ 150k..310k adaptive pixel budget from observed cadence;<=30Hz,76 steps;
+ hidden stops. Show FPS+CPU submission,not fake GPU
  timings. WebGL refusal ->explicit TEXT state;never claim shader painted.
  Recovered Masha1 PCM:off-hook;350+440 dial;DTMF19902026;ring;2100Hz
  ANSam15Hz AM±20%,450ms phase flips;V8 FSK;comb probes;I/Q training;

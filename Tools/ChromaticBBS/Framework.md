@@ -1,4 +1,4 @@
-# CHROMATIC C26.7 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.8 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -459,15 +459,25 @@ terminates the stalled worker and leaves Read scene available for retry.
 Device playback errors also reach the visible error path. No silent engine
 switch and no claim that cold CPU synthesis is instantaneous.
 
-## C26.7 / Signal Dock arrival
+## C26.8 / Signal Dock arrival
 
 The existing startup bay owns a raymarched modem, metal carrier aperture,
-folded relay lattice, data conduit and rotating cut crystal. The small
-typed terminal overlays the scene; existing controls stay in normal flow.
+folded relay lattice, data conduit and rotating cut crystal. A full-glass
+terminal layer fades from clear above to solid grey below, without a boxed
+log. Each actual stage types its text; new glyphs pulse the conduit and
+gate separately from the audio envelopes. Existing controls stay in flow.
+
+The one audio mixer supplies measured bass/mid/air/attack and RMS. Smooth
+attack/release maps bass to rim expansion, mids to membrane lobes and air
+to fine nodes. The receiver and conduit carry that same energy. There is
+no second FFT or invented audio source. Pause freezes envelopes and scene
+time; reduced motion suppresses the deforming and pulsing response.
 The actual boot clock drives indicator activation and route acquisition.
 Pointer parallax is bounded; Pause freezes scene time; hidden scenes stop
 rendering. The scene renders at most thirty frames per second and 310,000
-pixels with 76 march steps. FPS and CPU draw submission are measured;
+pixels with 76 march steps. Sustained slow frame cadence reduces the pixel
+budget toward 150,000; sustained full cadence restores it slowly. FPS and
+CPU draw submission are measured;
 those measurements are not a GPU-timing claim. No WebGL reports TEXT mode.
 
 Dial unlocks the audio context and prepares speech during the modem.

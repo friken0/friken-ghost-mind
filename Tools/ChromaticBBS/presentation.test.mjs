@@ -1,4 +1,5 @@
 import {choiceCommentary} from './commentary.mjs';
+import {bootSignalEnvelope} from './boot-world.mjs';
 import {validateVoiceClips} from './recorded-voice.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -6,6 +7,18 @@ import {battlePlan} from './roll-battle.mjs';
 import {castVoices,speechSegments,speechText,mountSpeech,speechUnits,neuralPassages} from './speech.mjs';
 import {responsePacket,validateResponse} from './response.mjs';
 import {newGame,view,choose,encodeSeed} from './engine.mjs';
+test('portal envelopes keep measured audio and terminal ink distinct, bounded and held on pause',()=>{
+ const quiet={bands:[0,0,0,0],level:0,ink:0};
+ const sound=bootSignalEnvelope(quiet,[1,.7,.4,.8],.18,0,.033);
+ assert.ok(sound.level>0&&sound.bands[0]>sound.bands[2]);assert.equal(sound.ink,0);
+ const typed=bootSignalEnvelope(quiet,[0,0,0,0],0,.75,.033);
+ assert.equal(typed.level,0);assert.deepEqual(typed.bands,[0,0,0,0]);assert.equal(typed.ink,.75);
+ assert.deepEqual(bootSignalEnvelope(sound,[0,0,0,0],0,0,1,{held:true}),sound);
+ assert.deepEqual(bootSignalEnvelope(sound,[1,1,1,1],1,1,.03,{reduced:true}),quiet);
+ const decay=bootSignalEnvelope(sound,[0,0,0,0],0,0,.1);assert.ok(decay.level<sound.level&&decay.level>0);
+ const bounded=bootSignalEnvelope(quiet,[NaN,Infinity,-1,5],Infinity,NaN,.1);
+ assert.ok([...bounded.bands,bounded.level,bounded.ink].every(x=>Number.isFinite(x)&&x>=0&&x<=1));
+});
 test('every legal die/stat/DC battle conserves subtraction and leaves exactly the signed margin',()=>{
   for(let die=1;die<=20;die++)for(let value=0;value<=20;value++)for(const dc of [12,15,18]){
     const roll={die,value,dc,total:die+value,success:die+value>=dc,stat:'INS'},source=JSON.stringify(roll),p=battlePlan(roll);
