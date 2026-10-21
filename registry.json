@@ -77,13 +77,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/audio.mjs",
-      "bytes": 12499,
-      "sha256": "112e0db471cf4e4190791c9c4d914a093a5d0ec24a6ca02c4773dc8e41374a13"
+      "bytes": 12507,
+      "sha256": "0f2d1aa365ce94c2f66897593ce582ea13de3a54a68863809999323917801972"
     },
     {
       "path": "Tools/ChromaticBBS/audio.test.mjs",
-      "bytes": 3041,
-      "sha256": "378309a648d03d3dbeb2e28def054e18de2294cfc1bae78b635efb278e239a3a"
+      "bytes": 3197,
+      "sha256": "9f07d67a695679912db778d8079d9a74cbbfa6a8077b5281a205800fd4e79d99"
     },
     {
       "path": "Tools/ChromaticBBS/battle-check.html",
@@ -418,7 +418,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 11454,
-      "sha256": "aacb3ca25d9958e579e64b2c483f601030b38f4812baa9b38c317502ae9f0eb5"
+      "sha256": "7fbb3472ac70dfcc560e687a57d3f052945fc8dea4df6ce1d130ef0a94f59793"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -587,13 +587,13 @@
     },
     {
       "path": "ghostlink.html",
-      "bytes": 4227542,
-      "sha256": "df15c8a89c9473e05b7038e5f313f399387cfe30a71ef6b01796645f04af467e"
+      "bytes": 4227550,
+      "sha256": "c318e03e7a493ea9d50cee9cbca81558fe0d5c5b2db33100e86f9f6182c3dba5"
     },
     {
       "path": "index.html",
-      "bytes": 4227542,
-      "sha256": "df15c8a89c9473e05b7038e5f313f399387cfe30a71ef6b01796645f04af467e"
+      "bytes": 4227550,
+      "sha256": "c318e03e7a493ea9d50cee9cbca81558fe0d5c5b2db33100e86f9f6182c3dba5"
     },
     {
       "path": "media/bang-non-and-on.mp3",

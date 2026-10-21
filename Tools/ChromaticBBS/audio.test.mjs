@@ -16,10 +16,10 @@ test('music defaults off through connection; explicit boot toggle starts it and 
   globalThis.fetch=async()=>{downloads++;return {ok:true,arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength)};};
   globalThis.location={href:'https://example.test/'};globalThis.document={addEventListener(){}};globalThis.requestAnimationFrame=()=>1;globalThis.cancelAnimationFrame=()=>{};
   globalThis.window={addEventListener(){},AudioContext:class{state='suspended';currentTime=0;sampleRate=48000;createGain(){return node();}createAnalyser(){return {...node(),frequencyBinCount:1024};}createDynamicsCompressor(){return {...node(),threshold:{},knee:{},ratio:{}};}async resume(){this.state='running';}async decodeAudioData(){return {duration:1,numberOfChannels:1,getChannelData:()=>new Float32Array([.1,.2])};}createBufferSource(){return {...node(),start(){starts++;},stop(){stops++;}};}}};
-  const root={querySelector(id){if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);},addEventListener(type,fn){events[type]=fn;}};
+  const attrs={};const root={setAttribute(k,v){attrs[k]=v;},querySelector(id){if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);},addEventListener(type,fn){events[type]=fn;}};
   const audio=mountAudio(root);await audio.unlock();events.pointerdown();await new Promise(r=>setTimeout(r,5));await audio.startMusic();
   assert.equal(downloads,0);assert.equal(starts,0);assert.equal(audio.info.music,'paused');assert.equal(audio.musicOn,false);
-  audio.connection(true);assert.equal(starts,0);assert.equal(downloads,0);nodes.get('#cg-boot-music').click();for(let i=0;i<100&&audio.info.music!=='playing';i++)await new Promise(r=>setTimeout(r,5));
+  audio.connection(true);assert.equal(attrs['data-carrier-connected'],'true','silent music must not leave connection telemetry stale');assert.equal(starts,0);assert.equal(downloads,0);nodes.get('#cg-boot-music').click();for(let i=0;i<100&&audio.info.music!=='playing';i++)await new Promise(r=>setTimeout(r,5));
   assert.equal(audio.info.music,'playing');assert.equal(starts,1);assert.equal(downloads,1);
   audio.connection(false);assert.equal(stops,1);assert.equal(audio.info.music,'waiting-for-connection');events.pointerdown();await new Promise(r=>setTimeout(r,5));assert.equal(starts,1);
   audio.connection(true);for(let i=0;i<20&&starts===1;i++)await new Promise(r=>setTimeout(r,5));assert.equal(starts,2);assert.equal(downloads,1,'reconnect reuses the verified decoded track');audio.connection(false);
