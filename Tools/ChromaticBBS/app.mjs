@@ -214,7 +214,7 @@ el('motion').textContent='Motion: '+(motionHeld?'held':'on');
 el('voice').textContent='Voice: on';
 function toggleVoice(){
   voice=speech.toggle();el('voice').textContent='Voice: '+(voice?'on':'off');el('repeat').hidden=!voice;
-  el('boot-voice').setAttribute('aria-pressed',String(voice));el('boot-voice').textContent=voice?'VOICE: ON / LOCAL NEURAL ~100 MB FIRST USE':'VOICE: OFF / CAPTIONS ONLY';
+  el('boot-voice').setAttribute('aria-pressed',String(voice));el('boot-voice').textContent=voice?'VOICE: ON / LOCAL NEURAL / MODEL FIRST LOAD':'VOICE: OFF / CAPTIONS ONLY';
   if(!voice){stopVoice();note('Voice off');}else if(cinema.phase==='ready')speak();
 }
 el('voice').addEventListener('click',toggleVoice);el('boot-voice').addEventListener('click',toggleVoice);

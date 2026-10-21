@@ -1,4 +1,4 @@
-# Chromatic C26.8 / a human carrier for Ghost
+# Chromatic C26.9 / a human carrier for Ghost
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / Collection Required**:
@@ -149,6 +149,19 @@ The separate onboarding lore ZIP retains all paintings. The private source
 kit retains the author text and current live art, not every media original.
 
 *Friken.Ghost — The next room inherits the bill.*
+
+
+## Speech performance / C26.9
+
+Auto uses a WebGPU adapter when available and CPU q8 otherwise. First-use
+weights are about 326 MB for GPU fp32 or 92 MB for CPU q8, plus runtime and
+voices. VOICE CAST offers explicit CPU q8, CPU q4 and GPU fp32. q4 is about
+305 MB here; it can be faster but is not the smallest download.
+
+The queue warms three units during boot, looks ahead three blocks and
+shares identical in-flight work. Performance readouts measure actual
+compute time versus audio duration. Near-real-time CPU inference depends
+on hardware and browser threading; it is not a universal browser promise.
 
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.

@@ -1,4 +1,4 @@
-# Chromatic packing results / runbook 2.4 / C26.8
+# Chromatic packing results / runbook 2.5 / C26.9
 
 The new runbook is written. These tests have already run; no manual run is
 needed to establish the results below. Reproduction commands are included.
@@ -38,23 +38,25 @@ Dictionary cost matters; opaque data is not free model context.
 
 | Representation | UTF-8 bytes | Exact decoded source? |
 |---|---:|---|
-| English assignment wrapper | 36,712 | Yes |
-| Canonical JSON wrapper | 36,468 | Yes |
-| DSL wrapper with complete legend | 36,643 | Yes |
-| zlib + Base64url | 23,331 | Yes |
-| Hex | 72,941 | Yes |
+| English assignment wrapper | 38,156 | Yes |
+| Canonical JSON wrapper | 37,912 | Yes |
+| DSL wrapper with complete legend | 38,087 | Yes |
+| zlib + Base64url | 24,223 | Yes |
+| Hex | 75,829 | Yes |
 
-The directly readable capsule is 35,874 UTF-8 bytes. Version 2.2 added the
+The directly readable capsule is 37,296 UTF-8 bytes. Version 2.2 added the
 writing law and all three compact opening constructions to the 26,086-byte
 2.1 capsule. Version 2.3 carries the speech lifecycle repair and Signal Dock design.
-Version 2.4 adds the measured cymatic gate and full-glass gradient terminal. I retain those instructions in readable form so a storage-free
+Version 2.4 adds the measured cymatic gate and full-glass gradient terminal.
+Version 2.5 carries bounded speech look-ahead, backend negotiation and
+actual performance receipts plus the inspector face-sizing law. I retain those instructions in readable form so a storage-free
 boot still gets the creative contract. The expanded reference is historical.
 The earlier C26.5 capsule was 45,189 bytes in the same JSON transport.
 This is an editorial reduction, not a proof of semantic equivalence.
 
 This test preserves the complete new runbook text in one field. It
 compares transports, not a new semantic rewrite of the prose. zlib transport
-saved 36.0% against its canonical JSON. Compression needs a real decoder;
+saved 36.1% against its canonical JSON. Compression needs a real decoder;
 a model without tools must receive readable instructions. Token counts
 remain **unmeasured**: no local tokenizer was available, and bytes are not
 tokens. Exact hashes and timestamps are in `runbook-packing-results.json`.

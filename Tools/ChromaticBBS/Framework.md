@@ -1,4 +1,4 @@
-# CHROMATIC C26.8 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.9 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -448,8 +448,8 @@ anything. An invalid seed stays at the handoff with a visible error.
 
 ## October 21 / speech lifecycle
 
-Dial warms the pinned neural model and first sentence during the modem.
-Remaining prose coalesces in 180-character units to bound CPU inference. The existing
+Dial warms the pinned neural model and three units during the modem.
+Remaining prose coalesces in 120-character units to bound inference. The existing
 voice control reports loading/preparing/speaking/paused/retry. Hiding a tab
 suspends unfinished speech; returning resumes its current unit. Explicit
 mute, new choice, power-off or scene replacement clears the resume. Completed
@@ -459,7 +459,7 @@ terminates the stalled worker and leaves Read scene available for retry.
 Device playback errors also reach the visible error path. No silent engine
 switch and no claim that cold CPU synthesis is instantaneous.
 
-## C26.8 / Signal Dock arrival
+## C26.9 / Signal Dock arrival
 
 The existing startup bay owns a raymarched modem, metal carrier aperture,
 folded relay lattice, data conduit and rotating cut crystal. A full-glass
@@ -485,3 +485,26 @@ GhostTracks cannot start from a generic pointer touch before carrier lock.
 The held CONNECT screen arms music; boot replay/disconnect disarms it.
 The log reports actual audio initialization separately from fictional
 handshake phases. Music remains independently mutable after connection.
+
+
+## C26.9 / face stage and sustained speech
+
+The face inspector reserves its controls and fits one square canvas into
+the remaining slot using its actual width and height. Dock portrait caps
+never constrain this stage. The same live canvas returns on Back.
+
+The neural worker is one bounded FIFO, with at most four unique jobs and
+three-unit look-ahead. Exact text/cast/speed requests share live inference.
+Cancellation releases readers and queued work; an already active job may
+finish into the bounded PCM cache and serve a returning reader. Boot primes
+three units; passages after the first sentence are at most 120 characters.
+Actual playback owns read-along and mouth movement. Preparing the next
+block never relabels current speech as stalled.
+
+Auto negotiates WebGPU fp32 when an adapter exists, otherwise WASM q8.
+VOICE CAST exposes Auto, CPU q8, CPU q4 and explicit GPU fp32. A failed
+selected backend reports an error rather than silently switching. q4 is
+305 MB here, q8 92 MB, fp32 326 MB before runtime/voice assets. q4 can be
+faster without being smaller; human quality judgement remains separate.
+The existing metrics line reports actual compute/audio durations and RTF.
+The carrier records first-play latency and maximum inter-block gap.

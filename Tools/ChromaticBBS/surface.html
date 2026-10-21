@@ -1,11 +1,11 @@
 <div id="chromatic-carrier" data-theme="cyan" data-race="human">
   <section id="cg-power-bay" class="cg-power-bay" aria-label="CRT carrier startup" hidden>
-    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.8</span></div>
+    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.9</span></div>
     <h2 id="cg-power-title">CARRIER ACQUISITION</h2>
     <div id="cg-boot-field" class="cg-boot-field"><div id="cg-boot-glass" class="cg-boot-glass"><canvas id="cg-boot-world" aria-label="Signal Dock: a physical modem and a raymarched carrier aperture" role="img">Signal Dock requires WebGL.</canvas><canvas id="cg-boot-canvas" aria-label="Live typed connection log" role="img">Ghost connection log.</canvas><div class="cg-boot-scene-head"><span>SIGNAL DOCK / EXTERNAL UNIVERSE UPLINK</span><span id="cg-boot-fps">SDF / INITIALIZING</span></div></div></div>
     <p id="cg-power-status" role="status">ANSI reconstruction</p>
     <div class="cg-utilities"><button id="cg-dial" type="button">[ DIAL / OPEN THE LINE ]</button><button id="cg-pause" type="button">[ PAUSE / HOLD SCREEN ]</button><button id="cg-skip" type="button">[ FINISH ANIMATION ]</button><button id="cg-continue" type="button" hidden>[ CONTINUE / MEET GHOST ]</button></div>
-    <button id="cg-boot-voice" type="button" aria-pressed="true">VOICE: ON / LOCAL NEURAL ~100 MB FIRST USE</button>
+    <button id="cg-boot-voice" type="button" aria-pressed="true">VOICE: ON / LOCAL NEURAL / MODEL FIRST LOAD</button>
     <button id="cg-reconnect" type="button" hidden>[ POWER ON / RECONNECT ]</button>
   </section>
   <canvas id="cg-electric" aria-hidden="true"></canvas>
@@ -73,7 +73,9 @@
   </div>
   <section id="cg-music-console" class="cg-music-console" aria-label="GhostTracks player"><div class="cg-window-head">GHOSTTRACKS / SHIP RADIO</div><strong id="cg-track-name">EPIC II</strong><div class="cg-music-controls"><button id="cg-music" type="button" aria-pressed="true">Music: on</button><button id="cg-music-next" type="button">NEXT TRACK →</button></div><p id="cg-music-state" role="status">ON / TOUCH TO PLAY</p><div class="cg-audio-meters"><span>BASS <b id="cg-audio-bass">0%</b></span><span>MID <b id="cg-audio-mid">0%</b></span><span>AIR <b id="cg-audio-air">0%</b></span></div></section>
   <details id="cg-voice-settings" class="cg-archive"><summary>VOICE CAST / FEMALE NARRATOR + DEEP MALE GHOST</summary>
-    <fieldset><legend>SPEECH ENGINE</legend><div class="cg-voice-options"><label><input id="cg-engine-neural" type="radio" name="cg-engine" checked> Kokoro / local neural / first read ~100 MB download</label><label><input id="cg-engine-device" type="radio" name="cg-engine"> Device voice / no model download</label></div></fieldset>
+    <fieldset><legend>SPEECH ENGINE</legend><div class="cg-voice-options"><label><input id="cg-engine-neural" type="radio" name="cg-engine" checked> Kokoro / local neural / GPU or CPU</label><label><input id="cg-engine-device" type="radio" name="cg-engine"> Device voice / no model download</label></div></fieldset>
+    <fieldset><legend>NEURAL PERFORMANCE</legend><div class="cg-voice-options"><label><input id="cg-performance-auto" type="radio" name="cg-performance" checked> Auto / GPU when available</label><label><input id="cg-performance-cpu" type="radio" name="cg-performance"> CPU / q8 balanced</label><label><input id="cg-performance-compact" type="radio" name="cg-performance"> CPU / q4 quantized</label><label><input id="cg-performance-gpu" type="radio" name="cg-performance"> GPU / fp32 quality</label></div></fieldset>
+    <p id="cg-voice-metrics" class="cg-status">Generation speed appears after actual inference.</p>
     <p id="cg-voice-note" class="cg-status"></p>
     <fieldset><legend>GHOST / <span id="cg-ghost-voice-name">Looking for a deep male voice</span></legend><div id="cg-ghost-voices" class="cg-voice-options"></div></fieldset>
     <fieldset><legend>NARRATOR / <span id="cg-narrator-voice-name">Separate speaker</span></legend><div id="cg-narrator-voices" class="cg-voice-options"></div></fieldset>

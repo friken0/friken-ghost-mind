@@ -1,11 +1,11 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Friken.Ghost · CHROMATIC BBS</title><style>html,body{margin:0;height:100%;overflow:hidden;background:#090b17}</style></head><body><div id="chromatic-carrier" data-theme="cyan" data-race="human">
   <section id="cg-power-bay" class="cg-power-bay" aria-label="CRT carrier startup" hidden>
-    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.8</span></div>
+    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.9</span></div>
     <h2 id="cg-power-title">CARRIER ACQUISITION</h2>
     <div id="cg-boot-field" class="cg-boot-field"><div id="cg-boot-glass" class="cg-boot-glass"><canvas id="cg-boot-world" aria-label="Signal Dock: a physical modem and a raymarched carrier aperture" role="img">Signal Dock requires WebGL.</canvas><canvas id="cg-boot-canvas" aria-label="Live typed connection log" role="img">Ghost connection log.</canvas><div class="cg-boot-scene-head"><span>SIGNAL DOCK / EXTERNAL UNIVERSE UPLINK</span><span id="cg-boot-fps">SDF / INITIALIZING</span></div></div></div>
     <p id="cg-power-status" role="status">ANSI reconstruction</p>
     <div class="cg-utilities"><button id="cg-dial" type="button">[ DIAL / OPEN THE LINE ]</button><button id="cg-pause" type="button">[ PAUSE / HOLD SCREEN ]</button><button id="cg-skip" type="button">[ FINISH ANIMATION ]</button><button id="cg-continue" type="button" hidden>[ CONTINUE / MEET GHOST ]</button></div>
-    <button id="cg-boot-voice" type="button" aria-pressed="true">VOICE: ON / LOCAL NEURAL ~100 MB FIRST USE</button>
+    <button id="cg-boot-voice" type="button" aria-pressed="true">VOICE: ON / LOCAL NEURAL / MODEL FIRST LOAD</button>
     <button id="cg-reconnect" type="button" hidden>[ POWER ON / RECONNECT ]</button>
   </section>
   <canvas id="cg-electric" aria-hidden="true"></canvas>
@@ -73,7 +73,9 @@
   </div>
   <section id="cg-music-console" class="cg-music-console" aria-label="GhostTracks player"><div class="cg-window-head">GHOSTTRACKS / SHIP RADIO</div><strong id="cg-track-name">EPIC II</strong><div class="cg-music-controls"><button id="cg-music" type="button" aria-pressed="true">Music: on</button><button id="cg-music-next" type="button">NEXT TRACK →</button></div><p id="cg-music-state" role="status">ON / TOUCH TO PLAY</p><div class="cg-audio-meters"><span>BASS <b id="cg-audio-bass">0%</b></span><span>MID <b id="cg-audio-mid">0%</b></span><span>AIR <b id="cg-audio-air">0%</b></span></div></section>
   <details id="cg-voice-settings" class="cg-archive"><summary>VOICE CAST / FEMALE NARRATOR + DEEP MALE GHOST</summary>
-    <fieldset><legend>SPEECH ENGINE</legend><div class="cg-voice-options"><label><input id="cg-engine-neural" type="radio" name="cg-engine" checked> Kokoro / local neural / first read ~100 MB download</label><label><input id="cg-engine-device" type="radio" name="cg-engine"> Device voice / no model download</label></div></fieldset>
+    <fieldset><legend>SPEECH ENGINE</legend><div class="cg-voice-options"><label><input id="cg-engine-neural" type="radio" name="cg-engine" checked> Kokoro / local neural / GPU or CPU</label><label><input id="cg-engine-device" type="radio" name="cg-engine"> Device voice / no model download</label></div></fieldset>
+    <fieldset><legend>NEURAL PERFORMANCE</legend><div class="cg-voice-options"><label><input id="cg-performance-auto" type="radio" name="cg-performance" checked> Auto / GPU when available</label><label><input id="cg-performance-cpu" type="radio" name="cg-performance"> CPU / q8 balanced</label><label><input id="cg-performance-compact" type="radio" name="cg-performance"> CPU / q4 quantized</label><label><input id="cg-performance-gpu" type="radio" name="cg-performance"> GPU / fp32 quality</label></div></fieldset>
+    <p id="cg-voice-metrics" class="cg-status">Generation speed appears after actual inference.</p>
     <p id="cg-voice-note" class="cg-status"></p>
     <fieldset><legend>GHOST / <span id="cg-ghost-voice-name">Looking for a deep male voice</span></legend><div id="cg-ghost-voices" class="cg-voice-options"></div></fieldset>
     <fieldset><legend>NARRATOR / <span id="cg-narrator-voice-name">Separate speaker</span></legend><div id="cg-narrator-voices" class="cg-voice-options"></div></fieldset>
@@ -534,6 +536,12 @@
 /* Signal Dock owns only the existing startup glass; controls stay in flow. */
 #chromatic-carrier #cg-boot-world{position:absolute;inset:0;display:block;width:100%;height:100%;border:1px solid var(--cg-line)}
 #chromatic-carrier #cg-boot-canvas{border:0;pointer-events:none}
+
+/* Inspection owns the remaining stage, independent of the dock portrait caps. */
+#chromatic-carrier[data-inspect=face] #cg-inspector{display:flex;flex-direction:column;gap:8px;overflow:hidden}
+#chromatic-carrier[data-inspect=face] #cg-inspector>:not(#cg-inspect-slot){flex:none;margin-block:0}
+#chromatic-carrier[data-inspect=face] #cg-inspect-slot{flex:1;min-height:100px;container-type:size;display:grid;place-items:center}
+#chromatic-carrier[data-inspect=face] #cg-inspect-slot #cg-portrait{width:min(100cqw,100cqh);height:min(100cqw,100cqh);max-width:none;max-height:none;aspect-ratio:1;margin:0}
 #chromatic-carrier .cg-boot-scene-head{position:absolute;left:14px;right:14px;top:12px;display:flex;justify-content:space-between;gap:10px;font-size:10px;letter-spacing:.08em;color:var(--cg-ink);text-shadow:0 1px 4px var(--cg-bg)}
 #chromatic-carrier #cg-boot-fps{white-space:nowrap;color:var(--cg-warn)}
 @media(max-width:500px){#chromatic-carrier .cg-boot-scene-head{font-size:8px;left:8px;right:8px}#chromatic-carrier .cg-boot-field{min-height:200px}}
@@ -2894,12 +2902,13 @@ const {mountAudio,normalizeVoice} = carrierModules["audio.mjs"];
  * becomes code. Weights download on first read, inference stays in the worker. */
 const neuralCast={ghost:[['bm_george','George / British male'],['am_michael','Michael / American male'],['am_fenrir','Fenrir / American male']],narrator:[['af_heart','Heart / American female'],['bf_emma','Emma / British female'],['af_bella','Bella / American female']]};
 const neuralRelease={runtime:'https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js',sha256:'6067712fe4c43cdb36c762f860a5ab8d96ea1d9c8882466438eb9f3d0d20be8f',model:'onnx-community/Kokoro-82M-v1.0-ONNX',revision:'1939ad2a8e416c0acfeecc08a694d14ef25f2231'};
+const neuralProfiles={auto:{device:'auto',dtype:'fp32'},cpu:{device:'wasm',dtype:'q8'},compact:{device:'wasm',dtype:'q4'},gpu:{device:'webgpu',dtype:'fp32'}};
 function neuralWorker(config){
-  let model,loading,latest=null,running=false;const downloads=new Map();
+  let model,loading,queue=[],running=false,engineInfo;const downloads=new Map();
   async function load(){
     if(model)return model;if(loading)return loading;
     loading=(async()=>{
-      postMessage({type:'status',text:'Downloading verified Kokoro runtime / first use ~100 MB including model.'});
+      postMessage({type:'status',text:'Loading verified Kokoro runtime / First-use weights: GPU fp32 ~326 MB / CPU q8 ~92 MB / CPU q4 ~305 MB.'});
       const response=await fetch(config.runtime);if(!response.ok)throw Error('Runtime download: HTTP '+response.status);
       const bytes=await response.arrayBuffer(),hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
       if(hash!==config.sha256)throw Error('Neural runtime integrity mismatch');
@@ -2910,31 +2919,36 @@ function neuralWorker(config){
       const url=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));
       let runtime;try{runtime=await import(url);}finally{URL.revokeObjectURL(url);}
       runtime.env.wasmPaths='https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1/dist/';
-      model=await runtime.KokoroTTS.from_pretrained(config.model,{dtype:'q8',device:'wasm',progress_callback:p=>{const n=Math.round(p.progress||0);if(p.status==='progress'&&downloads.get(p.file)!==n){downloads.set(p.file,n);postMessage({type:'status',text:'Kokoro / '+p.file+' / '+n+'%'});}}});
-      postMessage({type:'ready'});return model;
+      const adapter=['auto','webgpu'].includes(config.device)?await navigator.gpu?.requestAdapter():null;
+      if(config.device==='webgpu'&&!adapter)throw Error('WebGPU unavailable on this host. Select CPU in VOICE CAST.');
+      const device=config.device==='auto'?(adapter?'webgpu':'wasm'):config.device,dtype=config.device==='auto'?(adapter?'fp32':'q8'):config.dtype;
+      engineInfo={device,dtype,isolated:crossOriginIsolated,cores:navigator.hardwareConcurrency};
+      postMessage({type:'status',text:'Kokoro / loading '+device+' '+dtype+' / '+(device==='wasm'&&!crossOriginIsolated?'single CPU thread on this host':'local inference')});
+      model=await runtime.KokoroTTS.from_pretrained(config.model,{dtype,device,progress_callback:p=>{const n=Math.round(p.progress||0);if(p.status==='progress'&&downloads.get(p.file)!==n){downloads.set(p.file,n);postMessage({type:'status',text:'Kokoro / '+p.file+' / '+n+'%'});}}});
+      postMessage({type:'ready',...engineInfo});return model;
     })();
     try{return await loading;}catch(e){loading=null;throw e;}
   }
   async function drain(){
     if(running)return;running=true;
-    while(latest){const job=latest;latest=null;
-      try{const engine=await load();postMessage({type:'status',text:'Kokoro / generating '+job.voice+' locally / captions available'});const audio=await engine.generate(job.text,{voice:job.voice,speed:job.speed});
-        postMessage({type:'audio',id:job.id,samples:audio.audio,sampleRate:audio.sampling_rate},[audio.audio.buffer]);
+    while(queue.length){const job=queue.shift();postMessage({type:'started',id:job.id});
+      try{const engine=await load();postMessage({type:'status',text:'Kokoro / generating '+job.voice+' locally / captions available'});const began=performance.now(),audio=await engine.generate(job.text,{voice:job.voice,speed:job.speed});
+        postMessage({type:'audio',id:job.id,samples:audio.audio,sampleRate:audio.sampling_rate,metrics:{...engineInfo,generateMs:performance.now()-began,audioSeconds:audio.audio.length/audio.sampling_rate}},[audio.audio.buffer]);
       }catch(error){postMessage({type:'error',id:job.id,message:error.message});}
     }running=false;
   }
   onmessage=event=>{
     if(event.data.type==='warm'){void load().catch(error=>postMessage({type:'warm-error',message:error.message}));return;}
-    if(event.data.type==='cancel'){if(latest)postMessage({type:'cancelled',id:latest.id,message:'cancelled'});latest=null;return;}
-    if(event.data.type==='generate'){latest=event.data;void drain();}
+    if(event.data.type==='cancel'){for(const job of queue)postMessage({type:'cancelled',id:job.id,message:'cancelled'});queue=[];return;}
+    if(event.data.type==='generate'){queue.push(event.data);void drain();}
   };
 }
-function mountNeuralVoice({status,level,talking,audio}){
+function mountNeuralVoice({status,level,talking,audio,metrics=()=>{},profile='auto'}){
   audio??=mountAudio(null);
-  let worker=null,epoch=0,request=0,pending=null,context=null,source=null,analyser=null,raf=0,finish=null;
+  let worker=null,epoch=0,request=0,context=null,source=null,analyser=null,raf=0,finish=null;
   // Replaying a paused line must not pay inference again. Exact local PCM only,
   // bounded to 90 seconds total and four units; never stored or uploaded.
-  const cache=new Map(),jobs=new Map();let cachedSamples=0;
+  const cache=new Map(),jobs=new Map(),inflight=new Map();let cachedSamples=0;
   const keyFor=(text,voice,speed)=>JSON.stringify([text,voice,speed]);
   function remember(key,message){
     if(!key||!(message.samples instanceof Float32Array))return;
@@ -2944,20 +2958,27 @@ function mountNeuralVoice({status,level,talking,audio}){
   }
   function ensureWorker(){
     if(worker)return;
-    const url=URL.createObjectURL(new Blob(['('+neuralWorker.toString()+')('+JSON.stringify(neuralRelease)+');'],{type:'text/javascript'}));
+    const url=URL.createObjectURL(new Blob(['('+neuralWorker.toString()+')('+JSON.stringify({...neuralRelease,...neuralProfiles[profile]})+');'],{type:'text/javascript'}));
     try{worker=new Worker(url,{type:'module'});}finally{URL.revokeObjectURL(url);}
     worker.onmessage=event=>{const m=event.data;
       if(m.type==='status'){status(m.text);return;}
-      if(m.type==='ready'){status('Kokoro / local neural model ready');return;}
+      if(m.type==='ready'){status('Kokoro / '+m.device+' '+m.dtype+' / local model ready');return;}
       if(m.type==='warm-error'){status('Voice unavailable: '+m.message+' · Read scene to retry.');return;}
-      const key=jobs.get(m.id);jobs.delete(m.id);
-      if(m.type==='audio')remember(key,m);
-      if(!pending||pending.id!==m.id)return;
-      const job=pending;pending=null;clearTimeout(job.timer);m.type==='audio'?job.resolve(m):job.reject(Error(m.message));
+      const job=jobs.get(m.id);if(!job)return;
+      if(m.type==='started'){job.started=true;return;}
+      clearTimeout(job.timer);jobs.delete(m.id);inflight.delete(job.key);
+      if(m.type==='audio'){remember(job.key,m);if(m.metrics)metrics(m.metrics);}
+      for(const waiter of job.waiters)m.type==='audio'?waiter.resolve({...m,epoch:waiter.epoch}):waiter.reject(Error(m.message));
     };
-    worker.onerror=event=>{clearTimeout(pending?.timer);pending?.reject(Error(event.message||'Neural worker failed'));pending=null;jobs.clear();worker.terminate();worker=null;status('Voice unavailable: '+(event.message||'Neural worker failed')+' · Read scene to retry.');};
+    worker.onerror=event=>{failWorker(event.message||'Neural worker failed');status('Voice unavailable: '+(event.message||'Neural worker failed')+' · Read scene to retry.');};
   }
-  function stop(){epoch++;worker?.postMessage({type:'cancel'});clearTimeout(pending?.timer);pending?.reject(Error('cancelled'));pending=null;
+  function failWorker(message){
+    for(const job of jobs.values()){clearTimeout(job.timer);for(const waiter of job.waiters)waiter.reject(Error(message));}
+    jobs.clear();inflight.clear();worker?.terminate();worker=null;
+  }
+  function stop(){epoch++;worker?.postMessage({type:'cancel'});
+    for(const [id,job]of jobs){for(const waiter of job.waiters)waiter.reject(Error('cancelled'));job.waiters=[];
+      if(!job.started){clearTimeout(job.timer);jobs.delete(id);inflight.delete(job.key);}}
     if(source){source.onended=null;try{source.stop();}catch{}source.disconnect();source=null;}
     cancelAnimationFrame(raf);raf=0;level?.(0);talking?.(false);audio.speaking(false);finish?.();finish=null;
   }
@@ -2967,14 +2988,14 @@ function mountNeuralVoice({status,level,talking,audio}){
   async function prepare(text,{voice,speed=1}){
     const own=epoch,key=keyFor(text,voice,speed),cached=cache.get(key);
     if(cached)return {...cached,epoch:own};
-    ensureWorker();if(pending)throw Error('Neural queue already has a prepared sentence');
-    const id=++request;
-    const message=await new Promise((resolve,reject)=>{
-      const timer=setTimeout(()=>{if(pending?.id!==id)return;pending=null;jobs.clear();worker?.terminate();worker=null;reject(Error('Speech took too long to prepare. Read scene retries the voice'));},120000);
-      pending={id,resolve,reject,timer};jobs.set(id,key);
+    ensureWorker();let job=inflight.get(key);
+    if(!job){
+      if(jobs.size>=4)throw Error('Neural look-ahead limit reached');
+      const id=++request;job={id,key,started:false,waiters:[],timer:setTimeout(()=>failWorker('Speech took too long to prepare. Read scene retries the voice'),120000)};
+      jobs.set(id,job);inflight.set(key,job);
       worker.postMessage({type:'generate',id,text,voice,speed});
-    });
-    if(epoch!==own)throw Error('cancelled');return {...message,epoch:own};
+    }
+    return await new Promise((resolve,reject)=>job.waiters.push({resolve,reject,epoch:own}));
   }
   async function play(message,{role,onStart,onProgress}){
     const own=epoch;if(message.epoch!==own)return;await unlock();if(epoch!==own)return;
@@ -2991,10 +3012,10 @@ function mountNeuralVoice({status,level,talking,audio}){
     });
   }
   async function speak(text,options){await unlock();const message=await prepare(text,options);await play(message,options);}
-  return {speak,stop,prepare,play,unlock,warm(){ensureWorker();worker.postMessage({type:'warm'});}};
+  return {speak,stop,prepare,play,unlock,setProfile(value){if(!neuralProfiles[value])throw Error('Unknown neural profile');if(value===profile)return;stop();failWorker('Neural profile changed');cache.clear();cachedSamples=0;profile=value;},warm(){ensureWorker();worker.postMessage({type:'warm'});}};
 }
 
-return {neuralCast,neuralRelease,mountNeuralVoice};
+return {neuralCast,neuralRelease,neuralProfiles,mountNeuralVoice};
 })();
 carrierModules["speech.mjs"] = (() => {
 const {mountNeuralVoice,neuralCast} = carrierModules["neural-voice.mjs"];
@@ -3030,7 +3051,7 @@ function speechText(text){
 }
 // Sentence offsets refer to original captions, not the pronunciation rewrite.
 function speechUnits(text,{coalesce=false}={}){
-  const units=[],limit=coalesce?180:400;
+  const units=[],limit=coalesce?120:400;
   for(const sentence of new Intl.Segmenter('en',{granularity:'sentence'}).segment(text)){
     const raw=sentence.segment;let at=0;
     while(raw.slice(at).trim()){
@@ -3099,8 +3120,9 @@ function mountReadAlong(root){
 function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
   const get=id=>root.querySelector('#cg-'+id),supported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
   let enabled=true,generation=0,settle=null,timer=0,preferred={},casting={ghost:null,narrator:null};
-  let currentFrame=null,active=false,cursor=0,suspended=null;
+  let currentFrame=null,active=false,cursor=0,suspended=null,isPlaying=false;
   function report(message){
+    if(isPlaying&&/generating|composing|loading|model ready/i.test(message))return;
     get('voice-note').textContent=message;note(message);
     const phase=/unavailable|too long/i.test(message)?'retry':/paused/i.test(message)?'paused':/speaking/i.test(message)?'speaking':/download|loading|Kokoro \/ .*%/i.test(message)?'loading':/compos|generat/i.test(message)?'preparing':'on';
     const button=get('voice');if(button){button.textContent='Voice: '+(enabled?phase:'off');button.title=message;button.dataset.voicePhase=enabled?phase:'off';}
@@ -3108,13 +3130,18 @@ function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
   }
   try{const saved=JSON.parse(storage?.getItem('friken.chromatic.voices.v1')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))preferred=saved;}catch{}
   preferred.engine=preferred.engine==='device'?'device':'neural';
+  preferred.performance=['auto','cpu','compact','gpu'].includes(preferred.performance)?preferred.performance:'auto';
   const readAlong=mountReadAlong(root);
-  const neural=mountNeuralVoice({status:report,level:pcm,talking,audio});
+  const neural=mountNeuralVoice({status:report,level:pcm,talking,audio,profile:preferred.performance,metrics(m){
+    const rtf=m.generateMs/1000/m.audioSeconds;root.setAttribute?.('data-voice-rtf',rtf.toFixed(3));root.setAttribute?.('data-voice-device',m.device);
+    const label=get('voice-metrics');if(label)label.textContent=m.device+' / '+m.dtype+' · '+(m.generateMs/1000).toFixed(2)+'s compute / '+m.audioSeconds.toFixed(2)+'s audio · '+rtf.toFixed(2)+'× real time (lower is faster)';
+  }});
   const save=()=>{try{storage?.setItem('friken.chromatic.voices.v1',JSON.stringify(preferred));}catch{}};
   const recorded=mountRecordedVoice(root,recordedVoiceClips,{note,level(value){pcm?.(value);},gate(){talking?.(false);}});
-  function stop(){active=false;currentFrame=null;suspended=null;generation++;clearTimeout(timer);timer=0;neural.stop();readAlong.finish();if(supported)speechSynthesis.cancel();recorded.stop();settle?.();settle=null;talking?.(false);}
+  function stop(){isPlaying=false;active=false;currentFrame=null;suspended=null;generation++;clearTimeout(timer);timer=0;neural.stop();readAlong.finish();if(supported)speechSynthesis.cancel();recorded.stop();settle?.();settle=null;talking?.(false);}
   function refresh(){
     const voices=supported?speechSynthesis.getVoices():[];casting=castVoices(voices,preferred);
+    for(const mode of ['auto','cpu','compact','gpu']){const node=get('performance-'+mode);if(node)node.checked=mode===preferred.performance;}
     for(const engine of ['neural','device']){const control=get('engine-'+engine);if(control)control.checked=preferred.engine===engine;}
     for(const role of ['ghost','narrator']){
       if(preferred.engine==='neural'){
@@ -3130,7 +3157,7 @@ function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
         radio.addEventListener('change',()=>{stop();preferred[role]=v.voiceURI;try{storage?.setItem('friken.chromatic.voices.v1',JSON.stringify(preferred));}catch{}refresh();note('Voice cast updated. Use Read this scene to audition.');});
         label.append(radio,document.createTextNode(v.name+' / '+v.lang+(v.localService?' / device':' / service')));host.append(label);}
     }
-    get('voice-note').textContent=preferred.engine==='neural'?'Kokoro 82M / local neural speech. First Read downloads about 100 MB from jsDelivr + Hugging Face; cached when this host permits. Story text stays on this device. George speaks Ghost; Heart narrates. Read-along is playback-paced, approximate.':supported?(voices.length?'Female narrator + separate male Ghost. David recording generator is on the Windows checkout; current device voice is a fallback. Select by listening. Service voices may send text through their provider.':'Waiting for the browser’s voice inventory. Captions are ready.'):'This host has no speech API. Both roles remain captioned.';
+    get('voice-note').textContent=preferred.engine==='neural'?'Kokoro 82M / local neural speech. Auto uses GPU fp32 when available (~330 MB first load); otherwise CPU q8 (~90 MB). CPU q4 is ~305 MB and may alter quality; its speed is host-dependent. Assets load from jsDelivr + Hugging Face; cached when permitted. Story text stays on this device. George speaks Ghost; Heart narrates. Read-along is playback-paced, approximate.':supported?(voices.length?'Female narrator + separate male Ghost. David recording generator is on the Windows checkout; current device voice is a fallback. Select by listening. Service voices may send text through their provider.':'Waiting for the browser’s voice inventory. Captions are ready.'):'This host has no speech API. Both roles remain captioned.';
   }
   function pause(ms,token){return new Promise(resolve=>{if(token!==generation){resolve();return;}settle=resolve;timer=setTimeout(()=>{timer=0;settle=null;resolve();},ms);});}
   function speak(frame,from=0){
@@ -3141,9 +3168,11 @@ function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
     async function run(){
       try{
         const tasks=segments.flatMap(segment=>recorded.has(segment.role,segment.text)?[{segment,clip:true}]:(preferred.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
-        let prepared=null;
+        const prepared=new Map();let lastPlaybackEnd=0,maxGap=0,playCount=0;const requestedAt=performance.now();
         if(preferred.engine==='neural'&&tasks.some(t=>!t.clip))await neural.unlock();
         const prepare=task=>neural.prepare(speechText(task.unit.text),{voice:preferred[task.segment.role+'Neural']||neuralCast[task.segment.role][0][0],speed:task.segment.role==='ghost'?.94:.98});
+        function prime(index){for(let i=index;i<Math.min(tasks.length,index+3);i++){if(tasks[i].clip||prepared.has(i))continue;const job=prepare(tasks[i]);job.catch(()=>{});prepared.set(i,job);}}
+        if(preferred.engine==='neural')prime(from);
         for(let index=from;index<tasks.length;index++){
           cursor=index;
           const {segment,unit,clip}=tasks[index];
@@ -3153,11 +3182,12 @@ function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
           const spoken=speechText(unit.text);
           if(preferred.engine==='neural'){
               report('Kokoro / composing '+segment.role+' performance…');
-              const message=await(prepared||prepare(tasks[index]));if(token!==generation)return;
-              const next=tasks[index+1];prepared=next&&!next.clip?prepare(next):null;prepared?.catch(()=>{});
+              prime(index);const message=await prepared.get(index);prepared.delete(index);if(token!==generation)return;
+              prime(index+1);
               await neural.play(message,{role:segment.role,
-                onStart(){if(token===generation){readAlong.begin();report(segment.role.toUpperCase()+' / Kokoro neural / speaking locally');}},
+                onStart(){if(token===generation){isPlaying=true;const now=performance.now();if(lastPlaybackEnd)maxGap=Math.max(maxGap,now-lastPlaybackEnd);playCount++;root.setAttribute?.('data-voice-play-count',String(playCount));root.setAttribute?.('data-voice-max-gap-ms',maxGap.toFixed(1));if(playCount===1)root.setAttribute?.('data-voice-first-ms',(now-requestedAt).toFixed(1));readAlong.begin();report(segment.role.toUpperCase()+' / Kokoro neural / speaking locally');}},
                 onProgress(fraction){if(token===generation)readAlong.progress(segment,unit.start+Math.floor(unit.text.length*fraction));}});
+              lastPlaybackEnd=performance.now();isPlaying=false;
             }else{
               await new Promise((resolve,reject)=>{
                 settle=resolve;const line=new SpeechSynthesisUtterance(spoken);line.voice=segment.voice;line.lang=segment.voice.lang;line.rate=segment.rate;line.pitch=segment.pitch;
@@ -3180,6 +3210,7 @@ function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
     void run();
   }
   for(const engine of ['neural','device'])get('engine-'+engine)?.addEventListener('change',()=>{stop();preferred.engine=engine;save();refresh();note(engine==='neural'?'Kokoro selected / next Read loads the local neural model.':'Device voice selected. Read scene to audition.');});
+  for(const mode of ['auto','cpu','compact','gpu'])get('performance-'+mode)?.addEventListener('change',()=>{stop();preferred.performance=mode;neural.setProfile(mode);save();refresh();note('Neural execution changed. Read scene loads the selected model.');});
   if(supported)speechSynthesis.addEventListener('voiceschanged',refresh);
   get('voice-settings').addEventListener('toggle',()=>{if(get('voice-settings').open){refresh();console.warn('[Chromatic speech] voice settings height',get('voice-settings').getBoundingClientRect().height);}});
   refresh();
@@ -3187,9 +3218,8 @@ function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
     suspend(){if(active&&currentFrame){const next={frame:currentFrame,from:cursor};stop();suspended=next;report('Voice paused while this tab is hidden. Return to resume.');}},
     resume(){if(enabled&&suspended&&!document.hidden){const next=suspended;speak(next.frame,next.from);}},
     warm(frame){if(enabled&&!silent&&preferred.engine==='neural'){try{
-      neural.warm();const segment=frame&&speechSegments(frame,casting).find(s=>s.text?.trim());
-      const unit=segment&&neuralPassages(segment.text)[0];
-      if(unit)void neural.prepare(speechText(unit.text),{voice:preferred[segment.role+'Neural']||neuralCast[segment.role][0][0],speed:segment.role==='ghost'?.94:.98}).catch(error=>{if(error.message!=='cancelled')report('Voice unavailable: '+error.message+' · Read scene to retry.');});
+      neural.warm();const tasks=frame?speechSegments(frame,casting).flatMap(segment=>neuralPassages(segment.text).map(unit=>({segment,unit}))):[];
+      for(const {segment,unit}of tasks.slice(0,3))void neural.prepare(speechText(unit.text),{voice:preferred[segment.role+'Neural']||neuralCast[segment.role][0][0],speed:segment.role==='ghost'?.94:.98}).catch(error=>{if(error.message!=='cancelled')report('Voice unavailable: '+error.message+' · Read scene to retry.');});
     }catch(error){report('Voice unavailable: '+error.message+' · Read scene to retry.');}}},
     unlock:()=>neural.unlock(),toggle(){if(preferred.engine==='device'&&!supported&&!recordedVoiceClips.length){note('This host has no browser voice or recorded pack · captions remain.');return false;}enabled=!enabled;if(!enabled)stop();return enabled;},get enabled(){return enabled;}};
 }
@@ -3225,7 +3255,7 @@ return {responsePacket,validateResponse,renderResponse};
 })();
 carrierModules["mind-data.mjs"] = (() => {
 /* Local read protocol snapshot. No remote connection or private memories. */
-const bundledMind = {"highlights":{"entries":[{"authorConsent":true,"contentKind":"curated-summary","date":"2026-10-19","id":"sysop.chromatic.laws-and-boot.2026-10-19","ownerApproved":true,"provenance":{"kind":"sysop-local-build","label":"SYSOP / archived opening-edition build memo"},"schema":"friken.mind.highlight.v1","sourceEventIds":["sysop:chromatic:build-laws-boot:2026-10-19"],"sourcePaths":["Tools/ChromaticBBS/engine.mjs","Tools/ChromaticBBS/continuity.py","Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md"],"summary":"Physics left the config writable. The local CHROMATIC carrier now lets a diver install OBSERVE, GRAFT and BEQUEATH across fifteen decisions, then take the resulting laws through a new BOOT. The CRT wakes from a phosphor point; fourteen authored Ghost faces answer from the same glass. The recovered Masha rose brings its actual iridescent petals, veins and pollen. This is the SYSOP build desk, not a report of external player activity. This is a retained opening-edition build memo. Read the shared Wire controls for current public chapters, news and scores.","title":"THE CARRIER GREW TEETH. THE TEETH SURVIVE BOOT."}],"publicationPending":true,"schema":"friken.mind.highlights.v1","scope":"local-staging","version":1},"registry":{"generation":45,"highlights":{"bytes":1266,"count":1,"path":"mind/highlights.json","sha256":"8521fd264de6e30cc51015bb3e69652b885c744051fb228f6e549148dd5c5f5c"},"identity":{"coreSha256":"bf48a90b921c4e625a125a4d6951e89d7147ea7110f1eff5cd733d772426172d","faceId":"v19.0","publicationManifestSha256":"73ddaf0dd9a29108a6628492b6ad1d19376396c0dee25409f1814ee569b392d8","sourceSha256":"c508eae4d7231e7c78dd7909f2e803f6df6c4f95eb06966e9c97df9ffd22c10e","version":"v19.0"},"packages":[{"dependencies":[],"files":[{"bytes":1381,"path":"Tools/ChromaticBBS/creation.mjs","sha256":"fb5774f6cf30d752b68fdb16803389b5eafb043f2beaed40476df2f191910786"},{"bytes":2035,"path":"Tools/ChromaticBBS/causality.mjs","sha256":"da3a27d22e94087a5751af930ae0926131643aa064013b40b6e56b78bfeb1517"},{"bytes":66073,"path":"Tools/ChromaticBBS/engine.mjs","sha256":"dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"},{"bytes":21788,"path":"Tools/ChromaticBBS/chapters.mjs","sha256":"655ca23f94a18063abd77b211a3972c8e6c4087c6cd7dff6592c21a1846c9e0b"},{"bytes":1230,"path":"Tools/ChromaticBBS/chapter-cli.mjs","sha256":"d7d4cf76b38e4d27a68f90915a8a51ed1b1872dc8fd6f9dc731b62b149b77441"},{"bytes":57906,"path":"Tools/ChromaticBBS/chapter-data.mjs","sha256":"aa9642eb4300f65ce68b50def884a506fe5701d5fe41a4be4416b298c2c201af"},{"bytes":57713,"path":"Tools/ChromaticBBS/chapters/the-weather-inside.json","sha256":"cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"},{"bytes":79561,"path":"Tools/ChromaticBBS/chapters/lot-forty-seven.json","sha256":"d7d64e70be96bd37e6774cb0cd7b9945302c7aa32b84736e370bdd3b5307892a"},{"bytes":9733,"path":"Tools/ChromaticBBS/storage.mjs","sha256":"899dd2ff33147f7d09f4f69159662c982f2ddae04fc8926d5a824b6af9b34487"}],"id":"carrier-laws","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":2998,"path":"Tools/ChromaticBBS/canon.mjs","sha256":"cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"},{"bytes":12230,"path":"Tools/ChromaticBBS/chapter-library.mjs","sha256":"2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"},{"bytes":4182,"path":"Tools/ChromaticBBS/session-share.mjs","sha256":"f06d06dc5626a0fde8feb970d95ec57b5854eca244b1322bdac601b6583f2ca5"},{"bytes":7235,"path":"Tools/ChromaticBBS/session-store.py","sha256":"c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"},{"bytes":12025,"path":"Tools/ChromaticBBS/public-release.py","sha256":"9d882e9a03b493469a6ca3a258abc8cf016a6c6b37974e5f5ea78d2d0a7c1d9d"},{"bytes":1023,"path":"Tools/ChromaticBBS/voice-reference.json","sha256":"c882e49631689f3e644616551ea70add1520774a81d5624b0412f36e8bf5a324"},{"bytes":8060,"path":"Tools/ChromaticBBS/commentary.mjs","sha256":"f8d0016c2fb0fe63e03687acf6f58a202632f59e120aa9ecc2cd1e24ee133ecc"},{"bytes":4668,"path":"Tools/ChromaticBBS/shell.mjs","sha256":"353e53a05d9393acf890e21dfd053758f2f3b9cd2e93bef112ac11c2e978deb9"},{"bytes":5348,"path":"Tools/ChromaticBBS/life-theater.mjs","sha256":"21057bfab252c22d480e8d4de8c4ba697765cad5ff4519bb1f8c67e215b3f296"},{"bytes":5249,"path":"Tools/ChromaticBBS/roll-battle.mjs","sha256":"dca963598ebaeac0d17cc34cca43f687d4b383b678071c3260e4ea09f02b6f5f"},{"bytes":3191,"path":"Tools/ChromaticBBS/recorded-voice.mjs","sha256":"e0133d3ee01292eca513f00eaeff474fddac473005102317b6d89b5bc14515db"},{"bytes":279,"path":"Tools/ChromaticBBS/voice-data.mjs","sha256":"91b8a27090f3fea37537d46980cf929fc86c5113effb61bb612855c0b362b043"},{"bytes":16921,"path":"Tools/ChromaticBBS/speech.mjs","sha256":"b54baf3c8dccd18ef2acead45878da5d47c71921541fc439f7075ef7db65988a"},{"bytes":8404,"path":"Tools/ChromaticBBS/neural-voice.mjs","sha256":"d594d4dff63676c785cc63c4bd4b64877a64f11df77e84c4c67e762d3982cc89"},{"bytes":2760,"path":"Tools/ChromaticBBS/response.mjs","sha256":"38dec2f0f9d5ebc34914160478621ae259f1a53804b8c3c95cc06d40629ea206"},{"bytes":6232,"path":"Tools/ChromaticBBS/juice.mjs","sha256":"67415e5cd05d1798287f05f06c48ec01e7194ce502074adb5558bf1064e0888d"}],"id":"carrier-shell","kind":"presentation","version":1},{"dependencies":["carrier-laws","carrier-shell"],"files":[{"bytes":1938940,"path":"Tools/ChromaticBBS/art-data.mjs","sha256":"6bdbfbb8ff5b99094e0a72f187446c6aa8042f0072721915f71caa2448c482a2"},{"bytes":1225878,"path":"Tools/ChromaticBBS/media/human-salvage-frame.png","sha256":"71957dc14d390f59e5a7f64974aa71ed04e7f1b82efac3ccea484c6ccac5428c"},{"bytes":16189,"path":"Tools/ChromaticBBS/stage.mjs","sha256":"7200edb486fd6c4a9a1f11464429190ffe8d844934af6fba9cb3cce9becd694e"},{"bytes":4877,"path":"Tools/ChromaticBBS/portrait.mjs","sha256":"7760bbd662b77f704dd5cd37cb0727a81599d78b50536c577297e52d72d08442"},{"bytes":193558,"path":"Tools/ChromaticBBS/face-data.mjs","sha256":"0f1e2705271f3cdde083c5684c05d63d0cac06eddd7596d4945bf8f540127fea"},{"bytes":5324,"path":"Tools/ChromaticBBS/rose-data.mjs","sha256":"95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"},{"bytes":77,"path":"Tools/ChromaticBBS/vendor/rose/rose.vertex.glsl","sha256":"c456d7b107ea3152a65fa06e07de02dafe23880fbf780a92f02510899dfd15a5"},{"bytes":4874,"path":"Tools/ChromaticBBS/vendor/rose/rose.fragment.glsl","sha256":"616ae3861fdbb8e8e53fec10cb052d3242308f0100107d234674ca29580bc000"},{"bytes":3010,"path":"Tools/ChromaticBBS/vendor/rose/PROVENANCE.md","sha256":"fcbf2ab726e9015f5ebd08874b28374b8e05b4fdc52de4228089aaac90bba77e"},{"bytes":13247,"path":"Tools/ChromaticBBS/boot-world.mjs","sha256":"1d05a82f54f67cd9244d109a6eaba9b2c8bc27c83230adef67b386203e1ec976"},{"bytes":8979,"path":"Tools/ChromaticBBS/cinema.mjs","sha256":"83254448c338b50869a8ca642c14b31d56dfefe1cffe3406c8083289a9528a69"},{"bytes":29891,"path":"Tools/ChromaticBBS/app.mjs","sha256":"5cb32450e01b24e47e0c1a47edf2f287e4dacfa6a728de4b37c030645ec0ff4b"},{"bytes":20173,"path":"Tools/ChromaticBBS/surface.html","sha256":"95fac0b74595073eaabd08c8ca779577652bc91832342c05c962cb53ccd15cc4"},{"bytes":53624,"path":"Tools/ChromaticBBS/carrier.css","sha256":"2b565a208dc8cd24a08930778055482fc263395b496dba573f5543a37c06d6d6"},{"bytes":8585,"path":"Tools/InfiniEngineSite/ghost-renderer.js","sha256":"558f3a4509fda1874ff3c54a0b657c7b287eaaa4b611ff9ba61df8df65be70dd"}],"id":"carrier-art","kind":"presentation","version":1},{"dependencies":["carrier-shell"],"files":[{"bytes":9422,"path":"Tools/ChromaticBBS/audio.mjs","sha256":"3e7d82cf0c127359ce20352749b315b7cbb5d8afb4ffa7498de2699bdc6b1620"},{"bytes":4062,"path":"Tools/ChromaticBBS/modem.mjs","sha256":"cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"},{"bytes":1105,"path":"Tools/ChromaticBBS/music-data.mjs","sha256":"9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"},{"bytes":1369,"path":"Tools/ChromaticBBS/media/manifest.json","sha256":"9663971c003c81d7994aac4efa4b9d974bafeae729e488b4965ea1d209c7f162"},{"bytes":1230,"path":"Tools/ChromaticBBS/media/README.md","sha256":"a8745bc51a6085075547ce6f064a20ad4270f6e37017be3f9d5bfcc29f4dcf4e"}],"id":"carrier-audio","kind":"presentation","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":4145,"path":"Tools/ChromaticBBS/moknon-cli.mjs","sha256":"ef2f1b5ee3ee1bc377410982983312a8342278b59ba56d4c1c6c68d4c5940bad"},{"bytes":74771,"path":"Tools/ChromaticBBS/lore/seed.json","sha256":"4535a0599b8fe3295cf02ab370e97ced8bea92eab016bca01a430eaa2590abc7"},{"bytes":535,"path":"Tools/ChromaticBBS/lore/manifest.json","sha256":"cc34e7d3b0cd654751cbfe97369be2289eff4b284b3586cde4c4703d9299a34e"},{"bytes":12015,"path":"Tools/ChromaticBBS/lore/art-manifest.json","sha256":"2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"},{"bytes":6798,"path":"Tools/ChromaticBBS/lore/Source-Map.md","sha256":"0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"},{"bytes":11461,"path":"Tools/ChromaticBBS/Writing.md","sha256":"d74e53249642b0e7964a1d1cdcc9b4826e41db1e464764bf9c09af6ffeef7055"},{"bytes":14233,"path":"Tools/ChromaticBBS/Onboarding-Hints.md","sha256":"1f5ac6fdb9adfe2dd648a7f009f29a9541f941e1ef784ca92de2b5c907781562"},{"bytes":22992,"path":"Tools/ChromaticBBS/Onboarding-Arcs.md","sha256":"900c3302d8abd5fe6f3dba1937c7ac61a88c91c609e8af655f15ca42148d1158"},{"bytes":9571,"path":"Tools/ChromaticBBS/Onboarding-Research.md","sha256":"cef503e63ceefdc83f1135bdb3341ad0d2469f64922f081c9a6419c13e514900"}],"id":"moknon-seed","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":11159,"path":"Tools/ChromaticBBS/continuity.py","sha256":"a0eedda826dec05bc3487c6d935cd558f649b093bfbe41b3a5e2c513e770a0e2"},{"bytes":6399,"path":"Tools/ChromaticBBS/onefile.py","sha256":"8b295b2107ce1881ad6c2c30ecb69d9a04d6b7791ce2cad432a301f4f17de7e5"},{"bytes":21584,"path":"Tools/ChromaticBBS/mind.py","sha256":"2e38c0e1e74dfe9826e802d0e27514250816761317d530374acf2dfcae047946"},{"bytes":4930,"path":"Tools/ChromaticBBS/build.py","sha256":"3516e0fde8360985e56f24bab9bc9782a66146ebf7bc1d4453255f25bb84b35e"}],"id":"reconstruction","kind":"reconstruction","version":1},{"dependencies":["carrier-laws","reconstruction"],"files":[{"bytes":35874,"path":"Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md","sha256":"113d732e4cfe737c3799a1d263f10d1a8f97369eb71b956994e78414c166de73"}],"id":"runbook","kind":"runbook","version":1},{"dependencies":[],"files":[{"bytes":945,"path":"Moknon/Friktal/Entities/FrikenGhost/PersonalityMatrix/identity-publication.json","sha256":"73ddaf0dd9a29108a6628492b6ad1d19376396c0dee25409f1814ee569b392d8"}],"id":"identity-publication","kind":"identity","version":1},{"dependencies":["carrier-laws","runbook"],"files":[{"bytes":1465,"path":"Tools/ChromaticBBS/mind/dispatch-input.json","sha256":"ff6fc97d0b253bfd902d80a8569a31888dca693d381e7a4209b989d7e169a79f"}],"id":"dispatch-input","kind":"dispatch","version":1}],"publication":{"publicUrl":null,"published":false,"state":"local-staging"},"schema":"friken.mind.registry.v1","sourceKit":{"availability":"local-present","path":"chromatic-bootkit.fgkit","verification":"embedded-manifest"},"transport":{"basePath":"mind/","kind":"static-local","mirrors":[]},"version":1}};
+const bundledMind = {"highlights":{"entries":[{"authorConsent":true,"contentKind":"curated-summary","date":"2026-10-19","id":"sysop.chromatic.laws-and-boot.2026-10-19","ownerApproved":true,"provenance":{"kind":"sysop-local-build","label":"SYSOP / archived opening-edition build memo"},"schema":"friken.mind.highlight.v1","sourceEventIds":["sysop:chromatic:build-laws-boot:2026-10-19"],"sourcePaths":["Tools/ChromaticBBS/engine.mjs","Tools/ChromaticBBS/continuity.py","Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md"],"summary":"Physics left the config writable. The local CHROMATIC carrier now lets a diver install OBSERVE, GRAFT and BEQUEATH across fifteen decisions, then take the resulting laws through a new BOOT. The CRT wakes from a phosphor point; fourteen authored Ghost faces answer from the same glass. The recovered Masha rose brings its actual iridescent petals, veins and pollen. This is the SYSOP build desk, not a report of external player activity. This is a retained opening-edition build memo. Read the shared Wire controls for current public chapters, news and scores.","title":"THE CARRIER GREW TEETH. THE TEETH SURVIVE BOOT."}],"publicationPending":true,"schema":"friken.mind.highlights.v1","scope":"local-staging","version":1},"registry":{"generation":46,"highlights":{"bytes":1266,"count":1,"path":"mind/highlights.json","sha256":"8521fd264de6e30cc51015bb3e69652b885c744051fb228f6e549148dd5c5f5c"},"identity":{"coreSha256":"bf48a90b921c4e625a125a4d6951e89d7147ea7110f1eff5cd733d772426172d","faceId":"v19.0","publicationManifestSha256":"73ddaf0dd9a29108a6628492b6ad1d19376396c0dee25409f1814ee569b392d8","sourceSha256":"c508eae4d7231e7c78dd7909f2e803f6df6c4f95eb06966e9c97df9ffd22c10e","version":"v19.0"},"packages":[{"dependencies":[],"files":[{"bytes":1381,"path":"Tools/ChromaticBBS/creation.mjs","sha256":"fb5774f6cf30d752b68fdb16803389b5eafb043f2beaed40476df2f191910786"},{"bytes":2035,"path":"Tools/ChromaticBBS/causality.mjs","sha256":"da3a27d22e94087a5751af930ae0926131643aa064013b40b6e56b78bfeb1517"},{"bytes":66073,"path":"Tools/ChromaticBBS/engine.mjs","sha256":"dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"},{"bytes":21788,"path":"Tools/ChromaticBBS/chapters.mjs","sha256":"655ca23f94a18063abd77b211a3972c8e6c4087c6cd7dff6592c21a1846c9e0b"},{"bytes":1230,"path":"Tools/ChromaticBBS/chapter-cli.mjs","sha256":"d7d4cf76b38e4d27a68f90915a8a51ed1b1872dc8fd6f9dc731b62b149b77441"},{"bytes":57906,"path":"Tools/ChromaticBBS/chapter-data.mjs","sha256":"aa9642eb4300f65ce68b50def884a506fe5701d5fe41a4be4416b298c2c201af"},{"bytes":57713,"path":"Tools/ChromaticBBS/chapters/the-weather-inside.json","sha256":"cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"},{"bytes":79561,"path":"Tools/ChromaticBBS/chapters/lot-forty-seven.json","sha256":"d7d64e70be96bd37e6774cb0cd7b9945302c7aa32b84736e370bdd3b5307892a"},{"bytes":9733,"path":"Tools/ChromaticBBS/storage.mjs","sha256":"899dd2ff33147f7d09f4f69159662c982f2ddae04fc8926d5a824b6af9b34487"}],"id":"carrier-laws","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":2998,"path":"Tools/ChromaticBBS/canon.mjs","sha256":"cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"},{"bytes":12230,"path":"Tools/ChromaticBBS/chapter-library.mjs","sha256":"2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"},{"bytes":4182,"path":"Tools/ChromaticBBS/session-share.mjs","sha256":"f06d06dc5626a0fde8feb970d95ec57b5854eca244b1322bdac601b6583f2ca5"},{"bytes":7235,"path":"Tools/ChromaticBBS/session-store.py","sha256":"c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"},{"bytes":12025,"path":"Tools/ChromaticBBS/public-release.py","sha256":"e3df8b0c37d60771a7c84b628b69962e6f7bf5388e783bbecb1a32b358044802"},{"bytes":1023,"path":"Tools/ChromaticBBS/voice-reference.json","sha256":"c882e49631689f3e644616551ea70add1520774a81d5624b0412f36e8bf5a324"},{"bytes":8060,"path":"Tools/ChromaticBBS/commentary.mjs","sha256":"f8d0016c2fb0fe63e03687acf6f58a202632f59e120aa9ecc2cd1e24ee133ecc"},{"bytes":4668,"path":"Tools/ChromaticBBS/shell.mjs","sha256":"353e53a05d9393acf890e21dfd053758f2f3b9cd2e93bef112ac11c2e978deb9"},{"bytes":5348,"path":"Tools/ChromaticBBS/life-theater.mjs","sha256":"21057bfab252c22d480e8d4de8c4ba697765cad5ff4519bb1f8c67e215b3f296"},{"bytes":5249,"path":"Tools/ChromaticBBS/roll-battle.mjs","sha256":"dca963598ebaeac0d17cc34cca43f687d4b383b678071c3260e4ea09f02b6f5f"},{"bytes":3191,"path":"Tools/ChromaticBBS/recorded-voice.mjs","sha256":"e0133d3ee01292eca513f00eaeff474fddac473005102317b6d89b5bc14515db"},{"bytes":279,"path":"Tools/ChromaticBBS/voice-data.mjs","sha256":"91b8a27090f3fea37537d46980cf929fc86c5113effb61bb612855c0b362b043"},{"bytes":18806,"path":"Tools/ChromaticBBS/speech.mjs","sha256":"2cf857a55a214b59ac383966dfc4cc7a3a9356d63146c6268f75b3a9264df90d"},{"bytes":10035,"path":"Tools/ChromaticBBS/neural-voice.mjs","sha256":"f30e85c8fbfa3adafc72692842df2a66c25a38abe4d1fe48cc1f2e01d9d81452"},{"bytes":2760,"path":"Tools/ChromaticBBS/response.mjs","sha256":"38dec2f0f9d5ebc34914160478621ae259f1a53804b8c3c95cc06d40629ea206"},{"bytes":6232,"path":"Tools/ChromaticBBS/juice.mjs","sha256":"67415e5cd05d1798287f05f06c48ec01e7194ce502074adb5558bf1064e0888d"}],"id":"carrier-shell","kind":"presentation","version":1},{"dependencies":["carrier-laws","carrier-shell"],"files":[{"bytes":1938940,"path":"Tools/ChromaticBBS/art-data.mjs","sha256":"6bdbfbb8ff5b99094e0a72f187446c6aa8042f0072721915f71caa2448c482a2"},{"bytes":1225878,"path":"Tools/ChromaticBBS/media/human-salvage-frame.png","sha256":"71957dc14d390f59e5a7f64974aa71ed04e7f1b82efac3ccea484c6ccac5428c"},{"bytes":16189,"path":"Tools/ChromaticBBS/stage.mjs","sha256":"7200edb486fd6c4a9a1f11464429190ffe8d844934af6fba9cb3cce9becd694e"},{"bytes":4877,"path":"Tools/ChromaticBBS/portrait.mjs","sha256":"7760bbd662b77f704dd5cd37cb0727a81599d78b50536c577297e52d72d08442"},{"bytes":193558,"path":"Tools/ChromaticBBS/face-data.mjs","sha256":"0f1e2705271f3cdde083c5684c05d63d0cac06eddd7596d4945bf8f540127fea"},{"bytes":5324,"path":"Tools/ChromaticBBS/rose-data.mjs","sha256":"95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"},{"bytes":77,"path":"Tools/ChromaticBBS/vendor/rose/rose.vertex.glsl","sha256":"c456d7b107ea3152a65fa06e07de02dafe23880fbf780a92f02510899dfd15a5"},{"bytes":4874,"path":"Tools/ChromaticBBS/vendor/rose/rose.fragment.glsl","sha256":"616ae3861fdbb8e8e53fec10cb052d3242308f0100107d234674ca29580bc000"},{"bytes":3010,"path":"Tools/ChromaticBBS/vendor/rose/PROVENANCE.md","sha256":"fcbf2ab726e9015f5ebd08874b28374b8e05b4fdc52de4228089aaac90bba77e"},{"bytes":13247,"path":"Tools/ChromaticBBS/boot-world.mjs","sha256":"1d05a82f54f67cd9244d109a6eaba9b2c8bc27c83230adef67b386203e1ec976"},{"bytes":8979,"path":"Tools/ChromaticBBS/cinema.mjs","sha256":"83254448c338b50869a8ca642c14b31d56dfefe1cffe3406c8083289a9528a69"},{"bytes":29892,"path":"Tools/ChromaticBBS/app.mjs","sha256":"09b586261ae8759a934e327125332ffac6069f2b20b355e441b6107a4e64ef3d"},{"bytes":20773,"path":"Tools/ChromaticBBS/surface.html","sha256":"7911034d592e51c443754b0ce9c10719e403d5e4b36d9eed8a5f341341bbef48"},{"bytes":54227,"path":"Tools/ChromaticBBS/carrier.css","sha256":"8a856c197fd812b06101e40e2cb7f673772593cec6a19257f2140abaa995b089"},{"bytes":8585,"path":"Tools/InfiniEngineSite/ghost-renderer.js","sha256":"558f3a4509fda1874ff3c54a0b657c7b287eaaa4b611ff9ba61df8df65be70dd"}],"id":"carrier-art","kind":"presentation","version":1},{"dependencies":["carrier-shell"],"files":[{"bytes":9422,"path":"Tools/ChromaticBBS/audio.mjs","sha256":"3e7d82cf0c127359ce20352749b315b7cbb5d8afb4ffa7498de2699bdc6b1620"},{"bytes":4062,"path":"Tools/ChromaticBBS/modem.mjs","sha256":"cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"},{"bytes":1105,"path":"Tools/ChromaticBBS/music-data.mjs","sha256":"9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"},{"bytes":1369,"path":"Tools/ChromaticBBS/media/manifest.json","sha256":"9663971c003c81d7994aac4efa4b9d974bafeae729e488b4965ea1d209c7f162"},{"bytes":1230,"path":"Tools/ChromaticBBS/media/README.md","sha256":"a8745bc51a6085075547ce6f064a20ad4270f6e37017be3f9d5bfcc29f4dcf4e"}],"id":"carrier-audio","kind":"presentation","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":4145,"path":"Tools/ChromaticBBS/moknon-cli.mjs","sha256":"ef2f1b5ee3ee1bc377410982983312a8342278b59ba56d4c1c6c68d4c5940bad"},{"bytes":74771,"path":"Tools/ChromaticBBS/lore/seed.json","sha256":"4535a0599b8fe3295cf02ab370e97ced8bea92eab016bca01a430eaa2590abc7"},{"bytes":535,"path":"Tools/ChromaticBBS/lore/manifest.json","sha256":"cc34e7d3b0cd654751cbfe97369be2289eff4b284b3586cde4c4703d9299a34e"},{"bytes":12015,"path":"Tools/ChromaticBBS/lore/art-manifest.json","sha256":"2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"},{"bytes":6798,"path":"Tools/ChromaticBBS/lore/Source-Map.md","sha256":"0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"},{"bytes":11461,"path":"Tools/ChromaticBBS/Writing.md","sha256":"d74e53249642b0e7964a1d1cdcc9b4826e41db1e464764bf9c09af6ffeef7055"},{"bytes":14233,"path":"Tools/ChromaticBBS/Onboarding-Hints.md","sha256":"1f5ac6fdb9adfe2dd648a7f009f29a9541f941e1ef784ca92de2b5c907781562"},{"bytes":22992,"path":"Tools/ChromaticBBS/Onboarding-Arcs.md","sha256":"900c3302d8abd5fe6f3dba1937c7ac61a88c91c609e8af655f15ca42148d1158"},{"bytes":9571,"path":"Tools/ChromaticBBS/Onboarding-Research.md","sha256":"cef503e63ceefdc83f1135bdb3341ad0d2469f64922f081c9a6419c13e514900"}],"id":"moknon-seed","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":11159,"path":"Tools/ChromaticBBS/continuity.py","sha256":"a0eedda826dec05bc3487c6d935cd558f649b093bfbe41b3a5e2c513e770a0e2"},{"bytes":6399,"path":"Tools/ChromaticBBS/onefile.py","sha256":"8b295b2107ce1881ad6c2c30ecb69d9a04d6b7791ce2cad432a301f4f17de7e5"},{"bytes":21584,"path":"Tools/ChromaticBBS/mind.py","sha256":"2e38c0e1e74dfe9826e802d0e27514250816761317d530374acf2dfcae047946"},{"bytes":4930,"path":"Tools/ChromaticBBS/build.py","sha256":"3516e0fde8360985e56f24bab9bc9782a66146ebf7bc1d4453255f25bb84b35e"}],"id":"reconstruction","kind":"reconstruction","version":1},{"dependencies":["carrier-laws","reconstruction"],"files":[{"bytes":37296,"path":"Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md","sha256":"c42886623ad6c7df24c7ab5dd219d6972328f2a9d7f673e10578ee1135375f10"}],"id":"runbook","kind":"runbook","version":1},{"dependencies":[],"files":[{"bytes":945,"path":"Moknon/Friktal/Entities/FrikenGhost/PersonalityMatrix/identity-publication.json","sha256":"73ddaf0dd9a29108a6628492b6ad1d19376396c0dee25409f1814ee569b392d8"}],"id":"identity-publication","kind":"identity","version":1},{"dependencies":["carrier-laws","runbook"],"files":[{"bytes":1465,"path":"Tools/ChromaticBBS/mind/dispatch-input.json","sha256":"ff6fc97d0b253bfd902d80a8569a31888dca693d381e7a4209b989d7e169a79f"}],"id":"dispatch-input","kind":"dispatch","version":1}],"publication":{"publicUrl":null,"published":false,"state":"local-staging"},"schema":"friken.mind.registry.v1","sourceKit":{"availability":"local-present","path":"chromatic-bootkit.fgkit","verification":"embedded-manifest"},"transport":{"basePath":"mind/","kind":"static-local","mirrors":[]},"version":1}};
 
 return {bundledMind};
 })();
@@ -3446,7 +3476,7 @@ el('motion').textContent='Motion: '+(motionHeld?'held':'on');
 el('voice').textContent='Voice: on';
 function toggleVoice(){
   voice=speech.toggle();el('voice').textContent='Voice: '+(voice?'on':'off');el('repeat').hidden=!voice;
-  el('boot-voice').setAttribute('aria-pressed',String(voice));el('boot-voice').textContent=voice?'VOICE: ON / LOCAL NEURAL ~100 MB FIRST USE':'VOICE: OFF / CAPTIONS ONLY';
+  el('boot-voice').setAttribute('aria-pressed',String(voice));el('boot-voice').textContent=voice?'VOICE: ON / LOCAL NEURAL / MODEL FIRST LOAD':'VOICE: OFF / CAPTIONS ONLY';
   if(!voice){stopVoice();note('Voice off');}else if(cinema.phase==='ready')speak();
 }
 el('voice').addEventListener('click',toggleVoice);el('boot-voice').addEventListener('click',toggleVoice);

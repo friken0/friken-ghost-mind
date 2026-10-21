@@ -92,9 +92,9 @@ run, not a speed guarantee. The engine was capable of output; the full
 wrapper could cancel its own unfinished speech when hidden and never resume.
 Music kept playing, making the failure look like a dead voice engine.
 
-Dial warms the same pinned model and first sentence while the modem connects.
+The earlier C26.7 repair warms the pinned model and first sentence.
 The first sentence gets a head start; remaining prose coalesces in bounded
-180-character units, reducing large CPU inference stalls without adding
+180-character units. C26.9 uses 120 and primes three; the earlier fix avoided
 a separate artificial delay at every period. The existing
 voice button shows loading, preparing, speaking, paused or retry. Returning
 resumes the unfinished unit; completed units are not replayed. Muting or
@@ -110,3 +110,29 @@ still takes time; this repair does not claim instantaneous streaming TTS.
 C26.7 gates GhostTracks until carrier lock. Generic pointer unlock starts
 the audio context, never music before the modem. The connection log reports
 that context separately from the fictional handshake visualization.
+
+
+## October 21 / measured throughput and backend selection
+
+I measure the same two sentences on this Mac and Chromium 155 with eight
+reported cores and cross-origin isolation. The narrator produces roughly
+5.4 seconds of audio: q8 WASM reaches playback in 5.85 seconds, q4 WASM in
+3.16 seconds and fp32 WebGPU in 2.39 seconds. GPU measured generation is
+2.364 seconds; q4 is 3.143. GPU cold load plus first compilation takes
+14.76 seconds before first audio; that is separate from steady throughput.
+These short samples are host-specific, not a universal quality/speed rank.
+
+Official pinned model-tree sizes: fp32 325,532,232 bytes; q8 92,361,116;
+q4 305,215,966. I explicitly reject the tempting smaller-q4 assumption.
+Its conv-heavy model is mostly unchanged. I keep explicit mode selection
+and use GPU only when adapter negotiation supports it. No silent fallback
+on a selected backend's failure.
+
+Kokoro's stream yields generated sentence blocks, not partial waveform
+frames from a running sentence. ORT browser WASM threading requires
+cross-origin isolation. GitHub Pages CPU performance must be measured on
+that host; localhost's isolation headers are not evidence of public threads.
+
+Sources: [Kokoro implementation](https://github.com/hexgrad/kokoro/blob/main/kokoro.js/src/kokoro.js),
+[ONNX Runtime flags](https://onnxruntime.ai/docs/tutorials/web/env-flags-and-session-options.html),
+[pinned model tree](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx).

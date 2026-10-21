@@ -2,14 +2,17 @@
 <style>body{font:16px monospace;background:#090b17;color:#a5f7ef;padding:24px}button{font:inherit;padding:12px}pre{white-space:pre-wrap}</style>
 <h1>Real Kokoro inference / two independent voices</h1>
 <p>Downloads the pinned local neural model (~100 MB). Synthesizes and plays male Ghost and female narration. No scene text goes to a voice service.</p>
-<button id="run">Run neural speech witness</button><button id="stop">Stop speech</button><pre id="result">Not run.</pre>
+<button id="run">Run neural speech witness</button><button id="stop">Stop speech</button><button id="gpu">Test GPU fp32</button><button id="compact">Test CPU q4</button><pre id="result">Not run.</pre>
 <script type="module">
 import {mountNeuralVoice} from './neural-voice.mjs';
 import {speechText,speechUnits,mountReadAlong} from './speech.mjs';
-const out=document.querySelector('#result'),logs=[];let peak=0,frames=0,starts=0,progress=0;
+const out=document.querySelector('#result'),logs=[];
+const env=document.createElement('pre');env.id='environment';env.textContent=JSON.stringify({crossOriginIsolated,threads:navigator.hardwareConcurrency,webgpu:!!navigator.gpu,userAgent:navigator.userAgent});document.querySelector('h1').after(env);let peak=0,frames=0,starts=0,progress=0;
 const line=s=>{logs.push(s);if(logs.length>140)logs.shift();out.textContent=logs.join('\n');};
-const voice=mountNeuralVoice({status:line,level(v){peak=Math.max(peak,v);if(v>0)frames++;},talking(v){if(v)starts++;}});
+const voice=mountNeuralVoice({profile:'cpu',status:line,metrics(m){line('PERF / '+JSON.stringify({...m,rtf:m.generateMs/1000/m.audioSeconds}));},level(v){peak=Math.max(peak,v);if(v>0)frames++;},talking(v){if(v)starts++;}});
 document.querySelector('#stop').onclick=()=>voice.stop();
+document.querySelector('#gpu').onclick=()=>{voice.setProfile('gpu');document.querySelector('#run').click();};
+document.querySelector('#compact').onclick=()=>{voice.setProfile('compact');document.querySelector('#run').click();};
 document.querySelector('#run').onclick=async()=>{
  document.querySelector('#run').disabled=true;
  try{
@@ -19,7 +22,7 @@ document.querySelector('#run').onclick=async()=>{
   if(caption.firstChild.textContent!==full.slice(0,7)||caption.textContent!==full)throw Error('Progressive ink differs from source');host.querySelector('#cg-reveal').click();
   if(caption.textContent!==full||caption.children.length)throw Error('Reveal full text failed');read.prepare([segment]);caption.textContent='A new scene.';read.finish();
   if(caption.textContent!=='A new scene.')throw Error('Old read overwrote a new scene');line('PASS / read-along partial ink / full accessible text / reveal / stale cancellation');
-  line('Loading pinned Kokoro 1.2.1 / q8 WASM…');
+  line('Loading selected pinned Kokoro 1.2.1 profile…');
   for(const [role,cast,text] of [['ghost','bm_george','WHO gets tomorrow? The universe filed an objection. I ate the form.'],['narrator','af_heart','A face gathers in the phosphor. Beyond the window, the stars wait for your answer.']]){
    const began=performance.now();let beganAudio=0;
    await voice.speak(speechText(text),{voice:cast,role,onStart(){beganAudio=performance.now();line(role+' actual playback started.');},onProgress(v){progress=v;}});

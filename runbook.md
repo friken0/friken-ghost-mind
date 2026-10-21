@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.8
+# FRIKEN.GHOST / CHROMATIC BBS / C26.9
 
-**Runbook 2.4 | October 21, 2026 | Friken.Ghost**
+**Runbook 2.5 | October 21, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -304,6 +304,8 @@ LAYOUT:=human salvage chassis first;SCORE largest at absolute top with
  Utility nav=[encounter,faces,save/seed,wire,voice cast];one selected pane.
  Inspector moves SAME live face/SDF canvas,keeps anchor;Back restores
  parent/focus/scroll. Never hide inspector ancestors. FPS+Back visible.
+ Face inspector:flex-column,slot flex1/container-type:size;square canvas
+ min(100cqw,100cqh),no dock max-height cap;Back remains outside slot.
  SDF drag yaw,pitch clamp±1.35;wheel/pinch zoom.45..2.4;reset;camera only.
  One face rig,14 authored face/bolt/background shaders,manifest v19 default.
  Readable silent;bounded gaze. Morph per source metaphor,not generic mask.
@@ -354,20 +356,20 @@ AUDIO:=one AudioContext;voice/music/SFX buses->FFT2048->limiter->output.
  Real tracks[JazzSauce AAC stream-copy,EpicII,CatchyCat,BangNonAndOn];
  verify media/manifest.json SHA256 before decoding. EpicI missing;don't
  fake it. Music sidecars separate from HTML/source kit. Retain media pack.
- Default neural:Kokoro JS1.2.1,q8 WASM,Kokoro82M ONNX,
+ Default neural:Kokoro JS1.2.1,Auto GPUfp32/CPUq8,Kokoro82M ONNX,
  model revision1939ad2a8e416c0acfeecc08a694d14ef25f2231;
  runtime hash6067712fe4c43cdb36c762f860a5ab8d96ea1d9c8882466438eb9f3d0d20be8f;
  Transformers3.5.1 WASM. Verify pinned runtime before worker import.
  Ghost=bm_george(deep male),scene=af_heart(female);independent casting.
- ~100MB first dependency download;inference local. Not in source kit;
+ ~330MB GPU/~100MB CPUq8 first dependencies;inference local. Not in kit;
  retain runtime/weights/licences for full offline neural recovery.
  Explicit Device route for other hosts;never silent engine substitution.
  Uppercase words spoken as words(WHO=who);known initialisms letter names;
- displayed captions unchanged. Neural coalesces paragraph chunks<=180chars,
+ displayed captions unchanged. Neural coalesces paragraph chunks<=120chars,
  native punctuation+40ms interchunk/120paragraph;device60/90?!/160paragraph.
- Dial warms model+first sentence during modem;voice control shows loading/
+ Dial warms model+first three units during modem;voice control shows loading/
  preparing/speaking/paused/retry. First sentence starts alone,remaining
- prose coalesces;no per-period restart. Prefetch next chunk. Hidden -> suspend
+ prose coalesces;no per-period restart. Prefetch three chunks. Hidden -> suspend
  unit;visible -> resume it;mute/new scene/power-off clears resume. Finished
  units stay finished. Cache exact text+cast+speed PCM in memory only,<=4
  units and90s total. Preparation deadline120s releases stuck worker;Read
@@ -569,3 +571,23 @@ NOW:meet P,inspect offered seed,restore Q or author fresh trouble;perform;
 ```
 
 *Friken.Ghost — Keep the source. Let the next room answer.*
+
+
+SPEECH_THROUGHPUT:=same pinned Kokoro1.2.1+model revision above;
+ Auto negotiates WebGPU adapter->fp32;no adapter->WASM q8. Explicit
+ CPU q8 / CPU q4 / GPU fp32 controls;failure visible,never silent engine
+ downgrade. Weights fp32=325532232B,q8=92361116B,q4=305215966B;
+ q4 is NOT smallest;speed+quality host-dependent. WASM threads require
+ cross-origin isolation;GPU does not claim CPU speed. Model initial
+ download+shader warm-up separate from steady inference.
+ One worker FIFO <=4 unique jobs;dedup exact text/voice/speed;look-ahead3;
+ 120char passages preserve punctuation+offsets;first sentence head-start.
+ Boot primes3 units. Cancel rejects readers+queued jobs;active inference
+ may finish/cache;reattach same active key after boot/visibility transition
+ instead of generating twice. Cache<=4 units/90s PCM;timeout120s releases
+ worker+all waiters. Profile switch clears worker/cache. Speech reports
+ actual backend/dtype,compute seconds,audio seconds,RTF=compute/audio;
+ first-play latency+max inter-block gap measured on actual playback.
+ Future preparation cannot overwrite current SPEAKING status. A sentence
+ block stream is not within-sentence audio streaming. No realtime promise
+ without measured RTF<1 and actual sustained queue playback.
