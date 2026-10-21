@@ -1,4 +1,4 @@
-# CHROMATIC C26.11 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.12 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -40,23 +40,26 @@ The current band extends 0.20 below and 0.30 above target. A resonance hit
 passes even just below target, adds one Signal and ten score. The ordinary
 check reward and exact reward derive from the same receipt everywhere.
 
-`life-theater.mjs` owns an 80x40 toroidal Immigration Life field: ordinary
-B3/S23 occupancy, two inherited factions, ninety finite generations. New
-cells inherit the majority faction of their three parents; surviving cells
-keep their identity. Cyan squares are the player, magenta diamonds reality.
-The live scoreboard counts actual population, cumulative births and losses;
-its balance bar and thirty-sample traces report that simulation honestly.
+`life-theater.mjs` owns GATECRASH: cyan sample charges and gold stat charges
+assault one magenta Reality Gate. Charges contain at most 3.00 power; the
+last charge carries the exact remainder. Sample launches first, stat boost
+second. Each labelled impact spends its exact integer cents. Shield removed
+plus overflow equals power spent; reserve plus spent equals total power.
+The two live combat readouts show charge reserve and shield remaining.
+A cleared-shield bar reports progress toward that one physical objective.
 
-The primary scoreboard stages the saved sample, named stat reinforcement,
-force, target and signed margin. The colony leader is not a second chance
-authority: the committed receipt decides whether the story breaks through.
-Six-shot splitting salvos, debris, expanding impacts, local canvas shake,
-force membranes and a rotating plasma aperture perform a finite 9.4-second
-reveal. Pass, fail-forward and exact resonance have distinct colour, text,
-geometry and sound. Arithmetic, score, save and RNG never belong to an FX.
+The gate has sixteen visible armour segments and an opening mechanical
+iris. Impacts send local shock rings, shards and luminous wake through the
+corridor. Success opens the iris; failure leaves a numbered shield intact.
+Exact-band resonance opens a gold alignment lock at the verdict even if a
+small shield remainder survives. That bypass is named, never disguised as
+damage. The receipt remains the only story authority.
 
-Eighteen timeline events own both visual impacts and semantic SFX through
-the existing mixer. Each event crosses once per pass. Pause/hidden stop
+An 80x40 toroidal Immigration Life field supplies the low-contrast wake:
+B3/S23 occupancy, two inherited factions, ninety finite generations. Cells
+are atmosphere; there is no contradictory population-winning scoreboard.
+Variable-length charge events own both visible impacts and semantic SFX
+through the existing mixer. Each crosses once per pass. Pause/hidden stop
 active battle sources; resume starts from the held clock. Finish draws the
 held result without playing skipped cues. Replay resets only the theater.
 Reduced motion opens the static final diagram. Continue remains explicit.
@@ -534,7 +537,7 @@ faster without being smaller; human quality judgement remains separate.
 The existing metrics line reports actual compute/audio durations and RTF.
 The carrier records first-play latency and maximum inter-block gap.
 
-## C26.11 / GhostLink phase modem
+## C26.12 / GhostLink phase modem
 
 I give the modem a suspended crystal, three carrier coils, armour cheeks,
 fasteners and emissive gasket. Four physical lamps follow POWER/TX/RX/
@@ -557,3 +560,16 @@ operate the same owner and show the same state. Enabling before carrier
 lock cannot start a track. The named ghostlink.html doorway is an identical
 carrier export on the same origin, so the existing save namespace remains.
 The standing render budget and FPS/CPU-submit readouts still apply.
+
+## C26.12 / GATECRASH and cinematic focus
+
+The boot camera uses a bounded cubic dolly arc with smooth arrival and a
+small lens sweep. Each selection gets independent presentation entropy;
+gameplay RNG and replayable decisions are untouched. Close-up endpoints
+vary within safe subject bounds. Explicit Wide always restores overview.
+Empty interior space holds the current close-up. Only the outer three
+percent of the canvas, or leaving the field, requests a 650 ms pull-back.
+Subject acquisition requires 200 ms dwell. Automatic repicking is disabled
+during the approach; the moving scene cannot steal its own focus.
+Pause holds path age and signal time. Hidden scenes release animation.
+Reduced motion disables hover and snaps explicit camera requests.

@@ -472,3 +472,9 @@
 #chromatic-carrier .cg-dock-views>div{display:flex;gap:5px;flex-wrap:wrap}
 #chromatic-carrier .cg-dock-views button{font-size:10px;min-height:30px;padding:5px 9px}
 #chromatic-carrier .cg-dock-views button[aria-pressed=true]{border-color:var(--cg-warn);color:var(--cg-warn)}
+
+/* GATECRASH: combat numbers own the protected band above the action. */
+#chromatic-carrier .cg-roll-battle{gap:3px}
+#chromatic-carrier #cg-roll-comment,#chromatic-carrier #cg-roll-math{display:none}
+#chromatic-carrier #cg-roll-canvas{min-height:160px;flex-basis:160px}
+#chromatic-carrier #cg-roll-result{line-height:1.3;max-height:2.6em}

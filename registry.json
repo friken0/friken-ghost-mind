@@ -1,6 +1,6 @@
 {
   "schema": "friken.ghost.public-registry.v1",
-  "version": "C26.11",
+  "version": "C26.12",
   "repository": "https://github.com/friken0/friken-ghost-mind",
   "runbook": "runbook.md",
   "carrier": "https://friken0.github.io/friken-ghost-mind/ghostlink.html",
@@ -22,13 +22,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 10457,
-      "sha256": "f8b16f3046479632953dad032d7225d1863d580971220dbf1a3d475eb8481f7f"
+      "bytes": 10664,
+      "sha256": "36c111b73de755489c46b1732fe03ef0e06429cc461be89f2aea367439f03c12"
     },
     {
       "path": "Tools/ChromaticBBS/Framework.md",
-      "bytes": 31818,
-      "sha256": "08400068db81e916ab3794a182c5845339d17ca804b36348c4cc2a367b4c9d70"
+      "bytes": 32767,
+      "sha256": "f7441a975da764f3eeafd381f486314e9b8efd0b0d4d15b06a5132f4407e0b2d"
     },
     {
       "path": "Tools/ChromaticBBS/Onboarding-Arcs.Design-v1.md",
@@ -52,8 +52,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Packing-Results.md",
-      "bytes": 4494,
-      "sha256": "0cf82f4c199a80414820aa5d02fee2525e03fd3f3d1de8361b68a14957c08c81"
+      "bytes": 4637,
+      "sha256": "1b5e361ec05dccd9f88bcdc4a4fe49e38d3a26a3646b6b236237be385f7fc253"
     },
     {
       "path": "Tools/ChromaticBBS/Voice-Research.md",
@@ -87,18 +87,18 @@
     },
     {
       "path": "Tools/ChromaticBBS/battle-check.html",
-      "bytes": 5010,
-      "sha256": "797b15d0552f360f1e8ed7a7d60d10d320733e90a0f06aca0c77ef26fb22a132"
+      "bytes": 5807,
+      "sha256": "e55e97d1f78d0335574504d5e72d5bdf49ffe49af7b6a51bc669590913bba817"
     },
     {
       "path": "Tools/ChromaticBBS/boot-world.mjs",
-      "bytes": 19521,
-      "sha256": "ca5f6c7a84a0803f02a8b14cd548302a2afa84c84f6cb1626cbaada6fb83ec99"
+      "bytes": 20977,
+      "sha256": "c5c2500fd9637a2a025849a2b3323bff010d7ed4d19a0eecb8a819ff2c7a3f7f"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
-      "bytes": 7635,
-      "sha256": "db4180eed76b7bd097e14e46fcd2b000a4eab64639112cc7b7b163a576c14fe8"
+      "bytes": 8080,
+      "sha256": "83d40c1b6b038d707c3f6185b64453b21046cad962b384b2a623c1ee57243e8c"
     },
     {
       "path": "Tools/ChromaticBBS/build.py",
@@ -117,8 +117,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/carrier.css",
-      "bytes": 58933,
-      "sha256": "1a4f8e66d70498f347550804d5c4cd667bf63357568381a1d2e3c1db4f6d5b19"
+      "bytes": 59273,
+      "sha256": "72ebcbeddde6d93bb713d537418ef5bcffe63e9d523cc740deecbb1bc39d8769"
     },
     {
       "path": "Tools/ChromaticBBS/causality.mjs",
@@ -217,13 +217,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/life-theater.mjs",
-      "bytes": 13288,
-      "sha256": "8f81042188d10dd40741babad359211713e8abf387059feb384cdfe0575d492e"
+      "bytes": 12853,
+      "sha256": "d5c990ee6e3f3784e371f44cf3e1cbca7d5714be7f7f0368f26c74e705ba7368"
     },
     {
       "path": "Tools/ChromaticBBS/life-theater.test.mjs",
-      "bytes": 2642,
-      "sha256": "85629ed61a935d5e0b573e69b065ad80e224eacb46e67be25a6f0ad020d8fb89"
+      "bytes": 3716,
+      "sha256": "6aaca5ea06c8a824cc7c5e8f01fdc242cf3f88bbfdf82f0340622a9206d6fd05"
     },
     {
       "path": "Tools/ChromaticBBS/lore/README.md",
@@ -418,7 +418,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 11454,
-      "sha256": "7fbb3472ac70dfcc560e687a57d3f052945fc8dea4df6ce1d130ef0a94f59793"
+      "sha256": "e2ab3b4044da1702ae7bf321239e4ae141f7807a5fe5f40eb8ebec73e7e09763"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -472,13 +472,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/presentation.test.mjs",
-      "bytes": 15074,
-      "sha256": "37062cc401b954a8b4e36ccc8cb598f0bb1b0fb62719684156dc15e422612040"
+      "bytes": 15509,
+      "sha256": "370ecbc85a97349c426a806d11b16e5870106089e1d7ebb279702e4345656f37"
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
       "bytes": 12147,
-      "sha256": "382162cdea8fa870b335fc32b24308435191acfb7ffac69af58919a30468ffb3"
+      "sha256": "2d4c270b8ddcfa1b709a86363997e07d642e957a7cc2e6675466f1b2868d7d6e"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -492,8 +492,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/roll-battle.mjs",
-      "bytes": 7486,
-      "sha256": "b309719abdb202ab79f48a2b368d6960c624975023d7829c39110a61a25d1b8e"
+      "bytes": 7761,
+      "sha256": "7b4fa7b4f2b8cc07ac2893adb24a71bbcfe19cf6b8c981dcc0a43fd972d5910d"
     },
     {
       "path": "Tools/ChromaticBBS/rose-data.mjs",
@@ -502,8 +502,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
-      "bytes": 5486,
-      "sha256": "5a1d9036d1413764a6f6d3a52f921aa6dab2cd965a7f034df6bc1c25ee241b7c"
+      "bytes": 5485,
+      "sha256": "8176150a645ab1dde834fc9ee578152c2cb580dd011718e7819a9ff4bffbbcc1"
     },
     {
       "path": "Tools/ChromaticBBS/session-share.mjs",
@@ -547,8 +547,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/surface.html",
-      "bytes": 22358,
-      "sha256": "f1ffd39b948c97aeb66ccff544b34c7ed565c178af8517a931b4e8b6e7c7828f"
+      "bytes": 22366,
+      "sha256": "1b513cdb6f3598b6d4331ae1103342c409e231f8e0fe71f7af1853e6033ab18f"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/masha/PROVENANCE.md",
@@ -587,13 +587,13 @@
     },
     {
       "path": "ghostlink.html",
-      "bytes": 4227550,
-      "sha256": "c318e03e7a493ea9d50cee9cbca81558fe0d5c5b2db33100e86f9f6182c3dba5"
+      "bytes": 4229217,
+      "sha256": "3b99db0b12e7098bbf82ed6f9300ac4b6739c86749dfd260ac0e7e1122d8c90a"
     },
     {
       "path": "index.html",
-      "bytes": 4227550,
-      "sha256": "c318e03e7a493ea9d50cee9cbca81558fe0d5c5b2db33100e86f9f6182c3dba5"
+      "bytes": 4229217,
+      "sha256": "3b99db0b12e7098bbf82ed6f9300ac4b6739c86749dfd260ac0e7e1122d8c90a"
     },
     {
       "path": "media/bang-non-and-on.mp3",
@@ -617,8 +617,8 @@
     },
     {
       "path": "runbook.md",
-      "bytes": 39049,
-      "sha256": "9d6066639e0224162c36265949839484baae4abde5b123f42f812e687422e607"
+      "bytes": 39483,
+      "sha256": "6dab607f5078279e81735091d49cd65928d9b621abfb29ce70f846040485682a"
     }
   ],
   "privateSourceIncluded": false,

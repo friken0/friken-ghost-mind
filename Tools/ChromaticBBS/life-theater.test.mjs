@@ -21,3 +21,14 @@ test('every synthesized battle family is finite, bounded, audible PCM with a sil
  for(const kind of new Set([...battleTimeline(roll),...battleTimeline({...roll,success:false,grade:'fail'}),...battleTimeline({...roll,grade:'pass'})].map(e=>e.kind))){const a=renderBattleCue(kind),b=renderBattleCue(kind);assert.deepEqual(a,b);assert.ok(a.length<=14400);let peak=0,energy=0;for(const v of a){assert.ok(Number.isFinite(v));peak=Math.max(peak,Math.abs(v));energy+=v*v;}assert.ok(peak>.03&&peak<.8);assert.ok(Math.sqrt(energy/a.length)>.01);assert.ok(Math.abs(a.at(-1))<.0001);}
  assert.throws(()=>renderBattleCue('bogus'));
 });
+
+// Exercise every impact, not just the end card: no imaginary damage or ammo.
+test('gate charges conserve cents at every hit, including overflow and exact-band bypass',async()=>{
+ const {battleAssault}=await import('./life-theater.mjs');
+ for(const [die,value,dc,grade] of [[15.74,6,17.2,'pass'],[4.12,6,17.2,'fail'],[11.15,6,17.2,'resonance'],[.01,0,40,'fail'],[20,20,1,'pass']]){
+  const r={die,value,total:Math.round((die+value)*100)/100,dc,stat:'focus',grade,success:grade!=='fail'},events=battleTimeline(r);let previous=0;
+  for(const e of events){const a=battleAssault(r,e.at,events);assert.equal(a.absorbed+a.overflow,a.spent);assert.equal(a.spent+a.reserve,a.total);assert.equal(a.shield+a.absorbed,a.target);assert.ok(a.spent>=previous);previous=a.spent;assert.ok(a.shield>=0&&a.reserve>=0);}
+  const end=battleAssault(r,9400,events);assert.equal(end.spent,end.total);assert.equal(end.open,r.success);assert.equal(end.aligned,grade==='resonance');
+  if(grade==='resonance'){assert.equal(end.shield,5);assert.equal(battleAssault(r,7599,events).open,false);}
+ }
+});

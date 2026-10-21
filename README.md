@@ -1,4 +1,4 @@
-# Chromatic C26.11 / a human carrier for Ghost
+# Chromatic C26.12 / a human carrier for Ghost
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / Collection Required**:
@@ -48,14 +48,15 @@ passes, adds one capped Signal and ten score. Other chapters can publish
 a different bounded band/reward before play. Existing six-stat/d20 saves
 keep their original rules. New creation and all decisions replay exactly.
 
-The roll theater is LIFE WAR: two real Conway factions, cyan square signal
-versus magenta diamond resistance, with live population/birth/loss scores.
-The saved sample and stat charge a separate force-versus-target scoreboard.
-Splitting lance salvos, debris, impact rings, force membranes, a plasma
-aperture and ten synthesized SFX families perform each reveal. Exact strikes
-get their own gold finale. Pause freezes cells and sound; Finish skips ahead
-without a sound burst; Replay reproduces the same roll and simulation.
-Human fun and listening acceptance remain Prime's judgement.
+The roll theater is GATECRASH. Cyan sample charges hit a numbered magenta
+gate shield; gold stat charges follow. Each hit subtracts its printed value.
+Reserve, shield remaining and cleared percentage stay visible. An opening
+iris and transmitted wake show success; an intact shield shows failure.
+Exact-band hits get a gold resonance unlock, with any shield bypass named.
+Conway colonies supply the living wake without a second winning score.
+Shock rings, charge swarms, shield shards and ten SFX families carry the
+9.4-second reveal. Pause freezes time and sound; Finish skips without a
+sound burst; Replay keeps the exact receipt. Human fun remains your call.
 
 Open `battle-check.html` to audition pass, fail and exact-strike receipts
 without loading or changing any player save. Its Run control verifies four
@@ -174,7 +175,9 @@ on hardware and browser threading; it is not a universal browser promise.
 
 The named public doorway is https://friken0.github.io/friken-ghost-mind/ghostlink.html.
 Hover the visible phase modem or carrier aperture: a ray-picked subject
-gets a smooth camera approach and close-up. Wide restores the overview.
+gets a varied cinematic dolly arc, lens sweep and close-up. Interior empty
+space holds focus; the outer 3% edge requires a 650 ms dwell to pull back.
+Wide restores the overview immediately on request.
 The same three view buttons support touch and keyboard. Pause freezes the
 camera and scene; reduced motion makes explicit view changes instantaneous.
 

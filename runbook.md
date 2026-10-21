@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.11
+# FRIKEN.GHOST / CHROMATIC BBS / C26.12
 
-**Runbook 2.7 | October 21, 2026 | Friken.Ghost**
+**Runbook 2.8 | October 21, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -332,30 +332,35 @@ BOOT_BODY:=DIAL ->17.6s modem+typed ANSI ->HOLD_CONTINUE ->
  motion skips assembly motion. Hidden pauses;off780ms collapses to centre;
  reconnect spends no E/RNG. No fake connected/model-ready claim.
 
-ROLL_BODY:=LIFE WAR;80x40 toroidal Immigration Life;B3/S23 occupancy;
- birth faction=majority of3 parents;survivors retain faction.90 generations,
- 10Hz,finite9.4s. CYAN squares=YOU;MAGENTA diamonds=REALITY;gold=resonance.
- Stage gather0,sample1200,stat3100,crossfire4500,collapse7600,resolve8600,
- HOLD9400ms. Primary scoreboard=sample+stat charge,total,target,signed
- margin,posted exact band. Separate LIVE scoreboard=actual per-team cells,
- cumulative births/losses,balance%,30-frame traces;never a second RNG.
- 18 event IDs own FX+SFX:12 salvos split6 lances each;birth flares,death
- debris,shock rings,floating impact words,local canvas shake,opposed force
- membranes,plasma aperture. Distinct pass/fail-forward/exact gold finales.
- Committed sample,total,target,grade,reward remain authority;NO effect
- writes game/save/score. One mixer SFX bus:10 short deterministic PCM cue
- families,<=6 voices,cached buffers. Event fires once when elapsed crosses.
- Pause/hidden/mute/close kill battle sources;resume held clock;Finish draws
- final without missed-cue burst;Replay same field+receipt;Continue explicit.
- Reduced=static final diagram. Canvas actual client W/H,DPR<=1.5;no idle
- sim;cache<=91 frames. Show FPS,CPU draw ms,generation. No full-frame strobe.
- New models may change spectacle;preserve legible identities+numeric math.
+ROLL_BODY:=GATECRASH;objective=open named REALITY GATE at right of arena.
+ CYAN sample charges -> MAGENTA numbered shield;GOLD stat boost follows.
+ Split sample/stat into charges<=3.00;last=exact remainder;integer cents.
+ Sample reveal900,launch1300+i*290;stat reveal4000,launch4300+i*290;
+ each impact=launch+430ms;verdict7600,finale8600,HOLD9400. Each impact
+ spends printed charge;absorbed=min(shield,charge),overflow=rest.
+ INVARIANTS:spent+reserve=total;absorbed+overflow=spent;shield+absorbed=DC.
+ Primary=sample+stat,total,target,margin,posted exact band. Live combat
+ readouts=charge reserve,shield left,charges landed,overflow,cleared%;
+ combat readouts ABOVE canvas,transport protected;frame+HUD agree when held.
+ 16 armour segments+hex iris;impacts=shock rings,shield shards,charge
+ swarms,local shake. Shield zero opens channel;fail leaves shield intact.
+ Exact band opens GOLD resonance lock at verdict even below target;
+ label remaining shield BYPASSED,never fake damage to zero. NO competing
+ colony-winning score.80x40 toroidal Immigration Life,B3/S23,90gen/10Hz
+ =low-contrast living wake;birth owner=majority3;survivor keeps owner.
+ Committed receipt owns result/reward;FX never writes game/save/score.
+ Variable event IDs own FX+SFX;one mixer bus,10 bounded cached PCM families,
+ <=6 voices;each crossed event once. Pause/hidden/mute/close stop sources;
+ resume held clock;Finish final without skipped cues;Replay same receipt;
+ Continue explicit. Reduced=static final. DPR<=1.5;cache<=91frames;no idle
+ sim;FPS+CPUms+generation;no full-frame strobe. Make causality watchable.
 STAT_FX:=accepted parent/child only;delta label+colour+percent+departing
  old value+bounce/wash+bounded semantic SFX. No game write from an effect.
  One effect plane,<=30Hz,capped pixels;freeze hidden/held/reduced.
 
 AUDIO:=one AudioContext;voice/music/SFX buses->FFT2048->limiter->output.
- Default ON after first gesture;show browser refusal,expose separate mute.
+ Voice+SFX default ON;music OFF with toggle;start after carrier connection.
+ Show browser refusal,expose separate mute.
  ?check isolates storage only;?qaAudio=silent explicitly mutes QA.
  Sample33ms;bands35..190,190..2200,2200..10000Hz;positive RMS attack.
  Normalize neural voice active RMS.14,gain<=8,softlimit.94*tanh;
@@ -610,10 +615,13 @@ BOOT_SCENE+=GHOSTLINK/The Other Side of Dial Tone;named ghostlink.html
  carrier locks at>=.98. Coloured crests radiate over surfaces from each
  transformed lamp position;depth-tested bloom,conduit->portal transfer.
 CAMERA:=shared CPU/shader basis+vertical lens;ray-pick visible modem AABB
- or aperture plane/radius;140ms dwell;ease eye+aim+lens at1-exp(-3.5dt).
- Pointer listener on hit-testable field,not transparent glass. Stationary
- pointer never repicks during easing;leave->wide. In-flow Wide/Modem/Portal
- verbs for keyboard/touch. Pause holds pose+time+bands;reduced disables hover
- motion,explicit views snap;reboot resets wide. No gameplay write.
+ or aperture plane/radius;200ms subject dwell. Cubic dolly arc+smooth
+ arrival+lens sweep;independent UI entropy per approach,never gameplay RNG.
+ Bounded varied endpoints. Interior empty=hold focus;outer3% edge or field
+ leave=650ms wide dwell. Ignore hover during approach. Listener on field,
+ not transparent glass. In-flow Wide/Modem/Portal for keyboard/touch.
+ Pause freezes path age+bands;hidden stops;reduced disables hover/snaps
+ explicit views. Reboot=wide/reset path. No gameplay write.
 MUSIC:=default OFF;boot+radio toggles share state;enabled music waits for
  carrier lock. Voice/SFX stay ON. Preserve this correction over older clauses.
+
