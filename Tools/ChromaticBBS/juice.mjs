@@ -48,15 +48,15 @@ export function mountJuice(root,{audio:bus}={}){
 export function mountInspector(root,{stage,onRead,onOpen}){
   const get=id=>root.querySelector('#cg-'+id),bay=get('inspector'),slot=get('inspect-slot');let current=null,home=null,marker=null,returnY=0,opener=null;
   function close(){if(!current)return;home.insertBefore(current,marker);marker.remove();current=null;bay.hidden=true;delete root.dataset.inspect;window.scrollTo({top:returnY,behavior:'instant'});opener?.focus({preventScroll:true});}
-  function open(kind,button){onOpen?.();if(current)close();current=get(kind==='face'?'portrait':'canvas');home=current.parentNode;marker=document.createComment('live viewer home');home.insertBefore(marker,current);returnY=window.scrollY;opener=button;slot.append(current);root.dataset.inspect=kind;bay.hidden=false;get('inspect-title').textContent=kind==='face'?'FRIKEN.GHOST / FACE TO FACE':'RELIC OBSERVATORY / DRAG TO ORBIT';get('inspect-tools').hidden=kind==='face';get('inspect-help').textContent=kind==='face'?'Move the pointer: eyes track within their sockets. Ghost’s spoken lines animate his mouth.':'Drag to orbit · wheel or pinch to zoom · double-click to reset · Escape goes back.';bay.scrollIntoView({block:'start',behavior:'instant'});get('inspect-back').focus({preventScroll:true});console.warn('[Chromatic inspector] open height',bay.getBoundingClientRect().height);}
+  function open(kind,button){if(!['face','sdf','alien'].includes(kind))throw Error('Unknown inspection');onOpen?.();if(current)close();current=get(kind==='alien'?'alien-call':kind==='face'?'portrait':'canvas');home=current.parentNode;marker=document.createComment('live viewer home');home.insertBefore(marker,current);returnY=window.scrollY;opener=button;slot.append(current);root.dataset.inspect=kind;bay.hidden=false;get('inspect-title').textContent=kind==='alien'?'ALIEN VIEWSCREEN / LIVE TRANSLATION':kind==='face'?'FRIKEN.GHOST / FACE TO FACE':'RELIC OBSERVATORY / DRAG TO ORBIT';get('inspect-tools').hidden=kind!=='sdf';get('inspect-read').textContent=kind==='alien'?'HEAR ALIEN SIGNAL':'READ NARRATOR + GHOST';get('inspect-help').textContent=kind==='alien'?'Decoder accuracy is an in-world estimate. Cyan is clear; amber tentative; magenta uncertain. Back or Escape returns to the same choice.':kind==='face'?'Move the pointer: eyes track within their sockets. Ghost’s spoken lines animate his mouth.':'Drag to orbit · wheel or pinch to zoom · double-click to reset · Escape goes back.';bay.scrollIntoView({block:'start',behavior:'instant'});get('inspect-back').focus({preventScroll:true});console.warn('[Chromatic inspector] open height',bay.getBoundingClientRect().height);}
   get('inspect-face').addEventListener('click',()=>open('face',get('inspect-face')));
   get('inspect-sdf').addEventListener('click',()=>open('sdf',get('inspect-sdf')));
   get('portrait').addEventListener('click',()=>{if(!current)open('face',get('inspect-face'));});
   get('canvas').addEventListener('click',()=>{if(!current&&get('canvas').dataset.dragged!=='true')open('sdf',get('inspect-sdf'));});
   get('inspect-back').addEventListener('click',close);
-  get('inspect-read').addEventListener('click',onRead);
+  get('inspect-read').addEventListener('click',()=>onRead(root.dataset.inspect));
   for(const [id,amount] of [['inspect-in',-.15],['inspect-out',.15]])get(id).addEventListener('click',()=>stage?.zoom(amount));
   get('inspect-reset').addEventListener('click',()=>stage?.reset());
   root.addEventListener('keydown',e=>{if(e.key==='Escape'&&current){e.preventDefault();close();}});
-  return {close,get active(){return !!current;}};
+  return {open,close,get active(){return !!current;}};
 }

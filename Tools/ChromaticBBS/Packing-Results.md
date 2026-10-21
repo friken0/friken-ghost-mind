@@ -1,4 +1,4 @@
-# Chromatic packing results / runbook 2.8 / C26.12
+# Chromatic packing results / runbook 2.9 / C26.13
 
 The new runbook is written. These tests have already run; no manual run is
 needed to establish the results below. Reproduction commands are included.
@@ -38,13 +38,13 @@ Dictionary cost matters; opaque data is not free model context.
 
 | Representation | UTF-8 bytes | Exact decoded source? |
 |---|---:|---|
-| English assignment wrapper | 40,377 | Yes |
-| Canonical JSON wrapper | 40,133 | Yes |
-| DSL wrapper with complete legend | 40,308 | Yes |
-| zlib + Base64url | 25,675 | Yes |
-| Hex | 80,271 | Yes |
+| English assignment wrapper | 43,125 | Yes |
+| Canonical JSON wrapper | 42,881 | Yes |
+| DSL wrapper with complete legend | 43,056 | Yes |
+| zlib + Base64url | 27,268 | Yes |
+| Hex | 85,767 | Yes |
 
-The directly readable capsule is 39,483 UTF-8 bytes. Version 2.2 added the
+The directly readable capsule is 42,189 UTF-8 bytes. Version 2.2 added the
 writing law and all three compact opening constructions to the 26,086-byte
 2.1 capsule. Version 2.3 carries the speech lifecycle repair and Signal Dock design.
 Version 2.4 adds the measured cymatic gate and full-glass gradient terminal.
@@ -54,13 +54,15 @@ boot still gets the creative contract. Version 2.6 carries the two-faction
 LIFE WAR rules, real scoreboard accounting and event-owned sound lifecycle.
 Version 2.7 adds the phase modem, ray-picked camera and music-off default. Version 2.8 replaces competing colony scores with conserved charge/shield
 accounting and adds bounded cinematic paths plus narrow edge return.
-The expanded reference is historical.
+Version 2.9 adds typed alien conversations, confidence captions, shared
+viewscreen inspection and recovered Masha formant speech. The expanded
+reference is historical.
 The earlier C26.5 capsule was 45,189 bytes in the same JSON transport.
 This is an editorial reduction, not a proof of semantic equivalence.
 
 This test preserves the complete new runbook text in one field. It
 compares transports, not a new semantic rewrite of the prose. zlib transport
-saved 36.0% against its canonical JSON. Compression needs a real decoder;
+saved 36.4% against its canonical JSON. Compression needs a real decoder;
 a model without tools must receive readable instructions. Token counts
 remain **unmeasured**: no local tokenizer was available, and bytes are not
 tokens. Exact hashes and timestamps are in `runbook-packing-results.json`.

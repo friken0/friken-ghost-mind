@@ -1,4 +1,4 @@
-# CHROMATIC C26.12 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.13 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -537,7 +537,7 @@ faster without being smaller; human quality judgement remains separate.
 The existing metrics line reports actual compute/audio durations and RTF.
 The carrier records first-play latency and maximum inter-block gap.
 
-## C26.12 / GhostLink phase modem
+## C26.11 / GhostLink phase modem
 
 I give the modem a suspended crystal, three carrier coils, armour cheeks,
 fasteners and emissive gasket. Four physical lamps follow POWER/TX/RX/
@@ -573,3 +573,44 @@ Subject acquisition requires 200 ms dwell. Automatic repicking is disabled
 during the approach; the moving scene cannot steal its own focus.
 Pause holds path age and signal time. Hidden scenes release animation.
 Reduced motion disables hover and snaps explicit camera requests.
+
+## C26.13 / alien conversations
+
+`alien-comms.mjs` owns the bounded viewscreen and Masha-derived formant DSP.
+Scene and variant data may include `transmission`:
+
+```json
+{"race":"krex","speaker":"VARK / TRANSFER ENGINEER","accuracy":67,
+ "lines":[{"text":"Stop. That cable carries a resident.","confidence":94},
+          {"text":"[Memory / identity?] is not a replaceable part.",
+           "confidence":42}]}
+```
+
+Admission requires an embedded alien art identity, integer percentages
+0..100, 1..8 lines, each 1..400 characters, total at most 1800. Unknown
+fields fail. Variant transmission overrides the scene transmission. An
+ending has no incoming call. The new field is optional; existing seeds
+retain their exact older packs. Content hashes include the new data.
+
+Accuracy is an authored decoder estimate in the fiction. Phrase confidence
+is independently authored: >=80 clear/cyan, >=50 tentative/amber, lower
+uncertain/magenta with explicit alternatives. Critical choice stakes remain
+legible outside garble. A replay never upgrades knowledge or truthfulness.
+The receiver uses textContent, never imported HTML, code or audio URLs.
+
+The shared inspector moves the same receiver into a bounded viewscreen.
+Its original art appears there; Back restores its in-flow position. On
+wide screens art and captions sit side by side, with the existing Ghost
+column visible. Transport never shrinks; captions scroll within their
+remaining space. Existing face and SDF controls retain their own geometry.
+
+The Masha kernel supplies five moving formant targets, eighteen harmonics,
+pitch glides, breath and consonant friction. Current art-bound species get
+stable dialect profiles. Render at the existing AudioContext sample rate;
+syllables and silent gaps form a finite buffer, cached only for the current
+transmission. No neural synthesis, TTS service, microphone or extra context.
+Playback uses the one voice bus, feeds the existing measured mixer and
+paces caption illumination from actual audio time. The measured PCM window
+supplies the receiver’s energy envelope. Human narration and Ghost await
+that playback. Stop resolves pending waits and disconnects the source;
+hide, voice mute and new scenes cannot leak an old alien into a new turn.

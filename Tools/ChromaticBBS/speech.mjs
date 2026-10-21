@@ -14,6 +14,7 @@ export function castVoices(voices,preferred={}){
 export function speechSegments(frame,casting){
   const lines=[{role:'narrator',text:frame.scene,voice:casting.narrator,rate:.96,pitch:1,field:'scene'},
     {role:'ghost',text:frame.ghost,voice:casting.ghost,rate:.91,pitch:.80,field:frame.battle?'roll-comment':'ghost'}];
+  if(frame.transmission)lines.splice(1,0,{role:'alien',text:'',transmission:frame.transmission,field:null});
   if(frame.decision)lines.unshift({role:'ghost',text:frame.decision.spoken,voice:casting.ghost,rate:.91,pitch:.80,field:'choice-comment'});
   return lines;
 }
@@ -97,7 +98,7 @@ export function mountReadAlong(root){
   }
   return {prepare,progress,finish,begin(){if(queued&&!revealed){const segments=queued;prepare(segments);}}};
 }
-export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
+export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio,alien}){
   const get=id=>root.querySelector('#cg-'+id),supported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
   let enabled=true,generation=0,settle=null,timer=0,preferred={},casting={ghost:null,narrator:null};
   let currentFrame=null,active=false,cursor=0,suspended=null,isPlaying=false;
@@ -118,7 +119,7 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,au
   }});
   const save=()=>{try{storage?.setItem('friken.chromatic.voices.v1',JSON.stringify(preferred));}catch{}};
   const recorded=mountRecordedVoice(root,recordedVoiceClips,{note,level(value){pcm?.(value);},gate(){talking?.(false);}});
-  function stop(){isPlaying=false;active=false;currentFrame=null;suspended=null;generation++;clearTimeout(timer);timer=0;neural.stop();readAlong.finish();if(supported)speechSynthesis.cancel();recorded.stop();settle?.();settle=null;talking?.(false);}
+  function stop(){alien?.stop();isPlaying=false;active=false;currentFrame=null;suspended=null;generation++;clearTimeout(timer);timer=0;neural.stop();readAlong.finish();if(supported)speechSynthesis.cancel();recorded.stop();settle?.();settle=null;talking?.(false);}
   function refresh(){
     const voices=supported?speechSynthesis.getVoices():[];casting=castVoices(voices,preferred);
     for(const mode of ['auto','cpu','compact','gpu']){const node=get('performance-'+mode);if(node)node.checked=mode===preferred.performance;}
@@ -147,16 +148,17 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,au
     const token=generation,segments=speechSegments(frame,casting);readAlong.prepare(segments,true);
     async function run(){
       try{
-        const tasks=segments.flatMap(segment=>recorded.has(segment.role,segment.text)?[{segment,clip:true}]:(preferred.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
+        const tasks=segments.flatMap(segment=>segment.role==='alien'?[{segment,isAlien:true}]:recorded.has(segment.role,segment.text)?[{segment,clip:true}]:(preferred.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
         const prepared=new Map();let lastPlaybackEnd=0,maxGap=0,playCount=0;const requestedAt=performance.now();
         if(preferred.engine==='neural'&&tasks.some(t=>!t.clip))await neural.unlock();
         const prepare=task=>neural.prepare(speechText(task.unit.text),{voice:preferred[task.segment.role+'Neural']||neuralCast[task.segment.role][0][0],speed:task.segment.role==='ghost'?.94:.98});
-        function prime(index){for(let i=index;i<Math.min(tasks.length,index+3);i++){if(tasks[i].clip||prepared.has(i))continue;const job=prepare(tasks[i]);job.catch(()=>{});prepared.set(i,job);}}
+        function prime(index){for(let i=index;i<Math.min(tasks.length,index+3);i++){if(tasks[i].clip||tasks[i].isAlien||prepared.has(i))continue;const job=prepare(tasks[i]);job.catch(()=>{});prepared.set(i,job);}}
         if(preferred.engine==='neural')prime(from);
         for(let index=from;index<tasks.length;index++){
           cursor=index;
-          const {segment,unit,clip}=tasks[index];
+          const {segment,unit,clip,isAlien}=tasks[index];
           if(token!==generation)return;
+          if(isAlien){talking?.(false);await alien?.play(segment.transmission);cursor=index+1;continue;}
           if(clip){await recorded.play(segment.role,segment.text);if(token===generation)readAlong.progress(segment,segment.text.length);continue;}
           if(preferred.engine==='device'&&!segment.voice){readAlong.progress(segment,segment.text.length);continue;}
           const spoken=speechText(unit.text);
@@ -198,7 +200,7 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,au
     suspend(){if(active&&currentFrame){const next={frame:currentFrame,from:cursor};stop();suspended=next;report('Voice paused while this tab is hidden. Return to resume.');}},
     resume(){if(enabled&&suspended&&!document.hidden){const next=suspended;speak(next.frame,next.from);}},
     warm(frame){if(enabled&&!silent&&preferred.engine==='neural'){try{
-      neural.warm();const tasks=frame?speechSegments(frame,casting).flatMap(segment=>neuralPassages(segment.text).map(unit=>({segment,unit}))):[];
+      neural.warm();const tasks=frame?speechSegments(frame,casting).filter(segment=>segment.role!=='alien').flatMap(segment=>neuralPassages(segment.text).map(unit=>({segment,unit}))):[];
       for(const {segment,unit}of tasks.slice(0,3))void neural.prepare(speechText(unit.text),{voice:preferred[segment.role+'Neural']||neuralCast[segment.role][0][0],speed:segment.role==='ghost'?.94:.98}).catch(error=>{if(error.message!=='cancelled')report('Voice unavailable: '+error.message+' · Read scene to retry.');});
     }catch(error){report('Voice unavailable: '+error.message+' · Read scene to retry.');}}},
     unlock:()=>neural.unlock(),toggle(){if(preferred.engine==='device'&&!supported&&!recordedVoiceClips.length){note('This host has no browser voice or recorded pack · captions remain.');return false;}enabled=!enabled;if(!enabled)stop();return enabled;},get enabled(){return enabled;}};

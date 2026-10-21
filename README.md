@@ -1,4 +1,4 @@
-# Chromatic C26.12 / a human carrier for Ghost
+# Chromatic C26.13 / a human carrier for Ghost
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / Collection Required**:
@@ -187,6 +187,25 @@ lamps follow the fictional connection state and actual mixer energy. Their
 coloured waves travel over physical surfaces; the conduit and portal keep
 the same real bass/mid/air drive. Music defaults OFF with synchronized
 boot and radio toggles. Enabling it still waits for carrier lock.
+
+## Alien viewscreen / translation matrix
+
+Nine onboarding scenes now carry typed alien transmissions: Harkellinia,
+Krex and one damaged Moknon archive return. The original artwork stays in
+the encounter. Open Viewscreen (or click that artwork) enlarges the call;
+Back/Escape returns to the exact pending choice. Ghost remains alongside
+wide viewscreens. Caption confidence uses words and colour together.
+
+Translation accuracy is an authored in-world decoder estimate, not a truth
+score. Replay does not improve it. Low-confidence alternatives remain
+visible. Narration, procedural alien speech and Ghost commentary queue in
+that order; choice commentary still leads when applicable. The alien voice
+adapts Masha 1’s actual formant synthesis through the existing voice bus.
+Voice off, Quiet, new scenes and hidden tabs cancel playback. No neural
+model or network request generates these alien sounds.
+
+Previously saved chapters retain their own embedded content. Start the
+new onboarding to see its new transmissions; old seeds are never rewritten.
 
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.

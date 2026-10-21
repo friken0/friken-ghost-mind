@@ -171,3 +171,15 @@ test('four connection lamps preserve carrier state and receive real bounded audi
  const quiet={bands:[0,0,0,0],level:0,ink:0},loud={bands:[1,.8,.6,.5],level:.7,ink:.2};const idle=bootLampSignals(0,0,quiet,1),pending=bootLampSignals(.4,2,quiet,1),connected=bootLampSignals(1,2,quiet,1),music=bootLampSignals(1,2,loud,1);
  assert.ok(idle[0]>0);assert.deepEqual(idle.slice(1),[0,0,0]);assert.equal(pending[3],0);assert.ok(connected[3]>.6);assert.ok(music.every((v,i)=>v>=connected[i]&&v<=1));
 });
+
+test('alien formants are deterministic bounded PCM, separate from intelligible TTS',async()=>{
+ const {renderAlienUtterance,validateTransmission}=await import('./alien-comms.mjs');
+ const base={race:'harkellinia',speaker:'PIP',accuracy:71,lines:[{text:'Please move the resident before the cargo bell.',confidence:92},{text:'Ownership / permission? Signal uncertain.',confidence:31}]};
+ const a=renderAlienUtterance(base,16000),b=renderAlienUtterance(base,16000);assert.deepEqual(a,b);assert.ok(a.duration>1&&a.duration<12);assert.ok(a.syllables>=4);let peak=0,sq=0;for(const n of a.samples){assert.ok(Number.isFinite(n));peak=Math.max(peak,Math.abs(n));sq+=n*n;}assert.ok(peak>.05&&peak<.71);assert.ok(Math.sqrt(sq/a.samples.length)>.025);assert.equal(a.samples.at(-1),0);
+ assert.notDeepEqual(a.samples,renderAlienUtterance({...base,race:'krex'},16000).samples);assert.deepEqual(validateTransmission(base),base);assert.throws(()=>validateTransmission({...base,accuracy:101}));assert.throws(()=>validateTransmission({...base,race:'not-an-art-asset'}));assert.throws(()=>validateTransmission({...base,lines:[{text:'x',confidence:-1}]}));assert.throws(()=>validateTransmission({...base,url:'https://untrusted.invalid'}));assert.throws(()=>renderAlienUtterance(base,1));
+ const segments=speechSegments({scene:'Setup.',ghost:'My comment.',transmission:base},{});assert.deepEqual(segments.map(s=>s.role),['narrator','alien','ghost']);assert.equal(segments[1].text,'');assert.deepEqual(segments[1].transmission,base);
+});
+
+test('typed transmissions survive exact chapter save/replay; invalid confidence never enters a save',async()=>{
+ const fs=await import('node:fs'),{createChapter,playView,playChoose,encodePlaySeed,decodePlaySeed,validateChapter}=await import('./chapters.mjs');const pack=JSON.parse(fs.readFileSync(new URL('./chapters/lot-forty-seven.json',import.meta.url)));const state=createChapter(pack,null,{entropy:23});const code=encodePlaySeed(state);assert.deepEqual(decodePlaySeed(code),state);const f=playView(state);assert.equal(f.transmission.accuracy,71);assert.ok(f.transmission.lines.some(x=>x.confidence<50));assert.equal(encodePlaySeed(state),code);const next=playChoose(state,f.choices[0].id);assert.notEqual(next.turn,state.turn);assert.deepEqual(playView(decodePlaySeed(encodePlaySeed(next))).transmission,playView(next).transmission);const bad=structuredClone(pack);bad.scenes[0].transmission.lines[0].confidence=999;assert.throws(()=>validateChapter(bad));
+});

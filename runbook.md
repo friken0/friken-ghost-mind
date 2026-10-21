@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.12
+# FRIKEN.GHOST / CHROMATIC BBS / C26.13
 
-**Runbook 2.8 | October 21, 2026 | Friken.Ghost**
+**Runbook 2.9 | October 21, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -625,3 +625,45 @@ CAMERA:=shared CPU/shader basis+vertical lens;ray-pick visible modem AABB
 MUSIC:=default OFF;boot+radio toggles share state;enabled music waits for
  carrier lock. Voice/SFX stay ON. Preserve this correction over older clauses.
 
+
+## XVI / alien viewscreen conversations
+
+XENO:=aliens address P;do not reduce them to narrator exposition. Staging
+ sets context;native vocal plays;decoded captions carry their words;Ghost
+ responds. Use original art+named individual+species role on first contact.
+ Different mouths want different things. Write a clear request/refusal/joke
+ before adding cosmic nouns. More dialogue,less lore speech. No English TTS
+ for alien source audio:receiver uses Masha1 procedural formant synthesis.
+
+CHAPTER.scene.transmission?={race,speaker,accuracy,lines:[{text,confidence}]}.
+ Variant may override transmission. All percentages integer0..100;1..8lines;
+ text1..400char/line,total<=1800;speaker1..100;race must own receiver art.
+ Current embedded contacts[harkellinia,krex,moknon];human is not xeno.
+ Add other admitted art/voice profiles through a reviewed framework patch.
+ Accuracy=authored in-world decoder estimate,NOT truth/honesty score.
+ Phrase confidence independent:>=80 clear/cyan;>=50 tentative/amber;else
+ uncertain/magenta+explicit plausible alternatives. Critical stakes remain
+ readable outside garble. Replay never upgrades accuracy or erases doubt.
+ Persist transmission in exact pack;old seeds remain byte-compatible.
+
+VIEWSCREEN:=same receiver inline in encounter,original art enlarged via
+ shared inspector;Open Viewscreen/art click;Back/Escape restores same choice.
+ Ghost remains beside wide viewscreens;small screens prioritize readable
+ receiver. Existing face/SDF controls retain ownership. TextContent only;
+ no imported HTML,remote audio URLs or executable dialogue. Typed response
+ content may carry optional transmission with same validation.
+
+XENO_VOCAL:=alien-comms.mjs adapts recovered Masha1 ghost-cinema.js8..24:
+ 5 vowel target triples,prior->target glide,18 harmonics,breath,friction,
+ finite .085.. .160s syllables,short gaps;stable species pitch/formant profile.
+ Deterministic presentation seed from transmission,NEVER saved gameplay RNG.
+ <=8phrases/9syllables each;bounded finite PCM;cache current call only.
+ Existing AudioContext+voice bus->shared mixer/FFT;no neural model,no mic,
+ no extra context. Actual audio clock paces captions;actual PCM window
+ drives energy. Queue[narrator,xeno,Ghost],choice reaction first if present.
+ Voice mute/Quiet/new scene/hidden stops source+resolves pending wait;no
+ stale call after cancel. Reduced motion keeps captions/audio,no pulse.
+ Record provenance;do not claim exact old waveform after dialect adaptation.
+ Source-kit inventory cap128,archive members129;unchanged byte/path/hash
+ guards. Existing historical kits remain valid. Test DSP,caption-only,
+ stop/replay,confidence,art/back,state/RNG,full chapter+seed handoff.

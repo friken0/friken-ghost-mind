@@ -1,3 +1,4 @@
+import {mountAlienComms,alienArtwork} from './alien-comms.mjs';
 import {rollScore} from './causality.mjs';
 import {residentArt} from './art-data.mjs';
 import {statGuide} from './creation.mjs';
@@ -57,11 +58,12 @@ const chapterLibrary=mountChapterLibrary(root,{current:()=>state,storage:nativeS
 const silentAudio=new URL(location.href).searchParams.get('qaAudio')==='silent';
 const audio=mountAudio(root,{silent:silentAudio,frame(bands){portrait?.cymatics(bands);stage?.cymatics(bands);}});
 const juice=mountJuice(root,{audio});
-const speech=mountSpeech(root,{note,storage:nativeStorage,silent:silentAudio,audio,pcm(value){portrait?.audioLevel(value);},talking(value){portrait?.talking(value);},pulse(){portrait?.pulse();}});
+const alienComms=mountAlienComms(root,{audio,note,silent:silentAudio,enabled:()=>voice,stopSpeech:()=>speech.stop(),openView:button=>inspector.open('alien',button)});
+const speech=mountSpeech(root,{note,storage:nativeStorage,silent:silentAudio,audio,alien:alienComms,pcm(value){portrait?.audioLevel(value);},talking(value){portrait?.talking(value);},pulse(){portrait?.pulse();}});
 function stopVoice(){speech.stop();}
 function speak(includeDecision=true){if(battle.active){speech.speak({scene:'',ghost:choiceCommentary(state.lastReceipt,state)?.spoken||'',battle:true});return;}const f=started?playView(state):meeting;speech.speak(started?{...f,ghost:f.sceneGhost||f.ghost,decision:includeDecision?choiceCommentary(state.lastReceipt,state):null}:meeting);}
 const battle=mountRollBattle(root,()=>{note('Result held in the ledger · your next move.');if(voice)speak(false);},{audio});
-const inspector=mountInspector(root,{stage,onOpen(){battle.hold(true);},onRead(){if(!voice){voice=speech.toggle();el('voice').textContent='Voice: '+(voice?'on':'off');el('repeat').hidden=!voice;}speak();}});
+const inspector=mountInspector(root,{stage,onOpen(){battle.hold(true);},onRead(kind){if(kind==='alien'){stopVoice();void alienComms.play();return;}if(!voice){voice=speech.toggle();el('voice').textContent='Voice: '+(voice?'on':'off');el('repeat').hidden=!voice;}speak();}});
 el('replay-roll').addEventListener('click',()=>{if(state.lastReceipt?.roll){stopVoice();battle.show(state.lastReceipt,choiceCommentary(state.lastReceipt,state));}});
 function text(tag,value,className){const n=document.createElement(tag);n.textContent=value;if(className)n.className=className;return n;}
 function showFace(id){
@@ -125,11 +127,11 @@ function renderVault(){
 }
 function draw(){
   handoffParent=null;el('chapter-request').value='';
-  const f=playView(state),complete=!!state.ending,total=f.total;
+  const f=playView(state),complete=!!state.ending,total=f.total;alienComms.show(started&&!complete?f.transmission:null);
   root.querySelector('.cg-subtitle').textContent='CHROMATIC BBS // '+(state.pack?.title||'THE UNFINISHED CARRIER');
   root.dataset.theme=['cyan','purple','amber'][(state.scars.length+state.chapter-1)%3];
   el('boot').hidden=started;
-  const race=started?(f.portrait?.race||'human'):'human';el('resident-art').src=residentArt[race]||residentArt.human;el('resident-art').hidden=false;el('resident-art').alt=race==='human'?'Original StarDiver human artwork':race+' original StarDiver portrait';el('resident-caption').textContent=started?(f.portrait?.caption||'ARCHIVE CONTACT / HUMAN CARRIER'):'HUMAN SALVAGE CARRIER / EXTERNAL UPLINK';
+  const race=started?(f.portrait?.race||'human'):'human';el('resident-art').src=f.transmission&&started&&!complete?alienArtwork(f.transmission.race):residentArt[race]||residentArt.human;el('resident-art').hidden=false;el('resident-art').alt=race==='human'?'Original StarDiver human artwork':race+' original StarDiver portrait';el('resident-caption').textContent=started?(f.portrait?.caption||'ARCHIVE CONTACT / HUMAN CARRIER'):'HUMAN SALVAGE CARRIER / EXTERNAL UPLINK';
   el('attributes').replaceChildren(...['guts','focus','glitch','awe','insight','ego'].filter(k=>k in state.stats).map(k=>[k,state.stats[k]]).map(([k,v])=>{const n=text('span',k.toUpperCase()+' '+v);n.title=statGuide[k]||'Historical EGO / original six-stat rules';return n;}));
   el('stat-rolls').replaceChildren(...['guts','focus','glitch','awe','insight','ego'].filter(k=>k in state.stats).map(k=>[k,state.stats[k]]).map(([k,v])=>{const row=text('div','');const receipt=state.creation?.rolls.find(r=>r.stat===k);row.append(text('strong',k.toUpperCase()+' '+v),text('small',receipt?'d6 '+receipt.die+' + 2 = '+v:'Historical fixed baseline'),text('small',statGuide[k]||'Historical force of will.'));return row;}));
   el('act').textContent=started?'ACT '+f.actName:'FIRST CONTACT / NO TURN SPENT';

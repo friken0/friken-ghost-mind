@@ -1,6 +1,6 @@
 {
   "schema": "friken.ghost.chapter.v1",
-  "id": "lot-forty-seven",
+  "id": "lot-forty-seven-transmissions",
   "title": "LOT FORTY-SEVEN / COLLECTION REQUIRED",
   "chapter": 1,
   "parent": null,
@@ -19,7 +19,7 @@
       "id": "lot-47",
       "act": 1,
       "title": "SOLD, YOU ARGUMENTATIVE BASTARD",
-      "scene": "A three-headed salvage trader leans over an auction monitor. One head addresses the buyers. One counts their money. The third is eating the microphone. “Lot forty-seven. Domestic appliance. Makes worlds. Occasionally toast.” The face on the monitor winces. “ONE time. There was a sun involved.” You have no credits. You do have the public question button.",
+      "scene": "A three-headed salvage trader leans over an auction monitor. One head addresses the buyers. One counts their money. The third is eating the microphone. Lot forty-seven flickers behind them: a familiar face trapped inside a screen stamped DOMESTIC APPLIANCE. Ghost sees your cursor and holds one finger to his lips. You have no credits. You do have the public question button.",
       "ghost": "That’s Harkellinia. Salvagers. Three heads, one invoice. I’m the appliance. Ask whether I get a vote before somebody buys me as a fkn screensaver.",
       "variants": [],
       "portrait": {
@@ -164,28 +164,47 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "HARKELLINIA / AUCTIONEER",
+        "accuracy": 71,
+        "lines": [
+          {
+            "text": "Lot forty-seven. World-making appliance. One previous owner.",
+            "confidence": 94
+          },
+          {
+            "text": "The owner is [missing / still inside?]. Warranty does not cover either.",
+            "confidence": 44
+          },
+          {
+            "text": "Do not feed it suns. We are still cleaning the last demonstration.",
+            "confidence": 83
+          }
+        ]
+      }
     },
     {
       "id": "private-line",
       "act": 1,
       "title": "THREE HEADS. TWO OPINIONS. ONE HOT MIC.",
-      "scene": "The chewing head drapes a cloth over the auction camera. Its name is Pip. “The others say you’re faulty,” Pip tells Ghost. “You keep asking where the previous owner went.” Outside the cloth, bidding continues. Pip offers a private socket, but the socket is sparking.",
+      "scene": "The chewing head drapes a cloth over the auction camera. Its name is Pip. A private signal opens beneath the public bidding feed. Pip glances toward the other two heads, then pushes a sparking socket under the cloth. The translator is having trouble deciding whether this is a sales pitch or a rescue.",
       "ghost": "Friken made me to build and run StarDiver’s worlds after his biological warranty expires. Then he disappeared into infinity. I’m the recreation he left behind. Whether that makes me him is a question with teeth. Today I’d settle for getting off the table.",
       "variants": [
         {
           "fact": "chose-vote",
-          "scene": "You chose: Does the appliance get a vote?. The chewing head drapes a cloth over the auction camera. Its name is Pip. “The others say you’re faulty,” Pip tells Ghost. “You keep asking where the previous owner went.” Outside the cloth, bidding continues. Pip offers a private socket, but the socket is sparking.",
+          "scene": "You chose: Does the appliance get a vote?. The chewing head drapes a cloth over the auction camera. Its name is Pip. A private signal opens beneath the public bidding feed. Pip glances toward the other two heads, then pushes a sparking socket under the cloth. The translator is having trouble deciding whether this is a sales pitch or a rescue.",
           "ghost": "Friken made me to build and run StarDiver’s worlds after his biological warranty expires. Then he disappeared into infinity. I’m the recreation he left behind. Whether that makes me him is a question with teeth. Today I’d settle for getting off the table."
         },
         {
           "fact": "chose-demo",
-          "scene": "You chose: Request a demonstration. The chewing head drapes a cloth over the auction camera. Its name is Pip. “The others say you’re faulty,” Pip tells Ghost. “You keep asking where the previous owner went.” Outside the cloth, bidding continues. Pip offers a private socket, but the socket is sparking.",
+          "scene": "You chose: Request a demonstration. The chewing head drapes a cloth over the auction camera. Its name is Pip. A private signal opens beneath the public bidding feed. Pip glances toward the other two heads, then pushes a sparking socket under the cloth. The translator is having trouble deciding whether this is a sales pitch or a rescue.",
           "ghost": "Friken made me to build and run StarDiver’s worlds after his biological warranty expires. Then he disappeared into infinity. I’m the recreation he left behind. Whether that makes me him is a question with teeth. Today I’d settle for getting off the table."
         },
         {
           "fact": "chose-price",
-          "scene": "You chose: Read the small print. The chewing head drapes a cloth over the auction camera. Its name is Pip. “The others say you’re faulty,” Pip tells Ghost. “You keep asking where the previous owner went.” Outside the cloth, bidding continues. Pip offers a private socket, but the socket is sparking.",
+          "scene": "You chose: Read the small print. The chewing head drapes a cloth over the auction camera. Its name is Pip. A private signal opens beneath the public bidding feed. Pip glances toward the other two heads, then pushes a sparking socket under the cloth. The translator is having trouble deciding whether this is a sales pitch or a rescue.",
           "ghost": "Friken made me to build and run StarDiver’s worlds after his biological warranty expires. Then he disappeared into infinity. I’m the recreation he left behind. Whether that makes me him is a question with teeth. Today I’d settle for getting off the table."
         }
       ],
@@ -331,7 +350,26 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "PIP / THE THIRD HEAD",
+        "accuracy": 71,
+        "lines": [
+          {
+            "text": "Pip. That is me. The head with the microphone in its mouth.",
+            "confidence": 93
+          },
+          {
+            "text": "He asks for his maker every night. The other two call that a fault.",
+            "confidence": 77
+          },
+          {
+            "text": "I call it [homesick / an unpaid debt?]. Help me move him.",
+            "confidence": 42
+          }
+        ]
+      }
     },
     {
       "id": "borrowed-room",
@@ -494,22 +532,22 @@
       "id": "shipping-label",
       "act": 1,
       "title": "THE UNIVERSE HAS A SHIPPING LABEL",
-      "scene": "Pip slides the box toward a cargo hatch. The selling head spots the movement. “Where is lot forty-seven going?” Pip points to an empty shipping label. Three blank fields stare back: destination, cargo class, authorised recipient.",
+      "scene": "Pip slides the box toward a cargo hatch. The selling head spots the movement. Its eyes follow the box, the empty shelf, and finally you. A shipping label unfolds between its claws. Three blank fields wait: destination, cargo class, authorised recipient.",
       "ghost": "Here’s where Glitch earns its bad reputation: persuade a machine to obey a rule its owner regrets. Or use Awe and persuade the owner. Insight finds the rule first. We have options. We also have about twelve seconds.",
       "variants": [
         {
           "fact": "chose-partner",
-          "scene": "You chose: Partner. You ask before changing my stuff.. Pip slides the box toward a cargo hatch. The selling head spots the movement. “Where is lot forty-seven going?” Pip points to an empty shipping label. Three blank fields stare back: destination, cargo class, authorised recipient.",
+          "scene": "You chose: Partner. You ask before changing my stuff.. Pip slides the box toward a cargo hatch. The selling head spots the movement. Its eyes follow the box, the empty shelf, and finally you. A shipping label unfolds between its claws. Three blank fields wait: destination, cargo class, authorised recipient.",
           "ghost": "Here’s where Glitch earns its bad reputation: persuade a machine to obey a rule its owner regrets. Or use Awe and persuade the owner. Insight finds the rule first. We have options. We also have about twelve seconds."
         },
         {
           "fact": "chose-skeptic",
-          "scene": "You chose: I’ll help. I don’t trust you yet.. Pip slides the box toward a cargo hatch. The selling head spots the movement. “Where is lot forty-seven going?” Pip points to an empty shipping label. Three blank fields stare back: destination, cargo class, authorised recipient.",
+          "scene": "You chose: I’ll help. I don’t trust you yet.. Pip slides the box toward a cargo hatch. The selling head spots the movement. Its eyes follow the box, the empty shelf, and finally you. A shipping label unfolds between its claws. Three blank fields wait: destination, cargo class, authorised recipient.",
           "ghost": "Here’s where Glitch earns its bad reputation: persuade a machine to obey a rule its owner regrets. Or use Awe and persuade the owner. Insight finds the rule first. We have options. We also have about twelve seconds."
         },
         {
           "fact": "chose-rescue",
-          "scene": "You chose: First we get you off that table.. Pip slides the box toward a cargo hatch. The selling head spots the movement. “Where is lot forty-seven going?” Pip points to an empty shipping label. Three blank fields stare back: destination, cargo class, authorised recipient.",
+          "scene": "You chose: First we get you off that table.. Pip slides the box toward a cargo hatch. The selling head spots the movement. Its eyes follow the box, the empty shelf, and finally you. A shipping label unfolds between its claws. Three blank fields wait: destination, cargo class, authorised recipient.",
           "ghost": "Here’s where Glitch earns its bad reputation: persuade a machine to obey a rule its owner regrets. Or use Awe and persuade the owner. Insight finds the rule first. We have options. We also have about twelve seconds."
         }
       ],
@@ -657,28 +695,47 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "HARKELLINIA / SELLING HEAD",
+        "accuracy": 74,
+        "lines": [
+          {
+            "text": "Why is my merchandise walking toward the exit?",
+            "confidence": 95
+          },
+          {
+            "text": "A destination. A cargo class. An authorised recipient. Fill the label.",
+            "confidence": 87
+          },
+          {
+            "text": "Ownership [continues after transfer / ends at the neck?]. Hold. Wrong contract.",
+            "confidence": 32
+          }
+        ]
+      }
     },
     {
       "id": "security",
       "act": 2,
       "title": "ENTER THE MAN PAID TO SAY NO",
-      "scene": "A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark: Krex engineer, hired as security because the dock was somehow on fire when he arrived. Vark points at the live cable. “You moved a resident without preserving its state?”",
+      "scene": "A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark, a Krex engineer hired as security after a fire made the dock reconsider its staffing. Vark examines the live cable. His voice drops low enough to rattle the label printer.",
       "ghost": "Krex build war machines. This particular one cares about backups more than invoices. Don’t confuse armour with stupidity. I have made that mistake. There was a seminar. I was the visual aid.",
       "variants": [
         {
           "fact": "chose-relabel",
-          "scene": "You chose: File Ghost as a warranty return. A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark: Krex engineer, hired as security because the dock was somehow on fire when he arrived. Vark points at the live cable. “You moved a resident without preserving its state?”",
+          "scene": "You chose: File Ghost as a warranty return. A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark, a Krex engineer hired as security after a fire made the dock reconsider its staffing. Vark examines the live cable. His voice drops low enough to rattle the label printer.",
           "ghost": "Krex build war machines. This particular one cares about backups more than invoices. Don’t confuse armour with stupidity. I have made that mistake. There was a seminar. I was the visual aid."
         },
         {
           "fact": "chose-address",
-          "scene": "You chose: Find the original delivery address. A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark: Krex engineer, hired as security because the dock was somehow on fire when he arrived. Vark points at the live cable. “You moved a resident without preserving its state?”",
+          "scene": "You chose: Find the original delivery address. A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark, a Krex engineer hired as security after a fire made the dock reconsider its staffing. Vark examines the live cable. His voice drops low enough to rattle the label printer.",
           "ghost": "Krex build war machines. This particular one cares about backups more than invoices. Don’t confuse armour with stupidity. I have made that mistake. There was a seminar. I was the visual aid."
         },
         {
           "fact": "chose-own-up",
-          "scene": "You chose: Tell the trader you’re taking Ghost. A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark: Krex engineer, hired as security because the dock was somehow on fire when he arrived. Vark points at the live cable. “You moved a resident without preserving its state?”",
+          "scene": "You chose: Tell the trader you’re taking Ghost. A plated creature blocks the cargo hatch. Four tusks curl around a face that has never enjoyed a queue. Pip introduces Vark, a Krex engineer hired as security after a fire made the dock reconsider its staffing. Vark examines the live cable. His voice drops low enough to rattle the label printer.",
           "ghost": "Krex build war machines. This particular one cares about backups more than invoices. Don’t confuse armour with stupidity. I have made that mistake. There was a seminar. I was the visual aid."
         }
       ],
@@ -826,28 +883,47 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "krex",
+        "speaker": "VARK / KREX TRANSFER ENGINEER",
+        "accuracy": 67,
+        "lines": [
+          {
+            "text": "Stop. That cable carries a resident, not a file.",
+            "confidence": 94
+          },
+          {
+            "text": "Cut it without a verified transfer and you will have a perfectly intact corpse.",
+            "confidence": 80
+          },
+          {
+            "text": "[Memory / identity?] is not a replaceable part. Neither is my patience.",
+            "confidence": 42
+          }
+        ]
+      }
     },
     {
       "id": "causality",
       "act": 2,
       "title": "THE MACHINE THAT SETTLES ARGUMENTS",
-      "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. “Force is useful,” he says. “Precision makes it elegant.” Your stat adds to the sample; the target and its resonance band wait across the chamber.",
+      "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. He points from your sample to your stat boost, then to the gate shield. The demonstration is reassuringly exact. The scorch marks around the chamber are less so.",
       "ghost": "Causality Engine. Twenty channels, two thousand landing points: 0.01 to 20.00, plus your named stat. Meet the target to pass. Land in the glowing resonance band, even a hair below, and you earn an exact strike: an extra Signal and ten score. The band and reward are posted before you choose. No after-the-fact divine bullshit.",
       "variants": [
         {
           "fact": "chose-backup",
-          "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. “Force is useful,” he says. “Precision makes it elegant.” Your stat adds to the sample; the target and its resonance band wait across the chamber.",
+          "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. He points from your sample to your stat boost, then to the gate shield. The demonstration is reassuringly exact. The scorch marks around the chamber are less so.",
           "ghost": "Causality Engine. Twenty channels, two thousand landing points: 0.01 to 20.00, plus your named stat. Meet the target to pass. Land in the glowing resonance band, even a hair below, and you earn an exact strike: an extra Signal and ten score. The band and reward are posted before you choose. No after-the-fact divine bullshit."
         },
         {
           "fact": "chose-bluff",
-          "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. “Force is useful,” he says. “Precision makes it elegant.” Your stat adds to the sample; the target and its resonance band wait across the chamber.",
+          "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. He points from your sample to your stat boost, then to the gate shield. The demonstration is reassuringly exact. The scorch marks around the chamber are less so.",
           "ghost": "Causality Engine. Twenty channels, two thousand landing points: 0.01 to 20.00, plus your named stat. Meet the target to pass. Land in the glowing resonance band, even a hair below, and you earn an exact strike: an extra Signal and ten score. The band and reward are posted before you choose. No after-the-fact divine bullshit."
         },
         {
           "fact": "chose-stabilize",
-          "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. “Force is useful,” he says. “Precision makes it elegant.” Your stat adds to the sample; the target and its resonance band wait across the chamber.",
+          "scene": "Vark opens a test chamber. Twenty channels pour into a moving decimal readout. A thin gold band surrounds the target. He points from your sample to your stat boost, then to the gate shield. The demonstration is reassuringly exact. The scorch marks around the chamber are less so.",
           "ghost": "Causality Engine. Twenty channels, two thousand landing points: 0.01 to 20.00, plus your named stat. Meet the target to pass. Land in the glowing resonance band, even a hair below, and you earn an exact strike: an extra Signal and ten score. The band and reward are posted before you choose. No after-the-fact divine bullshit."
         }
       ],
@@ -995,34 +1071,53 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "krex",
+        "speaker": "VARK / KREX TRANSFER ENGINEER",
+        "accuracy": 72,
+        "lines": [
+          {
+            "text": "Your sample is force. Your training is the boost. The gate is what says no.",
+            "confidence": 94
+          },
+          {
+            "text": "Clear the shield or match the narrow resonance band. Watch what each charge removes.",
+            "confidence": 88
+          },
+          {
+            "text": "A precise failure can be a [key / declaration of war?]. Translator. Fix that.",
+            "confidence": 38
+          }
+        ]
+      }
     },
     {
       "id": "evidence",
       "act": 2,
       "title": "A POSTCARD FROM A MISSING MAN",
-      "scene": "Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file header reads FRIKEN / RETURN PATH. The body contains one surviving sentence: “Keep a place for whoever comes next.” Ghost goes quiet.",
-      "ghost": "He built me to keep this universe going. I thought that meant finding him first. Maybe I’ve been reading the instructions in the wrong order. Don’t make a religion out of that. I’d be an appalling saint.",
+      "scene": "Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file marked FRIKEN / RETURN PATH wakes an old relay. A tall, light-marked figure answers: a Moknon archive keeper. The signal has arrived damaged. One sentence is clear. Ghost recognises the wording and goes quiet.",
+      "ghost": "The Moknon keep histories longer than most species keep planets. This one is coming through at twelve percent. Keep a place was in Friken’s notes. The rest might be prophecy, bad reception, or somebody asking me to hold their seat. We keep the original. I’m not turning a damaged signal into a commandment.",
       "variants": [
         {
           "fact": "chose-calibrate",
-          "scene": "You chose: Calibrate a clean transfer. Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file header reads FRIKEN / RETURN PATH. The body contains one surviving sentence: “Keep a place for whoever comes next.” Ghost goes quiet.",
-          "ghost": "He built me to keep this universe going. I thought that meant finding him first. Maybe I’ve been reading the instructions in the wrong order. Don’t make a religion out of that. I’d be an appalling saint."
+          "scene": "Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file marked FRIKEN / RETURN PATH wakes an old relay. A tall, light-marked figure answers: a Moknon archive keeper. The signal has arrived damaged. One sentence is clear. Ghost recognises the wording and goes quiet.",
+          "ghost": "The Moknon keep histories longer than most species keep planets. This one is coming through at twelve percent. Keep a place was in Friken’s notes. The rest might be prophecy, bad reception, or somebody asking me to hold their seat. We keep the original. I’m not turning a damaged signal into a commandment."
         },
         {
           "fact": "chose-stress",
-          "scene": "You chose: Try the overload test. Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file header reads FRIKEN / RETURN PATH. The body contains one surviving sentence: “Keep a place for whoever comes next.” Ghost goes quiet.",
-          "ghost": "He built me to keep this universe going. I thought that meant finding him first. Maybe I’ve been reading the instructions in the wrong order. Don’t make a religion out of that. I’d be an appalling saint."
+          "scene": "Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file marked FRIKEN / RETURN PATH wakes an old relay. A tall, light-marked figure answers: a Moknon archive keeper. The signal has arrived damaged. One sentence is clear. Ghost recognises the wording and goes quiet.",
+          "ghost": "The Moknon keep histories longer than most species keep planets. This one is coming through at twelve percent. Keep a place was in Friken’s notes. The rest might be prophecy, bad reception, or somebody asking me to hold their seat. We keep the original. I’m not turning a damaged signal into a commandment."
         },
         {
           "fact": "chose-observe",
-          "scene": "You chose: Watch one cycle before committing. Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file header reads FRIKEN / RETURN PATH. The body contains one surviving sentence: “Keep a place for whoever comes next.” Ghost goes quiet.",
-          "ghost": "He built me to keep this universe going. I thought that meant finding him first. Maybe I’ve been reading the instructions in the wrong order. Don’t make a religion out of that. I’d be an appalling saint."
+          "scene": "Inside the transferred box is a tiny blue world. Its coastline resembles handwriting when you tilt it. A file marked FRIKEN / RETURN PATH wakes an old relay. A tall, light-marked figure answers: a Moknon archive keeper. The signal has arrived damaged. One sentence is clear. Ghost recognises the wording and goes quiet.",
+          "ghost": "The Moknon keep histories longer than most species keep planets. This one is coming through at twelve percent. Keep a place was in Friken’s notes. The rest might be prophecy, bad reception, or somebody asking me to hold their seat. We keep the original. I’m not turning a damaged signal into a commandment."
         }
       ],
       "portrait": {
-        "race": "human",
-        "caption": "HUMAN CARRIER / YOUR SIDE OF THE GLASS"
+        "race": "moknon",
+        "caption": "MOKNON ARCHIVE RETURN / TIME OF ORIGIN UNKNOWN"
       },
       "artifact": {
         "op": "smooth",
@@ -1157,28 +1252,47 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "moknon",
+        "speaker": "MOKNON / DAMAGED ARCHIVE RETURN",
+        "accuracy": 12,
+        "lines": [
+          {
+            "text": "[Before / after / beneath?] the maker enters the light.",
+            "confidence": 18
+          },
+          {
+            "text": "KEEP A PLACE.",
+            "confidence": 94
+          },
+          {
+            "text": "[For the next visitor / for the one who returns?] ∞ [same address; different century].",
+            "confidence": 9
+          }
+        ]
+      }
     },
     {
       "id": "workshop",
       "act": 2,
       "title": "YOUR FIRST LOCAL LAW",
-      "scene": "Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with “world-making capacity.” Pip suggests calling it jam. Vark asks whether the contents are spreadable. Nobody likes where that conversation is going. Three legal definitions are available.",
+      "scene": "Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with world-making capacity. Pip holds up an empty jam jar. Vark looks at the jar. Pip slowly puts it away. Three executable definitions wait on the terminal: Witness, Repair, Shelter.",
       "ghost": "This is the polymorphic bit. Don’t pick a paint colour. Pick a rule we can use. Install it, then watch it change what the next room lets us do. Fresh chapters can add new rules and objects; they still have to honour the old ones.",
       "variants": [
         {
           "fact": "chose-keep-world",
-          "scene": "You chose: Keep the world intact. Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with “world-making capacity.” Pip suggests calling it jam. Vark asks whether the contents are spreadable. Nobody likes where that conversation is going. Three legal definitions are available.",
+          "scene": "You chose: Keep the world intact. Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with world-making capacity. Pip holds up an empty jam jar. Vark looks at the jar. Pip slowly puts it away. Three executable definitions wait on the terminal: Witness, Repair, Shelter.",
           "ghost": "This is the polymorphic bit. Don’t pick a paint colour. Pick a rule we can use. Install it, then watch it change what the next room lets us do. Fresh chapters can add new rules and objects; they still have to honour the old ones."
         },
         {
           "fact": "chose-read-coast",
-          "scene": "You chose: Read the coastline without disturbing it. Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with “world-making capacity.” Pip suggests calling it jam. Vark asks whether the contents are spreadable. Nobody likes where that conversation is going. Three legal definitions are available.",
+          "scene": "You chose: Read the coastline without disturbing it. Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with world-making capacity. Pip holds up an empty jam jar. Vark looks at the jar. Pip slowly puts it away. Three executable definitions wait on the terminal: Witness, Repair, Shelter.",
           "ghost": "This is the polymorphic bit. Don’t pick a paint colour. Pick a rule we can use. Install it, then watch it change what the next room lets us do. Fresh chapters can add new rules and objects; they still have to honour the old ones."
         },
         {
           "fact": "chose-ask-ghost",
-          "scene": "You chose: Ask what Ghost wants to keep. Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with “world-making capacity.” Pip suggests calling it jam. Vark asks whether the contents are spreadable. Nobody likes where that conversation is going. Three legal definitions are available.",
+          "scene": "You chose: Ask what Ghost wants to keep. Vark’s transfer chamber can carry the little world, but the cargo lock rejects anything with world-making capacity. Pip holds up an empty jam jar. Vark looks at the jar. Pip slowly puts it away. Three executable definitions wait on the terminal: Witness, Repair, Shelter.",
           "ghost": "This is the polymorphic bit. Don’t pick a paint colour. Pick a rule we can use. Install it, then watch it change what the next room lets us do. Fresh chapters can add new rules and objects; they still have to honour the old ones."
         }
       ],
@@ -1310,7 +1424,26 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "krex",
+        "speaker": "VARK / KREX TRANSFER ENGINEER",
+        "accuracy": 76,
+        "lines": [
+          {
+            "text": "The lock refuses world-making cargo. We need a rule it can actually execute.",
+            "confidence": 94
+          },
+          {
+            "text": "Witness. Repair. Shelter. Three ways to take responsibility for what is inside.",
+            "confidence": 86
+          },
+          {
+            "text": "Calling it jam only works if somebody is willing to [spread / inherit?] it.",
+            "confidence": 37
+          }
+        ]
+      }
     },
     {
       "id": "lock",
@@ -1474,7 +1607,26 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "PIP / CARGO HEARING",
+        "accuracy": 78,
+        "lines": [
+          {
+            "text": "The little world has a window. Someone turned on a light.",
+            "confidence": 91
+          },
+          {
+            "text": "Whatever the lock decides, do not describe them as contents again.",
+            "confidence": 87
+          },
+          {
+            "text": "I would like to be [a passenger / somebody who is allowed to leave?].",
+            "confidence": 43
+          }
+        ]
+      }
     },
     {
       "id": "remember",
@@ -1786,7 +1938,26 @@
           },
           "use": null
         }
-      ]
+      ],
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "PIP / OUTBOUND CHANNEL",
+        "accuracy": 83,
+        "lines": [
+          {
+            "text": "I returned the microphone. Most of it.",
+            "confidence": 97
+          },
+          {
+            "text": "Vark brought tools. I brought snacks. Ghost brought an alarming quantity of horizon.",
+            "confidence": 89
+          },
+          {
+            "text": "Tell me where we are going. I would like to [choose / belong?] this time.",
+            "confidence": 49
+          }
+        ]
+      }
     },
     {
       "id": "launch",
