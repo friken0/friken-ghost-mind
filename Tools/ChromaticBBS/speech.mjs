@@ -31,11 +31,11 @@ export function speechText(text){
 }
 // Sentence offsets refer to original captions, not the pronunciation rewrite.
 export function speechUnits(text,{coalesce=false}={}){
-  const units=[];
+  const units=[],limit=coalesce?180:400;
   for(const sentence of new Intl.Segmenter('en',{granularity:'sentence'}).segment(text)){
     const raw=sentence.segment;let at=0;
     while(raw.slice(at).trim()){
-      let end=Math.min(raw.length,at+400);
+      let end=Math.min(raw.length,at+limit);
       if(end<raw.length){const space=raw.slice(at,end).lastIndexOf(' ');if(space>0)end=at+space+1;}
       const value=raw.slice(at,end),trimmed=value.trim();
       units.push({text:trimmed,start:sentence.index+at+value.indexOf(trimmed),end:sentence.index+end,pause:end<raw.length?20:/\n\s*\n/.test(value)?160:/[!?][”"’')]*\s*$/.test(value)?90:60});at=end;
@@ -48,10 +48,19 @@ export function speechUnits(text,{coalesce=false}={}){
   const passages=[];
   for(const unit of units){
     const prior=passages.at(-1),combined=prior?text.slice(prior.start,unit.end).trimEnd():'';
-    if(prior&&prior.pause<160&&combined.length<=400){prior.text=combined;prior.end=unit.end;prior.pause=unit.pause;}
+    if(prior&&prior.pause<160&&combined.length<=limit){prior.text=combined;prior.end=unit.end;prior.pause=unit.pause;}
     else passages.push({...unit});
   }
   return passages.map(unit=>({...unit,pause:unit.pause===160?120:40}));
+}
+// Give the first sentence its own small head start. The remaining speech
+// keeps bounded passages and the model's punctuation, not per-period delays.
+export function neuralPassages(text){
+  const first=speechUnits(text,{coalesce:true})[0];if(!first)return [];
+  const sentence=speechUnits(first.text)[0];
+  const end=first.start+sentence.end;
+  return [{text:text.slice(first.start,end).trim(),start:first.start,end,pause:40},
+    ...speechUnits(text.slice(end),{coalesce:true}).map(unit=>({...unit,start:unit.start+end,end:unit.end+end}))];
 }
 function captionOffset(text,spokenIndex){
   let spoken=0;
@@ -91,13 +100,20 @@ export function mountReadAlong(root){
 export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,audio}){
   const get=id=>root.querySelector('#cg-'+id),supported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
   let enabled=true,generation=0,settle=null,timer=0,preferred={},casting={ghost:null,narrator:null};
+  let currentFrame=null,active=false,cursor=0,suspended=null;
+  function report(message){
+    get('voice-note').textContent=message;note(message);
+    const phase=/unavailable|too long/i.test(message)?'retry':/paused/i.test(message)?'paused':/speaking/i.test(message)?'speaking':/download|loading|Kokoro \/ .*%/i.test(message)?'loading':/compos|generat/i.test(message)?'preparing':'on';
+    const button=get('voice');if(button){button.textContent='Voice: '+(enabled?phase:'off');button.title=message;button.dataset.voicePhase=enabled?phase:'off';}
+    const boot=get('boot-voice');if(boot){boot.textContent=enabled?'VOICE: ON / '+phase.toUpperCase():'VOICE: OFF';boot.title=message;}
+  }
   try{const saved=JSON.parse(storage?.getItem('friken.chromatic.voices.v1')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))preferred=saved;}catch{}
   preferred.engine=preferred.engine==='device'?'device':'neural';
   const readAlong=mountReadAlong(root);
-  const neural=mountNeuralVoice({status(message){get('voice-note').textContent=message;note(message);},level:pcm,talking,audio});
+  const neural=mountNeuralVoice({status:report,level:pcm,talking,audio});
   const save=()=>{try{storage?.setItem('friken.chromatic.voices.v1',JSON.stringify(preferred));}catch{}};
   const recorded=mountRecordedVoice(root,recordedVoiceClips,{note,level(value){pcm?.(value);},gate(){talking?.(false);}});
-  function stop(){generation++;clearTimeout(timer);timer=0;neural.stop();readAlong.finish();if(supported)speechSynthesis.cancel();recorded.stop();settle?.();settle=null;talking?.(false);}
+  function stop(){active=false;currentFrame=null;suspended=null;generation++;clearTimeout(timer);timer=0;neural.stop();readAlong.finish();if(supported)speechSynthesis.cancel();recorded.stop();settle?.();settle=null;talking?.(false);}
   function refresh(){
     const voices=supported?speechSynthesis.getVoices():[];casting=castVoices(voices,preferred);
     for(const engine of ['neural','device']){const control=get('engine-'+engine);if(control)control.checked=preferred.engine===engine;}
@@ -118,30 +134,33 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,au
     get('voice-note').textContent=preferred.engine==='neural'?'Kokoro 82M / local neural speech. First Read downloads about 100 MB from jsDelivr + Hugging Face; cached when this host permits. Story text stays on this device. George speaks Ghost; Heart narrates. Read-along is playback-paced, approximate.':supported?(voices.length?'Female narrator + separate male Ghost. David recording generator is on the Windows checkout; current device voice is a fallback. Select by listening. Service voices may send text through their provider.':'Waiting for the browser’s voice inventory. Captions are ready.'):'This host has no speech API. Both roles remain captioned.';
   }
   function pause(ms,token){return new Promise(resolve=>{if(token!==generation){resolve();return;}settle=resolve;timer=setTimeout(()=>{timer=0;settle=null;resolve();},ms);});}
-  function speak(frame){
+  function speak(frame,from=0){
     stop();if(!enabled||silent)return;
+    if(document.hidden){suspended={frame,from};report('Voice paused while this tab is hidden. Return to resume.');return;}
+    currentFrame=frame;cursor=from;active=true;
     const token=generation,segments=speechSegments(frame,casting);readAlong.prepare(segments,true);
     async function run(){
       try{
-        const tasks=segments.flatMap(segment=>recorded.has(segment.role,segment.text)?[{segment,clip:true}]:speechUnits(segment.text,{coalesce:preferred.engine==='neural'}).map(unit=>({segment,unit})));
+        const tasks=segments.flatMap(segment=>recorded.has(segment.role,segment.text)?[{segment,clip:true}]:(preferred.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
         let prepared=null;
         if(preferred.engine==='neural'&&tasks.some(t=>!t.clip))await neural.unlock();
         const prepare=task=>neural.prepare(speechText(task.unit.text),{voice:preferred[task.segment.role+'Neural']||neuralCast[task.segment.role][0][0],speed:task.segment.role==='ghost'?.94:.98});
-        for(let index=0;index<tasks.length;index++){
+        for(let index=from;index<tasks.length;index++){
+          cursor=index;
           const {segment,unit,clip}=tasks[index];
           if(token!==generation)return;
           if(clip){await recorded.play(segment.role,segment.text);if(token===generation)readAlong.progress(segment,segment.text.length);continue;}
           if(preferred.engine==='device'&&!segment.voice){readAlong.progress(segment,segment.text.length);continue;}
           const spoken=speechText(unit.text);
           if(preferred.engine==='neural'){
-              note('Kokoro / composing '+segment.role+' performance…');
+              report('Kokoro / composing '+segment.role+' performance…');
               const message=await(prepared||prepare(tasks[index]));if(token!==generation)return;
               const next=tasks[index+1];prepared=next&&!next.clip?prepare(next):null;prepared?.catch(()=>{});
               await neural.play(message,{role:segment.role,
-                onStart(){if(token===generation){readAlong.begin();note(segment.role.toUpperCase()+' / Kokoro neural / speaking locally');}},
+                onStart(){if(token===generation){readAlong.begin();report(segment.role.toUpperCase()+' / Kokoro neural / speaking locally');}},
                 onProgress(fraction){if(token===generation)readAlong.progress(segment,unit.start+Math.floor(unit.text.length*fraction));}});
             }else{
-              await new Promise(resolve=>{
+              await new Promise((resolve,reject)=>{
                 settle=resolve;const line=new SpeechSynthesisUtterance(spoken);line.voice=segment.voice;line.lang=segment.voice.lang;line.rate=segment.rate;line.pitch=segment.pitch;
                 let animation=0;
                 const finish=()=>{cancelAnimationFrame(animation);if(token===generation){talking?.(false);readAlong.progress(segment,unit.end);}resolve();};
@@ -149,15 +168,15 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,au
                   const began=performance.now(),seconds=Math.max(.5,unit.text.split(/\s+/).length/(2.6*segment.rate));
                   const type=()=>{if(token!==generation)return;readAlong.progress(segment,unit.start+Math.floor(unit.text.length*Math.min(.96,(performance.now()-began)/1000/seconds)));animation=requestAnimationFrame(type);};type();};
                 line.onboundary=event=>{if(token!==generation)return;cancelAnimationFrame(animation);const end=event.charIndex+(event.charLength||spoken.slice(event.charIndex).match(/^\S+/)?.[0].length||0);readAlong.progress(segment,unit.start+captionOffset(unit.text,end));if(segment.role==='ghost')pulse();};
-                line.onend=finish;line.onerror=e=>{if(token===generation)note('Device voice unavailable: '+e.error+' · captions remain.');finish();};
+                line.onend=finish;line.onerror=e=>{cancelAnimationFrame(animation);talking?.(false);reject(Error('Device voice unavailable: '+e.error));};
                 speechSynthesis.speak(line);
               });
             }
             if(token!==generation)return;
-            readAlong.progress(segment,unit.end);talking?.(false);await pause(unit.pause,token);
+            readAlong.progress(segment,unit.end);cursor=index+1;talking?.(false);await pause(unit.pause,token);
         }
-        if(token===generation){readAlong.finish();note('Voice finished · your move.');}
-      }catch(error){if(token===generation){neural.stop();readAlong.finish();talking?.(false);note('Voice unavailable: '+error.message+'. Choose a speech engine in VOICE CAST or keep reading.');}}
+        if(token===generation){active=false;currentFrame=null;readAlong.finish();report('Voice finished · your move.');}
+      }catch(error){if(token===generation){active=false;currentFrame=null;neural.stop();readAlong.finish();talking?.(false);report('Voice unavailable: '+error.message+'. Read scene retries; VOICE CAST offers another engine.');}}
     }
     void run();
   }
@@ -165,5 +184,13 @@ export function mountSpeech(root,{note,pulse,talking,pcm,storage,silent=false,au
   if(supported)speechSynthesis.addEventListener('voiceschanged',refresh);
   get('voice-settings').addEventListener('toggle',()=>{if(get('voice-settings').open){refresh();console.warn('[Chromatic speech] voice settings height',get('voice-settings').getBoundingClientRect().height);}});
   refresh();
-  return {speak,stop,unlock:()=>neural.unlock(),toggle(){if(preferred.engine==='device'&&!supported&&!recordedVoiceClips.length){note('This host has no browser voice or recorded pack · captions remain.');return false;}enabled=!enabled;if(!enabled)stop();return enabled;},get enabled(){return enabled;}};
+  return {speak,stop,
+    suspend(){if(active&&currentFrame){const next={frame:currentFrame,from:cursor};stop();suspended=next;report('Voice paused while this tab is hidden. Return to resume.');}},
+    resume(){if(enabled&&suspended&&!document.hidden){const next=suspended;speak(next.frame,next.from);}},
+    warm(frame){if(enabled&&!silent&&preferred.engine==='neural'){try{
+      neural.warm();const segment=frame&&speechSegments(frame,casting).find(s=>s.text?.trim());
+      const unit=segment&&neuralPassages(segment.text)[0];
+      if(unit)void neural.prepare(speechText(unit.text),{voice:preferred[segment.role+'Neural']||neuralCast[segment.role][0][0],speed:segment.role==='ghost'?.94:.98}).catch(error=>{if(error.message!=='cancelled')report('Voice unavailable: '+error.message+' · Read scene to retry.');});
+    }catch(error){report('Voice unavailable: '+error.message+' · Read scene to retry.');}}},
+    unlock:()=>neural.unlock(),toggle(){if(preferred.engine==='device'&&!supported&&!recordedVoiceClips.length){note('This host has no browser voice or recorded pack · captions remain.');return false;}enabled=!enabled;if(!enabled)stop();return enabled;},get enabled(){return enabled;}};
 }

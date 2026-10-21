@@ -234,13 +234,13 @@ el('vault-export').addEventListener('click',()=>{el('vault').value=vault.exportA
 el('vault-import').addEventListener('click',()=>{try{const receipt=vault.importArchive(el('vault').value);state=vault.current()||state;started=!!vault.current();savedReceipt=receipt;draw();el('vault-status').textContent='Imported '+receipt.imported+' run records. '+receipt.message;}catch(error){el('vault-status').textContent='Import refused: '+error.message;}});
 el('vault-download').addEventListener('click',()=>{const payload=vault.exportArchive();el('vault').value=payload;const url=URL.createObjectURL(new Blob([payload],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='friken-ghost-run-archive.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
 root.addEventListener('keydown',event=>{if(inspector.active||battle.active||cinema.phase!=='ready'||event.target.matches('input,textarea')||event.metaKey||event.ctrlKey||event.altKey||event.repeat)return;const index=Number(event.key)-1;if(started&&index>=0&&index<3){const c=playView(state).choices[index];if(c){event.preventDefault();act(c.id);}}});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)stopVoice();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)speech.suspend();else if(cinema.phase==='ready')speech.resume();});
 setInterval(()=>{if(!document.hidden)el('fps').textContent=stage?(stage.fps+' / FPS'):'TEXT MODE';},1000);
 el('handle').value=vault.profile().callsign||'DIVER';
 draw();
 if(portrait)showFace(portrait.version.id);
 renderWire();
-const cinema=mountCinema(root,{audio,
+const cinema=mountCinema(root,{audio,prepareVoice(){speech.warm(started?playView(state):meeting);},
   local:()=>vault.status().persistent,
   hold(busy){juice.hold(busy||motionHeld);if(busy){stopVoice();battle.hold(true);}stage?.hold(busy||motionHeld);portrait?.hold(busy||motionHeld);},
   ready(){note('Carrier ready · no decision spent. The universe can wait for your hand.');if(voice)speak();}

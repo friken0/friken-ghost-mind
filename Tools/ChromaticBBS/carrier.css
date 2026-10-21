@@ -415,3 +415,10 @@
 #chromatic-carrier .cg-baseline-impact .cg-stat-rolls>div:nth-child(5){animation-delay:.32s}
 @keyframes cg-baseline-flare{from{background:var(--cg-ink);color:var(--cg-bg);box-shadow:inset 0 0 15px var(--cg-ink)}to{background:var(--cg-glass);color:var(--cg-ink);box-shadow:none}}
 @media(prefers-reduced-motion:reduce){#chromatic-carrier .cg-baseline-impact .cg-stat-rolls>div{animation:none}}
+
+/* Signal Dock owns only the existing startup glass; controls stay in flow. */
+#chromatic-carrier #cg-boot-world{position:absolute;inset:0;display:block;width:100%;height:100%;border:1px solid var(--cg-line)}
+#chromatic-carrier #cg-boot-canvas{border:0;pointer-events:none}
+#chromatic-carrier .cg-boot-scene-head{position:absolute;left:14px;right:14px;top:12px;display:flex;justify-content:space-between;gap:10px;font-size:10px;letter-spacing:.08em;color:var(--cg-ink);text-shadow:0 1px 4px var(--cg-bg)}
+#chromatic-carrier #cg-boot-fps{white-space:nowrap;color:var(--cg-warn)}
+@media(max-width:500px){#chromatic-carrier .cg-boot-scene-head{font-size:8px;left:8px;right:8px}#chromatic-carrier .cg-boot-field{min-height:200px}}

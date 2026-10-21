@@ -1,4 +1,4 @@
-# CHROMATIC C26.6 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.7 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -428,7 +428,7 @@ The loopback build server supplies isolation headers for threaded inference.
 
 Each original sentence keeps its caption offsets. Device speech adds a
 short breath: 60 ms normally, 90 ms after ?!, 160 ms for paragraphs.
-Neural speech groups adjacent sentences into <=400-character passages and
+Neural speech groups adjacent sentences into <=180-character passages and
 uses Kokoro punctuation prosody internally; add only 40 ms between passages
 or 120 ms after a paragraph. This avoids per-sentence synthesis stalls.
 One upcoming neural passage is prepared while the current audio plays.
@@ -445,3 +445,33 @@ clear and saved branches survive. Copy produces a plain BOOT instruction
 plus the full exact request. Paste to runbook chat; Ghost writes new chapter
 JSON; import it back. Preparing a request neither wakes a model nor publishes
 anything. An invalid seed stays at the handoff with a visible error.
+
+## October 21 / speech lifecycle
+
+Dial warms the pinned neural model and first sentence during the modem.
+Remaining prose coalesces in 180-character units to bound CPU inference. The existing
+voice control reports loading/preparing/speaking/paused/retry. Hiding a tab
+suspends unfinished speech; returning resumes its current unit. Explicit
+mute, new choice, power-off or scene replacement clears the resume. Completed
+units stay completed. Exact text/cast/speed PCM cache: four units maximum,
+ninety seconds total, memory only. Preparation expires after 120 seconds,
+terminates the stalled worker and leaves Read scene available for retry.
+Device playback errors also reach the visible error path. No silent engine
+switch and no claim that cold CPU synthesis is instantaneous.
+
+## C26.7 / Signal Dock arrival
+
+The existing startup bay owns a raymarched modem, metal carrier aperture,
+folded relay lattice, data conduit and rotating cut crystal. The small
+typed terminal overlays the scene; existing controls stay in normal flow.
+The actual boot clock drives indicator activation and route acquisition.
+Pointer parallax is bounded; Pause freezes scene time; hidden scenes stop
+rendering. The scene renders at most thirty frames per second and 310,000
+pixels with 76 march steps. FPS and CPU draw submission are measured;
+those measurements are not a GPU-timing claim. No WebGL reports TEXT mode.
+
+Dial unlocks the audio context and prepares speech during the modem.
+GhostTracks cannot start from a generic pointer touch before carrier lock.
+The held CONNECT screen arms music; boot replay/disconnect disarms it.
+The log reports actual audio initialization separately from fictional
+handshake phases. Music remains independently mutable after connection.

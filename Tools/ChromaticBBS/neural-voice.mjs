@@ -32,11 +32,25 @@ function neuralWorker(config){
       }catch(error){postMessage({type:'error',id:job.id,message:error.message});}
     }running=false;
   }
-  onmessage=event=>{if(event.data.type==='cancel'){latest=null;return;}if(event.data.type==='generate'){latest=event.data;void drain();}};
+  onmessage=event=>{
+    if(event.data.type==='warm'){void load().catch(error=>postMessage({type:'warm-error',message:error.message}));return;}
+    if(event.data.type==='cancel'){if(latest)postMessage({type:'cancelled',id:latest.id,message:'cancelled'});latest=null;return;}
+    if(event.data.type==='generate'){latest=event.data;void drain();}
+  };
 }
 export function mountNeuralVoice({status,level,talking,audio}){
   audio??=mountAudio(null);
   let worker=null,epoch=0,request=0,pending=null,context=null,source=null,analyser=null,raf=0,finish=null;
+  // Replaying a paused line must not pay inference again. Exact local PCM only,
+  // bounded to 90 seconds total and four units; never stored or uploaded.
+  const cache=new Map(),jobs=new Map();let cachedSamples=0;
+  const keyFor=(text,voice,speed)=>JSON.stringify([text,voice,speed]);
+  function remember(key,message){
+    if(!key||!(message.samples instanceof Float32Array))return;
+    if(cache.has(key))cachedSamples-=cache.get(key).samples.length;
+    cache.delete(key);cache.set(key,message);cachedSamples+=message.samples.length;
+    while(cache.size>4||cachedSamples>24000*90){const key=cache.keys().next().value;cachedSamples-=cache.get(key).samples.length;cache.delete(key);}
+  }
   function ensureWorker(){
     if(worker)return;
     const url=URL.createObjectURL(new Blob(['('+neuralWorker.toString()+')('+JSON.stringify(neuralRelease)+');'],{type:'text/javascript'}));
@@ -44,12 +58,15 @@ export function mountNeuralVoice({status,level,talking,audio}){
     worker.onmessage=event=>{const m=event.data;
       if(m.type==='status'){status(m.text);return;}
       if(m.type==='ready'){status('Kokoro / local neural model ready');return;}
+      if(m.type==='warm-error'){status('Voice unavailable: '+m.message+' · Read scene to retry.');return;}
+      const key=jobs.get(m.id);jobs.delete(m.id);
+      if(m.type==='audio')remember(key,m);
       if(!pending||pending.id!==m.id)return;
-      const job=pending;pending=null;m.type==='audio'?job.resolve(m):job.reject(Error(m.message));
+      const job=pending;pending=null;clearTimeout(job.timer);m.type==='audio'?job.resolve(m):job.reject(Error(m.message));
     };
-    worker.onerror=event=>{pending?.reject(Error(event.message||'Neural worker failed'));pending=null;worker.terminate();worker=null;};
+    worker.onerror=event=>{clearTimeout(pending?.timer);pending?.reject(Error(event.message||'Neural worker failed'));pending=null;jobs.clear();worker.terminate();worker=null;status('Voice unavailable: '+(event.message||'Neural worker failed')+' · Read scene to retry.');};
   }
-  function stop(){epoch++;worker?.postMessage({type:'cancel'});pending?.reject(Error('cancelled'));pending=null;
+  function stop(){epoch++;worker?.postMessage({type:'cancel'});clearTimeout(pending?.timer);pending?.reject(Error('cancelled'));pending=null;
     if(source){source.onended=null;try{source.stop();}catch{}source.disconnect();source=null;}
     cancelAnimationFrame(raf);raf=0;level?.(0);talking?.(false);audio.speaking(false);finish?.();finish=null;
   }
@@ -57,9 +74,15 @@ export function mountNeuralVoice({status,level,talking,audio}){
     const graph=await audio.unlock();context=graph.context;return graph;
   }
   async function prepare(text,{voice,speed=1}){
+    const own=epoch,key=keyFor(text,voice,speed),cached=cache.get(key);
+    if(cached)return {...cached,epoch:own};
     ensureWorker();if(pending)throw Error('Neural queue already has a prepared sentence');
-    const own=epoch,id=++request;
-    const message=await new Promise((resolve,reject)=>{pending={id,resolve,reject};worker.postMessage({type:'generate',id,text,voice,speed});});
+    const id=++request;
+    const message=await new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>{if(pending?.id!==id)return;pending=null;jobs.clear();worker?.terminate();worker=null;reject(Error('Speech took too long to prepare. Read scene retries the voice'));},120000);
+      pending={id,resolve,reject,timer};jobs.set(id,key);
+      worker.postMessage({type:'generate',id,text,voice,speed});
+    });
     if(epoch!==own)throw Error('cancelled');return {...message,epoch:own};
   }
   async function play(message,{role,onStart,onProgress}){
@@ -77,5 +100,5 @@ export function mountNeuralVoice({status,level,talking,audio}){
     });
   }
   async function speak(text,options){await unlock();const message=await prepare(text,options);await play(message,options);}
-  return {speak,stop,prepare,play,unlock};
+  return {speak,stop,prepare,play,unlock,warm(){ensureWorker();worker.postMessage({type:'warm'});}};
 }

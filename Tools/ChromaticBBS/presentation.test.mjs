@@ -3,7 +3,7 @@ import {validateVoiceClips} from './recorded-voice.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {battlePlan} from './roll-battle.mjs';
-import {castVoices,speechSegments,speechText,mountSpeech,speechUnits} from './speech.mjs';
+import {castVoices,speechSegments,speechText,mountSpeech,speechUnits,neuralPassages} from './speech.mjs';
 import {responsePacket,validateResponse} from './response.mjs';
 import {newGame,view,choose,encodeSeed} from './engine.mjs';
 test('every legal die/stat/DC battle conserves subtraction and leaves exactly the signed margin',()=>{
@@ -113,4 +113,37 @@ test('neural passages keep natural sentence prosody, paragraph breaks and exact 
  const long=('The corridor remembers your answer. ').repeat(40);
  for(const u of speechUnits(long,{coalesce:true})){assert.ok(u.text.length<=400);assert.equal(long.slice(u.start,u.end).trim(),u.text);}
  assert.equal(speechUnits(long,{coalesce:true}).map(u=>u.text).join(' '),long.trim());
+});
+
+test('hidden speech resumes the unfinished unit, while explicit mute cancels resume',async()=>{
+ const names=['window','document','speechSynthesis','SpeechSynthesisUtterance','cancelAnimationFrame'];
+ const saved=new Map(names.map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));
+ const spoken=[],voices=[{name:'Samantha',lang:'en-US',voiceURI:'sam'},{name:'Daniel',lang:'en-GB',voiceURI:'dan'}];
+ const element=()=>({dataset:{},append(){},replaceChildren(){},addEventListener(){},pause(){},setAttribute(){},removeAttribute(){}}),nodes=new Map();
+ try{
+  globalThis.document={hidden:false,createElement:element,createTextNode:t=>t,addEventListener(){}};
+  globalThis.cancelAnimationFrame=()=>{};globalThis.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
+  globalThis.speechSynthesis={cancel(){},getVoices:()=>voices,addEventListener(){},speak(line){spoken.push(line);}};
+  globalThis.window={speechSynthesis,SpeechSynthesisUtterance};
+  const root={append(){},querySelector(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);}};
+  const speech=mountSpeech(root,{note(){},pulse(){},talking(){},storage:{getItem:()=>JSON.stringify({engine:'device'})}});
+  speech.speak({scene:'A line worth hearing.',ghost:'Then Ghost answers.'});
+  assert.equal(spoken.length,1);document.hidden=true;speech.suspend();
+  assert.match(nodes.get('#cg-voice').textContent,/paused/);
+  document.hidden=false;speech.resume();assert.equal(spoken.length,2);assert.equal(spoken[1].text,spoken[0].text);
+  spoken[1].onend();await new Promise(r=>setTimeout(r,100));assert.equal(spoken[2].voice.voiceURI,'dan');
+  document.hidden=true;speech.suspend();speech.toggle();document.hidden=false;speech.resume();assert.equal(spoken.length,3,'explicit voice off must not resume on return');
+  speech.toggle();document.hidden=true;speech.speak({scene:'Queued while hidden.',ghost:''});assert.equal(spoken.length,3);
+  document.hidden=false;speech.resume();assert.equal(spoken[3].text,'Queued while hidden.');speech.stop();
+  const cold=mountSpeech(root,{note(){},pulse(){},talking(){},storage:{getItem:()=>null}});
+  assert.doesNotThrow(()=>cold.warm({scene:'Hello.',ghost:''}));assert.match(nodes.get('#cg-voice').textContent,/retry/,'missing Worker must report retry without breaking Dial');cold.stop();
+ }finally{for(const [k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
+});
+
+
+test('neural head start retains every original caption offset with bounded later passages',()=>{
+ const text='Hello, Friken.Ghost. '+('A signal answers without an invitation. '.repeat(18))+'\n\nWHO goes next?';
+ const units=neuralPassages(text);assert.equal(units[0].text,'Hello, Friken.Ghost.');
+ for(const u of units){assert.equal(text.slice(u.start,u.end).trim(),u.text);assert.ok(u.text.length<=180);}
+ assert.equal(units.map(u=>u.text).join(' ').replace(/\s+/g,' '),text.replace(/\s+/g,' '));
 });

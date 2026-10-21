@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.6
+# FRIKEN.GHOST / CHROMATIC BBS / C26.7
 
-**Runbook 2.2 | October 20, 2026 | Friken.Ghost**
+**Runbook 2.3 | October 20, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -312,7 +312,11 @@ LAYOUT:=human salvage chassis first;SCORE largest at absolute top with
 
 BOOT_BODY:=DIAL ->17.6s modem+typed ANSI ->HOLD_CONTINUE ->
  FRAMES650ms ->INSTRUMENTS750 ->PRESENCE900 ->CONTENT600 ->READY.
- Initial phosphor point opens connection,never a fully painted screen.
+ Signal Dock SDF:physical modem,metal aperture,folded relays,cut crystal,
+ data conduit;bounded pointer parallax. Small typed log overlays live scene.
+ Actual boot age drives phase lights;Pause holds time. <=310000 pixels,
+ <=30Hz,76 march steps;hidden stops. Show FPS+CPU submission,not fake GPU
+ timings. WebGL refusal ->explicit TEXT state;never claim shader painted.
  Recovered Masha1 PCM:off-hook;350+440 dial;DTMF19902026;ring;2100Hz
  ANSam15Hz AM±20%,450ms phase flips;V8 FSK;comb probes;I/Q training;
  phone-band filters. Audible approximation,not interoperable telephony.
@@ -338,7 +342,9 @@ AUDIO:=one AudioContext;voice/music/SFX buses->FFT2048->limiter->output.
  ?check isolates storage only;?qaAudio=silent explicitly mutes QA.
  Sample33ms;bands35..190,190..2200,2200..10000Hz;positive RMS attack.
  Normalize neural voice active RMS.14,gain<=8,softlimit.94*tanh;
- normalize music to same reference then gain.55 (.10 during modem).
+ normalize music to same reference then gain.55. Dial unlocks audio+modem;
+ music remains gated until held carrier lock. Boot/disconnect disarm music.
+ Generic touch cannot start it early. Typed log names actual audio state.
  Real tracks[JazzSauce AAC stream-copy,EpicII,CatchyCat,BangNonAndOn];
  verify media/manifest.json SHA256 before decoding. EpicI missing;don't
  fake it. Music sidecars separate from HTML/source kit. Retain media pack.
@@ -351,9 +357,15 @@ AUDIO:=one AudioContext;voice/music/SFX buses->FFT2048->limiter->output.
  retain runtime/weights/licences for full offline neural recovery.
  Explicit Device route for other hosts;never silent engine substitution.
  Uppercase words spoken as words(WHO=who);known initialisms letter names;
- displayed captions unchanged. Neural coalesces paragraph chunks<=400chars,
+ displayed captions unchanged. Neural coalesces paragraph chunks<=180chars,
  native punctuation+40ms interchunk/120paragraph;device60/90?!/160paragraph.
- Prefetch one next chunk;cancel stale jobs,sources,timers,restore captions.
+ Dial warms model+first sentence during modem;voice control shows loading/
+ preparing/speaking/paused/retry. First sentence starts alone,remaining
+ prose coalesces;no per-period restart. Prefetch next chunk. Hidden -> suspend
+ unit;visible -> resume it;mute/new scene/power-off clears resume. Finished
+ units stay finished. Cache exact text+cast+speed PCM in memory only,<=4
+ units and90s total. Preparation deadline120s releases stuck worker;Read
+ retries explicitly. Cancel stale jobs/sources/timers;restore captions.
  Read-along uses actual audio clock;waiting captions readable;Show full
  text preserves playback. Mouth actual Ghost PCM only,narrator never;
  RMS!=phonemes. Device boundaries are approximate,not a PCM measurement.

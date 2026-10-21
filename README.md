@@ -1,4 +1,4 @@
-# Chromatic C26.6 / a human carrier for Ghost
+# Chromatic C26.7 / a human carrier for Ghost
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / Collection Required**:
@@ -25,9 +25,12 @@ claim a new live generation service. It changes how the next model writes.
 ## Play and continue
 
 Run `python3 Tools/ChromaticBBS/build.py --serve --port 4331`, then open
-http://127.0.0.1:4331/. Dial unlocks default-on voice, music and SFX. Pause
+http://127.0.0.1:4331/. Dial initializes the audio engine and modem, and warms voice. Music joins
+after carrier lock. Pause
 holds the actual 17.6-second modem connection. Finish leads to a held
 Continue; Continue builds frames, instruments, presence and content.
+The startup glass is a live SDF Signal Dock with a modem, carrier aperture,
+relay field, connection-driven lights, compact typed log and scene FPS.
 
 SCORE/resources own the top. Five rolled attributes sit beneath them.
 Resident artwork and story share one encounter, with choices below. Ghost
@@ -80,8 +83,11 @@ Neural voices normalize toward the same active RMS. Music plays at 55% of
 that reference, 10% during the modem. Ghost mouth follows Ghost PCM only.
 Default Kokoro speech uses George for Ghost and Heart for the female narrator;
 first use downloads roughly 100 MB of pinned runtime/model dependencies.
-Inference is local. Keep runtime, weights and licences separately for fully
-offline speech. VOICE CAST exposes explicit host/device alternatives.
+Inference is local. Dial starts voice loading during the modem; the voice
+button reports loading, preparing, speaking, paused or retry. Tab return
+resumes unfinished speech. Mute or a new choice cancels that resume. A stuck
+preparation expires after 120 seconds; Read scene retries it. Keep runtime,
+weights and licences separately for fully offline speech. VOICE CAST exposes explicit host/device alternatives.
 
 `?check` isolates test storage; it no longer mutes TTS. `?qaAudio=silent`
 is the explicit automated mute. Waiting captions stay readable while local

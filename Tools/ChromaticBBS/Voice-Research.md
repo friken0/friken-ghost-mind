@@ -43,7 +43,8 @@ and applies two guarded model-path substitutions before import. Both model
 and voice files bind to ONNX repository revision
 `1939ad2a8e416c0acfeecc08a694d14ef25f2231`. The WASM runtime path is pinned
 to Transformers.js 3.5.1. These are third-party assets, not chapter code.
-A model download on first Read is about 100 MB. Browser caches can be evicted;
+Dial now starts model loading during the modem sequence. Its first download
+is about 100 MB. Browser caches can be evicted;
 model/runtime bytes are NOT embedded in the private portable source kit.
 A fully offline neural deployment must retain and serve those dependencies
 and their licences. A missing dependency produces an explicit status and
@@ -61,10 +62,11 @@ speech.mjs separates uppercase display emphasis from speech pronunciation.
 WHO becomes a word; explicit technical initialisms keep letter names.
 Original exact captions, seed bytes and recorded-clip lookup keys survive.
 After Prime rejected the long pauses, neural speech coalesces sentences into
-bounded 400-character passages so Kokoro owns internal punctuation timing.
+bounded 180-character passages so Kokoro owns internal punctuation timing.
 Only 40 ms is added between passages, 120 ms at paragraph boundaries. Device
 speech adds 60 ms normally, 90 ms after ?!, 160 ms at paragraphs. Stop, mute,
-new choices and hidden pages cancel the gap.
+new choices cancel the gap. A hidden page suspends the current unit and
+returns to it when visible; an explicit mute or new choice clears that resume.
 The neural route uses the actual audio clock for progressive ink and actual
 512-sample PCM for Ghost's mouth. The reveal is approximate within each
 sentence, not a claim of forced word alignment or phoneme synchronization.
@@ -81,3 +83,30 @@ audio played 5.12 / 5.37 s. With isolated host, concurrent chapter tests:
 generation and possible download/cache work, not pure inference benchmarks.
 Both tests passed actual PCM and both-role playback. Perceived quality was
 not independently listened to by the agent. Prime auditions the actual cast.
+
+## October 21 / published-host lifecycle repair
+
+I verified both public voices directly: George first audio 12.73 seconds,
+playback 5.12; Heart first audio 11.86, playback 5.37. These are one measured
+run, not a speed guarantee. The engine was capable of output; the full
+wrapper could cancel its own unfinished speech when hidden and never resume.
+Music kept playing, making the failure look like a dead voice engine.
+
+Dial warms the same pinned model and first sentence while the modem connects.
+The first sentence gets a head start; remaining prose coalesces in bounded
+180-character units, reducing large CPU inference stalls without adding
+a separate artificial delay at every period. The existing
+voice button shows loading, preparing, speaking, paused or retry. Returning
+resumes the unfinished unit; completed units are not replayed. Muting or
+changing the scene cancels resume. Exact PCM is cached locally in memory,
+up to four units and ninety seconds total, keyed by text, cast and speed.
+No text or PCM is uploaded or persisted by that cache.
+
+A 120-second preparation deadline releases a stuck worker and exposes an
+explicit Read-scene retry. Worker errors and device playback failures stay
+visible. There is no automatic engine substitution. Cold CPU synthesis
+still takes time; this repair does not claim instantaneous streaming TTS.
+
+C26.7 gates GhostTracks until carrier lock. Generic pointer unlock starts
+the audio context, never music before the modem. The connection log reports
+that context separately from the fictional handshake visualization.
