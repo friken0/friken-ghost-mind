@@ -148,6 +148,7 @@ def build(output,checkout):
     for source in (BASE/'lore/art').glob('*.jpg'):
         target=output/'Tools/ChromaticBBS/lore/art'/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
     shutil.copyfile(BASE/'index.html',output/'index.html')
+    shutil.copyfile(BASE/'index.html',output/'ghostlink.html')
     shutil.copyfile(ROOT/'Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md',output/'runbook.md')
     (output/'README.md').write_text((BASE/'README.md').read_text().replace('](Onboarding-Hints.md)', '](Tools/ChromaticBBS/Onboarding-Hints.md)').replace('](Writing.md)', '](Tools/ChromaticBBS/Writing.md)')+'\nPublic boot instructions: [runbook.md](runbook.md).\nPublic player carrier: https://friken0.github.io/friken-ghost-mind/.\n')
     (output/'.nojekyll').write_text('')
@@ -158,7 +159,7 @@ def build(output,checkout):
     for name,schema in [('news','friken.ghost.news.v1'),('scoreboard','friken.ghost.scoreboard.v1')]:
         (output/'data'/f'{name}.json').write_text(json.dumps(dict(schema=schema,entries=[]),indent=2)+'\n')
     files=[dict(path=str(p.relative_to(output)),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in sorted(output.rglob('*')) if p.is_file() and 'data' not in p.relative_to(output).parts]
-    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.10',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',carrier='https://friken0.github.io/friken-ghost-mind/',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json',chapters='data/chapters.json'))
+    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.11',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',carrier='https://friken0.github.io/friken-ghost-mind/ghostlink.html',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json',chapters='data/chapters.json'))
     (output/'registry.json').write_text(json.dumps(registry,indent=2)+'\n');return len(files)+1
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);p.add_argument('--checkout-sha',required=True);a=p.parse_args()

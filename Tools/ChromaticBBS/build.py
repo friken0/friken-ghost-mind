@@ -55,7 +55,7 @@ fragment = ((base / 'surface.html').read_text() + '\n<style>\n' +
             '(() => {\nconst carrierModules={};\n' + '\n'.join(sources) + '\n})();\n</script>\n')
 document = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
-            '<title>Friken.Ghost · CHROMATIC BBS</title>'
+            '<title>GhostLink · The Other Side of Dial Tone</title>'
             '<style>html,body{margin:0;height:100%;overflow:hidden;background:#090b17}</style></head><body>' +
             fragment + '</body></html>\n')
 (base / 'index.html').write_text(document)

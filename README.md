@@ -1,4 +1,4 @@
-# Chromatic C26.10 / a human carrier for Ghost
+# Chromatic C26.11 / a human carrier for Ghost
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / Collection Required**:
@@ -25,8 +25,7 @@ claim a new live generation service. It changes how the next model writes.
 ## Play and continue
 
 Run `python3 Tools/ChromaticBBS/build.py --serve --port 4331`, then open
-http://127.0.0.1:4331/. Dial initializes the audio engine and modem, and warms voice. Music joins
-after carrier lock. Pause
+http://127.0.0.1:4331/. Dial initializes the audio engine and modem, and warms voice. Music starts off. Its boot toggle enables it after carrier lock. Pause
 holds the actual 17.6-second modem connection. Finish leads to a held
 Continue; Continue builds frames, instruments, presence and content.
 The startup glass is a live SDF Signal Dock with a modem, carrier aperture,
@@ -170,6 +169,21 @@ The queue warms three units during boot, looks ahead three blocks and
 shares identical in-flight work. Performance readouts measure actual
 compute time versus audio duration. Near-real-time CPU inference depends
 on hardware and browser threading; it is not a universal browser promise.
+
+## GhostLink / The Other Side of Dial Tone
+
+The named public doorway is https://friken0.github.io/friken-ghost-mind/ghostlink.html.
+Hover the visible phase modem or carrier aperture: a ray-picked subject
+gets a smooth camera approach and close-up. Wide restores the overview.
+The same three view buttons support touch and keyboard. Pause freezes the
+camera and scene; reduced motion makes explicit view changes instantaneous.
+
+A suspended crystal, carrier coils, armoured cheeks, bolts and luminous
+gaskets give the modem its own SDF silhouette. POWER, TX, RX and CARRIER
+lamps follow the fictional connection state and actual mixer energy. Their
+coloured waves travel over physical surfaces; the conduit and portal keep
+the same real bass/mid/air drive. Music defaults OFF with synchronized
+boot and radio toggles. Enabling it still waits for carrier lock.
 
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.

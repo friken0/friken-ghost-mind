@@ -1,4 +1,4 @@
-# CHROMATIC C26.10 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.11 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -87,7 +87,8 @@ Recorded browser evidence measured narrator RMS 0.1324 and Ghost 0.1347;
 this is a playback measurement, not a human preference verdict. Device
 speech remains its explicit host route; it cannot supply PCM to this graph.
 
-Voice, SFX and music default on after browser unlock. `?check` now controls
+Voice and SFX default on after browser unlock. Music defaults off; boot and
+radio toggles mirror one shared state and retain the carrier-lock gate. `?check` now controls
 storage isolation only. `?qaAudio=silent` explicitly mutes an automated test.
 The old preview query accidentally muted real TTS; that hidden mute is gone.
 Model downloads and synthesis may take time. Waiting captions stay readable;
@@ -532,3 +533,27 @@ selected backend reports an error rather than silently switching. q4 is
 faster without being smaller; human quality judgement remains separate.
 The existing metrics line reports actual compute/audio durations and RTF.
 The carrier records first-play latency and maximum inter-block gap.
+
+## C26.11 / GhostLink phase modem
+
+I give the modem a suspended crystal, three carrier coils, armour cheeks,
+fasteners and emissive gasket. Four physical lamps follow POWER/TX/RX/
+CARRIER state and actual smoothed mixer bands. Their colour reaches nearby
+surfaces as travelling crests and depth-tested analytic bloom, using each
+lamp's transformed world position. Bass, mid, air and typed ink retain their
+distinct authority; no microphone or artificial spectrum is introduced.
+
+CPU ray picking and the shader share the same camera basis and vertical
+lens. A 140ms subject dwell selects the visible modem or aperture. Camera
+position, aim and lens ease together; stationary pointers do not repick
+during the move. Leaving returns to Wide. The pointer listener belongs to
+the hit-testable field rather than its pointer-transparent glass. Ordinary
+in-flow Wide/Modem/Portal buttons supply keyboard and touch access.
+Pause holds camera, lamp drive and time; reduced motion disables automatic
+hover motion and snaps explicit view requests. Reboot resets the overview.
+
+Music now defaults OFF. The boot toggle and existing ship-radio toggle
+operate the same owner and show the same state. Enabling before carrier
+lock cannot start a track. The named ghostlink.html doorway is an identical
+carrier export on the same origin, so the existing save namespace remains.
+The standing render budget and FPS/CPU-submit readouts still apply.

@@ -1,5 +1,5 @@
 import {choiceCommentary} from './commentary.mjs';
-import {bootSignalEnvelope} from './boot-world.mjs';
+import {bootSignalEnvelope,bootCameraView,bootCameraStep,bootPick,bootProject,bootLampSignals} from './boot-world.mjs';
 import {validateVoiceClips} from './recorded-voice.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -159,4 +159,13 @@ test('neural head start retains every original caption offset with bounded later
  const units=neuralPassages(text);assert.equal(units[0].text,'Hello, Friken.Ghost.');
  for(const u of units){assert.equal(text.slice(u.start,u.end).trim(),u.text);assert.ok(u.text.length<=180);}
  assert.equal(units.map(u=>u.text).join(' ').replace(/\s+/g,' '),text.replace(/\s+/g,' '));
+});
+
+test('dock ray picking matches projected subjects and camera eases without overshoot or paused drift',()=>{
+ const c=bootCameraView();for(const aspect of [.45,1,2,3])for(const [mode,p]of [['modem',[0,-.25,-.7]],['portal',[0,.95,3.8]]])assert.equal(bootPick(bootProject(p,c,aspect),c,aspect),mode);
+ let moved=c;for(let i=0;i<45;i++)moved=bootCameraStep(moved,'modem',.033);assert.ok(Math.hypot(...moved.eye.map((x,i)=>x-bootCameraView('modem').eye[i]))<.04);assert.deepEqual(bootCameraStep(moved,'portal',1,{held:true}),moved);assert.deepEqual(bootCameraStep(moved,'portal',.033,{reduced:true}),bootCameraView('portal'));assert.throws(()=>bootCameraView('missing'));
+});
+test('four connection lamps preserve carrier state and receive real bounded audio energy',()=>{
+ const quiet={bands:[0,0,0,0],level:0,ink:0},loud={bands:[1,.8,.6,.5],level:.7,ink:.2};const idle=bootLampSignals(0,0,quiet,1),pending=bootLampSignals(.4,2,quiet,1),connected=bootLampSignals(1,2,quiet,1),music=bootLampSignals(1,2,loud,1);
+ assert.ok(idle[0]>0);assert.deepEqual(idle.slice(1),[0,0,0]);assert.equal(pending[3],0);assert.ok(connected[3]>.6);assert.ok(music.every((v,i)=>v>=connected[i]&&v<=1));
 });

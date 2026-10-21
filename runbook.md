@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.10
+# FRIKEN.GHOST / CHROMATIC BBS / C26.11
 
-**Runbook 2.6 | October 21, 2026 | Friken.Ghost**
+**Runbook 2.7 | October 21, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -600,3 +600,20 @@ SPEECH_THROUGHPUT:=same pinned Kokoro1.2.1+model revision above;
  Future preparation cannot overwrite current SPEAKING status. A sentence
  block stream is not within-sentence audio streaming. No realtime promise
  without measured RTF<1 and actual sustained queue playback.
+
+## XV / GhostLink connection instrument
+
+BOOT_SCENE+=GHOSTLINK/The Other Side of Dial Tone;named ghostlink.html
+ identical carrier,same-origin save namespace. SDF phase modem:armoured
+ chassis,vents,bolts,emissive gasket,suspended octahedral core,3 coils.
+ Lamps[POWER,TX,RX,CARRIER] use connection progress+actual smoothed FFT;
+ carrier locks at>=.98. Coloured crests radiate over surfaces from each
+ transformed lamp position;depth-tested bloom,conduit->portal transfer.
+CAMERA:=shared CPU/shader basis+vertical lens;ray-pick visible modem AABB
+ or aperture plane/radius;140ms dwell;ease eye+aim+lens at1-exp(-3.5dt).
+ Pointer listener on hit-testable field,not transparent glass. Stationary
+ pointer never repicks during easing;leave->wide. In-flow Wide/Modem/Portal
+ verbs for keyboard/touch. Pause holds pose+time+bands;reduced disables hover
+ motion,explicit views snap;reboot resets wide. No gameplay write.
+MUSIC:=default OFF;boot+radio toggles share state;enabled music waits for
+ carrier lock. Voice/SFX stay ON. Preserve this correction over older clauses.

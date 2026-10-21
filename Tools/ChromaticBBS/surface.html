@@ -1,8 +1,9 @@
 <div id="chromatic-carrier" data-theme="cyan" data-race="human">
   <section id="cg-power-bay" class="cg-power-bay" aria-label="CRT carrier startup" hidden>
-    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.10</span></div>
+    <div class="cg-power-head"><span>░▒▓ FRIKEN.GHOST ▓▒░</span><span>FRAMEWORK C26.11</span></div>
     <h2 id="cg-power-title">CARRIER ACQUISITION</h2>
-    <div id="cg-boot-field" class="cg-boot-field"><div id="cg-boot-glass" class="cg-boot-glass"><canvas id="cg-boot-world" aria-label="Signal Dock: a physical modem and a raymarched carrier aperture" role="img">Signal Dock requires WebGL.</canvas><canvas id="cg-boot-canvas" aria-label="Live typed connection log" role="img">Ghost connection log.</canvas><div class="cg-boot-scene-head"><span>SIGNAL DOCK / EXTERNAL UNIVERSE UPLINK</span><span id="cg-boot-fps">SDF / INITIALIZING</span></div></div></div>
+    <div id="cg-boot-field" class="cg-boot-field"><div id="cg-boot-glass" class="cg-boot-glass"><canvas id="cg-boot-world" aria-label="Signal Dock: a physical modem and a raymarched carrier aperture" role="img">Signal Dock requires WebGL.</canvas><canvas id="cg-boot-canvas" aria-label="Live typed connection log" role="img">Ghost connection log.</canvas><div class="cg-boot-scene-head"><span>GHOSTLINK / THE OTHER SIDE OF DIAL TONE</span><span id="cg-boot-fps">SDF / INITIALIZING</span></div></div></div>
+    <div class="cg-dock-views" aria-label="Signal Dock camera"><span id="cg-boot-focus">GHOSTLINK / POINT AT MODEM OR PORTAL</span><div><button id="cg-view-wide" type="button" aria-pressed="true">WIDE</button><button id="cg-view-modem" type="button" aria-pressed="false">MODEM</button><button id="cg-view-portal" type="button" aria-pressed="false">PORTAL</button><button id="cg-boot-music" type="button" aria-pressed="false">MUSIC: OFF</button></div></div>
     <p id="cg-power-status" role="status">ANSI reconstruction</p>
     <div class="cg-utilities"><button id="cg-dial" type="button">[ DIAL / OPEN THE LINE ]</button><button id="cg-pause" type="button">[ PAUSE / HOLD SCREEN ]</button><button id="cg-skip" type="button">[ FINISH ANIMATION ]</button><button id="cg-continue" type="button" hidden>[ CONTINUE / MEET GHOST ]</button></div>
     <button id="cg-boot-voice" type="button" aria-pressed="true">VOICE: ON / LOCAL NEURAL / MODEL FIRST LOAD</button>
@@ -76,7 +77,7 @@
     <button id="cg-reboot" type="button">Boot replay</button>
     <button id="cg-power-off" type="button">Power off</button>
   </div>
-  <section id="cg-music-console" class="cg-music-console" aria-label="GhostTracks player"><div class="cg-window-head">GHOSTTRACKS / SHIP RADIO</div><strong id="cg-track-name">EPIC II</strong><div class="cg-music-controls"><button id="cg-music" type="button" aria-pressed="true">Music: on</button><button id="cg-music-next" type="button">NEXT TRACK →</button></div><p id="cg-music-state" role="status">ON / TOUCH TO PLAY</p><div class="cg-audio-meters"><span>BASS <b id="cg-audio-bass">0%</b></span><span>MID <b id="cg-audio-mid">0%</b></span><span>AIR <b id="cg-audio-air">0%</b></span></div></section>
+  <section id="cg-music-console" class="cg-music-console" aria-label="GhostTracks player"><div class="cg-window-head">GHOSTTRACKS / SHIP RADIO</div><strong id="cg-track-name">EPIC II</strong><div class="cg-music-controls"><button id="cg-music" type="button" aria-pressed="false">Music: off</button><button id="cg-music-next" type="button">NEXT TRACK →</button></div><p id="cg-music-state" role="status">ON / TOUCH TO PLAY</p><div class="cg-audio-meters"><span>BASS <b id="cg-audio-bass">0%</b></span><span>MID <b id="cg-audio-mid">0%</b></span><span>AIR <b id="cg-audio-air">0%</b></span></div></section>
   <details id="cg-voice-settings" class="cg-archive"><summary>VOICE CAST / FEMALE NARRATOR + DEEP MALE GHOST</summary>
     <fieldset><legend>SPEECH ENGINE</legend><div class="cg-voice-options"><label><input id="cg-engine-neural" type="radio" name="cg-engine" checked> Kokoro / local neural / GPU or CPU</label><label><input id="cg-engine-device" type="radio" name="cg-engine"> Device voice / no model download</label></div></fieldset>
     <fieldset><legend>NEURAL PERFORMANCE</legend><div class="cg-voice-options"><label><input id="cg-performance-auto" type="radio" name="cg-performance" checked> Auto / GPU when available</label><label><input id="cg-performance-cpu" type="radio" name="cg-performance"> CPU / q8 balanced</label><label><input id="cg-performance-compact" type="radio" name="cg-performance"> CPU / q4 quantized</label><label><input id="cg-performance-gpu" type="radio" name="cg-performance"> GPU / fp32 quality</label></div></fieldset>
@@ -85,7 +86,7 @@
     <fieldset><legend>GHOST / <span id="cg-ghost-voice-name">Looking for a deep male voice</span></legend><div id="cg-ghost-voices" class="cg-voice-options"></div></fieldset>
     <fieldset><legend>NARRATOR / <span id="cg-narrator-voice-name">Separate speaker</span></legend><div id="cg-narrator-voices" class="cg-voice-options"></div></fieldset>
   </details>
-  <p class="cg-status" id="cg-status" role="status">Dial unlocks default-on voice, music and SFX. Mouth follows playback.</p>
+  <p class="cg-status" id="cg-status" role="status">Dial unlocks voice and SFX. Music starts off; enable it when wanted. Mouth follows playback.</p>
   <details class="cg-archive" id="cg-archive">
     <summary>Carrier archive / BOOT a previous seed</summary>
     <label for="cg-seed">PORTABLE SEED · YOUR GAME DATA</label>

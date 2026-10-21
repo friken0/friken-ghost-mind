@@ -11,11 +11,32 @@ export function bootSignalEnvelope(previous,bands,rms,ink,dt,{held=false,reduced
  const smooth=(old,next)=>old+(next-old)*(1-Math.exp(-Math.min(.1,Math.max(0,dt))*(next>old?24:5)));
  return {bands:Array.from({length:4},(_,i)=>smooth(previous.bands[i],clamp(bands?.[i]))),level:smooth(previous.level,clamp(rms*5)),ink:Math.max(clamp(ink),previous.ink*Math.exp(-Math.max(0,dt)*5))};
 }
+// Shared CPU camera math matches the shader basis and its vertical lens.
+const bootViews={wide:{eye:[3.5,2.2,-7.2],look:[-.1,.22,1.3],lens:1.45},modem:{eye:[2.,1.25,-3.7],look:[0.,-.22,-.7],lens:1.65},portal:{eye:[.8,1.3,-2.1],look:[0.,.95,4.2],lens:1.15}};
+export function bootCameraView(mode='wide'){const v=bootViews[mode];if(!v)throw Error('Unknown dock view');return {eye:[...v.eye],look:[...v.look],lens:v.lens};}
+export function bootCameraStep(previous,mode,dt,{held=false,reduced=false}={}){if(held)return previous;const v=bootCameraView(mode),a=reduced?1:1-Math.exp(-Math.max(0,Math.min(.1,dt))*3.5);return {eye:previous.eye.map((x,i)=>x+(v.eye[i]-x)*a),look:previous.look.map((x,i)=>x+(v.look[i]-x)*a),lens:previous.lens+(v.lens-previous.lens)*a};}
+const vsub=(a,b)=>a.map((v,i)=>v-b[i]),vdot=(a,b)=>a.reduce((n,v,i)=>n+v*b[i],0),vnorm=a=>{const n=Math.hypot(...a);return a.map(x=>x/n);},vcross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+function bootBasis(c){const f=vnorm(vsub(c.look,c.eye)),r=vnorm(vcross(f,[0,1,0]));return {f,r,up:vcross(r,f)};}
+export function bootProject(point,camera,aspect){const b=bootBasis(camera),p=vsub(point,camera.eye),z=vdot(p,b.f);return [vdot(p,b.r)/z*camera.lens*2/aspect,vdot(p,b.up)/z*camera.lens*2];}
+export function bootPick(pointer,camera,aspect){
+ const b=bootBasis(camera),rd=vnorm(b.f.map((v,i)=>v*camera.lens+b.r[i]*pointer[0]*aspect*.5+b.up[i]*pointer[1]*.5)),ro=camera.eye;
+ let near=0,far=1e4;const lo=[-1.65,-1.02,-1.75],hi=[1.65,.8,.2];
+ for(let i=0;i<3;i++){if(Math.abs(rd[i])<1e-8){if(ro[i]<lo[i]||ro[i]>hi[i])far=-1;}else{const a=(lo[i]-ro[i])/rd[i],c=(hi[i]-ro[i])/rd[i];near=Math.max(near,Math.min(a,c));far=Math.min(far,Math.max(a,c));}}
+ if(far>=near&&far>0)return 'modem';
+ const t=(3.8-ro[2])/rd[2];if(t>0&&Math.hypot(ro[0]+rd[0]*t,ro[1]+rd[1]*t-.95)<2.8)return 'portal';return 'wide';
+}
+export function bootLampSignals(progress,phase,signal,time){
+ const sat=x=>Math.max(0,Math.min(1,x)),[bass,mid,air]=signal.bands,live=phase>.5?1:0;
+ return [.28+live*.22+bass*.42,live*(.1+.35*Math.pow(Math.max(0,Math.sin(time*6.)),6)+mid*.55),live*(progress>.18?1:0)*(.12+air*.65+signal.ink*.22),progress>=.98?.65+bass*.25+air*.1:live*(progress>.68?1:0)*(.08+.24*Math.pow(Math.max(0,Math.sin(time*3.)),4))].map(sat);
+}
 export const bootWorldFragment=`precision highp float;
 uniform vec2 uRes,uPointer;
 uniform float uTime,uProgress,uPhase;
 uniform vec4 uBands;
 uniform vec2 uDrive;
+uniform vec3 uEye,uLook;
+uniform float uLens;
+uniform vec4 uLamps;
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 float box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
 float rounded(vec3 p,vec3 b,float r){return box(p,b)-r;}
@@ -35,6 +56,15 @@ vec2 map(vec3 p){
  d=join(d,vec2(rounded(a,vec3(.055,.35,.055),.025),3.));
  vec3 foot=m;foot.x=abs(foot.x)-1.10;foot.z=abs(foot.z)-.48;
  d=join(d,vec2(rounded(foot-vec3(0.,-.33,0.),vec3(.14,.09,.13),.04),1.));
+ // GHOSTLINK phase modem: suspended octahedral core and three carrier coils.
+ vec3 core=m-vec3(0.,.69,.02);core.xz=rot(uTime*.16)*core.xz;
+ float crystal=(dot(abs(core),vec3(1.))-.31-uBands.x*.035)*.57735;
+ d=join(d,vec2(crystal,13.));
+ for(int k=0;k<3;k++){vec3 coil=m-vec3(0.,.42+float(k)*.17,.02);coil.xz=rot(float(k)*.7)*coil.xz;coil.y+=.03*sin(atan(coil.z,coil.x)*6.+uTime*.7)*uBands.y;d=join(d,vec2(torus(coil.xzy,vec2(.42+float(k)*.07,.023)),14.));}
+ vec3 bolt=m;bolt.x=abs(m.x)-1.24;bolt.z=abs(m.z)-.55;bolt.y-=.23;d=join(d,vec2(length(bolt)-.07,3.));
+ vec3 armour=m;armour.x=abs(m.x)-1.35;armour.y-=.02;
+ float cheek=max(rounded(armour,vec3(.14,.27,.57),.045),abs(armour.z)+armour.y*.35-.59);d=join(d,vec2(cheek,1.));
+ vec3 gasket=m-vec3(0.,.13,0.);float seam=max(rounded(gasket,vec3(1.47,.012,.77),.05),-rounded(gasket,vec3(1.34,.08,.64),.03));d=join(d,vec2(seam,15.));
  // Four glass indicators, each gains a handshake stage rather than a fake RNG.
  for(int i=0;i<4;i++){
   vec3 led=m-vec3(-.73+float(i)*.45,.04,-.875);
@@ -71,9 +101,9 @@ vec3 sky(vec3 rd){
 }
 void main(){
  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
- vec3 ro=vec3(3.5+uPointer.x*.32,2.20+uPointer.y*.18,-7.2);
- vec3 target=vec3(-.1,.22,1.3);vec3 f=normalize(target-ro),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f);
- vec3 rd=normalize(f*1.45+uv.x*r+uv.y*up),col=sky(rd);float travel=0.,glow=0.;vec2 hit=vec2(1.);
+ vec3 ro=uEye;
+ vec3 target=uLook;vec3 f=normalize(target-ro),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f);
+ vec3 rd=normalize(f*uLens+uv.x*r+uv.y*up),col=sky(rd);float travel=0.,glow=0.;vec2 hit=vec2(1.);
  for(int i=0;i<76;i++){
   vec3 p=ro+rd*travel;hit=map(p);
   vec3 g=p-vec3(0.,.95,3.8);float ring=abs(length(g.xy)-(1.98+uProgress*.05))+abs(g.z)*.6;
@@ -87,15 +117,29 @@ void main(){
   if(hit.y<1.5)base=vec3(.13,.17,.18)*( .76+grain*.24);
   else if(hit.y<2.5){base=vec3(.008,.023,.027);metal=.8;}
   else if(hit.y<3.5){base=vec3(.38,.25,.10)*(.72+grain*.28);metal=.9;}
-  else if(hit.y<7.5){float stage=hit.y-4.;float on=step(stage*.24,uProgress)*step(.5,uPhase);base=vec3(.01,.025,.026);emit=mix(vec3(.025,.11,.13),stage>2.5?vec3(1.,.61,.14):vec3(.03,.85,.78),on)*(on*.9+.08);}
+  else if(hit.y<7.5){float stage=hit.y-4.;float on=stage<.5?uLamps.x:stage<1.5?uLamps.y:stage<2.5?uLamps.z:uLamps.w;base=vec3(.01,.025,.026);vec3 hue=stage<.5?vec3(.03,.85,.78):stage<1.5?vec3(.34,.23,1.):stage<2.5?vec3(.9,.09,.5):vec3(1.,.61,.14);emit=hue*(.025+on*2.5);}
   else if(hit.y<8.5){base=vec3(.015,.18,.18);emit=vec3(.02,.70,.69)*(.25+uProgress*2.+uDrive.x*3.+uDrive.y);}
   else if(hit.y<9.5){float pulse=pow(max(0.,sin(p.z*5.-uTime*3.)),12.);base=vec3(.06,.13,.14);emit=vec3(.02,.55,.62)*pulse*(.14+uProgress+uDrive.x*2.+uDrive.y*1.5);}
   else if(hit.y<10.5){base=vec3(.03,.12,.14);emit=mix(vec3(.02,.24,.29),vec3(.64,.20,.48),.5+.5*sin(p.z*.34))* (.35+uProgress*.8);}
+  else if(hit.y>12.5){base=vec3(.015,.04,.06);emit=mix(vec3(.02,.9,.8),vec3(.7,.15,1.),.5+.5*sin(p.y*12.+uTime))* (.3+uDrive.x*1.5+uBands.y);}
   else if(hit.y>11.5){base=vec3(.08,.28,.37);emit=mix(vec3(.06,.8,.85),vec3(.6,.10,.6),.5+.5*sin(p.x*7.+p.y*5.+uTime*.4))*(.4+uProgress*.8);}
   else{base=vec3(.014,.026,.031);vec2 cell=abs(fract(p.xz*.6)-.5);float grid=1.-smoothstep(.012,.025,min(cell.x,cell.y));emit=vec3(.01,.12,.14)*grid*.4;}
   float fres=pow(1.-max(0.,dot(n,-rd)),4.);float ao=clamp(map(p+n*.18).x/.18,.3,1.);
   col=base*(.19+diffuse*.85)*ao+spec*mix(vec3(.4),base,metal)*1.5+fres*vec3(.045,.12,.13)+emit;
+  // Every lamp sends coloured standing waves across actual surface points.
+  for(int k=0;k<4;k++){
+   vec3 lamp=vec3(-.73+float(k)*.45,.04,-.875);lamp.xz=rot(.10)*lamp.xz;lamp+=vec3(0.,-.48,-.7);float a=float(k);float power=k==0?uLamps.x:k==1?uLamps.y:k==2?uLamps.z:uLamps.w;
+   float radial=length(p-lamp),crest=exp(-pow(sin(radial*(10.+uBands.z*4.)-uTime*(2.+uBands.y)-a*.8)/(.10+uBands.x*.12),2.));
+   vec3 hue=k==0?vec3(.02,.8,.7):k==1?vec3(.3,.14,1.):k==2?vec3(.9,.04,.4):vec3(1.,.57,.08);
+   col+=hue*crest*exp(-radial*.75)*power*(.17+uDrive.x*.6);
+  }
   col=mix(col,sky(rd),1.-exp(-travel*.034));
+ }
+ // Analytic lamp bloom in the same world coordinates; stopped by occluders.
+ for(int k=0;k<4;k++){
+  vec3 lamp=vec3(-.73+float(k)*.45,.04,-.875);lamp.xz=rot(.10)*lamp.xz;lamp+=vec3(0.,-.48,-.7);float depth=dot(lamp-ro,rd),v=step(0.,depth)*step(depth-.12,travel),dist=length(ro+rd*max(0.,depth)-lamp);
+  float power=k==0?uLamps.x:k==1?uLamps.y:k==2?uLamps.z:uLamps.w;vec3 hue=k==0?vec3(.02,.8,.7):k==1?vec3(.3,.14,1.):k==2?vec3(.9,.04,.4):vec3(1.,.57,.08);
+  col+=hue*pow(.008/(.008+dist*dist),1.4)*power*.35*v;
  }
  col+=vec3(.015,.65,.68)*glow*(.8+uBands.y*.5);
  // Broad travelling arcs through the throat. Low frequency, no white strobe.
@@ -119,9 +163,9 @@ void main(){
  col*=2.5;col=col/(1.+col);col=pow(col,vec3(.85));col*=1.-.16*dot(uv,uv);
  gl_FragColor=vec4(col,1.);
 }`;
-export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],level=()=>0,reduced=false}={}){
+export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,0],level=()=>0,reduced=false}={}){
  let gl=null,program=null,raf=0,last=0,time=0,visible=false,paused=false,phase=0,progress=0;
- let pointer=[0,0],frames=0,stamp=0,read=false,pixelBudget=bootWorldBudget.pixels,slow=0,fast=0;
+ let pointer=[0,0],camera=bootCameraView(),focus='wide',candidate=null,candidateAt=0,pointerLast=[-1e4,-1e4],frames=0,stamp=0,read=false,pixelBudget=bootWorldBudget.pixels,slow=0,fast=0;
  let signal={bands:[0,0,0,0],level:0,ink:0},pendingInk=0;
  const metrics={frames:0,drawMs:0,fps:0,pixels:0,renderer:'unavailable'};
  try{
@@ -132,8 +176,10 @@ export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],level=()=>0,redu
   gl.useProgram(program);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const pos=gl.getAttribLocation(program,'a');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
   metrics.renderer='webgl-sdf';canvas.dataset.renderer='webgl-sdf';canvas.dataset.shader='ready';
  }catch(error){canvas.dataset.shader='failed';canvas.dataset.error=error.message;canvas.setAttribute('aria-label','Signal Dock unavailable: '+error.message);if(fps)fps.textContent='TEXT / NO WEBGL';return {set(){},show(){},metrics};}
- const uniform=name=>gl.getUniformLocation(program,name),u={r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive')};
+ const uniform=name=>gl.getUniformLocation(program,name),u={r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive'),eye:uniform('uEye'),look:uniform('uLook'),lens:uniform('uLens'),lamps:uniform('uLamps')};
  const bandBuffer=new Float32Array(4);
+ function selectView(mode){focus=mode;candidate=null;canvas.dataset.focus=focus;if(focusLabel)focusLabel.textContent=mode==='wide'?'GHOSTLINK / POINT AT MODEM OR PORTAL':mode==='modem'?'GHOSTLINK / PHASE MODEM':'GHOSTLINK / CARRIER APERTURE';for(const [key,button]of Object.entries(viewButtons))button?.setAttribute('aria-pressed',String(key===mode));}
+ for(const [mode,button]of Object.entries(viewButtons))button?.addEventListener('click',()=>selectView(mode));selectView('wide');
  function draw(now){
   raf=0;if(!visible||document.hidden)return;
   if(now-last>=1000/bootWorldBudget.fps-.1){
@@ -141,7 +187,8 @@ export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],level=()=>0,redu
    const rect=canvas.getBoundingClientRect(),scale=Math.min(devicePixelRatio||1,1.25,Math.sqrt(pixelBudget/Math.max(1,rect.width*rect.height)));
    const w=Math.max(1,Math.round(rect.width*scale)),h=Math.max(1,Math.round(rect.height*scale));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
    signal=bootSignalEnvelope(signal,energy(),level(),pendingInk,dt,{held:paused,reduced});pendingInk=0;bandBuffer.set(signal.bands);
-   const begin=performance.now();gl.viewport(0,0,w,h);gl.useProgram(program);gl.uniform2f(u.r,w,h);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.drawArrays(gl.TRIANGLES,0,6);
+   if(candidate&&time-candidateAt>.14)selectView(candidate);camera=bootCameraStep(camera,focus,dt,{held:paused,reduced});const lamps=bootLampSignals(progress,phase,signal,time);
+   const begin=performance.now();gl.viewport(0,0,w,h);gl.useProgram(program);gl.uniform2f(u.r,w,h);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.uniform3fv(u.eye,camera.eye);gl.uniform3fv(u.look,camera.look);gl.uniform1f(u.lens,camera.lens);gl.uniform4fv(u.lamps,lamps);gl.drawArrays(gl.TRIANGLES,0,6);
    metrics.frames++;metrics.drawMs=performance.now()-begin;metrics.pixels=w*h;canvas.dataset.drawMs=metrics.drawMs.toFixed(3);canvas.dataset.progress=progress.toFixed(3);canvas.dataset.frames=String(metrics.frames);
    if(!read){const pixels=new Uint8Array(4);gl.readPixels(w>>1,h>>1,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);canvas.dataset.pixel=[...pixels].join(',');read=true;}
    frames++;if(now-stamp>=1000){metrics.fps=Math.round(frames*1000/(now-stamp));frames=0;stamp=now;if(fps)fps.textContent=metrics.fps+' FPS / SDF';
@@ -151,13 +198,16 @@ export function mountBootWorld(canvas,{fps,energy=()=>[0,0,0,0],level=()=>0,redu
     if(fast>=6){pixelBudget=Math.min(bootWorldBudget.pixels,Math.round(pixelBudget*1.08));fast=0;}
    }
    canvas.dataset.pixels=String(w*h);
+   canvas.dataset.focus=focus;canvas.dataset.lens=camera.lens.toFixed(4);canvas.dataset.eye=camera.eye.map(x=>x.toFixed(4)).join(',');canvas.dataset.look=camera.look.map(x=>x.toFixed(4)).join(',');canvas.dataset.lamps=lamps.map(x=>x.toFixed(3)).join(',');
    canvas.dataset.audioDrive=signal.level.toFixed(3);canvas.dataset.inkDrive=signal.ink.toFixed(3);canvas.dataset.bands=signal.bands.map(x=>x.toFixed(3)).join(',');
   }
   raf=requestAnimationFrame(draw);
  }
  function show(value){visible=!!value;if(!visible){cancelAnimationFrame(raf);raf=0;}else if(!raf){last=performance.now();stamp=last;raf=requestAnimationFrame(draw);}}
- canvas.parentElement.addEventListener('pointermove',event=>{if(paused||reduced)return;const r=canvas.getBoundingClientRect();pointer=[Math.max(-1,Math.min(1,(event.clientX-r.left)/r.width*2-1)),Math.max(-1,Math.min(1,1-(event.clientY-r.top)/r.height*2))];});
+ const input=canvas.closest('.cg-boot-field')||canvas.parentElement;
+ input.addEventListener('pointermove',event=>{if(paused||reduced||event.pointerType==='touch')return;const r=canvas.getBoundingClientRect();if(Math.hypot(event.clientX-pointerLast[0],event.clientY-pointerLast[1])<4)return;pointerLast=[event.clientX,event.clientY];pointer=[Math.max(-1,Math.min(1,(event.clientX-r.left)/r.width*2-1)),Math.max(-1,Math.min(1,1-(event.clientY-r.top)/r.height*2))];const hit=bootPick(pointer,camera,r.width/r.height);if(hit!==focus&&hit!==candidate){candidate=hit;candidateAt=time;}else if(hit===focus)candidate=null;});
+ input.addEventListener('pointerleave',()=>{if(!paused&&!reduced){candidate='wide';candidateAt=time;}});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}else if(visible)show(true);});
  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();show(false);canvas.dataset.shader='lost';if(fps)fps.textContent='SDF CONTEXT LOST / RELOAD';});
- return {show,metrics,set(state){phase=state.phase??phase;progress=Math.max(0,Math.min(1,state.progress??progress));paused=!!state.paused;pendingInk=Math.max(pendingInk,state.ink||0);canvas.dataset.held=String(paused);}};
+ return {show,metrics,set(state){if(state.reset){camera=bootCameraView();selectView('wide');pointerLast=[-1e4,-1e4];}phase=state.phase??phase;progress=Math.max(0,Math.min(1,state.progress??progress));paused=!!state.paused;pendingInk=Math.max(pendingInk,state.ink||0);canvas.dataset.held=String(paused);}};
 }
