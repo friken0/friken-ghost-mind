@@ -41,7 +41,7 @@ export function drawLifeTheater(ctx,canvas,roll,elapsed,duration,colony,colors,e
  const shake=elapsed<duration?impact.reduce((n,e)=>n+Math.exp(-(elapsed-e.at)/125)*(['collapse','reinforce'].includes(e.kind)?6:3),0):0;
  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(Math.sin(t*79)*shake,Math.cos(t*93)*shake*.6);
  // A deep tactical well. Its cells are the actual Immigration Life population.
- const pad=16,top=52,bottom=h-46,fw=w-pad*2,fh=bottom-top,cw=fw/colony.w,ch=fh/colony.h;
+ const pad=16,top=32,bottom=h-30,fw=w-pad*2,fh=bottom-top,cw=fw/colony.w,ch=fh/colony.h;
  const haze=ctx.createRadialGradient(w*.5,h*.5,0,w*.5,h*.5,w*.65);haze.addColorStop(0,line);haze.addColorStop(1,bg);ctx.globalAlpha=.5;ctx.fillStyle=haze;ctx.fillRect(0,0,w,h);ctx.globalAlpha=1;
  ctx.strokeStyle=line;ctx.lineWidth=.6;ctx.beginPath();for(let x=0;x<=colony.w;x+=4){const px=pad+x*cw;ctx.moveTo(px,top);ctx.lineTo(px,bottom);}for(let y=0;y<=colony.h;y+=4){const py=top+y*ch;ctx.moveTo(pad,py);ctx.lineTo(w-pad,py);}ctx.stroke();
  const lifeAge=elapsed%100/100;
@@ -92,7 +92,7 @@ export function drawLifeTheater(ctx,canvas,roll,elapsed,duration,colony,colors,e
  // Outcome aperture erupts in the receipt winner's colour, never colony score.
  if(elapsed>=7600){const q=sat((elapsed-7600)/1000),exact=roll.grade==='resonance',color=exact?gold:team[roll.success?0:1],cx=w*.5,cy=h*.5;ctx.strokeStyle=color;ctx.lineWidth=exact?3:2;
   for(let k=0;k<(exact?12:7);k++){const a=k*Math.PI*2/(exact?12:7)+t*.3,r=(22+k*5)*q;ctx.globalAlpha=.65;ctx.beginPath();ctx.ellipse(cx+Math.cos(a)*r,cy+Math.sin(a)*r*.5,Math.max(1,r*.3),Math.max(1,r*.8),a+t*.3,0,Math.PI*2);ctx.stroke();}
-  ctx.globalAlpha=.9;ctx.fillStyle=bg;ctx.fillRect(w*.19,cy-27,w*.62,56);ctx.fillStyle=color;ctx.textAlign='center';ctx.font='bold '+(w<420?16:27)+'px ui-monospace,monospace';ctx.fillText(exact?'EXACT STRIKE':roll.success?'BREAKTHROUGH':'REALITY HOLDS',cx,cy-1);ctx.font='12px ui-monospace,monospace';ctx.fillText(roll.total.toFixed(2)+' vs '+roll.dc.toFixed(2)+' / '+(exact?'RESONANCE':roll.success?'PASS':'FAIL FORWARD'),cx,cy+20);
+  ctx.globalAlpha=.9;ctx.fillStyle=bg;ctx.fillRect(w*.22,cy-22,w*.56,46);ctx.fillStyle=color;ctx.textAlign='center';ctx.font='bold '+(w<420?16:h<240?21:27)+'px ui-monospace,monospace';ctx.fillText(exact?'EXACT STRIKE':roll.success?'BREAKTHROUGH':'REALITY HOLDS',cx,cy-1);ctx.font='12px ui-monospace,monospace';ctx.fillText(roll.total.toFixed(2)+' vs '+roll.dc.toFixed(2)+' / '+(exact?'RESONANCE':roll.success?'PASS':'FAIL FORWARD'),cx,cy+20);
  }
  // Tactical history: the last thirty population samples, no invented health.
  const graphW=Math.min(w*.24,160),graphH=21,gx=w*.5-graphW*.5,gy=31;

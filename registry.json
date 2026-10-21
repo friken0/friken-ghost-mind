@@ -27,8 +27,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Framework.md",
-      "bytes": 30128,
-      "sha256": "6a0a63cfc554aa367a065e62b18a8bcf0548d9c715d1979c5a8c1820f710937a"
+      "bytes": 30296,
+      "sha256": "456ca486be41da2f699cb0fcb89bf7b1b678d160396e038ced03156a5c2d26c8"
     },
     {
       "path": "Tools/ChromaticBBS/Onboarding-Arcs.Design-v1.md",
@@ -117,8 +117,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/carrier.css",
-      "bytes": 57922,
-      "sha256": "7f026863bb8f30066dc5fce236b4c888ecef5810fff9af25a831e826c07481f9"
+      "bytes": 58493,
+      "sha256": "de14734d1a4d873eda7753209a019d159ff1c0c698327ca3de2d3488bfd3176c"
     },
     {
       "path": "Tools/ChromaticBBS/causality.mjs",
@@ -217,8 +217,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/life-theater.mjs",
-      "bytes": 13279,
-      "sha256": "7cc4eb45b4481c7fb4005a6574aaf995b4e94438c9c965ff5628f3d711f43056"
+      "bytes": 13288,
+      "sha256": "8f81042188d10dd40741babad359211713e8abf387059feb384cdfe0575d492e"
     },
     {
       "path": "Tools/ChromaticBBS/life-theater.test.mjs",
@@ -418,7 +418,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 11454,
-      "sha256": "78d4877e7a321b3f02d4cdf7a1f6831d7984feb77955b23064bb95254169ddbb"
+      "sha256": "3034d92900d5d31b45c455e2a6a76944613bede8749095a18394b512a3cfb3ca"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -587,8 +587,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 4219096,
-      "sha256": "646725a2600461d7bbc2e818e6da62485433c66d0c378534fc5ee8c579af517c"
+      "bytes": 4219676,
+      "sha256": "d342959b7e0f2a582e462974510c1a01ee06701c3fcb12cba09b5c23d4a44924"
     },
     {
       "path": "media/bang-non-and-on.mp3",

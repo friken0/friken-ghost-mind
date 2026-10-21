@@ -63,7 +63,10 @@ Reduced motion opens the static final diagram. Continue remains explicit.
 The mixer caches ten cue families, caps battle voices at six, and releases
 sources on pause, mute, close, pagehide and natural playback drain.
 
-The battle canvas fits its actual client rectangle at DPR <=1.5. Generation,
+The battle compacts metadata before shrinking its canvas below 220px. Its
+play area uses the space between compact top/bottom labels; controls stay
+reachable in the same bounded bay. It fits its actual client rectangle at
+DPR <=1.5. Generation,
 population, CPU draw time and observed render cadence remain inspectable.
 The component audition is `battle-check.html`; its fixed receipts exercise
 all three endings and four widths without touching a player's save.

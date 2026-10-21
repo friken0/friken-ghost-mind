@@ -456,5 +456,14 @@
 #chromatic-carrier #cg-roll-result{flex:none;min-height:0;font-size:11px;margin:0}
 #chromatic-carrier .cg-roll-battle>.cg-utilities{flex:none;position:sticky;bottom:0;background:var(--cg-bg);padding:5px 0;margin:0;z-index:1}
 #chromatic-carrier .cg-roll-battle>.cg-utilities button{font-size:11px;min-height:34px;padding:6px 8px}
-#chromatic-carrier[data-field-leader=you] #cg-roll-you-count{color:var(--cg-battle-you)}
 @media(max-width:650px){#chromatic-carrier .cg-battle-scores{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)}#chromatic-carrier .cg-battle-scores>div,#chromatic-carrier .cg-colony-scores>div{padding:4px}#chromatic-carrier .cg-battle-scores strong{font-size:22px}#chromatic-carrier .cg-battle-scores span{font-size:9px}#chromatic-carrier .cg-battle-ticker{flex-direction:column;gap:0}#chromatic-carrier #cg-roll-choice{font-size:14px}#chromatic-carrier #cg-roll-canvas{flex-basis:190px;min-height:190px}}
+
+/* Short glass still belongs to the action. Compact chrome before the field. */
+#chromatic-carrier .cg-battle-head{line-height:1.2}
+#chromatic-carrier #cg-roll-phase{display:none}
+#chromatic-carrier #cg-roll-comment{max-height:1.6em;line-height:1.5}
+#chromatic-carrier .cg-battle-scores strong{line-height:1.1}
+#chromatic-carrier .cg-battle-scores small,#chromatic-carrier .cg-colony-scores small{line-height:1.2}
+#chromatic-carrier .cg-colony-scores>div{padding-top:3px;padding-bottom:3px}
+#chromatic-carrier #cg-roll-canvas{min-height:220px;flex-basis:220px}
+#chromatic-carrier #cg-roll-result{font-size:10px;max-height:3.2em;overflow:auto;line-height:1.5}
