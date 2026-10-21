@@ -60,7 +60,7 @@ const juice=mountJuice(root,{audio});
 const speech=mountSpeech(root,{note,storage:nativeStorage,silent:silentAudio,audio,pcm(value){portrait?.audioLevel(value);},talking(value){portrait?.talking(value);},pulse(){portrait?.pulse();}});
 function stopVoice(){speech.stop();}
 function speak(includeDecision=true){if(battle.active){speech.speak({scene:'',ghost:choiceCommentary(state.lastReceipt,state)?.spoken||'',battle:true});return;}const f=started?playView(state):meeting;speech.speak(started?{...f,ghost:f.sceneGhost||f.ghost,decision:includeDecision?choiceCommentary(state.lastReceipt,state):null}:meeting);}
-const battle=mountRollBattle(root,()=>{note('Result held in the ledger · your next move.');if(voice)speak(false);});
+const battle=mountRollBattle(root,()=>{note('Result held in the ledger · your next move.');if(voice)speak(false);},{audio});
 const inspector=mountInspector(root,{stage,onOpen(){battle.hold(true);},onRead(){if(!voice){voice=speech.toggle();el('voice').textContent='Voice: '+(voice?'on':'off');el('repeat').hidden=!voice;}speak();}});
 el('replay-roll').addEventListener('click',()=>{if(state.lastReceipt?.roll){stopVoice();battle.show(state.lastReceipt,choiceCommentary(state.lastReceipt,state));}});
 function text(tag,value,className){const n=document.createElement(tag);n.textContent=value;if(className)n.className=className;return n;}

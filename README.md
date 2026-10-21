@@ -1,4 +1,4 @@
-# Chromatic C26.9 / a human carrier for Ghost
+# Chromatic C26.10 / a human carrier for Ghost
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / Collection Required**:
@@ -49,10 +49,18 @@ passes, adds one capped Signal and ten score. Other chapters can publish
 a different bounded band/reward before play. Existing six-stat/d20 saves
 keep their original rules. New creation and all decisions replay exactly.
 
-The roll theater is a finite Conway life field: sample gathers, your stat
-feeds it, the surge tests the threshold, resonance blooms. It replays the
-committed result. Pause, Finish and Replay never roll again. Human fun and
-art acceptance remain Prime’s judgement; tests cannot certify dopamine.
+The roll theater is LIFE WAR: two real Conway factions, cyan square signal
+versus magenta diamond resistance, with live population/birth/loss scores.
+The saved sample and stat charge a separate force-versus-target scoreboard.
+Splitting lance salvos, debris, impact rings, force membranes, a plasma
+aperture and ten synthesized SFX families perform each reveal. Exact strikes
+get their own gold finale. Pause freezes cells and sound; Finish skips ahead
+without a sound burst; Replay reproduces the same roll and simulation.
+Human fun and listening acceptance remain Prime's judgement.
+
+Open `battle-check.html` to audition pass, fail and exact-strike receipts
+without loading or changing any player save. Its Run control verifies four
+widths and the pause/skip/replay contract with the real component/mixer.
 
 At chapter end, **CHAPTER COMPLETE** shows the ending and saved consequences.
 Continue prepares the actual next-chapter prompt in SAVE / SEED. Select

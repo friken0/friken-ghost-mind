@@ -1,4 +1,4 @@
-# CHROMATIC C26.9 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.10 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
 
@@ -40,12 +40,33 @@ The current band extends 0.20 below and 0.30 above target. A resonance hit
 passes even just below target, adds one Signal and ten score. The ordinary
 check reward and exact reward derive from the same receipt everywhere.
 
-`life-theater.mjs` owns a finite 48x24 toroidal Conway colony. The sample
-gathers, the player stat feeds it, and the surge tests the visible threshold.
-Gold marks the resonance window; a precise hit blooms. This is a visual
-replay of committed arithmetic. Cell evolution does not secretly determine
-or reroll the result. Pause, Finish, Replay and reduced motion retain it.
-The rejected diamond/square army drawing is removed.
+`life-theater.mjs` owns an 80x40 toroidal Immigration Life field: ordinary
+B3/S23 occupancy, two inherited factions, ninety finite generations. New
+cells inherit the majority faction of their three parents; surviving cells
+keep their identity. Cyan squares are the player, magenta diamonds reality.
+The live scoreboard counts actual population, cumulative births and losses;
+its balance bar and thirty-sample traces report that simulation honestly.
+
+The primary scoreboard stages the saved sample, named stat reinforcement,
+force, target and signed margin. The colony leader is not a second chance
+authority: the committed receipt decides whether the story breaks through.
+Six-shot splitting salvos, debris, expanding impacts, local canvas shake,
+force membranes and a rotating plasma aperture perform a finite 9.4-second
+reveal. Pass, fail-forward and exact resonance have distinct colour, text,
+geometry and sound. Arithmetic, score, save and RNG never belong to an FX.
+
+Eighteen timeline events own both visual impacts and semantic SFX through
+the existing mixer. Each event crosses once per pass. Pause/hidden stop
+active battle sources; resume starts from the held clock. Finish draws the
+held result without playing skipped cues. Replay resets only the theater.
+Reduced motion opens the static final diagram. Continue remains explicit.
+The mixer caches ten cue families, caps battle voices at six, and releases
+sources on pause, mute, close, pagehide and natural playback drain.
+
+The battle canvas fits its actual client rectangle at DPR <=1.5. Generation,
+population, CPU draw time and observed render cadence remain inspectable.
+The component audition is `battle-check.html`; its fixed receipts exercise
+all three endings and four widths without touching a player's save.
 
 ## One real audio graph
 

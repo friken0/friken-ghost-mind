@@ -428,3 +428,33 @@
 #chromatic-carrier .cg-boot-scene-head{position:absolute;left:14px;right:14px;top:12px;display:flex;justify-content:space-between;gap:10px;font-size:10px;letter-spacing:.08em;color:var(--cg-ink);text-shadow:0 1px 4px var(--cg-bg)}
 #chromatic-carrier #cg-boot-fps{white-space:nowrap;color:var(--cg-warn)}
 @media(max-width:500px){#chromatic-carrier .cg-boot-scene-head{font-size:8px;left:8px;right:8px}#chromatic-carrier .cg-boot-field{min-height:200px}}
+
+/* LIFE WAR uses invariant team tokens, distinct shapes, and ordinary flow.
+ * The colony scoreboard never impersonates the saved roll scoreboard. */
+#chromatic-carrier{--cg-battle-you:#19f4ee;--cg-battle-world:#ff51b7}
+#chromatic-carrier .cg-roll-battle{display:flex;flex-direction:column;gap:5px;padding:10px;scrollbar-color:var(--cg-battle-you) var(--cg-bg)}
+#chromatic-carrier .cg-battle-head{display:flex;justify-content:space-between;gap:10px;flex:none;color:var(--cg-warn);font-size:11px;letter-spacing:.05em}
+#chromatic-carrier #cg-roll-fps{color:var(--cg-dim);font-size:10px}
+#chromatic-carrier #cg-roll-choice{font-size:17px;margin:0;flex:none}
+#chromatic-carrier #cg-roll-comment{font-size:12px;margin:0;max-height:3.2em;overflow:auto;flex:none}
+#chromatic-carrier #cg-roll-math,#chromatic-carrier #cg-roll-phase{font-size:10px;margin:0;flex:none}
+#chromatic-carrier .cg-battle-scores{display:grid;grid-template-columns:minmax(0,1fr) 74px minmax(0,1fr);gap:5px;flex:none}
+#chromatic-carrier .cg-battle-scores>div,#chromatic-carrier .cg-colony-scores>div{padding:5px 8px;background:var(--cg-bg);border:1px solid currentColor;min-width:0;display:grid;grid-template-columns:1fr auto;align-items:center}
+#chromatic-carrier .cg-battle-you{color:var(--cg-battle-you)}
+#chromatic-carrier .cg-battle-world{color:var(--cg-battle-world)}
+#chromatic-carrier .cg-battle-scores span,#chromatic-carrier .cg-colony-scores span{font-size:10px;font-weight:bold}
+#chromatic-carrier .cg-battle-scores strong{font-size:27px;font-variant-numeric:tabular-nums;text-shadow:0 0 16px currentColor}
+#chromatic-carrier .cg-battle-scores small,#chromatic-carrier .cg-colony-scores small{grid-column:1/-1;font-size:9px;opacity:.85}
+#chromatic-carrier .cg-battle-scores .cg-battle-versus{display:flex;flex-direction:column;justify-content:center;color:var(--cg-warn);border-color:var(--cg-line);padding:2px}
+#chromatic-carrier .cg-battle-versus strong{font-size:19px}
+#chromatic-carrier #cg-roll-canvas{height:clamp(200px,34vh,470px);max-height:none;min-height:160px;flex:1 0 160px;margin:0;border:1px solid var(--cg-line);background:var(--cg-bg)}
+#chromatic-carrier .cg-colony-scores{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex:none}
+#chromatic-carrier .cg-colony-scores strong{font-size:22px;line-height:1.05;font-variant-numeric:tabular-nums}
+#chromatic-carrier .cg-battle-territory{height:7px;flex:none;background:var(--cg-battle-world)}
+#chromatic-carrier .cg-battle-territory i{display:block;width:var(--cg-share,50%);height:100%;background:var(--cg-battle-you);box-shadow:0 0 9px var(--cg-battle-you);transition:width .1s linear}
+#chromatic-carrier .cg-battle-ticker{display:flex;justify-content:space-between;gap:5px;font-size:10px;flex:none;color:var(--cg-warn)}
+#chromatic-carrier #cg-roll-result{flex:none;min-height:0;font-size:11px;margin:0}
+#chromatic-carrier .cg-roll-battle>.cg-utilities{flex:none;position:sticky;bottom:0;background:var(--cg-bg);padding:5px 0;margin:0;z-index:1}
+#chromatic-carrier .cg-roll-battle>.cg-utilities button{font-size:11px;min-height:34px;padding:6px 8px}
+#chromatic-carrier[data-field-leader=you] #cg-roll-you-count{color:var(--cg-battle-you)}
+@media(max-width:650px){#chromatic-carrier .cg-battle-scores{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)}#chromatic-carrier .cg-battle-scores>div,#chromatic-carrier .cg-colony-scores>div{padding:4px}#chromatic-carrier .cg-battle-scores strong{font-size:22px}#chromatic-carrier .cg-battle-scores span{font-size:9px}#chromatic-carrier .cg-battle-ticker{flex-direction:column;gap:0}#chromatic-carrier #cg-roll-choice{font-size:14px}#chromatic-carrier #cg-roll-canvas{flex-basis:190px;min-height:190px}}

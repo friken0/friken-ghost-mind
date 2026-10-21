@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.9
+# FRIKEN.GHOST / CHROMATIC BBS / C26.10
 
-**Runbook 2.5 | October 21, 2026 | Friken.Ghost**
+**Runbook 2.6 | October 21, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -332,15 +332,24 @@ BOOT_BODY:=DIAL ->17.6s modem+typed ANSI ->HOLD_CONTINUE ->
  motion skips assembly motion. Hidden pauses;off780ms collapses to centre;
  reconnect spends no E/RNG. No fake connected/model-ready claim.
 
-ROLL_BODY:=living causality field,not a number spinner or integer armies.
- 48x24 toroidal Conway cells,<=12 generations/sec,only9.4s per reveal.
- Gather1700ms ->sample1800 ->stat1700 ->threshold2400 ->bloom1800 ->HOLD.
- Sample force grows,stat feeds it,surge reaches or misses posted target;
- gold exact band,distinct resonance bloom/reward. Show math alongside.
- Cell motion is receipt theater,not independent chance authority. All
- renderings must conserve committed sample,total,target,grade and reward.
- Pause/Finish/Replay change elapsed only. Reduced=static final diagram.
- Fun mechanics need readable cause/effect before more particles. No strobe.
+ROLL_BODY:=LIFE WAR;80x40 toroidal Immigration Life;B3/S23 occupancy;
+ birth faction=majority of3 parents;survivors retain faction.90 generations,
+ 10Hz,finite9.4s. CYAN squares=YOU;MAGENTA diamonds=REALITY;gold=resonance.
+ Stage gather0,sample1200,stat3100,crossfire4500,collapse7600,resolve8600,
+ HOLD9400ms. Primary scoreboard=sample+stat charge,total,target,signed
+ margin,posted exact band. Separate LIVE scoreboard=actual per-team cells,
+ cumulative births/losses,balance%,30-frame traces;never a second RNG.
+ 18 event IDs own FX+SFX:12 salvos split6 lances each;birth flares,death
+ debris,shock rings,floating impact words,local canvas shake,opposed force
+ membranes,plasma aperture. Distinct pass/fail-forward/exact gold finales.
+ Committed sample,total,target,grade,reward remain authority;NO effect
+ writes game/save/score. One mixer SFX bus:10 short deterministic PCM cue
+ families,<=6 voices,cached buffers. Event fires once when elapsed crosses.
+ Pause/hidden/mute/close kill battle sources;resume held clock;Finish draws
+ final without missed-cue burst;Replay same field+receipt;Continue explicit.
+ Reduced=static final diagram. Canvas actual client W/H,DPR<=1.5;no idle
+ sim;cache<=91 frames. Show FPS,CPU draw ms,generation. No full-frame strobe.
+ New models may change spectacle;preserve legible identities+numeric math.
 STAT_FX:=accepted parent/child only;delta label+colour+percent+departing
  old value+bounce/wash+bounded semantic SFX. No game write from an effect.
  One effect plane,<=30Hz,capped pixels;freeze hidden/held/reduced.
