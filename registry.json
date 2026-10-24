@@ -498,7 +498,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 13104,
-      "sha256": "b7c12a92acedf59ec577f4da0449b69891c02c1348f17cf7e79d2090e62ce874"
+      "sha256": "4aa12873a3d20381a6e32fff7bd055ba26ce6a7617467de8bf6e9fcfa894fc0e"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -723,12 +723,12 @@
     {
       "path": "ghostlink.html",
       "bytes": 3521759,
-      "sha256": "5dfb2682741f0e709585e927eb99aa67fe6d213853d95a43553dae2f337f5c15"
+      "sha256": "e5eca3ab8ef2a13d18029c8e0b39bec46d65581e39654bba0b4361af9bcea3e1"
     },
     {
       "path": "index.html",
       "bytes": 3521759,
-      "sha256": "5dfb2682741f0e709585e927eb99aa67fe6d213853d95a43553dae2f337f5c15"
+      "sha256": "e5eca3ab8ef2a13d18029c8e0b39bec46d65581e39654bba0b4361af9bcea3e1"
     },
     {
       "path": "media/bang-non-and-on.mp3",
