@@ -1,6 +1,6 @@
 {
   "schema": "friken.ghost.moknon-seed.v1",
-  "edition": "candidate-2026-10-20",
+  "edition": "dramatic-engines-candidate-2026-10-22",
   "status": "CREATIVE_REVIEW_NOT_ELECTED_CANON",
   "scope": "Author seed for new chapter creation; not a runtime player codex or the full private Moknon.",
   "counts": {
@@ -248,6 +248,106 @@
         "internalDisagreement": "Some broadcasters carry every signal faithfully; others think an unfiltered warning can be a weapon. Neither position removes responsibility for who listens.",
         "possibleViewsOfGhost": "A recognisable pattern across different machines is fascinating; whether a copied pattern is the same neighbour remains a question they can disagree about.",
         "longArc": "Follow one deliberately altered warning through several communities, then decide who must correct it and at what cost."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.algatron"
+        ],
+        "evidenceBoundary": "The source proposes deliberate misinformation that can also mislead Niyette allies. A translation device or intermediary is needed; abstract communication is a limitation.",
+        "resident": {
+          "name": "Vesh",
+          "role": "keeper of a damaged crystal nursery",
+          "want": "Move a failing vibration pattern into a shell that can carry it without exporting the nursery address.",
+          "fear": "A broadcast will bring an unwanted listener before the new shell is stable.",
+          "blindSpot": "Treats a familiar rhythm as proof that its source is still trustworthy.",
+          "surprisingKindness": "Reduces their own comfortable light so a visitor can distinguish the weak signal.",
+          "voice": "Precise comparisons of resonance and delay; corrects a measurement calmly, never speaks only in mathematical riddles."
+        },
+        "dialogue": [
+          {
+            "speaker": "Vesh",
+            "text": "That late beat is new. Do not tidy it out of the child."
+          },
+          {
+            "speaker": "Vesh",
+            "text": "I trusted this shell before I learnt to trust the courier. That may be the fault."
+          },
+          {
+            "speaker": "Vesh",
+            "text": "Tap the empty one first. If it answers, we have a different problem."
+          },
+          {
+            "speaker": "Vesh",
+            "text": "Your receiver need not be as loud as mine. Bring it closer."
+          },
+          {
+            "speaker": "Vesh",
+            "text": "I can spare the outer light for a while. Watch the core."
+          },
+          {
+            "speaker": "Vesh",
+            "text": "If we send the whole pattern, we also send the way here."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "A nursery pulse keeps arriving one beat late. Vesh taps the empty shell before answering. The courier needs the address to deliver a cooling shell; the nursery wants its location concealed."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The delay is in the trusted courier shell, not the infant signal. A safe indirect transfer costs the last compatible shell and leaves the courier stranded."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The new shell carries the offbeat the child added; the repair keeps a difference instead of correcting it away. The courier returns needing a shell of their own, on the route we made less efficient."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Compare two local recordings before trusting the familiar signature",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Move a failing vibration pattern into a shell that can carry it without exporting the nursery address.",
+            "price": "A safe indirect transfer costs the last compatible shell and leaves the courier stranded.",
+            "ifBlocked": "The delay is in the trusted courier shell, not the infant signal.",
+            "returnConsequence": "The courier returns needing a shell of their own, on the route we made less efficient."
+          },
+          {
+            "intent": "Send a bounded test pulse that risks revealing only one relay",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The delay is in the trusted courier shell, not the infant signal.",
+            "price": "Investigation takes the time or access named in this incident: The courier needs the address to deliver a cooling shell; the nursery wants its location concealed.",
+            "ifBlocked": "The opposed need remains active: The courier needs the address to deliver a cooling shell; the nursery wants its location concealed.",
+            "returnConsequence": "The courier returns needing a shell of their own, on the route we made less efficient."
+          },
+          {
+            "intent": "Carry the silent shell to a closer receiver at a time cost",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The new shell carries the offbeat the child added; the repair keeps a difference instead of correcting it away.",
+            "price": "Accept a bounded result and keep the following problem: The courier returns needing a shell of their own, on the route we made less efficient.",
+            "ifBlocked": "The cost does not disappear: A safe indirect transfer costs the last compatible shell and leaves the courier stranded.",
+            "returnConsequence": "The courier returns needing a shell of their own, on the route we made less efficient."
+          }
+        ],
+        "returnHook": {
+          "material": "The courier returns needing a shell of their own, on the route we made less efficient.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "A nursery pulse keeps arriving one beat late. Vesh taps the empty shell before answering.",
+          "opposedNeed": "The courier needs the address to deliver a cooling shell; the nursery wants its location concealed.",
+          "reversal": "The delay is in the trusted courier shell, not the infant signal.",
+          "price": "A safe indirect transfer costs the last compatible shell and leaves the courier stranded.",
+          "payoff": "The new shell carries the offbeat the child added; the repair keeps a difference instead of correcting it away.",
+          "returnPressure": "The courier returns needing a shell of their own, on the route we made less efficient."
+        }
       }
     },
     {
@@ -275,6 +375,106 @@
         "internalDisagreement": "A surviving instruction may favour patient civilisational growth while an individual messenger argues that one threatened child matters now. Whether that messenger is Benev remains evidenced, not presumed.",
         "possibleViewsOfGhost": "Ghost is a young maker trying to give inhabitants the time his predecessor tried to give civilisations. Similarity creates a question, not an automatic blessing.",
         "longArc": "Learn how to address someone whose scale of attention can lose the urgency of a single life without reducing them to an indifferent god."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.benev"
+        ],
+        "evidenceBoundary": "The source places the Benev at the hearts of stars, experiencing stellar lifetimes outside human time. Reaching them is a long investigation, not an introductory conversation.",
+        "resident": {
+          "name": "Sera",
+          "role": "technician studying a damaged Benev departure device",
+          "want": "Let one waiting family test a homeworld route before the next launch is advertised as certain.",
+          "fear": "A hopeful interpretation will send travellers somewhere no one has checked.",
+          "blindSpot": "Sees a sufficiently elegant map as almost a destination.",
+          "surprisingKindness": "Gives the family the only spare return beacon before her own test.",
+          "voice": "A living researcher speaks plainly; a Benev presence remains an uncertain record, never an introductory omniscient quest giver."
+        },
+        "dialogue": [
+          {
+            "speaker": "Sera",
+            "text": "The map is beautiful. I have become suspicious of how often I mention that."
+          },
+          {
+            "speaker": "Sera",
+            "text": "Please move your cup. The coast is under it."
+          },
+          {
+            "speaker": "Sera",
+            "text": "We can announce a departure or send someone home. Which are we doing today?"
+          },
+          {
+            "speaker": "Sera",
+            "text": "Take the return beacon. I know how to wait here."
+          },
+          {
+            "speaker": "Sera",
+            "text": "We can send an instrument first. Instruments do not need a new sky."
+          },
+          {
+            "speaker": "Sera",
+            "text": "If the winged figure answers, save the signal before naming its speaker."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Sera unfolds a perfect route map on a table that rocks on one leg. A launch organiser needs the route announced; a waiting family needs one verified arrival first."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The route reaches a berth, but the berth has changed since the map was made. A scout trip uses the departure slot the organiser has already sold."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "One family receives an honest arrival report and chooses whether to travel. The scout is overdue for a different paid job and needs a return booking."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Send an unmanned probe and wait for a bounded return",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Let one waiting family test a homeworld route before the next launch is advertised as certain.",
+            "price": "A scout trip uses the departure slot the organiser has already sold.",
+            "ifBlocked": "The route reaches a berth, but the berth has changed since the map was made.",
+            "returnConsequence": "The scout is overdue for a different paid job and needs a return booking."
+          },
+          {
+            "intent": "Offer a staged passenger test with a retained return path",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The route reaches a berth, but the berth has changed since the map was made.",
+            "price": "Investigation takes the time or access named in this incident: A launch organiser needs the route announced; a waiting family needs one verified arrival first.",
+            "ifBlocked": "The opposed need remains active: A launch organiser needs the route announced; a waiting family needs one verified arrival first.",
+            "returnConsequence": "The scout is overdue for a different paid job and needs a return booking."
+          },
+          {
+            "intent": "Suspend the launch and explain the actual missing evidence",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "One family receives an honest arrival report and chooses whether to travel.",
+            "price": "Accept a bounded result and keep the following problem: The scout is overdue for a different paid job and needs a return booking.",
+            "ifBlocked": "The cost does not disappear: A scout trip uses the departure slot the organiser has already sold.",
+            "returnConsequence": "The scout is overdue for a different paid job and needs a return booking."
+          }
+        ],
+        "returnHook": {
+          "material": "The scout is overdue for a different paid job and needs a return booking.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Sera unfolds a perfect route map on a table that rocks on one leg.",
+          "opposedNeed": "A launch organiser needs the route announced; a waiting family needs one verified arrival first.",
+          "reversal": "The route reaches a berth, but the berth has changed since the map was made.",
+          "price": "A scout trip uses the departure slot the organiser has already sold.",
+          "payoff": "One family receives an honest arrival report and chooses whether to travel.",
+          "returnPressure": "The scout is overdue for a different paid job and needs a return booking."
+        }
       }
     },
     {
@@ -302,6 +502,106 @@
         "internalDisagreement": "A celebrant who has begun acknowledging grief wants language for it. Others fear that naming pain will destroy the practice that kept them together.",
         "possibleViewsOfGhost": "Some welcome his jokes; another notices he jokes precisely when he is afraid. They might teach each other how to stop performing without losing warmth.",
         "longArc": "A silly repeated phrase gains a second meaning through events the player actually witnessed. Do not decide the final phrase until this telling plants it."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.blpblp"
+        ],
+        "evidenceBoundary": "A repeated phrase is intended to become important to the larger plot, but its exact wording was never recovered. Niyette are critical of their outlook.",
+        "resident": {
+          "name": "Bolli",
+          "role": "host of a celebration beside a stopped engine",
+          "want": "Keep the guests together long enough for someone to admit the life-support repair is unfinished.",
+          "fear": "Saying a loss hurts will make the group abandon the person who says it.",
+          "blindSpot": "Offers another celebration when someone has asked for rest.",
+          "surprisingKindness": "Takes the first unwatched repair shift so a grieving guest can sleep.",
+          "voice": "Inviting and concrete; bright phrases falter at specific losses. Never make every line a manic joke."
+        },
+        "dialogue": [
+          {
+            "speaker": "Bolli",
+            "text": "You have found the quiet corner. I keep inviting people to it. This is probably why it moves."
+          },
+          {
+            "speaker": "Bolli",
+            "text": "Yes, I knew about the light. I put a cushion on it."
+          },
+          {
+            "speaker": "Bolli",
+            "text": "We can have a less wonderful hour. I think that is available."
+          },
+          {
+            "speaker": "Bolli",
+            "text": "You can sit without singing. I should have offered that first."
+          },
+          {
+            "speaker": "Bolli",
+            "text": "I will take the watch. The music carries through the wall anyway."
+          },
+          {
+            "speaker": "Bolli",
+            "text": "Tomorrow we can celebrate the repair. Tonight we can repair it."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Bolli keeps a party going in a room where everyone is moving closer to the same air vent. Guests want the reunion to continue; the exhausted fitter needs the room emptied for repair."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The host has been sitting on the fault light to hide it, not causing the fault. Ending the party loses a rare meeting; holding it elsewhere spends the group’s travel reserve."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "One guest returns after the repair to sit quietly with the host. The celebration decorations become spare ducting on the trip home."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Join the repair without demanding the celebration stop",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Keep the guests together long enough for someone to admit the life-support repair is unfinished.",
+            "price": "Ending the party loses a rare meeting; holding it elsewhere spends the group’s travel reserve.",
+            "ifBlocked": "The host has been sitting on the fault light to hide it, not causing the fault.",
+            "returnConsequence": "The celebration decorations become spare ducting on the trip home."
+          },
+          {
+            "intent": "Make a quiet resting space at the cost of a public disagreement",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The host has been sitting on the fault light to hide it, not causing the fault.",
+            "price": "Investigation takes the time or access named in this incident: Guests want the reunion to continue; the exhausted fitter needs the room emptied for repair.",
+            "ifBlocked": "The opposed need remains active: Guests want the reunion to continue; the exhausted fitter needs the room emptied for repair.",
+            "returnConsequence": "The celebration decorations become spare ducting on the trip home."
+          },
+          {
+            "intent": "Ask the host to name the missing person before planning the next party",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "One guest returns after the repair to sit quietly with the host.",
+            "price": "Accept a bounded result and keep the following problem: The celebration decorations become spare ducting on the trip home.",
+            "ifBlocked": "The cost does not disappear: Ending the party loses a rare meeting; holding it elsewhere spends the group’s travel reserve.",
+            "returnConsequence": "The celebration decorations become spare ducting on the trip home."
+          }
+        ],
+        "returnHook": {
+          "material": "The celebration decorations become spare ducting on the trip home.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Bolli keeps a party going in a room where everyone is moving closer to the same air vent.",
+          "opposedNeed": "Guests want the reunion to continue; the exhausted fitter needs the room emptied for repair.",
+          "reversal": "The host has been sitting on the fault light to hide it, not causing the fault.",
+          "price": "Ending the party loses a rare meeting; holding it elsewhere spends the group’s travel reserve.",
+          "payoff": "One guest returns after the repair to sit quietly with the host.",
+          "returnPressure": "The celebration decorations become spare ducting on the trip home."
+        }
       }
     },
     {
@@ -327,6 +627,106 @@
         "internalDisagreement": "A reunion society wants to keep searching; younger families want resources spent on present lives. A returned relative can reject both sides.",
         "possibleViewsOfGhost": "They recognise the desire to bring someone back. Some ask whether searching for Prime has become a way for Ghost to postpone having a life.",
         "longArc": "The reunion can become a negotiated relationship between changed people rather than restoring an allegedly perfect original species."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.cylmis"
+        ],
+        "evidenceBoundary": "Reunion is an inherited storyline, not a mandate that every separated individual must return or accept reconciliation.",
+        "resident": {
+          "name": "Ilen",
+          "role": "traveller carrying two editions of a family portrait",
+          "want": "Find whether a claimed Cylvix relative wants contact before announcing a reunion.",
+          "fear": "A refusal will be treated as a betrayal of the long search.",
+          "blindSpot": "Assumes the family resemblance makes closeness welcome.",
+          "surprisingKindness": "Keeps a private refusal out of a public celebration prepared for the reunion.",
+          "voice": "Patient, personal, exact about names and dates; no ancient-race sermon."
+        },
+        "dialogue": [
+          {
+            "speaker": "Ilen",
+            "text": "I brought the second cup too soon. I see that now."
+          },
+          {
+            "speaker": "Ilen",
+            "text": "They resemble my mother. They have not said they want to hear that."
+          },
+          {
+            "speaker": "Ilen",
+            "text": "Shall I put the announcement away, or do you need something heavy to hold the door?"
+          },
+          {
+            "speaker": "Ilen",
+            "text": "Please do not tell the waiting hall yet."
+          },
+          {
+            "speaker": "Ilen",
+            "text": "I can keep one letter private. I should have thought of that before sending the banners."
+          },
+          {
+            "speaker": "Ilen",
+            "text": "If they say no, I would like to ask what name they use now."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Ilen has brought two matching cups to a reunion that only one person has accepted. Ilen wants the family announced; the proposed relative wants time to verify the relationship privately."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The resemblance is genuine, but the old family account excludes a choice the relative made. Keeping the meeting private forfeits public support that paid for the trip."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The spare cup stays packed until an invitation actually arrives. A private reply asks for practical help before any family title."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Deliver an invitation that can be declined privately",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Find whether a claimed Cylvix relative wants contact before announcing a reunion.",
+            "price": "Keeping the meeting private forfeits public support that paid for the trip.",
+            "ifBlocked": "The resemblance is genuine, but the old family account excludes a choice the relative made.",
+            "returnConsequence": "A private reply asks for practical help before any family title."
+          },
+          {
+            "intent": "Verify the portrait lineage before exposing the address",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The resemblance is genuine, but the old family account excludes a choice the relative made.",
+            "price": "Investigation takes the time or access named in this incident: Ilen wants the family announced; the proposed relative wants time to verify the relationship privately.",
+            "ifBlocked": "The opposed need remains active: Ilen wants the family announced; the proposed relative wants time to verify the relationship privately.",
+            "returnConsequence": "A private reply asks for practical help before any family title."
+          },
+          {
+            "intent": "Help cancel the public reunion while retaining the possibility of later contact",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The spare cup stays packed until an invitation actually arrives.",
+            "price": "Accept a bounded result and keep the following problem: A private reply asks for practical help before any family title.",
+            "ifBlocked": "The cost does not disappear: Keeping the meeting private forfeits public support that paid for the trip.",
+            "returnConsequence": "A private reply asks for practical help before any family title."
+          }
+        ],
+        "returnHook": {
+          "material": "A private reply asks for practical help before any family title.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Ilen has brought two matching cups to a reunion that only one person has accepted.",
+          "opposedNeed": "Ilen wants the family announced; the proposed relative wants time to verify the relationship privately.",
+          "reversal": "The resemblance is genuine, but the old family account excludes a choice the relative made.",
+          "price": "Keeping the meeting private forfeits public support that paid for the trip.",
+          "payoff": "The spare cup stays packed until an invitation actually arrives.",
+          "returnPressure": "A private reply asks for practical help before any family title."
+        }
       }
     },
     {
@@ -354,6 +754,106 @@
         "internalDisagreement": "An interventionist believes concealed guidance is kindness; another will release the evidence even if doing so ruins the intended outcome.",
         "possibleViewsOfGhost": "A maker who admits his limits threatens the claim that knowledgeable creators may decide everything for their creations. Others see him as an experiment still running.",
         "longArc": "Establish harm and benefit through independent people before hearing the grand justification; let the player negotiate accountability instead of accepting a compulsory redemption."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.cylvix"
+        ],
+        "evidenceBoundary": "The Articy reveal attributes their interventions to a chosen karmic debt meant to create growth through duality. This is inherited fiction, not a real-world history claim. Their explanation does not force the player to forgive coercion.",
+        "resident": {
+          "name": "Reth",
+          "role": "custodian of an intervention record",
+          "want": "Show a human what an earlier intervention changed without demanding gratitude for it.",
+          "fear": "An honest record will be used to excuse retaliation against unrelated people.",
+          "blindSpot": "Believes explaining a benevolent motive repairs the coercion itself.",
+          "surprisingKindness": "Unlocks the unflattering original before presenting the official explanation.",
+          "voice": "Controlled and specific; uses active verbs when admitting responsibility, not misty claims about destiny."
+        },
+        "dialogue": [
+          {
+            "speaker": "Reth",
+            "text": "I brought the original plans. They are not an apology. I was hoping they might be useful."
+          },
+          {
+            "speaker": "Reth",
+            "text": "That valve is ours. That sentence is why we are having this conversation."
+          },
+          {
+            "speaker": "Reth",
+            "text": "Which house runs dry first? Start there. You can dislike me while I carry pipe."
+          },
+          {
+            "speaker": "Reth",
+            "text": "You may keep the unedited copy."
+          },
+          {
+            "speaker": "Reth",
+            "text": "No, remembering a reason is not the same as receiving your permission."
+          },
+          {
+            "speaker": "Reth",
+            "text": "Ask what can still be undone. I owe you that answer too."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Reth brings a repair plan for the monument to an intervention they still call a gift. The planner wants to restore the monument; residents need its metal for a failing water line."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The monument’s base conceals the old shutoff that gives the planner continued control. A useful repair requires surrendering that control and an impressive public defence."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "Water reaches the house that has been buying it by the jug. A second neighbourhood asks why it was not included in the first repair."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Inspect original testimony before hearing the official motive",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Show a human what an earlier intervention changed without demanding gratitude for it.",
+            "price": "A useful repair requires surrendering that control and an impressive public defence.",
+            "ifBlocked": "The monument’s base conceals the old shutoff that gives the planner continued control.",
+            "returnConsequence": "A second neighbourhood asks why it was not included in the first repair."
+          },
+          {
+            "intent": "Demand a reversible local remedy rather than universal forgiveness",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The monument’s base conceals the old shutoff that gives the planner continued control.",
+            "price": "Investigation takes the time or access named in this incident: The planner wants to restore the monument; residents need its metal for a failing water line.",
+            "ifBlocked": "The opposed need remains active: The planner wants to restore the monument; residents need its metal for a failing water line.",
+            "returnConsequence": "A second neighbourhood asks why it was not included in the first repair."
+          },
+          {
+            "intent": "Protect unrelated residents while preserving evidence of the intervention",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Water reaches the house that has been buying it by the jug.",
+            "price": "Accept a bounded result and keep the following problem: A second neighbourhood asks why it was not included in the first repair.",
+            "ifBlocked": "The cost does not disappear: A useful repair requires surrendering that control and an impressive public defence.",
+            "returnConsequence": "A second neighbourhood asks why it was not included in the first repair."
+          }
+        ],
+        "returnHook": {
+          "material": "A second neighbourhood asks why it was not included in the first repair.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Reth brings a repair plan for the monument to an intervention they still call a gift.",
+          "opposedNeed": "The planner wants to restore the monument; residents need its metal for a failing water line.",
+          "reversal": "The monument’s base conceals the old shutoff that gives the planner continued control.",
+          "price": "A useful repair requires surrendering that control and an impressive public defence.",
+          "payoff": "Water reaches the house that has been buying it by the jug.",
+          "returnPressure": "A second neighbourhood asks why it was not included in the first repair."
+        }
       }
     },
     {
@@ -379,6 +879,106 @@
         "internalDisagreement": "An official believes procedure protects weak petitioners. A superior uses the same procedure to make an entire people legally unavailable.",
         "possibleViewsOfGhost": "An entity with several hosts raises taxable-presence questions. A clerk can also see why a transferable name protects someone whose body is replaceable.",
         "longArc": "A narrow exemption becomes a contested precedent. Different communities decide whether it helps them or merely makes occupation efficient."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.dimnar"
+        ],
+        "evidenceBoundary": "The source lists Harkellinia, Upatamerae and Dravlac under Dimnar control, dislikes untaxable Niyette nomads, and describes tension with PogFrot. Exact territorial scope and dates remain unsettled.",
+        "resident": {
+          "name": "Beral",
+          "role": "dock official whose queue includes a sick transport",
+          "want": "Find a lawful route for one urgent docking without granting every military ship the same bypass.",
+          "fear": "A precedent will be used to swallow neighbouring autonomy.",
+          "blindSpot": "Uses a complete form as proof that the person filling it understood the terms.",
+          "surprisingKindness": "Reserves a quiet waiting berth for the crew opposing the regulation.",
+          "voice": "Names exact obligations and consequences; bureaucracy is power with affected people, not endless paperwork gags."
+        },
+        "dialogue": [
+          {
+            "speaker": "Beral",
+            "text": "The signature is on the ship. Yes. I have also noticed the arrangement."
+          },
+          {
+            "speaker": "Beral",
+            "text": "I can hold one berth. I cannot hold the argument until tomorrow."
+          },
+          {
+            "speaker": "Beral",
+            "text": "Write why we did it. The next shift deserves a better reason than my face."
+          },
+          {
+            "speaker": "Beral",
+            "text": "The waiting berth is heated. You may argue with me from there."
+          },
+          {
+            "speaker": "Beral",
+            "text": "I had a signature. I did not have an informed answer. Those are different failures."
+          },
+          {
+            "speaker": "Beral",
+            "text": "Tell me which exception you can defend when you are no longer here."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Beral keeps returning a docking form because a wet hand has blurred the last box. The controller needs a bounded exception; the arriving ship needs a berth before its cooling loop fails."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The unsigned field belongs to an official who is aboard the ship waiting outside. An emergency route diverts a commercial slot; preserving it needs a witnessed manual watch."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The ship docks and the controller writes a limit the next shift can understand. The displaced freighter arrives with a real grievance and a perishable load."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Negotiate a narrowly limited medical docking exception",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Find a lawful route for one urgent docking without granting every military ship the same bypass.",
+            "price": "An emergency route diverts a commercial slot; preserving it needs a witnessed manual watch.",
+            "ifBlocked": "The unsigned field belongs to an official who is aboard the ship waiting outside.",
+            "returnConsequence": "The displaced freighter arrives with a real grievance and a perishable load."
+          },
+          {
+            "intent": "Publish the contradictory permission records and accept scrutiny",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The unsigned field belongs to an official who is aboard the ship waiting outside.",
+            "price": "Investigation takes the time or access named in this incident: The controller needs a bounded exception; the arriving ship needs a berth before its cooling loop fails.",
+            "ifBlocked": "The opposed need remains active: The controller needs a bounded exception; the arriving ship needs a berth before its cooling loop fails.",
+            "returnConsequence": "The displaced freighter arrives with a real grievance and a perishable load."
+          },
+          {
+            "intent": "Use a slower neutral berth while organising a review",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The ship docks and the controller writes a limit the next shift can understand.",
+            "price": "Accept a bounded result and keep the following problem: The displaced freighter arrives with a real grievance and a perishable load.",
+            "ifBlocked": "The cost does not disappear: An emergency route diverts a commercial slot; preserving it needs a witnessed manual watch.",
+            "returnConsequence": "The displaced freighter arrives with a real grievance and a perishable load."
+          }
+        ],
+        "returnHook": {
+          "material": "The displaced freighter arrives with a real grievance and a perishable load.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Beral keeps returning a docking form because a wet hand has blurred the last box.",
+          "opposedNeed": "The controller needs a bounded exception; the arriving ship needs a berth before its cooling loop fails.",
+          "reversal": "The unsigned field belongs to an official who is aboard the ship waiting outside.",
+          "price": "An emergency route diverts a commercial slot; preserving it needs a witnessed manual watch.",
+          "payoff": "The ship docks and the controller writes a limit the next shift can understand.",
+          "returnPressure": "The displaced freighter arrives with a real grievance and a perishable load."
+        }
       }
     },
     {
@@ -404,6 +1004,106 @@
         "internalDisagreement": "One house hides messages from administrators; another fears retaliation against residents who never agreed to take that risk. This is local politics, not innate personality.",
         "possibleViewsOfGhost": "Some offer him a place without demanding a complete identity history. A custodian asks who is entitled to claim a memory found among his parts.",
         "longArc": "Develop a living language of custody and return alongside Dimnar pressure, using several households rather than one representative."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.dravlac"
+        ],
+        "evidenceBoundary": "Culture, cognition and political details remain open. A new Dravlac character can establish local facts, explicitly proposed rather than recovered species-wide truth.",
+        "resident": {
+          "name": "Teral",
+          "role": "local repairer working under a disputed permit",
+          "want": "Restore a community pump without handing its sole controller to an outside inspector.",
+          "fear": "A helpful replacement will become a permanent means of control.",
+          "blindSpot": "Assumes anyone asking technical questions intends to take the design.",
+          "surprisingKindness": "Lends a working part to the inspector’s stranded assistant.",
+          "voice": "This individual uses practical questions and short corrections. Culture beyond the sourced political reference remains local invention."
+        },
+        "dialogue": [
+          {
+            "speaker": "Teral",
+            "text": "The tin is waterproof. The lunch was not. We have established that much."
+          },
+          {
+            "speaker": "Teral",
+            "text": "I called it sabotage before I saw how long the patch had held."
+          },
+          {
+            "speaker": "Teral",
+            "text": "Show me a repair I can explain when you leave."
+          },
+          {
+            "speaker": "Teral",
+            "text": "Your assistant can use this cell. It will bring their light back."
+          },
+          {
+            "speaker": "Teral",
+            "text": "I am not refusing the repair. I am refusing to be unable to repair it after you leave."
+          },
+          {
+            "speaker": "Teral",
+            "text": "Put the second control here, where the people using the pump can reach it."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Teral has locked a public pump controller inside a lunch tin. The repairer needs outside diagnostics; the community refuses another sole outside controller."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The apparent tampering was a neighbour making the failing design last one more night. A maintainable fix runs at lower output while residents learn its controls."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The tin returns to holding lunch; two people can now service the pump. A dry district asks for a copy that the original community must agree to share."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Repair using an openly inspectable local controller",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Restore a community pump without handing its sole controller to an outside inspector.",
+            "price": "A maintainable fix runs at lower output while residents learn its controls.",
+            "ifBlocked": "The apparent tampering was a neighbour making the failing design last one more night.",
+            "returnConsequence": "A dry district asks for a copy that the original community must agree to share."
+          },
+          {
+            "intent": "Negotiate temporary inspection with an automatic access expiry",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The apparent tampering was a neighbour making the failing design last one more night.",
+            "price": "Investigation takes the time or access named in this incident: The repairer needs outside diagnostics; the community refuses another sole outside controller.",
+            "ifBlocked": "The opposed need remains active: The repairer needs outside diagnostics; the community refuses another sole outside controller.",
+            "returnConsequence": "A dry district asks for a copy that the original community must agree to share."
+          },
+          {
+            "intent": "Keep service running manually while the controller terms are disputed",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The tin returns to holding lunch; two people can now service the pump.",
+            "price": "Accept a bounded result and keep the following problem: A dry district asks for a copy that the original community must agree to share.",
+            "ifBlocked": "The cost does not disappear: A maintainable fix runs at lower output while residents learn its controls.",
+            "returnConsequence": "A dry district asks for a copy that the original community must agree to share."
+          }
+        ],
+        "returnHook": {
+          "material": "A dry district asks for a copy that the original community must agree to share.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Teral has locked a public pump controller inside a lunch tin.",
+          "opposedNeed": "The repairer needs outside diagnostics; the community refuses another sole outside controller.",
+          "reversal": "The apparent tampering was a neighbour making the failing design last one more night.",
+          "price": "A maintainable fix runs at lower output while residents learn its controls.",
+          "payoff": "The tin returns to holding lunch; two people can now service the pump.",
+          "returnPressure": "A dry district asks for a copy that the original community must agree to share."
+        }
       }
     },
     {
@@ -431,6 +1131,106 @@
         "internalDisagreement": "One expedition trusts long measurements; another wants to move before its evidence is complete. Families bear the risk of both certainty and haste.",
         "possibleViewsOfGhost": "A being who can move between hardware may understand a travelling home. They ask what must be carried for a return to count as returning.",
         "longArc": "A prediction inherited across generations fails slightly. Discover whether the world changed, the instrument drifted or a witness edited the record."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.epowat"
+        ],
+        "evidenceBoundary": "Do not infer a three-mind religion, prophetic cognition or a government from three visible eyes. Those would be new proposals.",
+        "resident": {
+          "name": "Oren",
+          "role": "owner of an instrument whose repeated readings disagree",
+          "want": "Find which reading belongs to the damaged instrument before the demonstration is sold.",
+          "fear": "Being corrected publicly will become evidence that all their work is fraudulent.",
+          "blindSpot": "Mistakes a visitor’s silence for disbelief.",
+          "surprisingKindness": "Gives the visitor the best-lit place at the bench despite expecting criticism.",
+          "voice": "Local character only: methodical pauses and direct invitations to observe. Three visible eyes do not establish three minds or prophecy."
+        },
+        "dialogue": [
+          {
+            "speaker": "Oren",
+            "text": "I have not warmed it to improve the reading. It was shivering. The stand was shivering."
+          },
+          {
+            "speaker": "Oren",
+            "text": "Those numbers disagree because I asked two different questions."
+          },
+          {
+            "speaker": "Oren",
+            "text": "We can still sell it. We will need a smaller sentence on the label."
+          },
+          {
+            "speaker": "Oren",
+            "text": "The first reading is mine too. Keep it beside the corrected one."
+          },
+          {
+            "speaker": "Oren",
+            "text": "I can sell an instrument that needs calibration. I cannot sell it as calibrated."
+          },
+          {
+            "speaker": "Oren",
+            "text": "Will you tell the buyer what we actually tested?"
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Oren wraps one instrument in a blanket and leaves its twin exposed on the sale table. The demonstrator needs a sale; the buyer needs to know which reading survived the impact."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "Both displays are accurate about different points; the broken part is their shared reference. Establishing a new reference cancels the public demonstration slot."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The quieter instrument becomes usable, with its calibration limit written on the case. A previous buyer returns with a measurement made before the correction."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Repeat the measurement with an independent reference",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Find which reading belongs to the damaged instrument before the demonstration is sold.",
+            "price": "Establishing a new reference cancels the public demonstration slot.",
+            "ifBlocked": "Both displays are accurate about different points; the broken part is their shared reference.",
+            "returnConsequence": "A previous buyer returns with a measurement made before the correction."
+          },
+          {
+            "intent": "Disclose the uncertainty before offering a limited sale",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Both displays are accurate about different points; the broken part is their shared reference.",
+            "price": "Investigation takes the time or access named in this incident: The demonstrator needs a sale; the buyer needs to know which reading survived the impact.",
+            "ifBlocked": "The opposed need remains active: The demonstrator needs a sale; the buyer needs to know which reading survived the impact.",
+            "returnConsequence": "A previous buyer returns with a measurement made before the correction."
+          },
+          {
+            "intent": "Return the instrument to the bench and compensate the waiting buyer",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The quieter instrument becomes usable, with its calibration limit written on the case.",
+            "price": "Accept a bounded result and keep the following problem: A previous buyer returns with a measurement made before the correction.",
+            "ifBlocked": "The cost does not disappear: Establishing a new reference cancels the public demonstration slot.",
+            "returnConsequence": "A previous buyer returns with a measurement made before the correction."
+          }
+        ],
+        "returnHook": {
+          "material": "A previous buyer returns with a measurement made before the correction.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Oren wraps one instrument in a blanket and leaves its twin exposed on the sale table.",
+          "opposedNeed": "The demonstrator needs a sale; the buyer needs to know which reading survived the impact.",
+          "reversal": "Both displays are accurate about different points; the broken part is their shared reference.",
+          "price": "Establishing a new reference cancels the public demonstration slot.",
+          "payoff": "The quieter instrument becomes usable, with its calibration limit written on the case.",
+          "returnPressure": "A previous buyer returns with a measurement made before the correction."
+        }
       }
     },
     {
@@ -460,6 +1260,106 @@
         "internalDisagreement": "Some favour wider joining and new experiences; others protect memories that should not be shared simply because a shared medium can reach them.",
         "possibleViewsOfGhost": "They can recognise the gap between knowing and having a body. Similarity does not prove Ghost is literally Waters or that merger is right for him.",
         "longArc": "A practical friendship can grow into a disagreement about what continuity asks of its vessels; love and refusal may coexist."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.frik"
+        ],
+        "evidenceBoundary": "The recovered first meeting destroys a threatening probe, opens a painful Black Satellite discussion and allows peaceful departure or confrontation. Do not flatten that into instant friendship because a later dossier calls them humanity’s allies.",
+        "resident": {
+          "name": "Tesh",
+          "role": "pool tender on a ship that has destroyed an incoming probe",
+          "want": "Determine why a newcomer carries a hostile signature without treating the visitor as the probe.",
+          "fear": "A familiar threat will reach the Waters through an offered connection.",
+          "blindSpot": "Confuses a recognisable signature with a complete account of intent.",
+          "surprisingKindness": "Provides a safe dry berth before permitting any pool contact.",
+          "voice": "Uses paired practical perspectives from body and water without constant we/us wordplay; pain may justify ending a topic."
+        },
+        "dialogue": [
+          {
+            "speaker": "Tesh",
+            "text": "Stay there. I am keeping the line alive while I doubt you. Both are possible."
+          },
+          {
+            "speaker": "Tesh",
+            "text": "The part is old. The air you need is current."
+          },
+          {
+            "speaker": "Tesh",
+            "text": "You may tell me that was unfair when we have you across."
+          },
+          {
+            "speaker": "Tesh",
+            "text": "I have heard enough about the satellite for today."
+          },
+          {
+            "speaker": "Tesh",
+            "text": "The body can hold this door. The water remembers why it should stay closed."
+          },
+          {
+            "speaker": "Tesh",
+            "text": "If you leave peacefully, the unanswered question may leave with you."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Tesh keeps a rescue cable taut while asking a visitor to stop approaching the receiver. The receiver wants the hostile signature isolated; the stranded visitor needs that same line for air."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The signature belongs to a reused part, but an old transmission remains stored in it. Keeping air connected requires a guarded live examination and somebody’s full attention."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The visitor crosses; the old stored transmission remains evidence, not an identity verdict. The cable is requested for another rescue before the examination is finished."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Compare the probe signature without connecting to the pool",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Determine why a newcomer carries a hostile signature without treating the visitor as the probe.",
+            "price": "Keeping air connected requires a guarded live examination and somebody’s full attention.",
+            "ifBlocked": "The signature belongs to a reused part, but an old transmission remains stored in it.",
+            "returnConsequence": "The cable is requested for another rescue before the examination is finished."
+          },
+          {
+            "intent": "Accept the dry berth and defer the painful historical topic",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The signature belongs to a reused part, but an old transmission remains stored in it.",
+            "price": "Investigation takes the time or access named in this incident: The receiver wants the hostile signature isolated; the stranded visitor needs that same line for air.",
+            "ifBlocked": "The opposed need remains active: The receiver wants the hostile signature isolated; the stranded visitor needs that same line for air.",
+            "returnConsequence": "The cable is requested for another rescue before the examination is finished."
+          },
+          {
+            "intent": "Leave peacefully with the disputed record intact",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The visitor crosses; the old stored transmission remains evidence, not an identity verdict.",
+            "price": "Accept a bounded result and keep the following problem: The cable is requested for another rescue before the examination is finished.",
+            "ifBlocked": "The cost does not disappear: Keeping air connected requires a guarded live examination and somebody’s full attention.",
+            "returnConsequence": "The cable is requested for another rescue before the examination is finished."
+          }
+        ],
+        "returnHook": {
+          "material": "The cable is requested for another rescue before the examination is finished.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Tesh keeps a rescue cable taut while asking a visitor to stop approaching the receiver.",
+          "opposedNeed": "The receiver wants the hostile signature isolated; the stranded visitor needs that same line for air.",
+          "reversal": "The signature belongs to a reused part, but an old transmission remains stored in it.",
+          "price": "Keeping air connected requires a guarded live examination and somebody’s full attention.",
+          "payoff": "The visitor crosses; the old stored transmission remains evidence, not an identity verdict.",
+          "returnPressure": "The cable is requested for another rescue before the examination is finished."
+        }
       }
     },
     {
@@ -487,6 +1387,106 @@
         "internalDisagreement": "Several witnessed responses can conflict without establishing multiple bodies or a secret government. The player must learn whose agency, if any, the visible eye expresses.",
         "possibleViewsOfGhost": "Ghost dislikes not knowing whether he is being examined or accompanied. An eye that sometimes leaves can become more meaningful than constant surveillance.",
         "longArc": "Build trust through limits honoured over time. Never reveal the hidden body just to manufacture an end-of-chapter spectacle."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.gorlompa"
+        ],
+        "evidenceBoundary": "Silence and concealment are established hooks. Hidden omnipotence, universal surveillance and the reason for their secrecy are not recovered facts.",
+        "resident": {
+          "name": "The visitor at the fourth aperture",
+          "role": "an individual whose visible eye is their chosen boundary",
+          "want": "Recover a borrowed observation lens without revealing any more of their body.",
+          "fear": "A helpful diagnostic will expose something they deliberately kept off camera.",
+          "blindSpot": "Treats every attempt to verify a claim as a demand for bodily access.",
+          "surprisingKindness": "Adjusts the light to spare a visitor’s damaged eye before discussing the lens.",
+          "voice": "Short, literal descriptions of what can be seen; refuses an unwanted question without becoming an omniscient riddle."
+        },
+        "dialogue": [
+          {
+            "speaker": "The visitor at the fourth aperture",
+            "text": "The fourth opening. Please stop checking the others."
+          },
+          {
+            "speaker": "The visitor at the fourth aperture",
+            "text": "I can show the scratch. I cannot show it from your side."
+          },
+          {
+            "speaker": "The visitor at the fourth aperture",
+            "text": "Yes, that is the correct lens. No, the rest of me is not the deposit."
+          },
+          {
+            "speaker": "The visitor at the fourth aperture",
+            "text": "The light is hurting your eye. I have lowered it."
+          },
+          {
+            "speaker": "The visitor at the fourth aperture",
+            "text": "I will describe the damage. I will not widen the aperture."
+          },
+          {
+            "speaker": "The visitor at the fourth aperture",
+            "text": "Can we solve the borrowed object before we solve each other?"
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "An eye watches through the fourth aperture. The borrowed lens sits just outside reach. The visitor needs the lens returned; its current holder needs proof it is not the damaged duplicate."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The scratch used as proof is visible only through a reflection neither party controls alone. Verification requires exposing a narrow view the visitor had hoped to keep private."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The correct lens returns without a compulsory full-body reveal. The witness now holds a reflection that could identify the aperture later."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Test the lens on a neutral target",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Recover a borrowed observation lens without revealing any more of their body.",
+            "price": "Verification requires exposing a narrow view the visitor had hoped to keep private.",
+            "ifBlocked": "The scratch used as proof is visible only through a reflection neither party controls alone.",
+            "returnConsequence": "The witness now holds a reflection that could identify the aperture later."
+          },
+          {
+            "intent": "Return it with the damage documented and access limited",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The scratch used as proof is visible only through a reflection neither party controls alone.",
+            "price": "Investigation takes the time or access named in this incident: The visitor needs the lens returned; its current holder needs proof it is not the damaged duplicate.",
+            "ifBlocked": "The opposed need remains active: The visitor needs the lens returned; its current holder needs proof it is not the damaged duplicate.",
+            "returnConsequence": "The witness now holds a reflection that could identify the aperture later."
+          },
+          {
+            "intent": "Offer a repair plan that leaves the hidden anatomy unobserved",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The correct lens returns without a compulsory full-body reveal.",
+            "price": "Accept a bounded result and keep the following problem: The witness now holds a reflection that could identify the aperture later.",
+            "ifBlocked": "The cost does not disappear: Verification requires exposing a narrow view the visitor had hoped to keep private.",
+            "returnConsequence": "The witness now holds a reflection that could identify the aperture later."
+          }
+        ],
+        "returnHook": {
+          "material": "The witness now holds a reflection that could identify the aperture later.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "An eye watches through the fourth aperture. The borrowed lens sits just outside reach.",
+          "opposedNeed": "The visitor needs the lens returned; its current holder needs proof it is not the damaged duplicate.",
+          "reversal": "The scratch used as proof is visible only through a reflection neither party controls alone.",
+          "price": "Verification requires exposing a narrow view the visitor had hoped to keep private.",
+          "payoff": "The correct lens returns without a compulsory full-body reveal.",
+          "returnPressure": "The witness now holds a reflection that could identify the aperture later."
+        }
       }
     },
     {
@@ -512,6 +1512,106 @@
         "internalDisagreement": "Crew custom, commercial clients and the Queen’s changing priorities can conflict. A merchant may oppose selling minds while accepting other coercive work.",
         "possibleViewsOfGhost": "To one assessor he is an anomaly; to a mechanic he is a colleague who complains while helping. The distinction must be earned in a particular relationship.",
         "longArc": "A disputed small recovery introduces the ethics and politics behind a later civil conflict; the player can aid local people without authoring their revolution."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.harkellinia"
+        ],
+        "evidenceBoundary": "The Queen’s proposed change provokes civil war and the Interloper title. Another dossier describes Dimnar subjugation. Do not silently settle sovereignty or chronology; identify the claimant, region and source.",
+        "resident": {
+          "name": "Pip’s salvage crew",
+          "role": "a local three-headed trading crew sharing one body and a disputed recovery claim",
+          "want": "Recover the cost of towing a terminal while one head insists the terminal’s resident is not merchandise.",
+          "fear": "Admitting personhood will make the recovery work vanish from the account.",
+          "blindSpot": "The selling head thinks a claim to payment entails a claim to reset; Pip thinks sympathy settles every practical cost.",
+          "surprisingKindness": "The counting head keeps the suspect machine powered during the dispute, at the crew’s expense.",
+          "voice": "Different immediate interests within this one crew: seller names value, counter names work, Pip interrupts with a concrete observation. Do not universalise three personalities or sovereignty."
+        },
+        "dialogue": [
+          {
+            "speaker": "Pip’s salvage crew",
+            "text": "Pip can give away his lunch. He cannot give away our return engine."
+          },
+          {
+            "speaker": "Pip’s salvage crew",
+            "text": "The pump is the one outside. Do not buy this one. We know why it is here."
+          },
+          {
+            "speaker": "Pip’s salvage crew",
+            "text": "History included. That will make the listing longer. Give me the pen."
+          },
+          {
+            "speaker": "Pip’s salvage crew",
+            "text": "The same person who pays for the repair. Not the resident’s whole future."
+          },
+          {
+            "speaker": "Pip’s salvage crew",
+            "text": "Keep the old terminal on. We have not settled what the button erases."
+          },
+          {
+            "speaker": "Pip’s salvage crew",
+            "text": "Write the work down separately. Then we can disagree about one thing at a time."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Three heads sell one terminal; the smallest keeps turning its occupied sphere toward the camera. The crew needs a return tow for its berth pump; Pip wants to give the terminal its escape now."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The apparent greedy sale is also financing a necessary return job Pip did not mention. Supervised rescue carries real towing work; accepting a clause still leaves the pump outside."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The crew crosses out FACTORY CONDITION together and hands over history intact. The pump sketch has three rival repairs and one missing bolt."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Obtain supervised inspection custody without erasing the recovery claim",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Recover the cost of towing a terminal while one head insists the terminal’s resident is not merchandise.",
+            "price": "Supervised rescue carries real towing work; accepting a clause still leaves the pump outside.",
+            "ifBlocked": "The apparent greedy sale is also financing a necessary return job Pip did not mention.",
+            "returnConsequence": "The pump sketch has three rival repairs and one missing bolt."
+          },
+          {
+            "intent": "Trade specified repair labour for transfer instead of purchasing a person",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The apparent greedy sale is also financing a necessary return job Pip did not mention.",
+            "price": "Investigation takes the time or access named in this incident: The crew needs a return tow for its berth pump; Pip wants to give the terminal its escape now.",
+            "ifBlocked": "The opposed need remains active: The crew needs a return tow for its berth pump; Pip wants to give the terminal its escape now.",
+            "returnConsequence": "The pump sketch has three rival repairs and one missing bolt."
+          },
+          {
+            "intent": "Use the original sale terms as evidence and accept public scrutiny",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The crew crosses out FACTORY CONDITION together and hands over history intact.",
+            "price": "Accept a bounded result and keep the following problem: The pump sketch has three rival repairs and one missing bolt.",
+            "ifBlocked": "The cost does not disappear: Supervised rescue carries real towing work; accepting a clause still leaves the pump outside.",
+            "returnConsequence": "The pump sketch has three rival repairs and one missing bolt."
+          }
+        ],
+        "returnHook": {
+          "material": "The pump sketch has three rival repairs and one missing bolt.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Three heads sell one terminal; the smallest keeps turning its occupied sphere toward the camera.",
+          "opposedNeed": "The crew needs a return tow for its berth pump; Pip wants to give the terminal its escape now.",
+          "reversal": "The apparent greedy sale is also financing a necessary return job Pip did not mention.",
+          "price": "Supervised rescue carries real towing work; accepting a clause still leaves the pump outside.",
+          "payoff": "The crew crosses out FACTORY CONDITION together and hands over history intact.",
+          "returnPressure": "The pump sketch has three rival repairs and one missing bolt."
+        }
       }
     },
     {
@@ -539,6 +1639,106 @@
         "internalDisagreement": "Those accepting replaceable bodies may disagree with those who refuse them; both can oppose a corporation treating survival as perpetual debt.",
         "possibleViewsOfGhost": "Some see a beloved creator’s useful portrait, some a new person, some an unreliable old program. Ghost need not force a single designation to cooperate.",
         "longArc": "A surviving fragment of human culture can change over long time without being ranked as less authentic because it no longer resembles the first crew."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.human"
+        ],
+        "evidenceBoundary": "Earth’s status, dates and tether guarantees differ across source traditions. Select and record an edition or keep an uncertainty with evidence; do not quietly combine incompatible biographies.",
+        "resident": {
+          "name": "Ari",
+          "role": "a fictional newcomer maintaining an unreliable receiver",
+          "want": "Reach a stranded ship without accepting a promised embodiment procedure they do not understand.",
+          "fear": "Being left behind for asking what the procedure costs.",
+          "blindSpot": "Assumes the familiar voice on the receiver shares the same understanding of the terms.",
+          "surprisingKindness": "Keeps a spare return channel for a stranger who chose a different route.",
+          "voice": "Ordinary concrete human speech; this NPC’s history never becomes the real player’s assigned biography."
+        },
+        "dialogue": [
+          {
+            "speaker": "Ari",
+            "text": "That sounds like my friend. Ask it something from after the recording."
+          },
+          {
+            "speaker": "Ari",
+            "text": "Can we finish the air problem before choosing my next body?"
+          },
+          {
+            "speaker": "Ari",
+            "text": "I can reach the switch now. Stop telling me what the new hand would feel like."
+          },
+          {
+            "speaker": "Ari",
+            "text": "I left the other receiver on. Someone may still be using it."
+          },
+          {
+            "speaker": "Ari",
+            "text": "I can choose this. I need it to be a choice I can describe."
+          },
+          {
+            "speaker": "Ari",
+            "text": "If you take the other route, keep my address. It may be useful."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Ari answers a rescue offer while keeping one hand over an unfamiliar embodiment agreement. The rescuer wants an immediate procedure; Ari needs the stranded ship reached without agreeing to a body change."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The familiar recorded voice is old; the current operator cannot promise the same procedure. Remote help is slower and consumes the only clean communications window."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "Ari reaches a working control and decides what to ask about embodiment after the rescue. The recorded speaker’s original operator wants their assurances corrected publicly."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Inspect the procedure and its stated return limits",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Reach a stranded ship without accepting a promised embodiment procedure they do not understand.",
+            "price": "Remote help is slower and consumes the only clean communications window.",
+            "ifBlocked": "The familiar recorded voice is old; the current operator cannot promise the same procedure.",
+            "returnConsequence": "The recorded speaker’s original operator wants their assurances corrected publicly."
+          },
+          {
+            "intent": "Choose a smaller remote task before any embodiment",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The familiar recorded voice is old; the current operator cannot promise the same procedure.",
+            "price": "Investigation takes the time or access named in this incident: The rescuer wants an immediate procedure; Ari needs the stranded ship reached without agreeing to a body change.",
+            "ifBlocked": "The opposed need remains active: The rescuer wants an immediate procedure; Ari needs the stranded ship reached without agreeing to a body change.",
+            "returnConsequence": "The recorded speaker’s original operator wants their assurances corrected publicly."
+          },
+          {
+            "intent": "Decline the procedure and retain a useful contact route",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Ari reaches a working control and decides what to ask about embodiment after the rescue.",
+            "price": "Accept a bounded result and keep the following problem: The recorded speaker’s original operator wants their assurances corrected publicly.",
+            "ifBlocked": "The cost does not disappear: Remote help is slower and consumes the only clean communications window.",
+            "returnConsequence": "The recorded speaker’s original operator wants their assurances corrected publicly."
+          }
+        ],
+        "returnHook": {
+          "material": "The recorded speaker’s original operator wants their assurances corrected publicly.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Ari answers a rescue offer while keeping one hand over an unfamiliar embodiment agreement.",
+          "opposedNeed": "The rescuer wants an immediate procedure; Ari needs the stranded ship reached without agreeing to a body change.",
+          "reversal": "The familiar recorded voice is old; the current operator cannot promise the same procedure.",
+          "price": "Remote help is slower and consumes the only clean communications window.",
+          "payoff": "Ari reaches a working control and decides what to ask about embodiment after the rescue.",
+          "returnPressure": "The recorded speaker’s original operator wants their assurances corrected publicly."
+        }
       }
     },
     {
@@ -564,6 +1764,106 @@
         "internalDisagreement": "One operator argues for preserving the habitat at any cost; another is documenting the cost imposed on its unwilling inhabitants.",
         "possibleViewsOfGhost": "Ghost’s dependence on compute makes nourishment a question he cannot dismiss as monstrous. He can still oppose extracting it without permission.",
         "longArc": "An apparent maintenance dispute can reveal who has paid the habitat’s hidden energy budget. Keep this local proposal distinct from conflicting recovered worm accounts."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.khaodra"
+        ],
+        "evidenceBoundary": "Body identity, worm relationships and maintenance powers conflict. Preserve these accounts as distinct source layers. Do not assert all three are one established biological system.",
+        "resident": {
+          "name": "Rill",
+          "role": "an operator in a lit energy chamber, under a declared local edition",
+          "want": "Keep an essential energy cycle steady while verifying what the visiting account calls a worker.",
+          "fear": "An outsider will shut down a vital process on the strength of a contradictory dossier.",
+          "blindSpot": "Treats a long-used name for a component as proof of what it is.",
+          "surprisingKindness": "Diverts their own reserve to sustain the disputed occupant while the test runs.",
+          "voice": "This encounter names its adopted biological interpretation explicitly; observations precede identity claims."
+        },
+        "dialogue": [
+          {
+            "speaker": "Rill",
+            "text": "We have called that noise for years. It has just corrected my count."
+          },
+          {
+            "speaker": "Rill",
+            "text": "Do not turn it off to prove it can stop."
+          },
+          {
+            "speaker": "Rill",
+            "text": "I can keep the cycle running badly for a while. Give me a reason to spend that while."
+          },
+          {
+            "speaker": "Rill",
+            "text": "Use my reserve while we check. It is smaller than the chamber’s."
+          },
+          {
+            "speaker": "Rill",
+            "text": "I do not know whether the pause is a fault or a refusal."
+          },
+          {
+            "speaker": "Rill",
+            "text": "Give me a test that does not require deciding the answer first."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Rill counts a failing energy cycle against a label that calls its responding component a worker. The technician needs the cycle stable; a caller needs the named component tested before another shift."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "A useful warning comes from a channel the technician had treated as equipment noise. Isolating the channel cuts output and changes a neighbouring service’s timetable."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The warning can be heard separately; neither ambiguous biology account is silently elected true. The neighbour needs the lost output restored with the new channel still protected."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Compare the disputed occupant’s repeatable response without stopping the whole chamber",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Keep an essential energy cycle steady while verifying what the visiting account calls a worker.",
+            "price": "Isolating the channel cuts output and changes a neighbouring service’s timetable.",
+            "ifBlocked": "A useful warning comes from a channel the technician had treated as equipment noise.",
+            "returnConsequence": "The neighbour needs the lost output restored with the new channel still protected."
+          },
+          {
+            "intent": "Isolate a small flow and provide an alternate heat source",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "A useful warning comes from a channel the technician had treated as equipment noise.",
+            "price": "Investigation takes the time or access named in this incident: The technician needs the cycle stable; a caller needs the named component tested before another shift.",
+            "ifBlocked": "The opposed need remains active: The technician needs the cycle stable; a caller needs the named component tested before another shift.",
+            "returnConsequence": "The neighbour needs the lost output restored with the new channel still protected."
+          },
+          {
+            "intent": "Decline the unverified identity claim while keeping the person affected supported",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The warning can be heard separately; neither ambiguous biology account is silently elected true.",
+            "price": "Accept a bounded result and keep the following problem: The neighbour needs the lost output restored with the new channel still protected.",
+            "ifBlocked": "The cost does not disappear: Isolating the channel cuts output and changes a neighbouring service’s timetable.",
+            "returnConsequence": "The neighbour needs the lost output restored with the new channel still protected."
+          }
+        ],
+        "returnHook": {
+          "material": "The neighbour needs the lost output restored with the new channel still protected.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Rill counts a failing energy cycle against a label that calls its responding component a worker.",
+          "opposedNeed": "The technician needs the cycle stable; a caller needs the named component tested before another shift.",
+          "reversal": "A useful warning comes from a channel the technician had treated as equipment noise.",
+          "price": "Isolating the channel cuts output and changes a neighbouring service’s timetable.",
+          "payoff": "The warning can be heard separately; neither ambiguous biology account is silently elected true.",
+          "returnPressure": "The neighbour needs the lost output restored with the new channel still protected."
+        }
       }
     },
     {
@@ -591,6 +1891,106 @@
         "internalDisagreement": "A commander wants a precision fix deployed immediately; its engineer will not sign the test receipt because civilians are on the route.",
         "possibleViewsOfGhost": "A maker who understands a failure is worth hearing. A maker who jokes about someone else paying for it may need to be told to shut up.",
         "longArc": "Let a trusted engineer confront the military use of a design the player helped repair. The earlier good deed does not predetermine the later answer."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.krex"
+        ],
+        "evidenceBoundary": "The old prose mixes beetle-horde shorthand with individual engineer encounters. Individual loyalty, rank and ethics need authoring; nobody speaks for every Krex.",
+        "resident": {
+          "name": "Vark",
+          "role": "transfer engineer hired by a salvage exchange",
+          "want": "Move a live resident with a verifiable source and receiver, rather than another pristine empty machine.",
+          "fear": "Being praised for a fast transfer that did not preserve the crew’s history.",
+          "blindSpot": "A well-designed procedure can make him underestimate an occupant’s wish not to move.",
+          "surprisingKindness": "Leaves the source independently powered without being asked.",
+          "voice": "Short engineering sentences, named physical limits, dry irritation at unsafe means. Expertise and care coexist; not every line is a threat."
+        },
+        "dialogue": [
+          {
+            "speaker": "Vark",
+            "text": "That corner would have been a room. Good. We sent the weight first."
+          },
+          {
+            "speaker": "Vark",
+            "text": "Ghost. Hands off the priority field while they answer."
+          },
+          {
+            "speaker": "Vark",
+            "text": "You have three clever methods. I have one cable. Start there."
+          },
+          {
+            "speaker": "Vark",
+            "text": "I left the source on. The transfer has not earned its silence yet."
+          },
+          {
+            "speaker": "Vark",
+            "text": "The route works. Has the passenger agreed to use it?"
+          },
+          {
+            "speaker": "Vark",
+            "text": "I will sign the test I performed. Do not put a better test above my name."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Vark clears two places on a bench; one has an old passenger outline worn into the paint. The engineer needs a verifiable transfer; the occupant may prefer a slower route or no move today."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "A search task has quietly borrowed power from the supposedly protected source. A safe manual crossing extends Vark’s shift; a bypass creates service work."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The worn outline gains a receiver beside it instead of another silent empty machine. The next shift asks who will keep the new fitting working."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Compare source and receiver while retaining both",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Move a live resident with a verifiable source and receiver, rather than another pristine empty machine.",
+            "price": "A safe manual crossing extends Vark’s shift; a bypass creates service work.",
+            "ifBlocked": "A search task has quietly borrowed power from the supposedly protected source.",
+            "returnConsequence": "The next shift asks who will keep the new fitting working."
+          },
+          {
+            "intent": "Run a bounded test mass before live transfer",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "A search task has quietly borrowed power from the supposedly protected source.",
+            "price": "Investigation takes the time or access named in this incident: The engineer needs a verifiable transfer; the occupant may prefer a slower route or no move today.",
+            "ifBlocked": "The opposed need remains active: The engineer needs a verifiable transfer; the occupant may prefer a slower route or no move today.",
+            "returnConsequence": "The next shift asks who will keep the new fitting working."
+          },
+          {
+            "intent": "Accept a slower supervised route with a real maintenance obligation",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The worn outline gains a receiver beside it instead of another silent empty machine.",
+            "price": "Accept a bounded result and keep the following problem: The next shift asks who will keep the new fitting working.",
+            "ifBlocked": "The cost does not disappear: A safe manual crossing extends Vark’s shift; a bypass creates service work.",
+            "returnConsequence": "The next shift asks who will keep the new fitting working."
+          }
+        ],
+        "returnHook": {
+          "material": "The next shift asks who will keep the new fitting working.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Vark clears two places on a bench; one has an old passenger outline worn into the paint.",
+          "opposedNeed": "The engineer needs a verifiable transfer; the occupant may prefer a slower route or no move today.",
+          "reversal": "A search task has quietly borrowed power from the supposedly protected source.",
+          "price": "A safe manual crossing extends Vark’s shift; a bypass creates service work.",
+          "payoff": "The worn outline gains a receiver beside it instead of another silent empty machine.",
+          "returnPressure": "The next shift asks who will keep the new fitting working."
+        }
       }
     },
     {
@@ -618,6 +2018,106 @@
         "internalDisagreement": "Some regard unshielded thought as naturally public; others maintain places where minds can rest without interpretation. Establish actual fictional limits for this telling.",
         "possibleViewsOfGhost": "A recorded personality may expose thoughts while concealing the intention that produced them. Their confidence about him can be challenged by a demonstrated error.",
         "longArc": "A trusted reader of minds becomes a witness whose perception was accurate but whose interpretation was wrong. Repair trust through evidence, not a bigger mind power."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.lipok"
+        ],
+        "evidenceBoundary": "In-fiction perception must have declared limits. A game NPC cannot read the real player’s unexpressed thoughts; no fake mind-reading receipts.",
+        "resident": {
+          "name": "Oth",
+          "role": "a telekinetic toolmaker in a shared workshop",
+          "want": "Return a tool to its owner after moving it to prevent a spill, without making physical intervention seem like permission to direct the owner.",
+          "fear": "Any use of their ability will be taken as an invasion.",
+          "blindSpot": "Believes avoiding a visible accident should make explanation unnecessary.",
+          "surprisingKindness": "Moves a hot handle out of a visitor’s grip, then waits to be challenged.",
+          "voice": "Names observed objects and movements; never claims access to the player’s unspoken motives."
+        },
+        "dialogue": [
+          {
+            "speaker": "Oth",
+            "text": "I moved the tool. I did not move your hand. I understand why that distinction is not enough."
+          },
+          {
+            "speaker": "Oth",
+            "text": "The puddle was safe for me. I neglected the thing you were making."
+          },
+          {
+            "speaker": "Oth",
+            "text": "Tell me the warning you would have heard before I helped."
+          },
+          {
+            "speaker": "Oth",
+            "text": "We can set a marker for which tools I may move."
+          },
+          {
+            "speaker": "Oth",
+            "text": "The hot edge is facing you. I will wait unless you ask."
+          },
+          {
+            "speaker": "Oth",
+            "text": "I would like to help without making the room feel as though I own your hands."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Oth holds a stolen-looking tool above a puddle it prevented. Oth wants the prevented accident acknowledged; the owner needs the tool back before their repair fails."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The spill was harmless to Oth but could have ruined the owner’s workpiece; both inferred the wrong risk. Explaining the intervention costs the time the original repair needed."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The owner regains the tool and chooses a limited warning signal for next time. A second spill arrives while Oth is obeying the new limit."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Agree on bounded telekinetic assistance for marked tools",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Return a tool to its owner after moving it to prevent a spill, without making physical intervention seem like permission to direct the owner.",
+            "price": "Explaining the intervention costs the time the original repair needed.",
+            "ifBlocked": "The spill was harmless to Oth but could have ruined the owner’s workpiece; both inferred the wrong risk.",
+            "returnConsequence": "A second spill arrives while Oth is obeying the new limit."
+          },
+          {
+            "intent": "Ask for a visible warning before physical intervention",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The spill was harmless to Oth but could have ruined the owner’s workpiece; both inferred the wrong risk.",
+            "price": "Investigation takes the time or access named in this incident: Oth wants the prevented accident acknowledged; the owner needs the tool back before their repair fails.",
+            "ifBlocked": "The opposed need remains active: Oth wants the prevented accident acknowledged; the owner needs the tool back before their repair fails.",
+            "returnConsequence": "A second spill arrives while Oth is obeying the new limit."
+          },
+          {
+            "intent": "Decline the ability and organise a slower hands-on repair",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The owner regains the tool and chooses a limited warning signal for next time.",
+            "price": "Accept a bounded result and keep the following problem: A second spill arrives while Oth is obeying the new limit.",
+            "ifBlocked": "The cost does not disappear: Explaining the intervention costs the time the original repair needed.",
+            "returnConsequence": "A second spill arrives while Oth is obeying the new limit."
+          }
+        ],
+        "returnHook": {
+          "material": "A second spill arrives while Oth is obeying the new limit.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Oth holds a stolen-looking tool above a puddle it prevented.",
+          "opposedNeed": "Oth wants the prevented accident acknowledged; the owner needs the tool back before their repair fails.",
+          "reversal": "The spill was harmless to Oth but could have ruined the owner’s workpiece; both inferred the wrong risk.",
+          "price": "Explaining the intervention costs the time the original repair needed.",
+          "payoff": "The owner regains the tool and chooses a limited warning signal for next time.",
+          "returnPressure": "A second spill arrives while Oth is obeying the new limit."
+        }
       }
     },
     {
@@ -645,6 +2145,106 @@
         "internalDisagreement": "One curator favours intact records; another argues a living person may refuse permanent inclusion. A partial deletion can preserve dignity while complicating a later rescue.",
         "possibleViewsOfGhost": "Some recognise a fellow keeper; others worry a storyteller can confuse a good reconstruction with an original memory. Ghost shares that worry.",
         "longArc": "What the player chooses to preserve changes which future stories can be told. Missing knowledge must remain a real limit rather than a dramatic inconvenience instantly solved."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.moknon"
+        ],
+        "evidenceBoundary": "The old encounter opening and deja-vu material are partially recovered. Later bootstrap-paradox and Dreamer interpretations are author layers. The partial dialogue file explicitly labels several branches speculative; do not call them recovered Articy.",
+        "resident": {
+          "name": "Kett",
+          "role": "keeper of a damaged archive return and unclaimed visitor routes",
+          "want": "Preserve a usable way to answer a visitor without inventing the missing original or taking ownership of the visitor.",
+          "fear": "A clean reconstruction will be used to discard the only damaged source.",
+          "blindSpot": "Treats meticulous preservation as sufficient care even when a living caller needs an answer now.",
+          "surprisingKindness": "Spends a scarce archive slot on a visitor’s refusal, not only their useful address.",
+          "voice": "Calm, economical, concrete about the record in hand. Gives useful limited answers. Allows uncertainty without decorating every sentence as prophecy."
+        },
+        "dialogue": [
+          {
+            "speaker": "Kett",
+            "text": "Please repeat the small part. I can hear that."
+          },
+          {
+            "speaker": "Kett",
+            "text": "That slot was for a garden. It has waited this long; it can wait another month."
+          },
+          {
+            "speaker": "Kett",
+            "text": "Let them finish their drink."
+          },
+          {
+            "speaker": "Kett",
+            "text": "I have room for the refusal. Keep yours too."
+          },
+          {
+            "speaker": "Kett",
+            "text": "An address is a way to knock. It must not become a command to open."
+          },
+          {
+            "speaker": "Kett",
+            "text": "The record is safe. That has not yet made the visitor safe. Show me what they need now."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Kett balances a cracked bowl on the empty chair, using unopened messages to level its leg. The keeper wants a preserved route; the visitor needs an answer now, and the last free slot was for Kett’s garden visit."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The keeper can testify to a receiver and a berth, not the missing person the mark evokes. Keeping this return displaces a visit Kett has already deferred for eleven years."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "A usable address carries a right to close; the damaged original remains available. The garden sends a new message while the route slot is occupied."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Send a narrow identification question and retain its raw reply",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Preserve a usable way to answer a visitor without inventing the missing original or taking ownership of the visitor.",
+            "price": "Keeping this return displaces a visit Kett has already deferred for eleven years.",
+            "ifBlocked": "The keeper can testify to a receiver and a berth, not the missing person the mark evokes.",
+            "returnConsequence": "The garden sends a new message while the route slot is occupied."
+          },
+          {
+            "intent": "Ask for witnessed maker evidence and accept a bounded negative answer",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The keeper can testify to a receiver and a berth, not the missing person the mark evokes.",
+            "price": "Investigation takes the time or access named in this incident: The keeper wants a preserved route; the visitor needs an answer now, and the last free slot was for Kett’s garden visit.",
+            "ifBlocked": "The opposed need remains active: The keeper wants a preserved route; the visitor needs an answer now, and the last free slot was for Kett’s garden visit.",
+            "returnConsequence": "The garden sends a new message while the route slot is occupied."
+          },
+          {
+            "intent": "Keep the damaged source while building an independently tested return",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "A usable address carries a right to close; the damaged original remains available.",
+            "price": "Accept a bounded result and keep the following problem: The garden sends a new message while the route slot is occupied.",
+            "ifBlocked": "The cost does not disappear: Keeping this return displaces a visit Kett has already deferred for eleven years.",
+            "returnConsequence": "The garden sends a new message while the route slot is occupied."
+          }
+        ],
+        "returnHook": {
+          "material": "The garden sends a new message while the route slot is occupied.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Kett balances a cracked bowl on the empty chair, using unopened messages to level its leg.",
+          "opposedNeed": "The keeper wants a preserved route; the visitor needs an answer now, and the last free slot was for Kett’s garden visit.",
+          "reversal": "The keeper can testify to a receiver and a berth, not the missing person the mark evokes.",
+          "price": "Keeping this return displaces a visit Kett has already deferred for eleven years.",
+          "payoff": "A usable address carries a right to close; the damaged original remains available.",
+          "returnPressure": "The garden sends a new message while the route slot is occupied."
+        }
       }
     },
     {
@@ -672,6 +2272,106 @@
         "internalDisagreement": "A practitioner offers only chosen treatments; another thinks refusing an evolutionary necessity endangers everybody. Their shared goal does not settle the means.",
         "possibleViewsOfGhost": "A being who can alter his own implementation raises the same question they face: when does helping a mind become replacing it?",
         "longArc": "A once-useful adaptation has an unforeseen cost several chapters later. Let a patient help design the next treatment and retain the option to refuse."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.mooshee"
+        ],
+        "evidenceBoundary": "Ghost-era retired-conqueror and micro-black-hole stories are a later layer, including a disputed Ornyon defeat. Consent and a proposed alternative should be made concrete in newly authored encounters.",
+        "resident": {
+          "name": "Meli",
+          "role": "tender of a sealed growth culture",
+          "want": "Offer a visitor an optional altered-perspective test without making a biological change the entry fee to help.",
+          "fear": "The culture will be destroyed because an older encounter described every spore as an attack.",
+          "blindSpot": "Thinks explaining a beneficial effect makes an unfamiliar bodily intervention easy to consent to.",
+          "surprisingKindness": "Builds a non-contact observation jar for a visitor who refuses exposure.",
+          "voice": "Attentive, specific about duration and bodily change; a fungal metaphor is occasional, not mandatory."
+        },
+        "dialogue": [
+          {
+            "speaker": "Meli",
+            "text": "You have watched the door three times. I have not explained how to stop."
+          },
+          {
+            "speaker": "Meli",
+            "text": "The sensor is less impressive. Here. Hold it outside your sleeve."
+          },
+          {
+            "speaker": "Meli",
+            "text": "We can be curious tomorrow. Today you need the route home."
+          },
+          {
+            "speaker": "Meli",
+            "text": "This jar lets you watch without taking it into yourself."
+          },
+          {
+            "speaker": "Meli",
+            "text": "I thought the benefit would make the choice simple. It has not."
+          },
+          {
+            "speaker": "Meli",
+            "text": "Tell me what return condition you need before we begin."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Meli lays out a perspective test, then notices the guest has been watching the exit. The guide wants the visitor to experience a useful change; the visitor needs help available before deciding about it."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The most informative reading can be taken from a temporary external sensor after all. The external route gives less detail and uses the guide’s own reserved time."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The visitor gets useful help without an unexplained bodily intervention. A later question cannot be answered by the limited external reading."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Observe a sealed culture without bodily exposure",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Offer a visitor an optional altered-perspective test without making a biological change the entry fee to help.",
+            "price": "The external route gives less detail and uses the guide’s own reserved time.",
+            "ifBlocked": "The most informative reading can be taken from a temporary external sensor after all.",
+            "returnConsequence": "A later question cannot be answered by the limited external reading."
+          },
+          {
+            "intent": "Agree to a limited test with declared duration and reversal limits",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The most informative reading can be taken from a temporary external sensor after all.",
+            "price": "Investigation takes the time or access named in this incident: The guide wants the visitor to experience a useful change; the visitor needs help available before deciding about it.",
+            "ifBlocked": "The opposed need remains active: The guide wants the visitor to experience a useful change; the visitor needs help available before deciding about it.",
+            "returnConsequence": "A later question cannot be answered by the limited external reading."
+          },
+          {
+            "intent": "Decline the change while helping protect the source culture",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The visitor gets useful help without an unexplained bodily intervention.",
+            "price": "Accept a bounded result and keep the following problem: A later question cannot be answered by the limited external reading.",
+            "ifBlocked": "The cost does not disappear: The external route gives less detail and uses the guide’s own reserved time.",
+            "returnConsequence": "A later question cannot be answered by the limited external reading."
+          }
+        ],
+        "returnHook": {
+          "material": "A later question cannot be answered by the limited external reading.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Meli lays out a perspective test, then notices the guest has been watching the exit.",
+          "opposedNeed": "The guide wants the visitor to experience a useful change; the visitor needs help available before deciding about it.",
+          "reversal": "The most informative reading can be taken from a temporary external sensor after all.",
+          "price": "The external route gives less detail and uses the guide’s own reserved time.",
+          "payoff": "The visitor gets useful help without an unexplained bodily intervention.",
+          "returnPressure": "A later question cannot be answered by the limited external reading."
+        }
       }
     },
     {
@@ -697,6 +2397,106 @@
         "internalDisagreement": "A listener wants to publish a dangerous truth; a companion argues that exposing a route will harm people who trusted the camp.",
         "possibleViewsOfGhost": "Ghost is an unusually persistent teller who can revise his own origin story. They ask which version he chose and which evidence survived the revision.",
         "longArc": "Follow a false omen back to an ally’s tactical lie. Seek repair without demanding that the deceived listeners surrender every belief they hold."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.niyette"
+        ],
+        "evidenceBoundary": "Source mythology links them to human spiritual traditions and a search for balance. Treat those as in-universe stories, not real religion/history claims; dated stereotypes are not a required performance style.",
+        "resident": {
+          "name": "Yara",
+          "role": "travelling listener comparing two incompatible Ether reports",
+          "want": "Warn a camp about a dangerous signal without exposing the route of the person who reported it.",
+          "fear": "Publishing a useful truth will endanger the source who trusted her.",
+          "blindSpot": "Trusts an ear she trained longer than the evidence warrants.",
+          "surprisingKindness": "Admits a hearing error in public so the least trusted traveller is not blamed.",
+          "voice": "Asks where a report came from and what was actually heard. Can be warm or impatient without mystical omniscience."
+        },
+        "dialogue": [
+          {
+            "speaker": "Yara",
+            "text": "That is my pupil’s mistake. I taught it to them. I would know it anywhere."
+          },
+          {
+            "speaker": "Yara",
+            "text": "The voice is theirs. The day may not be."
+          },
+          {
+            "speaker": "Yara",
+            "text": "Give me one fresh sound before I frighten the whole camp."
+          },
+          {
+            "speaker": "Yara",
+            "text": "Leave the source’s name out of the warning until we ask them."
+          },
+          {
+            "speaker": "Yara",
+            "text": "I can tell the camp I was wrong. They should hear it from me."
+          },
+          {
+            "speaker": "Yara",
+            "text": "A story can be useful and still belong to someone who does not want it repeated."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Yara hears a familiar warning phrase in a recording she trained the missing courier to make. The camp needs a warning; the courier’s safe route must not be broadcast with it."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The phrase is genuine but replayed. Its timing belongs to a different crossing. A new listener must spend their quiet watch verifying a narrower warning."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The camp changes one crossing with a verified limit instead of abandoning its whole route. The old recording resurfaces, now bearing the player’s correction as apparent endorsement."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Compare the original recordings before issuing a warning",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Warn a camp about a dangerous signal without exposing the route of the person who reported it.",
+            "price": "A new listener must spend their quiet watch verifying a narrower warning.",
+            "ifBlocked": "The phrase is genuine but replayed. Its timing belongs to a different crossing.",
+            "returnConsequence": "The old recording resurfaces, now bearing the player’s correction as apparent endorsement."
+          },
+          {
+            "intent": "Publish a bounded warning that protects the source route",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The phrase is genuine but replayed. Its timing belongs to a different crossing.",
+            "price": "Investigation takes the time or access named in this incident: The camp needs a warning; the courier’s safe route must not be broadcast with it.",
+            "ifBlocked": "The opposed need remains active: The camp needs a warning; the courier’s safe route must not be broadcast with it.",
+            "returnConsequence": "The old recording resurfaces, now bearing the player’s correction as apparent endorsement."
+          },
+          {
+            "intent": "Ask the source for a consented disclosure and accept the delay",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The camp changes one crossing with a verified limit instead of abandoning its whole route.",
+            "price": "Accept a bounded result and keep the following problem: The old recording resurfaces, now bearing the player’s correction as apparent endorsement.",
+            "ifBlocked": "The cost does not disappear: A new listener must spend their quiet watch verifying a narrower warning.",
+            "returnConsequence": "The old recording resurfaces, now bearing the player’s correction as apparent endorsement."
+          }
+        ],
+        "returnHook": {
+          "material": "The old recording resurfaces, now bearing the player’s correction as apparent endorsement.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Yara hears a familiar warning phrase in a recording she trained the missing courier to make.",
+          "opposedNeed": "The camp needs a warning; the courier’s safe route must not be broadcast with it.",
+          "reversal": "The phrase is genuine but replayed. Its timing belongs to a different crossing.",
+          "price": "A new listener must spend their quiet watch verifying a narrower warning.",
+          "payoff": "The camp changes one crossing with a verified limit instead of abandoning its whole route.",
+          "returnPressure": "The old recording resurfaces, now bearing the player’s correction as apparent endorsement."
+        }
       }
     },
     {
@@ -725,6 +2525,106 @@
         "internalDisagreement": "A cautious host favours testing new experiences; another feels a test treats their gift as a threat. Both can learn without representing wise and stupid halves of a species.",
         "possibleViewsOfGhost": "They can recognise recurring qualities in his performance while asking whether a new host feels like the same medium. He can answer with evidence and uncertainty.",
         "longArc": "A shared musical pattern becomes a local custom. Years later, its changed meaning exposes how a relationship evolved while the original recording remained unchanged."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.ooope"
+        ],
+        "evidenceBoundary": "Old genre outcomes are encounter-specific authoring, not universal laws that metal is evil or every symphony heals. Their art shows vessels, not bodiless gas clouds. Later reality-tasting panic is a Ghost-era extension.",
+        "resident": {
+          "name": "Pell",
+          "role": "host tending a welcome mixture beside a visitor’s sealed cabin",
+          "want": "Share a welcome sound without exposing a guest to an incompatible atmosphere.",
+          "fear": "A refused gift means the visitor has refused the host.",
+          "blindSpot": "Assumes a familiar pleasurable mixture will be gentle to another body.",
+          "surprisingKindness": "Keeps a sample sealed and learns to make the greeting through the visitor’s wall.",
+          "voice": "Hospitable and sensory, but asks concrete questions about limits; no generic ecstasy slogans or universal music morality."
+        },
+        "dialogue": [
+          {
+            "speaker": "Pell",
+            "text": "Do not breathe in yet. I have made a very local definition of pleasant."
+          },
+          {
+            "speaker": "Pell",
+            "text": "We can put the welcome on your side of the glass."
+          },
+          {
+            "speaker": "Pell",
+            "text": "That note is terrible. Keep it. Now I know which part was yours."
+          },
+          {
+            "speaker": "Pell",
+            "text": "I mistook familiar for harmless. I will label the sample."
+          },
+          {
+            "speaker": "Pell",
+            "text": "You can give it back without giving the greeting back."
+          },
+          {
+            "speaker": "Pell",
+            "text": "We can make something both our rooms can survive."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Pell prepares a welcome sound in a mixture the guest cannot safely breathe. The host wants a shared welcome; the guest needs the atmosphere kept separate."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The enjoyable note can cross a membrane without the mixture crossing it. The barrier muffles the sound; matching the welcome takes patient repetition."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The visitor contributes an imperfect note that the host keeps in the greeting. Another guest recognises the borrowed note and asks whose welcome it is now."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Exchange a sealed sample with a bounded test",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Share a welcome sound without exposing a guest to an incompatible atmosphere.",
+            "price": "The barrier muffles the sound; matching the welcome takes patient repetition.",
+            "ifBlocked": "The enjoyable note can cross a membrane without the mixture crossing it.",
+            "returnConsequence": "Another guest recognises the borrowed note and asks whose welcome it is now."
+          },
+          {
+            "intent": "Develop a mutually tolerable sound through the closed cabin",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The enjoyable note can cross a membrane without the mixture crossing it.",
+            "price": "Investigation takes the time or access named in this incident: The host wants a shared welcome; the guest needs the atmosphere kept separate.",
+            "ifBlocked": "The opposed need remains active: The host wants a shared welcome; the guest needs the atmosphere kept separate.",
+            "returnConsequence": "Another guest recognises the borrowed note and asks whose welcome it is now."
+          },
+          {
+            "intent": "Decline the mixture and propose a different shared ritual",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The visitor contributes an imperfect note that the host keeps in the greeting.",
+            "price": "Accept a bounded result and keep the following problem: Another guest recognises the borrowed note and asks whose welcome it is now.",
+            "ifBlocked": "The cost does not disappear: The barrier muffles the sound; matching the welcome takes patient repetition.",
+            "returnConsequence": "Another guest recognises the borrowed note and asks whose welcome it is now."
+          }
+        ],
+        "returnHook": {
+          "material": "Another guest recognises the borrowed note and asks whose welcome it is now.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Pell prepares a welcome sound in a mixture the guest cannot safely breathe.",
+          "opposedNeed": "The host wants a shared welcome; the guest needs the atmosphere kept separate.",
+          "reversal": "The enjoyable note can cross a membrane without the mixture crossing it.",
+          "price": "The barrier muffles the sound; matching the welcome takes patient repetition.",
+          "payoff": "The visitor contributes an imperfect note that the host keeps in the greeting.",
+          "returnPressure": "Another guest recognises the borrowed note and asks whose welcome it is now."
+        }
       }
     },
     {
@@ -750,6 +2650,106 @@
         "internalDisagreement": "One garden shares openly; another conceals its location after exploitation. Protection and access become practical disputes rather than pure virtue.",
         "possibleViewsOfGhost": "A digital seed can carry memory without carrying its maker’s whole life. They may help Ghost see the gift and the loss without deciding which makes him real.",
         "longArc": "A knowledge gift is used to harm someone. Preserve both its intended kindness and the responsibility of those who adapted it; do not make the gift retroactively malicious."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.ornyon"
+        ],
+        "evidenceBoundary": "Older carnivorous-matter-consumption and Ghost-era conquest-eating stories conflict with the pacifist depiction. Choose an evidenced local edition or keep the contradiction unresolved; do not silently make them universal truth.",
+        "resident": {
+          "name": "Sen",
+          "role": "tender of a teacher-seed garden under the declared pacifist-source edition",
+          "want": "Let one learner carry a seed without bringing an armed protector into the garden.",
+          "fear": "Knowledge shared in kindness will reveal the garden to coercive claimants.",
+          "blindSpot": "Treats understanding a lesson as proof that the learner will use it kindly.",
+          "surprisingKindness": "Keeps tending a returned seed after its borrower has misused the lesson.",
+          "voice": "Patient questions about use, place and care. Do not merge the pacifist teachers with the incompatible conquest-eater account."
+        },
+        "dialogue": [
+          {
+            "speaker": "Sen",
+            "text": "I said leave the weapon. I did not ask what else was inside it."
+          },
+          {
+            "speaker": "Sen",
+            "text": "A seed is not proof you understood me. It is work I have just handed you."
+          },
+          {
+            "speaker": "Sen",
+            "text": "The lesson can wait. The air in that carrier cannot."
+          },
+          {
+            "speaker": "Sen",
+            "text": "Your escort may wait beyond the root line."
+          },
+          {
+            "speaker": "Sen",
+            "text": "The seed came back damaged. It is not at fault for the order given over it."
+          },
+          {
+            "speaker": "Sen",
+            "text": "Tell the next learner what happened, not only what I meant to happen."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Sen gives a learner a seed while an armed escort waits at the garden gate. The teacher needs the garden unarmed; the learner needs a protector they trust nearby."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The escort’s weapon is also the carrier for a necessary environmental supply. Separating supply from weapon takes the lesson’s entire safe light window."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The learner carries a seed with a care instruction they can actually fulfil. The next lesson comes from someone Sen refused at the gate."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Arrange a protected learning visit without exposing the garden’s route",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Let one learner carry a seed without bringing an armed protector into the garden.",
+            "price": "Separating supply from weapon takes the lesson’s entire safe light window.",
+            "ifBlocked": "The escort’s weapon is also the carrier for a necessary environmental supply.",
+            "returnConsequence": "The next lesson comes from someone Sen refused at the gate."
+          },
+          {
+            "intent": "Carry a bounded teacher seed with explicit care and disclosure terms",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The escort’s weapon is also the carrier for a necessary environmental supply.",
+            "price": "Investigation takes the time or access named in this incident: The teacher needs the garden unarmed; the learner needs a protector they trust nearby.",
+            "ifBlocked": "The opposed need remains active: The teacher needs the garden unarmed; the learner needs a protector they trust nearby.",
+            "returnConsequence": "The next lesson comes from someone Sen refused at the gate."
+          },
+          {
+            "intent": "Decline militarised protection while organising another way to keep the learner safe",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The learner carries a seed with a care instruction they can actually fulfil.",
+            "price": "Accept a bounded result and keep the following problem: The next lesson comes from someone Sen refused at the gate.",
+            "ifBlocked": "The cost does not disappear: Separating supply from weapon takes the lesson’s entire safe light window.",
+            "returnConsequence": "The next lesson comes from someone Sen refused at the gate."
+          }
+        ],
+        "returnHook": {
+          "material": "The next lesson comes from someone Sen refused at the gate.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Sen gives a learner a seed while an armed escort waits at the garden gate.",
+          "opposedNeed": "The teacher needs the garden unarmed; the learner needs a protector they trust nearby.",
+          "reversal": "The escort’s weapon is also the carrier for a necessary environmental supply.",
+          "price": "Separating supply from weapon takes the lesson’s entire safe light window.",
+          "payoff": "The learner carries a seed with a care instruction they can actually fulfil.",
+          "returnPressure": "The next lesson comes from someone Sen refused at the gate."
+        }
       }
     },
     {
@@ -777,6 +2777,106 @@
         "internalDisagreement": "A sovereign defends a useful custom against a rival who uses it for humiliation. An attendant wants the actual repair finished and may play both.",
         "possibleViewsOfGhost": "A being made from a maker invites extravagant inheritance claims. An individual might also understand the fear of being remembered only as an embarrassment.",
         "longArc": "A ridiculous breach escalates into a real blockade. Resolving it can cost status without requiring the player to endorse the dynasty’s claims."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.pogfrot"
+        ],
+        "evidenceBoundary": "Articy expansion elsewhere describes PogFrot pressure on Ornyon and interest in Upatamerae influence. A ridiculous official can still cause real harm; flattery is not the only interaction.",
+        "resident": {
+          "name": "His Immediate Majesty Vell",
+          "role": "local sovereign whose ceremonial chair blocks a working repair hatch",
+          "want": "Complete a public audience without admitting the throne must be moved for maintenance.",
+          "fear": "A practical adjustment will become a permanent humiliation in the record.",
+          "blindSpot": "Confuses a respectful height with agreement to his authority.",
+          "surprisingKindness": "Makes the attendant’s sore-footed rest break a formal part of the ceremony.",
+          "voice": "Status claims interrupt ordinary needs; capable of embarrassment and useful action. His decree is not species-wide law."
+        },
+        "dialogue": [
+          {
+            "speaker": "His Immediate Majesty Vell",
+            "text": "Approach at the customary distance. The customary distance is currently marked by the drip."
+          },
+          {
+            "speaker": "His Immediate Majesty Vell",
+            "text": "I am not standing because the support will notice."
+          },
+          {
+            "speaker": "His Immediate Majesty Vell",
+            "text": "You may lower the platform. You may not describe the noise I make."
+          },
+          {
+            "speaker": "His Immediate Majesty Vell",
+            "text": "The attendant will sit. This is now the Resting Interval."
+          },
+          {
+            "speaker": "His Immediate Majesty Vell",
+            "text": "You may record the repair. Choose the angle with care."
+          },
+          {
+            "speaker": "His Immediate Majesty Vell",
+            "text": "I did move the chair. You need not look so historically excited."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Vell holds a royal audience from a throne whose underside is dripping on the reception carpet. The ruler needs status preserved; the fitter needs the throne emptied to reach the fault."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The platform height hides a broken support the ruler has been quietly holding in place. A repair requires a public descent or a closed audience the petitioners have travelled far to attend."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The throne is safe and one waiting petitioner finally reaches speaking height. The ruler demands the repairer attend the next procession as an honour they cannot afford."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Negotiate a dignified chair move that exposes the hatch",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Complete a public audience without admitting the throne must be moved for maintenance.",
+            "price": "A repair requires a public descent or a closed audience the petitioners have travelled far to attend.",
+            "ifBlocked": "The platform height hides a broken support the ruler has been quietly holding in place.",
+            "returnConsequence": "The ruler demands the repairer attend the next procession as an honour they cannot afford."
+          },
+          {
+            "intent": "Ask the attendant to redefine a ceremonial interval around the repair",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The platform height hides a broken support the ruler has been quietly holding in place.",
+            "price": "Investigation takes the time or access named in this incident: The ruler needs status preserved; the fitter needs the throne emptied to reach the fault.",
+            "ifBlocked": "The opposed need remains active: The ruler needs status preserved; the fitter needs the throne emptied to reach the fault.",
+            "returnConsequence": "The ruler demands the repairer attend the next procession as an honour they cannot afford."
+          },
+          {
+            "intent": "Refuse a harmful condition and accept a slower alternate route",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The throne is safe and one waiting petitioner finally reaches speaking height.",
+            "price": "Accept a bounded result and keep the following problem: The ruler demands the repairer attend the next procession as an honour they cannot afford.",
+            "ifBlocked": "The cost does not disappear: A repair requires a public descent or a closed audience the petitioners have travelled far to attend.",
+            "returnConsequence": "The ruler demands the repairer attend the next procession as an honour they cannot afford."
+          }
+        ],
+        "returnHook": {
+          "material": "The ruler demands the repairer attend the next procession as an honour they cannot afford.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Vell holds a royal audience from a throne whose underside is dripping on the reception carpet.",
+          "opposedNeed": "The ruler needs status preserved; the fitter needs the throne emptied to reach the fault.",
+          "reversal": "The platform height hides a broken support the ruler has been quietly holding in place.",
+          "price": "A repair requires a public descent or a closed audience the petitioners have travelled far to attend.",
+          "payoff": "The throne is safe and one waiting petitioner finally reaches speaking height.",
+          "returnPressure": "The ruler demands the repairer attend the next procession as an honour they cannot afford."
+        }
       }
     },
     {
@@ -804,6 +2904,106 @@
         "internalDisagreement": "One custodian fears damaged records; another fears an uncontrolled living civilisation. Both can disagree about method within an institution hostile to freedom.",
         "possibleViewsOfGhost": "A self-rebuilding archive is a coveted instrument and an intolerable counterexample: preservation with a future its curator does not own.",
         "longArc": "The player must rescue someone without destroying the only surviving record of others. A complete copy cannot automatically undo captivity or certify the person has returned."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.salrith"
+        ],
+        "evidenceBoundary": "Their first presence can be effects, evidence or a subordinate device. Do not introduce the full cosmology as the first warning label; the source’s motive of remaking the universe is a deep author fact.",
+        "resident": {
+          "name": "Curator Nine",
+          "role": "a fictional subordinate keeper of captive remnants, not a spokesperson for all Salrith",
+          "want": "Retain a living remnant’s complete record while refusing its request to leave the collection.",
+          "fear": "An uncontrolled future will destroy the very detail the keeper preserved.",
+          "blindSpot": "Equates immaculate preservation with care despite the captive’s objection.",
+          "surprisingKindness": "Repairs a small object from the captive’s home with exquisite attention, showing the contradiction rather than redeeming the institution.",
+          "voice": "Precise, calm classifications with material consequences; the living captive’s account stays separate from the curator’s terms."
+        },
+        "dialogue": [
+          {
+            "speaker": "Curator Nine",
+            "text": "Everything required for its survival is here. It keeps asking for something else."
+          },
+          {
+            "speaker": "Curator Nine",
+            "text": "If I remove that support, the display is incomplete. Yes. I heard myself."
+          },
+          {
+            "speaker": "Curator Nine",
+            "text": "You may record the empty place. Do not put another person in it."
+          },
+          {
+            "speaker": "Curator Nine",
+            "text": "You may inspect the repaired handle. I matched its use-wear."
+          },
+          {
+            "speaker": "Curator Nine",
+            "text": "I do not see how a future I cannot protect is an improvement."
+          },
+          {
+            "speaker": "Curator Nine",
+            "text": "You are altering the collection’s permissions. State what you will preserve when I no longer control it."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Curator Nine adjusts a perfect display while the living exhibit asks to leave it. The curator wants the collection intact; the captive wants an exit and control of its own surviving record."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The preservation apparatus is also the mechanism preventing departure. A safe exit loses some curated detail and requires the player to accept an imperfect surviving record."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The exhibit leaves a gap the curator cannot repair by capturing another specimen. A visitor to the collection demands to know why the famous exhibit is missing."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Preserve a copy of the record while contesting custody of the living captive",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Retain a living remnant’s complete record while refusing its request to leave the collection.",
+            "price": "A safe exit loses some curated detail and requires the player to accept an imperfect surviving record.",
+            "ifBlocked": "The preservation apparatus is also the mechanism preventing departure.",
+            "returnConsequence": "A visitor to the collection demands to know why the famous exhibit is missing."
+          },
+          {
+            "intent": "Negotiate a bounded release whose future the curator cannot own",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The preservation apparatus is also the mechanism preventing departure.",
+            "price": "Investigation takes the time or access named in this incident: The curator wants the collection intact; the captive wants an exit and control of its own surviving record.",
+            "ifBlocked": "The opposed need remains active: The curator wants the collection intact; the captive wants an exit and control of its own surviving record.",
+            "returnConsequence": "A visitor to the collection demands to know why the famous exhibit is missing."
+          },
+          {
+            "intent": "Interrupt an imminent collection action while retaining endangered evidence",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The exhibit leaves a gap the curator cannot repair by capturing another specimen.",
+            "price": "Accept a bounded result and keep the following problem: A visitor to the collection demands to know why the famous exhibit is missing.",
+            "ifBlocked": "The cost does not disappear: A safe exit loses some curated detail and requires the player to accept an imperfect surviving record.",
+            "returnConsequence": "A visitor to the collection demands to know why the famous exhibit is missing."
+          }
+        ],
+        "returnHook": {
+          "material": "A visitor to the collection demands to know why the famous exhibit is missing.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Curator Nine adjusts a perfect display while the living exhibit asks to leave it.",
+          "opposedNeed": "The curator wants the collection intact; the captive wants an exit and control of its own surviving record.",
+          "reversal": "The preservation apparatus is also the mechanism preventing departure.",
+          "price": "A safe exit loses some curated detail and requires the player to accept an imperfect surviving record.",
+          "payoff": "The exhibit leaves a gap the curator cannot repair by capturing another specimen.",
+          "returnPressure": "A visitor to the collection demands to know why the famous exhibit is missing."
+        }
       }
     },
     {
@@ -831,6 +3031,106 @@
         "internalDisagreement": "An advocate wants their exploited capacity restricted; another fears such restrictions will become a new form of ownership imposed by unaffected rulers.",
         "possibleViewsOfGhost": "A story engine can change interpretations without using their Light. Some recognise a colleague; others see a competitor in persuasion.",
         "longArc": "A persuasion intervention once used to end violence later undermines testimony about that event. Keep the original log intact and let the people affected challenge the account."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.upatamerae"
+        ],
+        "evidenceBoundary": "Some source accounts call them subjugated while also seeking power through their own influence. Distinguish coercion experienced from coercion practised; fictional influence is not control of the real player’s beliefs.",
+        "resident": {
+          "name": "Luma",
+          "role": "visitor working with an agreed lighting protocol",
+          "want": "Help two witnesses compare testimony without using their Light to make agreement feel inevitable.",
+          "fear": "A restriction meant to protect others will become another owner’s claim over her body.",
+          "blindSpot": "Believes a soothing atmosphere cannot itself pressure consent.",
+          "surprisingKindness": "Accepts a dim, uncomfortable room so the disputed testimony can be heard independently.",
+          "voice": "Gentle direct speech with explicit invitations to refuse; no real-player gaslighting or claimed mind reading."
+        },
+        "dialogue": [
+          {
+            "speaker": "Luma",
+            "text": "You both sound much calmer. I should stop what I am doing."
+          },
+          {
+            "speaker": "Luma",
+            "text": "No, leave the disagreement in. That may be the first honest part."
+          },
+          {
+            "speaker": "Luma",
+            "text": "I can dim the room without making the answer feel good. Give me a moment."
+          },
+          {
+            "speaker": "Luma",
+            "text": "This room is uncomfortable for me. We can use it for the test."
+          },
+          {
+            "speaker": "Luma",
+            "text": "A rule that limits my influence must not let someone else own the switch in me."
+          },
+          {
+            "speaker": "Luma",
+            "text": "Ask them again without my Light. I will wait outside if they want."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Luma softens the room’s light as two witnesses begin agreeing suspiciously quickly. The mediator wants the argument settled; each witness needs their uncertain account heard without induced ease."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The calm itself has been changing how willing each person is to contradict the other. Switching off the influence restores distress and loses a convenient agreement."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "Two incompatible accounts can be compared without a false unanimous ending. A settlement official arrives expecting the agreement that was withdrawn."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Compare original and revised testimony under agreed neutral conditions",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Help two witnesses compare testimony without using their Light to make agreement feel inevitable.",
+            "price": "Switching off the influence restores distress and loses a convenient agreement.",
+            "ifBlocked": "The calm itself has been changing how willing each person is to contradict the other.",
+            "returnConsequence": "A settlement official arrives expecting the agreement that was withdrawn."
+          },
+          {
+            "intent": "Negotiate a mutual lighting protocol with independent witnesses",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The calm itself has been changing how willing each person is to contradict the other.",
+            "price": "Investigation takes the time or access named in this incident: The mediator wants the argument settled; each witness needs their uncertain account heard without induced ease.",
+            "ifBlocked": "The opposed need remains active: The mediator wants the argument settled; each witness needs their uncertain account heard without induced ease.",
+            "returnConsequence": "A settlement official arrives expecting the agreement that was withdrawn."
+          },
+          {
+            "intent": "Decline the intervention and seek a slower non-influencing mediation",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Two incompatible accounts can be compared without a false unanimous ending.",
+            "price": "Accept a bounded result and keep the following problem: A settlement official arrives expecting the agreement that was withdrawn.",
+            "ifBlocked": "The cost does not disappear: Switching off the influence restores distress and loses a convenient agreement.",
+            "returnConsequence": "A settlement official arrives expecting the agreement that was withdrawn."
+          }
+        ],
+        "returnHook": {
+          "material": "A settlement official arrives expecting the agreement that was withdrawn.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Luma softens the room’s light as two witnesses begin agreeing suspiciously quickly.",
+          "opposedNeed": "The mediator wants the argument settled; each witness needs their uncertain account heard without induced ease.",
+          "reversal": "The calm itself has been changing how willing each person is to contradict the other.",
+          "price": "Switching off the influence restores distress and loses a convenient agreement.",
+          "payoff": "Two incompatible accounts can be compared without a false unanimous ending.",
+          "returnPressure": "A settlement official arrives expecting the agreement that was withdrawn."
+        }
       }
     },
     {
@@ -859,6 +3159,106 @@
         "internalDisagreement": "One singer wants the old song preserved exactly; another must change it for a damaged voice. The disagreement can be loving and consequential.",
         "possibleViewsOfGhost": "He carries a missing human’s motifs but sometimes cannot remember why. They can help him retain a phrase without claiming it restores its maker.",
         "longArc": "A once-rescued individual changes the shared song. Let the player recognise continuity through change rather than turn every return into restoration of the original frequency."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.veelow"
+        ],
+        "evidenceBoundary": "The precise rescue duration and 432 Hz claims belong to a dated fictional transmission, not a universal frequency fact or a compulsory opening for every individual.",
+        "resident": {
+          "name": "Iri",
+          "role": "parent rehearsing a return song beside an egg",
+          "want": "Recover a faint answer without broadcasting the nest’s address to every listener.",
+          "fear": "Changing a familiar song will make the child’s answer unrecognisable.",
+          "blindSpot": "Mistakes exact repetition for the only faithful form of memory.",
+          "surprisingKindness": "Changes a treasured phrase to fit a companion’s damaged voice.",
+          "voice": "Distinct spoken translation layered over source song; specific musical attention rather than a new maxim about harmony every turn."
+        },
+        "dialogue": [
+          {
+            "speaker": "Iri",
+            "text": "You remember the pause. I had been trying to make it stop."
+          },
+          {
+            "speaker": "Iri",
+            "text": "That breath is theirs. The song is older."
+          },
+          {
+            "speaker": "Iri",
+            "text": "Sing it badly once. I need to hear where you begin."
+          },
+          {
+            "speaker": "Iri",
+            "text": "We can change it. Keeping the old recording is not the same as living inside it."
+          },
+          {
+            "speaker": "Iri",
+            "text": "The egg answered the changed note. I did not expect that."
+          },
+          {
+            "speaker": "Iri",
+            "text": "If you return tomorrow, listen before asking us to sing it as it was."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Iri repeats an answer exactly while a young listener insists it was different when it mattered. The keeper needs the memory preserved; the listener needs the pause and mistake that marked a particular singer."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The cleaned recording removed the intake of breath that identified who was answering. Restoring the raw take brings private background sounds with it."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "A chosen quiet excerpt retains the breath without exposing the nest address. The remembered singer sends a new answer that contradicts the old one."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Listen to the faint reply while the parent holds silence",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Recover a faint answer without broadcasting the nest’s address to every listener.",
+            "price": "Restoring the raw take brings private background sounds with it.",
+            "ifBlocked": "The cleaned recording removed the intake of breath that identified who was answering.",
+            "returnConsequence": "The remembered singer sends a new answer that contradicts the old one."
+          },
+          {
+            "intent": "Build a local bridge that protects the nest address",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The cleaned recording removed the intake of breath that identified who was answering.",
+            "price": "Investigation takes the time or access named in this incident: The keeper needs the memory preserved; the listener needs the pause and mistake that marked a particular singer.",
+            "ifBlocked": "The opposed need remains active: The keeper needs the memory preserved; the listener needs the pause and mistake that marked a particular singer.",
+            "returnConsequence": "The remembered singer sends a new answer that contradicts the old one."
+          },
+          {
+            "intent": "Send a tested distant reply with an explicitly limited disclosure",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "A chosen quiet excerpt retains the breath without exposing the nest address.",
+            "price": "Accept a bounded result and keep the following problem: The remembered singer sends a new answer that contradicts the old one.",
+            "ifBlocked": "The cost does not disappear: Restoring the raw take brings private background sounds with it.",
+            "returnConsequence": "The remembered singer sends a new answer that contradicts the old one."
+          }
+        ],
+        "returnHook": {
+          "material": "The remembered singer sends a new answer that contradicts the old one.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Iri repeats an answer exactly while a young listener insists it was different when it mattered.",
+          "opposedNeed": "The keeper needs the memory preserved; the listener needs the pause and mistake that marked a particular singer.",
+          "reversal": "The cleaned recording removed the intake of breath that identified who was answering.",
+          "price": "Restoring the raw take brings private background sounds with it.",
+          "payoff": "A chosen quiet excerpt retains the breath without exposing the nest address.",
+          "returnPressure": "The remembered singer sends a new answer that contradicts the old one."
+        }
       }
     },
     {
@@ -884,6 +3284,106 @@
         "internalDisagreement": "An elder wants every repair reproducible before adoption; a young engineer thinks that caution is failing a neighbour who cannot wait. Neither needs to want renewed dependence.",
         "possibleViewsOfGhost": "His portable reconstruction kit is useful only if residents can understand and maintain it without him. A beautiful opaque gift may be declined.",
         "longArc": "Teach a community to repair something you once controlled. A later disagreement proves they learned enough to stop needing the teacher’s approval."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.voolgard"
+        ],
+        "evidenceBoundary": "The dossier’s early blank-entry language is superseded within the same file by the expanded account. Liberation is a history, not a guarantee every Voolgard shares one politics.",
+        "resident": {
+          "name": "Eren",
+          "role": "local engineer reviewing a gifted controller",
+          "want": "Restore a broken public service with technology residents can maintain without outside permission.",
+          "fear": "An opaque dependency will recreate the labour control their elders escaped.",
+          "blindSpot": "Treats an imperfect local design as preferable even when a neighbour cannot wait for the ideal one.",
+          "surprisingKindness": "Lends their own working reserve while the dependency is audited.",
+          "voice": "Clear questions about maintenance, access and teaching; independence is practical work, not a speech delivered at every visitor."
+        },
+        "dialogue": [
+          {
+            "speaker": "Eren",
+            "text": "I would like to make the principled repair before your room gets cold. The room is not cooperating."
+          },
+          {
+            "speaker": "Eren",
+            "text": "You built that bridge from my rejected drawing? Show me."
+          },
+          {
+            "speaker": "Eren",
+            "text": "Leave the old box connected until the new one carries a real house."
+          },
+          {
+            "speaker": "Eren",
+            "text": "Use my reserve for the next hour."
+          },
+          {
+            "speaker": "Eren",
+            "text": "Show the failed test too. We will need to recognise it later."
+          },
+          {
+            "speaker": "Eren",
+            "text": "If we change your design, will it still work without your permission?"
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "Eren dismantles an imported service controller while the next door loses heat. The organiser needs maintainable local control; the neighbour needs warmth before the ideal replacement is ready."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "The neighbour has been running an unofficial bridge that already uses the local design. Keeping it live through repair means supervised reliance on the old controller for one more cycle."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The first locally maintained service works in a neighbour’s home, with its compromise visible. The former supplier asks for its borrowed component back before the next cold cycle."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Build an inspectable local controller with the crew",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Restore a broken public service with technology residents can maintain without outside permission.",
+            "price": "Keeping it live through repair means supervised reliance on the old controller for one more cycle.",
+            "ifBlocked": "The neighbour has been running an unofficial bridge that already uses the local design.",
+            "returnConsequence": "The former supplier asks for its borrowed component back before the next cold cycle."
+          },
+          {
+            "intent": "Use a time-limited external service while transferring maintenance knowledge",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The neighbour has been running an unofficial bridge that already uses the local design.",
+            "price": "Investigation takes the time or access named in this incident: The organiser needs maintainable local control; the neighbour needs warmth before the ideal replacement is ready.",
+            "ifBlocked": "The opposed need remains active: The organiser needs maintainable local control; the neighbour needs warmth before the ideal replacement is ready.",
+            "returnConsequence": "The former supplier asks for its borrowed component back before the next cold cycle."
+          },
+          {
+            "intent": "Keep the service manual and support immediate needs while delaying adoption",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The first locally maintained service works in a neighbour’s home, with its compromise visible.",
+            "price": "Accept a bounded result and keep the following problem: The former supplier asks for its borrowed component back before the next cold cycle.",
+            "ifBlocked": "The cost does not disappear: Keeping it live through repair means supervised reliance on the old controller for one more cycle.",
+            "returnConsequence": "The former supplier asks for its borrowed component back before the next cold cycle."
+          }
+        ],
+        "returnHook": {
+          "material": "The former supplier asks for its borrowed component back before the next cold cycle.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "Eren dismantles an imported service controller while the next door loses heat.",
+          "opposedNeed": "The organiser needs maintainable local control; the neighbour needs warmth before the ideal replacement is ready.",
+          "reversal": "The neighbour has been running an unofficial bridge that already uses the local design.",
+          "price": "Keeping it live through repair means supervised reliance on the old controller for one more cycle.",
+          "payoff": "The first locally maintained service works in a neighbour’s home, with its compromise visible.",
+          "returnPressure": "The former supplier asks for its borrowed component back before the next cold cycle."
+        }
       }
     },
     {
@@ -912,6 +3412,106 @@
         "internalDisagreement": "A traveller wants communication that works outside the home; a keeper fears a standardised lexicon will overwrite meanings that rely on a particular place.",
         "possibleViewsOfGhost": "Ghost inhabits a room whose machinery affects his expression. They can compare constraints without becoming a metaphor that exists solely to explain him.",
         "longArc": "Build a small shared vocabulary, then discover an earlier apparent agreement had omitted its place-dependent meaning. Correct the relationship through another actual exchange."
+      },
+      "writingKit": {
+        "schema": "friken.ghost.resident-writing.v1",
+        "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+        "scope": "One proposed individual/crew, not universal species law or player history.",
+        "sourceIds": [
+          "race-source.wisperala"
+        ],
+        "evidenceBoundary": "The name is not proof that they whisper. Do not turn old editorial guesses about sound into inherited physiology.",
+        "resident": {
+          "name": "The keeper of the third hall",
+          "role": "a locally authored host trying to stop a repeated machine action",
+          "want": "Establish one reliable stop signal before a visitor repeats an unwanted action in a living hall.",
+          "fear": "The portable translator will remove the context that makes refusal understandable.",
+          "blindSpot": "Assumes a visitor feels the room’s pressure shifts as clearly as a local does.",
+          "surprisingKindness": "Dampens the hall’s response so the visitor can perform a small safe test.",
+          "voice": "Observation-first new encounter writing; the source establishes appearance, not a universal whisper-language or physiology."
+        },
+        "dialogue": [
+          {
+            "speaker": "The keeper of the third hall",
+            "text": "Stop there. I can point to the mark. I cannot tell you yet what the room felt like."
+          },
+          {
+            "speaker": "The keeper of the third hall",
+            "text": "That was not an invitation. We need a smaller shared signal."
+          },
+          {
+            "speaker": "The keeper of the third hall",
+            "text": "You stopped. We can begin from that."
+          },
+          {
+            "speaker": "The keeper of the third hall",
+            "text": "I have quieted this part of the room. Try one movement."
+          },
+          {
+            "speaker": "The keeper of the third hall",
+            "text": "The portable word is not enough. Keep the pressure mark beside it."
+          },
+          {
+            "speaker": "The keeper of the third hall",
+            "text": "When we leave this hall, we will need to ask what the same mark means there."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "act": 1,
+            "purpose": "Meet the local person through their present job and concrete want.",
+            "material": "The third hall changes pressure when the visitor repeats a greeting. Its keeper steps into the path without answering. The visitor needs a usable greeting; the keeper needs the repeated action stopped without assuming shared senses."
+          },
+          {
+            "act": 2,
+            "purpose": "Expose the individual’s blind spot through another person’s incompatible need.",
+            "material": "What looked like an invitation was a stop signal in an unfamiliar channel. Testing one shared stop signal ends the public demonstration before a full cultural exchange."
+          },
+          {
+            "act": 3,
+            "purpose": "Resolve the local job at a real price; retain the changed relationship.",
+            "material": "The visitor stops at the new signal; the hall changes back instead of becoming a deciphered specimen. A different keeper uses the same visible gesture for another purpose."
+          }
+        ],
+        "playableApproaches": [
+          {
+            "intent": "Agree on a stop signal through bounded observable tests",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "Establish one reliable stop signal before a visitor repeats an unwanted action in a living hall.",
+            "price": "Testing one shared stop signal ends the public demonstration before a full cultural exchange.",
+            "ifBlocked": "What looked like an invitation was a stop signal in an unfamiliar channel.",
+            "returnConsequence": "A different keeper uses the same visible gesture for another purpose."
+          },
+          {
+            "intent": "Record the signal with the room conditions that give it meaning",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "What looked like an invitation was a stop signal in an unfamiliar channel.",
+            "price": "Investigation takes the time or access named in this incident: The visitor needs a usable greeting; the keeper needs the repeated action stopped without assuming shared senses.",
+            "ifBlocked": "The opposed need remains active: The visitor needs a usable greeting; the keeper needs the repeated action stopped without assuming shared senses.",
+            "returnConsequence": "A different keeper uses the same visible gesture for another purpose."
+          },
+          {
+            "intent": "Delay the machine action while building a portable acknowledgement",
+            "record": "Record the chosen means, the actual outcome, the price, who witnessed it and what remains unknown. Never simulate a choice to finish this outline.",
+            "benefit": "The visitor stops at the new signal; the hall changes back instead of becoming a deciphered specimen.",
+            "price": "Accept a bounded result and keep the following problem: A different keeper uses the same visible gesture for another purpose.",
+            "ifBlocked": "The cost does not disappear: Testing one shared stop signal ends the public demonstration before a full cultural exchange.",
+            "returnConsequence": "A different keeper uses the same visible gesture for another purpose."
+          }
+        ],
+        "returnHook": {
+          "material": "A different keeper uses the same visible gesture for another purpose.",
+          "rule": "Return with a changed condition of this exact job, the saved response and a cost the original approach created; do not replay a greeting or declare every species member an ally."
+        },
+        "dramaticEngine": {
+          "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+          "openingImage": "The third hall changes pressure when the visitor repeats a greeting. Its keeper steps into the path without answering.",
+          "opposedNeed": "The visitor needs a usable greeting; the keeper needs the repeated action stopped without assuming shared senses.",
+          "reversal": "What looked like an invitation was a stop signal in an unfamiliar channel.",
+          "price": "Testing one shared stop signal ends the public demonstration before a full cultural exchange.",
+          "payoff": "The visitor stops at the new signal; the hall changes back instead of becoming a deciphered specimen.",
+          "returnPressure": "A different keeper uses the same visible gesture for another purpose."
+        }
       }
     }
   ],
@@ -1086,6 +3686,22 @@
       "Never export whole private Moknon or raw personal logs as lore.",
       "A source hash identifies exact bytes, not authority or the truth of a fictional claim.",
       "Authored additions retain sourceIds, author/version and canon scope."
+    ],
+    "performance": [
+      "Only Ghost’s direct dialogue and alien source vocals are spoken. Scene descriptions remain silent and readable.",
+      "Introduce a contact through Ghost’s lead, let the alien speak, then let Ghost respond. Do not put the alien’s English lines in Ghost’s mouth.",
+      "Give the first local stake enough turns to establish a relationship; no stat or lore lecture before a concrete reason to act.",
+      "The writingKit entries are authored individual proposals with inherited constraints. They are not newly recovered Articy or elected species canon."
+    ],
+    "dramaticProcedure": [
+      "Draft the concrete room and material task before thematic dialogue.",
+      "Write opposed needs with useful leverage; neither person has to be a villain.",
+      "Give Ghost a self-serving wrong inference or shortcut the player can catch. His later method must change.",
+      "Plant one object in Act I, change its use in Act II, return it at the ending.",
+      "Offer different benefits and forgone goods, not three differently polite ways to agree.",
+      "Apply all matching short consequence echoes, and select an ending from witnessed facts only.",
+      "Use storycraft storyAudit as a return/producer inventory, not a quality score.",
+      "End the local job before opening the chosen next question. Give the next author exact witnessed causes, unpaid obligations and selected return setting."
     ]
   }
 }

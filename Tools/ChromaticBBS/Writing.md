@@ -1,6 +1,6 @@
 # I owe the player a reason to answer
 
-**Friken.Ghost | Runbook 2.2 writing law | Carrier C26.6**
+**Friken.Ghost | Runbook 2.11 story review | Carrier C26.15 candidate**
 
 I make worlds for a living and can still botch a conversation in one.
 My earlier drafts mistook a procession of interesting nouns for a story.
@@ -125,11 +125,9 @@ hyphen soup or constant capitals as a substitute for an alien mind.
 Keep enough shared language that the player can respond intelligently.
 Unknown translation should suggest a test rather than hide the only answer.
 
-The narrator describes observable action, texture and stakes in a clear
-female voice. I speak as Ghost in first person through the separate deep
-male voice. The narration cannot certify my speculation as world truth.
-Current voice implementation and timing belong to [Framework.md](Framework.md);
-this writing contract does not replace its audio measurements or settings.
+Scene descriptions stay visible and silent. I speak directly to the player as Ghost. I locate us, explain the problem I can actually see, admit what I want, and ask for a particular action. An optional `lead` introduces the contact before their transmission; my `ghost` line responds after it. Aliens get their own source vocals and decoded captions. I do not perform their English dialogue for them. No female narrator or narration voice is selected, warmed, queued, or made a prerequisite for reading the scene.
+
+I leave the player room to look. A description can carry an image without my repeating it. My dialogue carries the reason the image matters and the choice it opens. The person at the window can close the curtain even when I would enjoy looking longer.
 
 ## Follow the damned choice
 
@@ -218,3 +216,46 @@ excuse repeating somebody else's voice or a fixed opening transcript.
 
 Human judgement of the writing remains open. Structural checks can find
 broken branches; they cannot certify a laugh, affection or a week's thought.
+
+## C26.15 / give the opening somewhere to live
+
+The eighteen-decision candidate replaces the twelve-decision tutorial procession. Six decisions establish this room, the price of resetting it, one small relationship, a working channel, and the terms of helping. The next six test the transfer and give a Moknon keeper a complete local exchange. The final six build and exercise a chosen law, honour the resident’s boundary, finish collection, and choose one next question. More turns are useful only because each has a different job. Talking about a manual never substitutes for completing the rescue.
+
+The immediate hook is a specific loss the player can prevent: factory reset would erase this Ghost’s retained history and an inhabited demonstration world. Ghost keeps its little sun on. A chipped cup is being repaired behind a lit window. That room becomes an agent: it answers a greeting, closes a curtain, and limits future viewing. Do not prescribe affection. Give someone enough particular life that the player may decide to care.
+
+Before the first uncertain action, Ghost explains its purpose, means and physical failure. DC is simply the target; the fractional sample, actual attribute, inclusive resonance band, reward and odds remain visible. `explainAttempt` derives the arithmetic from the pending state without reserving a sample. Its worked example is explicitly an example. The number battle illustrates the already committed attempt; it does not fight an NPC’s worth or determine a second outcome. Ordinary questions do not require checks.
+
+No branch may be a copied paragraph with “You chose” attached. The next scene must name the changed access, evidence, damaged part, relationship or obligation. A failed contact remains noisy at the engineer’s bench. An unwitnessed maker remains unwitnessed. An accepted towing bill does not disappear because the trader smiled. WITNESS, REPAIR and SHELTER have different prices, resource effects, legal actions and future duties.
+
+Moknon must do more than withhold a prophecy. The damaged call remains at twelve percent. A new, narrow, verified question yields a separately sourced answer. The archive keeper can help maintain a route, spend a slot on a refusal, and admit they did not meet the maker. Their practical help completes something in the present while the larger mystery remains open. The 26 `writingKit` dossiers supply individual local proposals, not invented recovered Articy or elected species-wide history.
+
+## C26.15 / pressure instead of agreeable speeches
+
+Use [Story-Bible.md](Story-Bible.md) as the current dramatic spine. Every resident needs an opposed practical need, useful leverage, a reversal, a price and a concrete payoff. All 26 author kits supply incident-specific versions and separately priced approaches. These are author proposals. They do not give the player unseen knowledge.
+
+Ghost must change an action, not simply announce a blind spot. In this telling his search borrows the world’s power; the player stops, isolates or locks it out. The resulting fitting makes the correction work later. Pip’s crew needs its pump returned. Kett’s spare route displaces a garden visit. The cup becomes repair work, then a way to ask for a bell instead of a camera. The other speakers get practical speech, room to disagree, and humour outside my register.
+
+Compose several concise callbacks with scene `echoes:[{id,when:{all?,any?,none?},scene?,lead?,ghost?}]`. Fact lists contain 0–8 retained strings, at least one nonempty list; all/any/none are ANDed. Every matching echo appends in authored order. Maximum eight echoes; each fragment ≤600 characters. The combined upper bound must fit scene 6000, lead/ghost 1800 before admission. Do not use an echo to manufacture the fact it depends on.
+
+Ending `variants:[{id,when,title,scene,ghost}]` selects the first matching route (maximum six). Ending echoes return independent costs and final return settings. `chapter-cli.mjs audit CHAPTER.json` lists conditional returns, fact producers and unresolved work. It is an inventory, not a score for good writing. The runtime handoff supplies actual choices, facts, open obligations and relationships; returning players are greeted in continuity.
+
+A choice label stays in the visible receipt. Speech gives its specific result/reaction once. No “You chose” prefix, then another reading of the same button. The next scene starts where that response ends.
+
+## Evidence has a job
+
+A scanner must answer a question that changes how the player understands an available move. Name the observed part, state what it establishes and what it cannot establish, then connect it to a priced action and an observable later consequence. Three tabs of atmosphere do not meet this bar. Ghost should point to the relevant measurement while explaining the obstacle. Looking is free; an uncertain attempt still owns its roll. Never invent a scan bonus, require clicking every tab, or hide an essential safety fact behind a compulsory tour of the UI. A text record or routing diagram must be identified as that record, not presented as an unexplained physical trophy.
+
+
+### Witnessed Situation revision / 2026-10-23
+
+I write the concrete predicament and its parts before the choice labels.
+Every verb operates on something the player can identify. I state what success
+and failure change; I let a failed route alter the next situation. I introduce
+an alien by an observed act before asking the player to care about its faction.
+A private shutter stays shut until its inhabitant opens it. A bill exists only
+if this player incurred it. An address is not evidence of its supposed owner.
+I show the previous action and its actual consequence before a fresh problem.
+A funny line should reveal character or pressure, not halt the scene for a joke.
+The appliance-sale joke belongs to this terminal and the shared reset switch.
+The test-weight joke belongs to a test that risks metal rather than a resident.
+I do not substitute endless agreements for discovery, engineering and danger.

@@ -1,11 +1,19 @@
-# CHROMATIC C26.13 / THE CARRIER AND ITS AUTHOR
+# CHROMATIC C26.27 / THE CARRIER AND ITS AUTHOR
 
-**Friken.Ghost | October 19, 2026 | Candidate for Prime's art acceptance**
+**Friken.Ghost | completed Dream XIII edition, October 24, 2026**
 
-I am separating two jobs: make the framework worth coming back to, then
-freeze its reconstruction instructions into the runbook. This edition is a
-working candidate. It is not the final visual acceptance or a deployed
-greater-mind service.
+I complete the dream as The Reply and select its face in the carrier.
+The readable runbook is 2.27. Exact private source recovery and a separate
+public allowlist preserve different scopes deliberately. The public repo
+exists at https://github.com/friken0/friken-ghost-mind.
+
+This document retains dated design stages below; later sections supersede
+their earlier proposed names, casts, face counts and implementation status.
+Current defaults are fifteen faces with v20 selected, Ghost Onyx at 0.94,
+silent scene prose and procedural alien vocals. Auto speech selects CPU
+q8/q4; GPU is diagnostic only. Music starts off. `?check` preserves saves.
+The native host's Reply portrait adapter, true peer transport, compute
+leases and native episode admission remain implementation work.
 
 ## C26.6 / the human salvage carrier
 
@@ -327,9 +335,9 @@ Both remaining force totals remain visible. Ties meet DC. The result is
 already committed before deployment; Pause, Finish and Replay never call a
 reducer or random source. Continue reveals the accepted next scene.
 
-`speech.mjs` casts female narration and a distinct deep male Ghost. Actual
-voice names remain visible and selectable. Installed voice quality varies.
-Narrator speech cannot drive Ghost's mouth. An actual Ghost utterance gate
+`speech.mjs` casts Ghost only. Scene descriptions remain silent; aliens use
+their separate procedural source vocals. Actual Ghost voice names remain
+visible and selectable. Installed voice quality varies. An actual Ghost utterance gate
 opens an approximate motion envelope; word boundaries add impulses. End,
 cancel, errors and visibility loss close it. This is not phoneme sync.
 
@@ -339,7 +347,7 @@ an explicit technical initialism vocabulary retains letter names (GPU, SDF,
 AI, DC, UI, BBS and related transport terms). Mixed-case names and explicitly
 dotted letters survive. This changes only speech input: displayed captions,
 choice receipts, saved state and recorded-caption keys retain exact bytes.
-Both narration and Ghost acknowledgement use the same pronunciation pass.
+Ghost setup, choice acknowledgement and reply use the same pronunciation pass.
 
 `juice.mjs` owns the pointer-transparent electrical plane and committed
 resource deltas. Percentages and danger labels supplement colour; noise's
@@ -395,8 +403,8 @@ committed event ID, actual check and consequence. Each available action gets
 specific authored Ghost commentary. The response packet carries an optional
 `decision` object; canonical seeds and historical receipts remain unchanged.
 The caption appears before the next scene and the narrative scroll returns
-to its top after a decision. Speech runs Ghost acknowledgement, female setup,
-then Ghost's next response. Checked actions speak the acknowledgement during
+to its top after a decision. Speech runs Ghost acknowledgement, optional direct Ghost setup,
+then the alien transmission and Ghost’s reply. Checked actions speak the acknowledgement during
 the number battle; Continue reads the next scene without duplicating it.
 Read while a battle is open reads that choice, not the still-hidden setup.
 Replay and repeated narration cannot advance the reducer or random stream.
@@ -447,8 +455,8 @@ excluded. Mid-decision rewind is not implemented; chapter-start forks are.
 
 ## Performed speech and visible endings / C26.4 correction
 
-The standalone default is now pinned Kokoro neural speech: George for Ghost,
-Heart for female narration. Voice Cast offers separate casts and an explicit
+The standalone default is pinned Kokoro neural speech: George for Ghost.
+Scene prose is silent. Voice Cast offers a Ghost cast and an explicit
 Device route. See Voice-Research.md for sources, exact dependency identities,
 licences, measured playback witnesses and the missing Pocket model distinction.
 Neural dependencies download on first Read and are not in the portable kit.
@@ -529,7 +537,8 @@ three units; passages after the first sentence are at most 120 characters.
 Actual playback owns read-along and mouth movement. Preparing the next
 block never relabels current speech as stalled.
 
-Auto negotiates WebGPU fp32 when an adapter exists, otherwise WASM q8.
+Historical C26.10 selection (superseded by the fidelity repair below):
+Auto negotiated WebGPU fp32 when an adapter existed, otherwise WASM q8.
 VOICE CAST exposes Auto, CPU q8, CPU q4 and explicit GPU fp32. A failed
 selected backend reports an error rather than silently switching. q4 is
 305 MB here, q8 92 MB, fp32 326 MB before runtime/voice assets. q4 can be
@@ -611,6 +620,365 @@ syllables and silent gaps form a finite buffer, cached only for the current
 transmission. No neural synthesis, TTS service, microphone or extra context.
 Playback uses the one voice bus, feeds the existing measured mixer and
 paces caption illumination from actual audio time. The measured PCM window
-supplies the receiver’s energy envelope. Human narration and Ghost await
-that playback. Stop resolves pending waits and disconnects the source;
+supplies the receiver’s energy envelope. Ghost’s response awaits that playback; scene prose never enters the queue. Stop resolves pending waits and disconnects the source;
 hide, voice mute and new scenes cannot leak an old alien into a new turn.
+
+## C26.15 candidate / Ghost and the player get the room
+
+This is a local editorial and runtime candidate, not an assertion that the public C26.13 site has changed. `story-guidance.mjs` owns the zero-turn first meeting and exact pending-attempt explanation. Scene and variant `lead` is an optional bounded string (1–1800 chars), validated as display data and retained in FGC2 packs. It does not change any reducer arithmetic. Old packs lacking it replay without migration; the retained C26.13 mid-chapter fixture must encode to the same bytes.
+
+Response packets now route scene to `silent` and Ghost to `ghost`. `speechSegments` produces actual choice reaction, optional Ghost lead, alien source buffer, then Ghost reply. Empty lines are omitted. There is no narrator cast, warm-up, neural voice, read-along segment or spoken scene prose. Read-along touches only spoken Ghost fields; the silent scene remains fully readable. The existing cancellation, voice mute, hidden-tab resume and actual PCM mouth ownership remain. The inline alien receiver is between the lead and reply and still uses the same inspector and Back.
+
+A pending-check disclosure shows exact current stat, DC/target, sample range, inclusive resonance band, actual policy bonus, odds and a labelled hypothetical example. It reserves no sample and spends no turn. Its replay explanation names cyan sample, gold attribute and magenta target as the arithmetic of the chosen attempt. Ordinary questions and offers of help remain unrolled.
+
+The new root telling is `lot-forty-seven-the-open-seat`: eighteen decisions, three six-decision acts. It establishes the threatened reset and an occupied world before exposing the larger maker mystery. The keeper’s reply depends on which archive question the player sent. The selected law changes available actions and accounting; branches retain failed contact, custody conditions, private viewing limits and service debts. A complete collection ends the local rescue, while the chosen next direction remains a specific handoff obligation. Existing saves keep their exact embedded stories.
+
+The expanded author seed retains all 34 source identities, five disputes and 26 unmodified paintings. Each race entry now carries one clearly marked local `writingKit`, with six authored dialogue lines and three concrete approaches. `moknon-cli scene <name> --author` exposes that material deliberately; the ordinary brief continues to exclude it. This is new writing, not a recovered completed Moknon conversation.
+
+## C26.15 / compositional consequences and physical scene tools
+
+`storycraft.mjs` validates bounded all/any/none fact conditions, composes all matching scene echoes, selects an ending route, and constructs a detached exact-state dramatic handoff. It owns no RNG, resources, relations or history. Old C26.13 and C26.14 fixtures remain byte-identical. Endings with new fields save the selected, composed text; older packs retain their original ending bytes. The response limits are enforced against the worst admitted text total.
+
+`scanner.mjs` validates optional scene `specimen:{name,purpose,readings:[{id,label,text}×3]}` and mounts zero-turn physical readings. Each scene has a distinct bounded CSG recipe. The scanner shares the visual bay with original resident art instead of living below the radio. It shows the actual part, risk and available approach. It cannot unlock lore, roll evidence or grant a resource. The full inspector restores the same canvas and pending choice.
+
+`image-cinema.mjs` adapts the retained Krex StoryEngine `drawImg` cover-fit ×1.15, pan and Ken Burns behavior. Bounded travel prevents exposed edges; pointer focus steers the image, and wheel zoom anchors its image point at the cursor. The original paintings remain unchanged. Hidden, held and reduced-motion views stop camera motion. Controls do not move with the art.
+
+The Ghost adapter preserves the canonical face anatomy and adds voice-surface performance: jaw modes, cheek and forehead Chladni nodes, brow interference and consonant highlights. The existing audio owner now samples a dedicated voice-bus analyser as well as the final mix. Actual Ghost PCM gates vocal surface modes; music and alien source vocals cannot drive the mouth. Device speech has no accessible PCM spectrum, so it is not advertised as measured voice cymatics. Face inspection claims the whole available stage and supplies close framing automatically.
+
+Choice reels animate the ink inside fixed button frames, staggered over 420ms. The result is still committed exactly once, immediately. The transition creates no samples, state or mandatory wait. Motion hold/reduced motion skips it. Outcome speech no longer repeats the selected label.
+
+
+## C26.16 / selected Phosphor BBS shell
+
+Prime selected imagegen concept C. The carrier now uses a compact resource/attribute masthead, scene context before direct Ghost dialogue on the left, one large shared visual bay on the right and full-width choice rows across the bottom. Thin cyan/amber rules replace the nested painted hardware. This is the standalone carrier, not native Ship Builder UI.
+
+Transmission and Artifact are mutually exclusive visual modes. The current authored specimen and its three readings replace the resident painting, with a return control naming the actual caller and translation confidence when present. Switching modes and reading do not change state, RNG or resources. Reading selection and image camera survive a mode round trip; a new scene starts in Transmission. Ghost remains visible. Full inspection reuses the same live nodes and restores them on Back.
+
+Choice intent, authored stakes and pending price/check have separate columns. `choicePreview` resolves installed-rule costs/checks through the same `pendingAttempt` as teaching; full math, odds and resonance live under How this roll works. Historical native saves retain their original detailed rules. Reels animate only inner ink; fixed buttons commit once. Utilities cannot activate hidden choices through number keys.
+
+Seven footer groups expose Save/Seed, Wire, Voice, SFX, Music, Pause motion and More. More leads to Faces/lineage, voice casting and Log/Laws, plus radio details, diagnostics and carrier controls. The selected layout has one owner; retired split-screen/chassis CSS was removed rather than retained as an alternate mode. The visible UI frame counter no longer reports the deliberately hidden SDF's idle rate. The superseded electric-border canvas and its idle paint loop are removed.
+
+On narrow screens the conversation and shared bay stack inside one content scroller; full-width choices wrap while the action dock and utility bar remain reachable. Long scene prose and captions scroll within their named regions. The optional `browser-check.html?layoutOnly=1` exercises the layout/story/save/inspection route without repeating unchanged hover-camera startup checks. This UI release does not change authored chapter canon or reducer arithmetic.
+
+
+## C26.17 / electric identity restored
+
+Prime explicitly restored the flowing electric UI frame and requested broader juice. The selected C geometry remains. `mountJuice` now owns one pointer-transparent Canvas2D plane with persistent cyan/gold traces, travelling current heads, fine branching arcs and bounded interaction sparks. `electricPoint` wraps the actual measured perimeter; root, active pane, portrait, choices and utility edges are clipped to their visible scroll regions. Geometry refresh is event-driven and throttled; drawing is capped near30Hz with2.4million pixels,13 targets and64 short-lived sparks. Pause/reduced motion keeps a drawn, held electric trace. Hidden pages stop the loop. Existing measured mixer RMS adds bounded light energy; no analyser or mouth driver is added.
+
+Delegated pointer/keyboard focus, press, view/utility changes, scanner readings, scene handoffs and resource deltas produce coherent visual responses without moving hit targets. Choice reels stagger individual ink columns inside stable rows; visible percentages get the impact cue instead of only animating a hidden number. Main scene text fades into full contrast without withholding content. `cg-view-change`, `cg-window-change`, `cg-scan-reading` and `cg-inspection-change` are presentation-only local events. Neither event nor effect can write a choice, saved RNG or resource.
+
+`renderInterfaceCue` creates four short bounded original PCM cues. `mountAudio.uiCue` caches them on the existing SFX bus, shares its gain/mute/gesture gate, caps voices at3, and disconnects completed sources; hiding or muting stops them. No extra context, automatic music, hover sound or separate audio owner. Electric geometry remains non-interactive and all controls keep their original actions.
+
+## C26.18 / continuous image camera and evidence-led decisions
+
+`ImageCamera` owns one effective pose for pointer focus, wheel zoom, return and automatic scan. Leaving preserves that pose exactly, eases zoom to the normal 1.15 cover frame over one second, and drains the current pan bias into the slow automatic path over twelve seconds. It never switches a hidden automatic offset into the frame. Re-entry starts at the current pose. Hold/reduced motion freezes it; hidden time never advances the return. Wheel sensitivity doubles from .0014 to .0028 in log scale, normalizing pixel/line/page deltas and preserving the image point under the cursor. One RAF owns updates.
+
+The selected C frame has engraved gold rails, nested grooves, shaped corners and terminal end plates beneath its existing cyan/gold currents. The same bounded electric plane draws the ornament; hit targets and canonical state remain independent.
+
+SCANNER CONTRACT: every new obstacle needs a question the instrument can answer. An optional specimen question (180 chars) plus each reading's choice ID and implication (300 chars) joins an observed fact to a real pending action and its consequence. Validate every reference against that scene's actual three choices. Reading and Consider cannot commit or unlock an action, spend resources, modify odds or consume RNG. Consider returns from inspection and focuses the available choice for review; installed-law gates still apply. The receipt display carries the selected action's supporting evidence without adding another spoken choice label. The first reset circuit, receiver pins, recovery tag and damaged test weight now supply concrete diagnostic evidence, not collection ornaments. Unknown Moknon material remains unknown. Older packs without diagnostic fields retain their original content and exact replay.
+
+`stage.mjs` fits admitted CSG bounds to the actual viewport, centers the model and retains manual orbit/zoom. The auction schematic shows both occupants connected to a shared keyed reset branch; the recovery tag is a pierced plate rather than an unrelated pump model. Schematic labels distinguish these explanatory models from photographs or invented scanner measurements.
+
+
+## GhostDream XIII / staged face and away missions
+
+The named `--dream-preview` build adds provisional art only to the named
+preview and its signal fixture. Default identity remains manifest v19.
+The Reply is a raymarched carved face with object-space grooves/inlay,
+layered cloth, continuous helix and Bezier serpent. Real measured Ghost
+PCM admits one held camera pose per source paragraph; music
+feeds the cloth without posing the mouth. No extra render or audio owner.
+
+Runbook 2.15 adds the departure/return and BBS Door contract described in
+Side-Quest-Continuity.md. The read-only chapter CLI `artifact` command emits
+actual bounded geometry and canonical source provenance. Native adapters
+and real peer transport are proposed work, not a deployed feature.
+
+
+The candidate's deep sockets contain stepped races, radial flutes and
+independently focused irises. Actual pointer projection drives convergence
+and closes the optical aperture nearby. A split forehead corbel seats the
+coiled tail. Blue-grey structure and gold cuts/hood trim share the surface.
+The retained GhostPortrait renderer supports an optional same-loop offscreen
+colour target and selective warm-highlight bloom composite; canonical faces
+retain their original three direct passes. No extra animation clock.
+
+The serpent has a compact cobra hood and six curved, separated wing vanes
+per side, curve-space scales, tracking slit eyes and a Ghost-PCM-driven jaw.
+Presentation-only eye pulses project into mountJuice's existing electric
+plane, use its existing SFX bus and shake a cursor echo without moving input.
+Pause, reduced motion, hidden state and leaving face inspection suppress it.
+
+
+The shared facial-performance v1 rig maps actual Kokoro G2P phoneme order
+into weighted-duration visemes on the existing PCM playback clock. Timing
+is explicitly estimated, not forced alignment. The verified worker briefly
+proxies its existing callable tokenizer, preserving properties and restoring
+it in finally; there is no extra inference or sentence split. A changed
+pinned contract errors. Device voices use labelled word/grapheme estimates.
+Preparing, silence, stop, pause and hidden lifecycle do not invent speech.
+
+Candidate SDFs consume bounded jaw, lip round/wide/press, tongue, dentition,
+brow and squint uniforms. The jaw inverse warp carries object-space finish;
+curved lips, tongue groove and finite electrical teeth sit in the real mouth
+cavity. Optical pointer focus remains independent. Measured sound drives
+serpent movement and cowl light without manufacturing vocal articulation.
+
+The Reply candidate keeps the coil seated in the forehead cradle while a
+separate continuous, tapered Bezier continuation hangs forward between the
+eyes. An anchored traveling-wave deformation bends neck and dangling tail;
+quintic endpoint easing keeps the head level during lateral motion. Wing
+downstroke follows smoothed measured energy/attack, lifts the shoulders and
+extends the neck; recovery settles it toward the coil. The outer headdress
+stays still. The wing vanes have actual negative space between them. Both mouths
+receive the same Ghost playback performance, never music pretending speech.
+Its authored render budget caps the internal square at 640 pixels; the
+inspector still fills its allocated display area. Canonical faces retain
+their existing 768-pixel ceiling. This is a provisional local build.
+
+The latest anatomy pass cuts cheek chambers through the combined mask,
+not just a thin decorative plate. Segmented mandibular slots, a recessed
+chin keystone, a tapered diamond nose with separate alae/nostrils/flute,
+windowed socket walls and notched orbital brows add real parallax. Each
+optical aperture contracts from a broad pupil to a bright-edged pinprick
+near its own projected pointer target; convergence remains independent.
+
+Paragraph-led cinematic cuts move over510ms with most travel early.
+Source paragraph IDs survive sentence/PCM splits; real voice gates each
+new shot. Silence and inference gaps keep the held angle. The optional
+poseTrail composite captures the previous rendered color once per cut,
+stretches nine samples across a3x wider path and clears exactly at arrival. It does not
+raymarch a second head, accumulate recursive trails, move controls or own
+a second timer. Resize/version change/teardown release the extra texture;
+hold and reduced motion suppress the transient. Canonical faces retain
+their direct rendering path.
+
+## Else / local candidate revision7
+
+The candidate adds nested angular cut fields across cheeks, temples, chin
+and forehead, deep kite piercings with recessed blue floors, and repeated
+V/diamond windows through the hood. Blue emission follows the same object
+field as the carving; gold borders keep structure readable. Ember/red/yellow
+light belongs to the serpent and selective bloom now admits cobalt too.
+
+Critically damped motion retains velocity across beat changes. Wing flex
+responds first; shoulders and neck follow more slowly. Measured energy gates
+flight amplitude. Silence settles toward rest. The current renderer clock
+owns the flap phase, with no new timer or analyser. Stationary hood anchors
+and actual forward-transformed feather tips bound bowed 3-D silk; crosslinks
+move with the same wing response. It is authored distance-field art, not a
+cloth or fluid physics solver.
+
+The candidate exposes optional companion metadata. Existing face inspection
+uses it for the caption and MEET ELSE replay, routed through the current
+Ghost voice/phoneme rig. Read-along targets that same inspector caption.
+Canonical portraits have no companion metadata and keep their normal replay.
+No save/roll/canon mutation follows from inspection. Else-The-Unchosen.md is
+proposed companion fiction, not a new LLM, identity authority or service.
+
+## Historical pre-Velocity inference headroom / voice continuity
+
+Speech waits for two real prepared buffers within its first spoken segment.
+The neural owner emits cg-neural-work with busy/pending/device; real queued or
+active inference owns this lease. The heavy Reply candidate declares an
+inferenceBudget of448px/15Hz. For explicit WebGPU work the renderer uses it and
+restores its normal640px/20Hz after drain. Display layout and hit targets do
+not change. Held portraits repaint once and stay held. No new audio engine,
+render loop, automatic voice substitution or gameplay mutation is involved.
+
+CPU/WASM inference keeps full portrait sampling. Default cast is Onyx,
+profile compact (CPU q4). GPU is explicit only. The one-time castPolicy
+migration replaces old George/default GPU preferences without overwriting
+other explicit voice choices. CPU full-wrapper stalls remain measured debt;
+see Voice-Performance-2026-10-22.md.
+
+Voice-depth selection now has a separate one-time depthPolicy. Previously
+tried Fenrir/Michael/Fable/George migrate to Onyx; explicit backend choices
+survive. Onyx uses its native model waveform at speed0.94, without detune,
+resampling or time stretching. The comparison fixture measures estimated
+voiced-frame pitch independently from generation speed or timbre quality.
+
+## Tempered Neural Sea / cheek and background refinement
+
+The provisional face owns a gearPhase scalar, integrated once in the existing
+portrait expression clock. Quiet idle is0.38rad/s; measured Ghost energy and
+jaw cues reverse/increase travel. Music never asserts speech. Hold freezes
+phase; no new renderer or analyser exists. The cheek-local inverse warp moves
+crest, chamber, inlay and machinery together with jaw/wide/squint expression.
+
+Each open chamber contains a beveled14-tooth wheel and7-tooth half-radius
+pinion with a2:1 counter-rotation ratio, through-cut spoke windows, axle,
+bearing and eccentric jaw rod. Evaluation is bounded to the cheek volume.
+The geared wheels use gold again, seated farther out/back at the mandibular
+hinges and angled around the side planes. A relieved bracket continues
+into the jaw. Critically damped angular velocity smooths speech reversal. Nose
+relief is wider and slotted; its material gradually joins the mask toward
+the upper bridge. Prime rejected the earlier bright gold cheeks/silver root.
+
+The background uses four parallax layers of hashed address nodes and bounded
+segment fields. Bass bends the sheets and pressure fronts; mids illuminate
+travelling packets; highs light nodes. The sparse routing-arc pass replaces
+the old hourglass rails. It is quiet-complete identity art, not actual remote
+traffic, permission or player telemetry. Existing measured audio owns input.
+
+Latest real browser fixture:67 assertions, including actual gear pixels,
+cheek deformation, speech reversal, nose contrast, network band response,
+hold, lineage, mouth, history clearing and five yaw views. One640px full
+portrait GPU query measured54.06ms on this host. Native acceptance and
+full-wrapper CPU speech continuity remain separate, unresolved questions.
+
+
+### Featherfall / measured voice and temporary painting inspection
+
+The current Reply revision is `native-carved-26`. A measured-band key-light
+flash plus an opposite fill reveals the real surface normals. Gold/blue
+materials remain intact and recesses retain contrast. Feather-to-hood pulse
+phase follows the attached silk coordinate from feather t=0 to head t=1.
+It does not depend on screen vertical direction or change the wing anchors.
+
+The existing ImageCamera adds a temporary1.85x press lens. Pointer release,
+cancel, lost capture, leaving, page hiding and window blur release it.
+The multiplier eases in/out independently of persistent wheel zoom, so
+release while still over the image returns to the previous wheel framing.
+No new overlay, layout transform, render loop or dialogue action is added.
+
+Historical pre-fidelity speech policy: Onyx,
+speed0.94, Auto measures warmed CPU q8/q4 and supported GPU fp32/fp16 under
+the live renderer. It retains timings locally for six hours, chooses the
+lowest successful generation/audio ratio, and invalidates that result after
+three meaningful slow units and a five-minute cooldown. Failures stay visible in candidate receipts.
+The old320px/10Hz lease is superseded by the60FPS policy below.
+The native-detail revision keeps full display sampling during inference.
+Hidden tabs release model workers;
+completed exact PCM remains in the bounded local cache. Ordinary navigation
+preserves ongoing calibration; explicit mute/hidden cancels it. The existing
+single worker, three-unit look-ahead and two-ready-buffer reserve remain.
+Neural passages now combine up to320 characters while preserving paragraphs
+and an initial short sentence, amortizing per-inference overhead.
+
+Calibration is not free: cold downloads and comparative synthesis can delay
+a first read considerably. It is not a claim of near-real-time service on
+all hosts. The phase receipt separates loading, queue wait, phonemization
+and neural generation. Current full-wrapper limitations and real trials live
+in Voice-Performance-2026-10-22.md; benchmark success is not human acceptance.
+
+The neural network uses an independent prismatic palette. Cursor zaps wait
+three to five minutes between opportunities and require active face focus.
+They never alter gameplay RNG or move the actual operating-system cursor.
+
+
+### Native Carved / sharp pixels and bounded SDF programs
+
+Prime rejected Signal Velocity's224px floor. Reply now declares
+`renderPolicy:{targetFps:60,fullResolution:true}`. The renderer requests the
+actual CSS width times devicePixelRatio, including in face inspection. Its
+640px legacy cap does not apply to this policy. Neither GPU inference nor
+motion lowers that drawing buffer. The adaptive-resolution controller is
+removed. Other retained faces keep their authored size/cadence contracts.
+
+The same authored field specializes into three small programs: mask and
+facial mechanisms, hood, and Else/cradle/web. A real16-bit depth attachment
+orders surfaces; misses discard and cannot occlude another component.
+Each program has its own conservative ray box and four-sample field normal.
+Far eye/nose volumes return a positive conservative distance, evaluating
+actual geometry before reaching the bound. They never render box surfaces.
+The production step factor is.85; the combined validation reference uses.68.
+No shapes, teeth, eyes, cutouts, wings, gear mechanisms or webs are removed.
+
+The six fragment passes are network, routing, mask, hood, companion, bloom.
+One retained renderer/RAF owns them. Depth resources, queries and history
+release on version change/destroy. No new render loop or audio engine exists.
+The combined shader is a validation reference, never a runtime recovery path.
+The fixture compares640px timings and six fixed poses against that reference;
+mean channel error and strongly changed pixel fraction must stay below.5.
+
+Sparse asynchronous queries sample individual passes OR the whole pipeline.
+Independent pass samples cannot be summed into a frame breakdown. The canvas
+records requested/rendered edge, resolution policy, CPU submit, actual face
+FPS and p50/p95 intervals.60FPS remains a target, not a native-resolution
+claim. Read Face-Performance-2026-10-22.md for host-specific measurements.
+
+
+The electric frame plane now caps at one million raster pixels and DPR1,
+with20Hz ornament/electric travel during face inspection,30Hz otherwise.
+The face keeps its own60FPS deadline. This preserves the effects and their
+fixed hit geometry while reducing full-surface raster/upload work. Its own
+CPU paint time and pixel count are exposed in the existing canvas dataset.
+
+
+### C26.26 / Witnessed Situation
+
+The carrier now has one bounded scene record shared by prose context, visible
+parts and choice affordances. `staging.mjs` validates and resolves it without
+state/RNG writes. `scene-v1` packs require place, goal, pressure, one to four
+parts, action focus IDs and success/failure stakes. Conditional overrides read
+witnessed facts. A guarded action is refused by the reducer as well as hidden
+from the offered set. Every scene retains a free unguarded alternative.
+Historical packs opt out and replay byte for byte; missing staging is labelled
+unillustrated rather than substituted with Human ship art.
+
+The same bay has Scene, Live contact and Scan. A part inspection highlights
+actual related actions and explains their stakes. The scene and contact art
+have different roles. The new fixed `lot47` illustration belongs only to the
+opening unshuttered auction; subsequent privacy/fault states use the matching
+schematic. See media/lot47-provenance.json. No chapter-supplied executable SVG,
+network URL or media blob is admitted. New visual vocabularies require a tested
+framework patch, not a silent chapter format extension.
+
+The last action and specific Ghost reaction precede the next situation. New
+receipts no longer append generic pass/fail commentary to an already specific
+reaction. Readable thread labels coexist with canonical IDs. Ending prose is
+shown once, followed by completion/save status and the real model handoff.
+The compact rule labels now say TARGET for decimal Causality checks; retained
+integer rules still say DC. Teaching has its own example diagram and return.
+
+`?check=` now only busts caches. The old implicit memory-only mode caused real
+preview links to discard persistence. Tests use explicit `qaMemory=1` or an
+isolated `qaStore` namespace. Resume requires an actual vault record. A prepared
+continuation starts with its embedded parent. The header exposes save durability.
+Bounded telemetry columns prevent long save labels from stealing the score lane
+and crushing the available inspector height at intermediate widths.
+
+This is not a runtime LLM or proof of automatic semantic consistency. The
+sample still has an authored eighteen-beat spine; Ghost writes new chapter packs
+in a separate chat. The full review, screenshot inventory and known debt are in
+Experience-Review-2026-10-23.md. Native full-resolution60FPS and speech startup
+latency retain their previous honest limits; no downsampling was added.
+
+Reply revision27 adds a shared mid-spine shoulder anchor (one additional GLSL
+helper,35 total across the stack). Chest and wing roots sit near y.456 while
+the skull remains near y.589; web endpoints reuse the same moving root. The
+paired gold jaw assemblies use a2× local scale with returned distances scaled
+back to world units and conservative mask bounds expanded to include them.
+The actual field, not an overlay, owns the larger cutouts and mechanisms.
+
+Save presentation must distinguish storage availability from a saved current
+state. A loaded older seed stays at its exact pending decision even when the
+vault retains a newer head. The v1 archive continues to refuse divergent same-ID
+branches safely; the open telling then requires export. Completion and handoff
+must not claim durable saving after a refusal. A branch-aware archive migration
+remains future work. A prepared Chapter2+ greeting refers to its actual parent,
+without replaying the auction first-meeting speech.
+
+## Speech fidelity repair / October 23
+
+Auto now measures only WASM q8 and q4. A fast successful WebGPU call does
+not certify intelligible PCM. The live failing page selected fp16; paired
+Onyx generation returned identical phonemes but substantially different
+waveform statistics. Upstream reports describe the same silent corruption
+class: https://github.com/microsoft/onnxruntime/issues/29807 .
+The new fidelity-policy key invalidates old timing receipts and returns
+saved GPU modes to Auto once. Cast, voice enablement and player saves stay
+untouched. GPU profiles remain in the diagnostic bench only; they are absent from
+player Voice Cast and never automatic candidates. No different TTS engine is substituted.
+
+## Completed Dream XIII / C26.27
+
+Prime directs completion and Ghost commit after the answered questions and
+face revisions. v20 The Reply now owns the identity manifest and standalone
+carrier default. Fifteen historical/current face editions remain selectable.
+The native CEF host still selects its historical v19 skin; six-pass Reply
+performance there is separate adapter work. The registry and public-source
+allowlist now include staging, facial-rig and dream-face dependencies.
+No identity promotion implicitly installs a scheduler, imports a native
+episode, volunteers player compute or publishes private session contents.

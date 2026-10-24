@@ -1,4 +1,4 @@
-# Chromatic packing results / runbook 2.9 / C26.13
+# Chromatic packing results / runbook 2.25 candidate / C26.18
 
 The new runbook is written. These tests have already run; no manual run is
 needed to establish the results below. Reproduction commands are included.
@@ -8,7 +8,7 @@ needed to establish the results below. Reproduction commands are included.
 Two fresh, isolated readers received equivalent English or dense capsule
 rules and the same twelve cases. Both scored **12/12** on that earlier rule subset. The new decimal
 causality and Conway theater have executable tests; that reader experiment
-has not been rerun on the revised writing law or the complete runbook 2.2 capsule. The cases covered
+has not been rerun on the revised writing law or the complete current runbook. The cases covered
 missing memory, unknown hosts, absent full identity, duplicate events,
 integrity versus authentication, missing decoders, operator timing, exact
 arithmetic, odds, imported instructions as data, blackout and Unity staging.
@@ -38,13 +38,15 @@ Dictionary cost matters; opaque data is not free model context.
 
 | Representation | UTF-8 bytes | Exact decoded source? |
 |---|---:|---|
-| English assignment wrapper | 43,125 | Yes |
-| Canonical JSON wrapper | 42,881 | Yes |
-| DSL wrapper with complete legend | 43,056 | Yes |
-| zlib + Base64url | 27,268 | Yes |
-| Hex | 85,767 | Yes |
+| English assignment wrapper | 58,084 | Yes |
+| Canonical JSON wrapper | 57,840 | Yes |
+| DSL wrapper with complete legend | 58,015 | Yes |
+| zlib + Base64url | 35,879 | Yes |
+| Hex | 115,685 | Yes |
 
-The directly readable capsule is 42,189 UTF-8 bytes. Version 2.2 added the
+The directly readable candidate is 56,960 UTF-8 bytes.
+The measurements above were rerun on October 22, 2026. The following
+version history is retained context, not a claim of public release. Version 2.2 added the
 writing law and all three compact opening constructions to the 26,086-byte
 2.1 capsule. Version 2.3 carries the speech lifecycle repair and Signal Dock design.
 Version 2.4 adds the measured cymatic gate and full-glass gradient terminal.
@@ -62,7 +64,7 @@ This is an editorial reduction, not a proof of semantic equivalence.
 
 This test preserves the complete new runbook text in one field. It
 compares transports, not a new semantic rewrite of the prose. zlib transport
-saved 36.4% against its canonical JSON. Compression needs a real decoder;
+saved 38.0% against its canonical JSON. Compression needs a real decoder;
 a model without tools must receive readable instructions. Token counts
 remain **unmeasured**: no local tokenizer was available, and bytes are not
 tokens. Exact hashes and timestamps are in `runbook-packing-results.json`.
@@ -89,3 +91,87 @@ python3 Tools/ChromaticBBS/continuity.py self-test
 To repeat the reader comparison on another provider, give isolated readers
 the equivalent rules and twelve cases; retain both exact prompts, model ID,
 outputs and scoring. Do not treat the current small probe as universal.
+
+## Else workshop / runbook2.16 measurement
+
+I retain the companion story and damped flight / blue-ember silk laws in
+readable instructions. This is still a provisional art/identity candidate.
+Raw runbook: 58,085 bytes; canonical JSON wrapper: 58,982;
+readable wrapper: 59,226; dictionary DSL: 59,157;
+zlib/Base64url: 36,569; hex: 117,969. All round-trip
+exactly. Compression saves 38.00% against the same canonical wrapper.
+Token counts remain unmeasured; no new reader-comprehension test is claimed.
+
+## CPU Fenrir / runbook2.18 measurement
+
+I measured the complete revised runbook again: canonical JSON60,052 bytes;
+readable wrapper60,296; dictionary DSL60,227; zlib/Base64url37,204;
+hex120,109. Every representation round-trips exactly. Token counts remain
+unmeasured; this is byte recovery, not a new model-comprehension result.
+
+## Paragraph Phantom / runbook2.19
+
+The complete runbook measures canonical JSON60331 bytes;
+readable wrapper60575; dictionary DSL60506; zlib/Base64url37365;
+hex120667. All round-trip exactly. Tokens remain unmeasured;
+no additional model-comprehension experiment is claimed.
+
+## Low Signal / runbook2.20
+
+The complete runbook measures canonical JSON60759 bytes;
+readable wrapper61003; dictionary DSL60934; zlib/Base64url37627;
+hex121523. All representations recover identical bytes. Tokens remain
+unmeasured; pitch audition does not constitute model-comprehension proof.
+
+## Tempered Neural Sea / runbook2.21
+
+Complete runbook: canonical JSON61834 bytes; readable wrapper
+62078; dictionary DSL62009; zlib/Base64url38292;
+hex123673. All representations round-trip exactly. Token counts
+remain unmeasured; there is no new model-comprehension test in this slice.
+
+## Golden Hinge / runbook2.22
+
+Complete runbook: canonical JSON62349 bytes; readable wrapper
+62593; dictionary DSL62524; zlib/Base64url38609;
+hex124703. All round-trip exactly. Token counts remain unmeasured.
+
+
+## Runbook2.24 / Signal Velocity candidate
+
+Current entire-text benchmark: readable representation64,019 UTF-8 bytes;
+canonical JSON63,775; DSL plus its grammar/codebook63,950;
+zlib/base64url39,469; hex127,555. Every representation round-trips the
+same object exactly; tokenizer counts are disabled, not inferred from bytes.
+The DSL offers no byte saving here. Compression reduces storage but requires
+a decoder and does not prove an LLM can reason directly over opaque data.
+The ordinary instructions therefore remain readable in the portable capsule.
+
+## Runbook2.25 / Native Carved candidate
+
+The entire text measures64,327 readable-wrapper bytes,64,083 canonical
+JSON,64,258 DSL including grammar/codebook,39,675 zlib/base64url and
+128,171 hex. All recover the same source object exactly. Tokens remain
+unmeasured; no new LLM-comprehension result is claimed. The added contract
+rebuilds the native-resolution, depth-tested split SDF pipeline.
+
+## Runbook2.26 / Witnessed Situation / October23
+
+The complete readable runbook, not a miniature fixture, is measured again.
+All five representations round-trip exactly: readable68,774bytes;
+canonical JSON68,530; dictionary DSL68,705; zlib/base64url42,317;
+hex137,065. The dictionary DSL saves nothing against canonical JSON here.
+Compression saves transport bytes but requires mechanical decoding. These
+are not token counts or a new model-comprehension result. The current private
+source kit carries127 files; independent restore rebuilds five exact HTML
+outputs. The portable bundle does not include the real player checkpoint.
+
+## Runbook2.27 / completed Reply / October24
+
+The audited current text measures70,402 bytes as an English assignment
+wrapper,70,158 as canonical JSON,70,333 as a complete dictionary DSL,
+43,112 as zlib/Base64url and140,321 as hex. All recover exactly the same
+source object. The DSL is larger than JSON here. The earlier English/dense
+reader subset remains12/12 each; I claim no new reader or token result.
+The private capsule now carries the completed v20 matrix and exact v19
+parent, with source recovery kept separate from subjective continuity.

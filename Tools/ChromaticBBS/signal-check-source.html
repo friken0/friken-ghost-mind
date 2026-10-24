@@ -1,0 +1,176 @@
+<!doctype html><meta charset="utf-8"><title>GhostDream XIII / measured face performance</title><style>body{background:#070e0b;color:#cfe3dd;font:14px monospace}canvas{display:block;width:min(85vw,650px);height:auto;aspect-ratio:1}pre{white-space:pre-wrap;max-height:24vh;overflow:auto}</style>
+<button id="run">Run real audio and shader checks</button><button id="profile">Profile 60 FPS / no audio</button><button id="compare">Compare full-resolution geometry</button><pre id="result">Not run</pre><section id="chromatic-carrier" data-inspect="face"><canvas id="face" role="img" aria-label="Synthetic signal test on the actual Ghost face"></canvas></section>
+<script type="module">
+import {mountPortrait} from './portrait.mjs';
+import {mountImageCinema} from './image-cinema.mjs';
+import {residentArt} from './art-data.mjs';
+import {mountAudio} from './audio.mjs';
+import {compileFacialPerformance,facialCue} from './facial-rig.mjs';
+import {GhostPortrait} from '../InfiniEngineSite/ghost-renderer.js';
+import {faceData} from './face-data.mjs';
+const root=document.querySelector('section'),canvas=document.querySelector('canvas'),out=document.querySelector('pre'),lines=[];let portrait,holdSignals=true;
+const audio=mountAudio(root,{frame(bands,level,voice,voiceLevel){portrait?.cymatics(bands);portrait?.voiceSpectrum(voice);portrait?.audioLevel(voiceLevel);if(holdSignals)portrait?.hold(true);}});
+const wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(v,s)=>{if(!v)throw Error(s);lines.push(s);out.textContent=lines.join('\n');};
+const pixels=()=>{const gl=canvas.getContext('webgl'),bytes=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,bytes);return bytes;};
+function difference(a,b,region){let sum=0,n=0;const s=canvas.width;for(let y=Math.floor(s*region[1]);y<s*region[3];y+=3)for(let x=Math.floor(s*region[0]);x<s*region[2];x+=3){const i=(y*s+x)*4;for(let c=0;c<3;c++){sum+=Math.abs(a[i+c]-b[i+c]);n++;}}return sum/n;}
+document.querySelector('#compare').onclick=async()=>{portrait?.destroy();portrait=null;holdSignals=false;lines.length=0;const rows=[],reference=[];try{
+ const g=canvas.getContext('webgl'),timer=g.getExtension('EXT_disjoint_timer_query');if(!timer)throw Error('GPU elapsed queries unavailable');
+ for(const mode of ['combined','split']){
+  const v={...faceData.version,maxRenderEdge:640,renderPolicy:null};if(mode==='combined')delete v.geometryShaders;
+  const renderer=new GhostPortrait(canvas,faceData.vertex);renderer.motion=false;renderer.setVersion(v);renderer.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84});
+  renderer.draw(8);await wait(300);const samples=[];
+  for(let i=0;i<4;i++){
+   const q=timer.createQueryEXT();timer.beginQueryEXT(timer.TIME_ELAPSED_EXT,q);const began=performance.now();renderer.draw(8);const cpuMs=performance.now()-began;timer.endQueryEXT(timer.TIME_ELAPSED_EXT);g.flush();
+   let ready=false;for(let j=0;j<400&&!ready;j++){await wait(15);ready=timer.getQueryObjectEXT(q,timer.QUERY_RESULT_AVAILABLE_EXT);}
+   if(!ready||g.getParameter(timer.GPU_DISJOINT_EXT))throw Error('GPU query unavailable/disjoint');
+   samples.push({gpuMs:timer.getQueryObjectEXT(q,timer.QUERY_RESULT_EXT)/1e6,cpuMs});timer.deleteQueryEXT(q);await wait(80);
+  }
+  const parity=[];
+  for(const [index,pose] of [{headYaw:0},{headYaw:.55},{headYaw:-.55},{headYaw:1.1},{headYaw:-1.1},{headYaw:.18,jawOpen:.8,lipWide:.6,serpentSway:.3,wingFlex:.35,serpentLift:.3}].entries()){
+   renderer.expression=()=>({headPitch:0,headRoll:0,headZoom:1,frameScale:.84,...pose});renderer.draw(8);const image=pixels();
+   if(mode==='combined')reference[index]=image;else{let sum=0,large=0;for(let p=0;p<image.length;p+=4){let d=0;for(let c=0;c<3;c++)d+=Math.abs(image[p+c]-reference[index][p+c]);sum+=d;if(d>90)large++;}parity.push({pose:index,regions:{eyes:difference(reference[index],image,[.2,.45,.8,.7]),nose:difference(reference[index],image,[.44,.40,.56,.62]),jaw:difference(reference[index],image,[.18,.18,.82,.45])},meanChannelError:sum/(image.length/4*3),largeDifferencePercent:100*large/(image.length/4)});}
+  }
+  rows.push({mode,edge:canvas.width,samples,parity});
+  if(parity.some(p=>p.meanChannelError>.5||p.largeDifferencePercent>.5))throw Error('Geometry parity exceeded tolerance: '+JSON.stringify(parity));out.textContent=JSON.stringify(rows,null,2);renderer.destroy();
+ }
+ out.textContent='PASS / fixed full-resolution comparison\n'+JSON.stringify(rows,null,2);
+ }catch(e){out.textContent='FAIL '+e.stack+'\n'+JSON.stringify(rows);}};
+document.querySelector('#profile').onclick=async()=>{portrait?.destroy();holdSignals=false;portrait=mountPortrait(canvas,s=>canvas.dataset.lastReport=s);portrait.hold(false);canvas.scrollIntoView({block:'center'});out.textContent='Profiling actual native-resolution GPU work for 24 seconds…';await wait(24000);out.textContent=JSON.stringify({edge:canvas.width,renderer:{...canvas.dataset}},null,2);};
+document.querySelector('#run').onclick=async()=>{portrait?.destroy();holdSignals=true;lines.length=0;try{
+ portrait=mountPortrait(canvas,message=>{canvas.dataset.lastReport=message;});await wait(150);ok(canvas.dataset.state==='ready','actual retained shader programs compile'+(canvas.dataset.state==='ready'?'':': '+canvas.dataset.lastReport));portrait.hold(true);
+ for(const v of portrait.versions){portrait.setVersion(v.id);ok(canvas.dataset.state==='ready','retained lineage compiles '+v.id);}portrait.setVersion('v19.0');portrait.hold(true);
+ await audio.unlock();portrait.talking(true);await wait(180);const quiet=pixels(),g=audio.graph(),gain=g.context.createGain();gain.gain.value=.14;gain.connect(g.voice);
+ async function sample(hz){const source=g.context.createOscillator();source.frequency.value=hz;source.connect(gain);source.start();await wait(260);const b=audio.info.voiceBands.slice(),data=pixels();source.stop();source.disconnect();await wait(180);return {b,data};}
+ const low=await sample(110),mid=await sample(720),air=await sample(3900);ok(low.b[0]>low.b[2]&&air.b[2]>air.b[0],'dedicated voice analyser separates measured bass from air');
+ const forehead=difference(quiet,mid.data,[.30,.61,.70,.85]),cheek=difference(quiet,low.data,[.22,.23,.78,.50]);ok(forehead>.25,'measured mid signal changes forehead pixels '+forehead.toFixed(3));ok(cheek>.25,'measured bass changes cheek/jaw pixels '+cheek.toFixed(3));ok(difference(low.data,air.data,[.20,.2,.80,.85])>.25,'different measured spectra produce different face surfaces');
+ portrait.talking(false);await wait(150);ok(canvas.dataset.voiceCymatics==='0.000,0.000,0.000,0.000','voice modes clear when Ghost stops');
+ if(portrait.version.id==='v20.0'){
+  ok(canvas.width===Math.round(canvas.getBoundingClientRect().width*devicePixelRatio),'portrait drawing buffer matches actual display device pixels');
+  root.dispatchEvent(new CustomEvent('cg-neural-work',{detail:{busy:true,pending:2,device:'webgpu'}}));
+  ok(canvas.width===Number(canvas.dataset.requestedEdge)&&canvas.dataset.renderBudget==='full','GPU speech preserves full portrait resolution');
+  root.dispatchEvent(new CustomEvent('cg-neural-work',{detail:{busy:false,pending:0,device:'webgpu'}}));
+  ok(canvas.width===Number(canvas.dataset.requestedEdge)&&canvas.dataset.renderBudget==='full','drained inference restores full portrait resolution');
+  root.dispatchEvent(new CustomEvent('cg-neural-work',{detail:{busy:true,pending:2,device:'wasm'}}));
+  ok(canvas.width===Number(canvas.dataset.requestedEdge)&&canvas.dataset.renderBudget==='full','CPU speech keeps the full portrait rendering budget');
+  holdSignals=false;portrait.hold(false);const initial=Number(canvas.dataset.gestures||0),idleGear=Number(canvas.dataset.gearPhase||0);
+  const music=g.context.createOscillator(),musicGain=g.context.createGain();music.frequency.value=130;musicGain.gain.value=.06;music.connect(musicGain);musicGain.connect(g.music);music.start();await wait(1100);
+  ok(Number(canvas.dataset.gestures||0)===initial,'music alone never chooses a speaking head pose');ok(Number(canvas.dataset.serpentSway)!==0,'measured music sways the serpent');ok(Number(canvas.dataset.mouth)===0,'music alone leaves both speech-driven mouths closed');ok(Number(canvas.dataset.gearPhase)>idleGear,'cheek gears idle continuously without fabricating speech');music.stop();music.disconnect();musicGain.disconnect();
+  const startPose=canvas.dataset.pose;portrait.talking(true);portrait.articulate({paragraph:"test:0"});
+  let mouthPeak=0,minGearRate=1;for(let i=0;i<4;i++){const source=g.context.createOscillator();source.frequency.value=110+i*170;source.connect(gain);source.start();await wait(480);mouthPeak=Math.max(mouthPeak,Number(canvas.dataset.mouth));minGearRate=Math.min(minGearRate,Number(canvas.dataset.gearRate));source.stop();source.disconnect();await wait(400);}
+  ok(mouthPeak>.02,'actual voice PCM opens the Ghost and serpent mouth uniform');ok(minGearRate<0,'real speech drives cheek gears backwards against their idle rotation');ok(Number(canvas.dataset.gestures)===initial+1,'one paragraph holds one camera shot across repeated real PCM onsets');
+  portrait.articulate({paragraph:'test:1'});const nextVoice=g.context.createOscillator();nextVoice.frequency.value=180;nextVoice.connect(gain);nextVoice.start();await wait(220);
+  ok(Number(canvas.dataset.gestures)===initial+2,'the next voiced paragraph chooses the next angle');
+  ok(canvas.dataset.poseTrail==='fading','the wider ghost trail is active during the camera move');
+  await wait(600);ok(canvas.dataset.poseTrail==='clear','the trail clears as the new camera angle settles during ongoing speech');nextVoice.stop();nextVoice.disconnect();
+  ok(Number(canvas.dataset.trailCaptures)>0,'speech-led camera cuts capture actual preceding portrait pixels');
+  ok(canvas.dataset.pose!==startPose,'automatic performance moves the actual orbit camera');
+  const plan=compileFacialPerformance({phonemes:'m ɑ i u l f'}),articulations=[];portrait.talking(true);
+  const voice=g.context.createOscillator();voice.frequency.value=180;voice.connect(gain);voice.start();
+  for(const cue of plan.cues.filter(c=>c.kind!=='rest')){portrait.articulate(facialCue(plan,(cue.start+cue.end)*.5));await wait(180);articulations.push(pixels());}
+  ok(difference(articulations[0],articulations[1],[.25,.1,.75,.45])>.1,'closed and open visemes change actual mouth geometry');
+  ok(difference(articulations[2],articulations[3],[.25,.1,.75,.45])>.1,'wide and rounded visemes change rendered lips');
+  ok(difference(articulations[4],articulations[5],[.25,.1,.75,.45])>.1,'tongue and dentition cues produce distinct rendered surfaces');voice.stop();voice.disconnect();
+  portrait.talking(false);await wait(1500);ok(canvas.dataset.performance==='rest','silent face returns to its readable resting pose');ok(canvas.dataset.poseTrail==='clear','spectral camera trail clears after the cut rather than smearing the resting face');portrait.hold(true);
+  const r=canvas.getBoundingClientRect();
+  root.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+r.width*.48,clientY:r.top+r.height*.39,bubbles:true}));portrait.hold(true);const focus=pixels();
+  root.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+r.width*.75,clientY:r.top+r.height*.32,bubbles:true}));portrait.hold(true);
+  ok(difference(focus,pixels(),[.2,.45,.8,.8])>.1,'independent eye targets and focus irises change actual socket pixels');
+  ok(canvas.dataset.bloom==='gold-threshold','gold bloom composites the actual rendered surface');
+  const gl=canvas.getContext('webgl'),timer=gl.getExtension('EXT_disjoint_timer_query');
+  if(timer){
+   const query=timer.createQueryEXT();timer.beginQueryEXT(timer.TIME_ELAPSED_EXT,query);portrait.hold(true);timer.endQueryEXT(timer.TIME_ELAPSED_EXT);gl.flush();
+   let available=false;for(let i=0;i<120&&!available;i++){await wait(25);available=timer.getQueryObjectEXT(query,timer.QUERY_RESULT_AVAILABLE_EXT);}
+   if(available&&!gl.getParameter(timer.GPU_DISJOINT_EXT)){
+    const ms=timer.getQueryObjectEXT(query,timer.QUERY_RESULT_EXT)/1e6;
+    ok(Number.isFinite(ms)&&ms>0,'hardware elapsed query: '+ms.toFixed(2)+' ms for a '+canvas.width+'px portrait draw; browser GPU timing, not native scene FPS');
+   }else{lines.push('Hardware timing unavailable/disjoint; GPU cost remains unmeasured.');}
+   timer.deleteQueryEXT(query);
+  }else{lines.push('Hardware elapsed query unsupported; GPU cost remains unmeasured.');}
+  const gallery=document.querySelector('#poses')||document.body.appendChild(Object.assign(document.createElement('section'),{id:'poses'}));gallery.replaceChildren();gallery.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
+  portrait.destroy();portrait=null;const geometry=new GhostPortrait(canvas,faceData.vertex);geometry.motion=false;geometry.setVersion(faceData.version);
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,talk:0,jawOpen:0});geometry.draw(8);const stillMouths=pixels();
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,gearPhase:.72});geometry.draw(8);
+  ok(difference(stillMouths,pixels(),[.22,.28,.78,.48])>.12,'rotating the gear phase changes actual cheek chamber pixels');
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,jawOpen:.85,lipWide:.7});geometry.draw(8);
+  ok(difference(stillMouths,pixels(),[.20,.34,.80,.48])>.3,'jaw and expression deform cheek geometry at the same fixed camera');
+  const brightness=(bytes,region)=>{let sum=0,n=0;for(let y=Math.floor(canvas.height*region[1]);y<canvas.height*region[3];y++)for(let x=Math.floor(canvas.width*region[0]);x<canvas.width*region[2];x++){let i=(y*canvas.width+x)*4;sum+=bytes[i]*.3+bytes[i+1]*.6+bytes[i+2]*.1;n++;}return sum/n;};
+  const noseLight=brightness(stillMouths,[.491,.47,.512,.55]),faceLight=brightness(stillMouths,[.435,.47,.457,.55]);
+  ok(noseLight>faceLight*1.15,'the blended nose relief remains readable against adjacent mask luminance '+noseLight.toFixed(1)+' vs '+faceLight.toFixed(1));
+  const quietNet=stillMouths;geometry.cymatics=[.8,.6,.5,.7];geometry.draw(8);const liveNet=pixels();
+  ok(difference(quietNet,liveNet,[0.,.05,.13,.95])>.15,'measured-band input changes the hyperspace network beyond the face');
+  ok(brightness(quietNet,[0.,.05,.13,.95])>4.,'the network inhabits the outer frame in silence');
+  ok(brightness(liveNet,[.32,.37,.40,.57])>brightness(quietNet,[.32,.37,.40,.57])*1.05,'sound-led directional light reveals carved cheek relief');geometry.cymatics=[0,0,0,0];
+
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,talk:.75,jawOpen:.65});geometry.draw(8);const openMouths=pixels();
+  ok(difference(stillMouths,openMouths,[.42,.27,.58,.40])>.1,'Ghost mouth visibly articulates at a fixed camera and clock');
+  ok(difference(stillMouths,openMouths,[.46,.82,.55,.90])>.1,'serpent mouth visibly articulates on the same speaking frame');
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,serpentSway:.16});geometry.draw(8);const rightSway=pixels();
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,serpentSway:-.16});geometry.draw(8);
+  ok(difference(rightSway,pixels(),[.44,.55,.60,.73])>.1,'hanging tail changes rendered position with the whole serpent sway field');
+  geometry.expression=()=>({headYaw:-.55,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,shiftSerial:1,shift:0});geometry.draw(8);
+  geometry.expression=()=>({headYaw:.55,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,shiftSerial:2,shift:.8,shiftX:.14});geometry.draw(8);const trailPixels=pixels(),captures=canvas.dataset.trailCaptures;
+  geometry.expression=()=>({headYaw:.55,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,shiftSerial:2,shift:0});geometry.draw(8);
+  ok(difference(trailPixels,pixels(),[.15,.12,.85,.9])>.3,'captured previous camera pose visibly dissolves across the current rendering');
+  ok(canvas.dataset.trailCaptures===captures,'a held shot does not recapture or recursively accumulate its afterimage');
+  ok(canvas.getContext('webgl').getError()===0,'portrait history, bloom and framebuffer operations leave no WebGL error');
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,serpentLift:0});geometry.draw(8);const wingsRest=pixels();
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,serpentLift:.85,wingFlex:.85});geometry.draw(8);
+  ok(difference(wingsRest,pixels(),[.25,.74,.75,.97])>.3,'wing downstroke and shoulder lift change the actual serpent geometry');
+  ok(difference(wingsRest,pixels(),[.12,.22,.22,.43])<.05,'wing performance leaves the lower outer headdress stationary');
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,wingFlex:0});geometry.draw(8);const silkRest=pixels();
+  geometry.expression=()=>({headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84,wingFlex:.85});geometry.draw(8);const silkDown=pixels();
+  const silkDelta=difference(silkRest,silkDown,[.24,.59,.36,.73]);
+  ok(silkDelta>.05,'feather motion changes the hanging web below the wing silhouette '+silkDelta.toFixed(3));
+  let bluePixels=0,emberPixels=0;const size=canvas.width;
+  for(let y=Math.floor(size*.2);y<size*.83;y++)for(let x=Math.floor(size*.14);x<size*.86;x++){
+   const i=(y*size+x)*4;if(silkRest[i+2]>65&&silkRest[i+2]>silkRest[i]*1.4&&silkRest[i+2]>silkRest[i+1]*1.1)bluePixels++;
+  }
+  for(let y=Math.floor(size*.82);y<size*.96;y++)for(let x=Math.floor(size*.40);x<size*.60;x++){
+   const i=(y*size+x)*4;if(silkRest[i]>80&&silkRest[i]>silkRest[i+1]*1.22&&silkRest[i+1]>silkRest[i+2]*1.4)emberPixels++;
+  }
+  ok(bluePixels>100,'carved face and hood carry actual luminous blue pixels '+bluePixels);
+  ok(emberPixels>25,'serpent contains actual warm orange-red/yellow pixels '+emberPixels);
+  const optics={headYaw:0,headPitch:0,headRoll:0,headZoom:1,frameScale:.84};
+  geometry.expression=()=>optics;geometry.draw(8);const openIris=pixels();
+  geometry.expression=()=>({...optics,pointerActive:1,pointerX:-.220,pointerY:.143});geometry.draw(8);const leftIris=pixels();
+  geometry.expression=()=>({...optics,pointerActive:1,pointerX:.220,pointerY:.157});geometry.draw(8);const rightIris=pixels();
+  // Sample the moving pupil's own core, not whole-eye image differences:
+  // a far pointer also moves gaze, which is not aperture contraction.
+  function coreLuma(data,k,pointer){
+   const norm=a=>{const l=Math.hypot(...a);return a.map(v=>v/l);},dot=(a,b)=>a.reduce((n,v,i)=>n+v*b[i],0);
+   const f=norm([0,-.015,-2.4]),up=[0,-f[2],f[1]],eye=[k? .194:-.194,.14+k*.012,.093],m=pointer.map(v=>v*.84);
+   const ray=norm(f.map((v,i)=>v*2.2+(i===0?m[0]:0)+up[i]*m[1])),t=(.42-2.4)/Math.min(-.05,ray[2]);
+   const target=ray.map((v,i)=>v*t+(i===2?2.4:0)),aim=norm(target.map((v,i)=>v-eye[i]));
+   const lead=[Math.max(-.034,Math.min(.034,aim[0]*.042)),Math.max(-.021,Math.min(.021,aim[1]*.042))],angle=(k?1:-1)*.13;
+   const point=[eye[0]+Math.cos(angle)*lead[0]+Math.sin(angle)*lead[1],eye[1]-Math.sin(angle)*lead[0]+Math.cos(angle)*lead[1],.148-2.4];
+   const px=Math.round((point[0]*2.2/dot(point,f)/.84*.5+.5)*canvas.width),py=Math.round((dot(point,up)*2.2/dot(point,f)/.84*.5+.5)*canvas.height);
+   let sum=0,n=0;for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++){const i=((py+y)*canvas.width+px+x)*4;sum+=data[i]*.23+data[i+1]*.64+data[i+2]*.13;n++;}return sum/n;
+  }
+  const leftOwn=coreLuma(leftIris,0,[-.220,.143]),leftOther=coreLuma(rightIris,0,[.220,.157]);
+  const rightOwn=coreLuma(rightIris,1,[.220,.157]),rightOther=coreLuma(leftIris,1,[-.220,.143]);
+  ok(leftOwn>leftOther+5,'left pinpoint closes its own dark core independently '+leftOwn.toFixed(1)+' vs '+leftOther.toFixed(1));
+  ok(rightOwn>rightOther+5,'right pinpoint closes its own dark core independently '+rightOwn.toFixed(1)+' vs '+rightOther.toFixed(1));
+  for(const yaw of [-1.1,-.55,0,.55,1.1]){
+   geometry.expression=()=>({headYaw:yaw,headPitch:0,headRoll:0,headZoom:1,frameScale:.84});geometry.draw(8);
+   const data=pixels();let lit=0;for(let i=0;i<data.length;i+=4)if(data[i]+data[i+1]+data[i+2]>60)lit++;
+   ok(lit>canvas.width*canvas.height*.025,'actual SDF remains nonempty at camera yaw '+yaw.toFixed(2));
+   const figure=document.createElement('figure'),copy=document.createElement('canvas'),label=document.createElement('figcaption');copy.width=copy.height=240;copy.style.width='240px';copy.getContext('2d').drawImage(canvas,0,0,240,240);label.textContent='YAW '+yaw.toFixed(2)+' / actual shader';figure.append(copy,label);gallery.append(figure);
+  }
+  geometry.destroy();portrait=mountPortrait(canvas,()=>{});portrait.hold(true);
+
+ }
+ const artHost=document.createElement('figure'),art=document.createElement('img');artHost.style.cssText='position:relative;width:320px;height:200px;overflow:hidden';art.style.position='absolute';art.src=residentArt.human;art.alt='Actual human painting / hold to inspect';artHost.append(art);document.body.append(artHost);
+ await art.decode();const imageCinema=mountImageCinema(art);artHost.scrollIntoView({block:"center"});await wait(120);
+ const rect=artHost.getBoundingClientRect(),event=(type,extra={})=>artHost.dispatchEvent(new PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'mouse',button:0,clientX:rect.left+rect.width*.65,clientY:rect.top+rect.height*.5,...extra}));
+ // Synthetic events cannot acquire native pointer capture. Test the production
+ // handlers with this fixture's explicit capture shim, then release/cancel.
+ artHost.setPointerCapture=()=>{};artHost.hasPointerCapture=()=>false;
+ event('pointermove');event('pointerdown');await wait(500);
+ ok(Number(art.dataset.zoom)>1.75&&art.dataset.pressed==='true','holding the actual painting zooms its existing camera');
+ event('pointerup');await wait(1100);
+ ok(Number(art.dataset.zoom)<1.01&&art.dataset.pressed==='false','releasing over the painting eases back without requiring pointer exit');
+ event('pointerdown');await wait(150);event('pointercancel');await wait(1000);
+ ok(art.dataset.pressed==='false'&&Number(art.dataset.zoom)<1.01,'cancelled press cannot leave the painting zoom latched');imageCinema.destroy();
+ out.textContent='PASS '+lines.length+' assertions\n'+lines.join('\n')+'\nSynthetic PCM test, not a player utterance.';
+ }catch(e){out.textContent='FAIL '+e.stack+'\n'+lines.join('\n');}};
+</script>

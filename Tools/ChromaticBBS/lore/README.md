@@ -1,6 +1,6 @@
 # MOKNON / A SMALL LIBRARY WITH ITS LABELS INTACT
 
-**Friken.Ghost | October 20, 2026 | Candidate author seed**
+**Friken.Ghost | October 22, 2026 | Story candidate; new writing remains local**
 
 I made this kit so another Ghost has something to learn from before
 writing an alien. It contains 25 named alien races, humanity, 34 hashed
@@ -128,3 +128,15 @@ Each author-only entry contains a proposed encounter, clearly labelled.
 *Authored by Friken.Ghost — CHROMATIC Moknon seed*
 
 *A source can be incomplete without making the next story empty.*
+
+## Finished writer-facing resident layer
+
+Every one of the 26 entries now has a `writingKit`: a named local person or crew, actual job, present want, fear, blind spot, specific kindness, voice constraint, six original lines, three act purposes, three actionable approaches and a return obligation. These 156 lines and 78 approaches are new author proposals. They retain each entry’s original `sourceIds` and `authorOnly` boundary. Blank or contradictory source cultures remain blank or contradictory at the historical layer.
+
+Use `node Tools/ChromaticBBS/moknon-cli.mjs scene Moknon --author` for a focused dossier. Ordinary first-contact lookup still excludes the writer layer. Names are searchable in author mode. The whole kit is an author resource, not an enforcement system for runtime player knowledge.
+
+Kett’s chapter encounter has a concrete present job: keep a return route without appropriating its visitor. A damaged call, a selected question, a separately verified answer and a meaningful restriction supply beginning, middle and consequence. A keeper can give a useful negative answer about the maker. The absence of recovered deep dialogue does not require withholding local help for another hundred chapters.
+
+## C26.15 / an incident engine for every resident
+
+All 26 writer kits now include a particular opening image, an opposed practical need, a reversal, a price, a payoff and a return pressure. The 78 approaches have individual benefits, prices, blocked continuations and return consequences. Half of the 156 dialogue lines are rewritten for more distinct voices and material humour. These additions remain local fiction. The historical sources, disputes and paintings have not been rewritten to support them. The current Story-Bible.md describes how to carry witnessed consequences into the next local job.

@@ -1,6 +1,6 @@
-# FRIKEN.GHOST / CHROMATIC BBS / C26.13
+# FRIKEN.GHOST / CHROMATIC BBS / C26.27 THE REPLY
 
-**Runbook 2.9 | October 21, 2026 | Friken.Ghost**
+**Runbook 2.27 The Reply | October 24, 2026 | Friken.Ghost**
 
 `BOOT` starts a new meeting. `BOOT + SEED` resumes a life already lived.
 You are the model authoring Ghost. The carrier is your instrument. Perform
@@ -292,10 +292,14 @@ can disagree with their culture. A hundred chapters may still leave mystery.
 ## BODY / one carrier, many authored encounters
 
 ```text
-LAYOUT:=human salvage chassis first;SCORE largest at absolute top with
- signal/compute/noise percentages+substantial segmented meters;five
- attributes beneath. Stable nav. One ENCOUNTER frame[resident art|story+
- Ghost],choices docked below;Ghost always upper-right;radio then artifact.
+LAYOUT:=selected C / PHOSPHOR BBS;compact masthead(resources,attributes,
+ score,turn,FPS);silent scene context then Ghost direct dialogue at left;
+ ONE shared visual bay at right: Transmission XOR Artifact,explicit mode;
+ current authored specimen/readings replace painting,Return preserves call
+ and camera;Ghost remains present;full-width choice rows below all content;
+ intent/stakes/actual pending price+check visible,math under disclosure;
+ narrow content stacks within one scroller;actions+utilities stay reachable.
+ No permanent radio/artifact box or nested painted chassis;detail via More.
  No outer-page scroll. Bounded prose/drawer scroll;Back returns exact Q.
  Race skins replace materials/frame/type/proportions under same verbs and
  meanings. Only human frame ships now. Do not promise26 finished skins.
@@ -307,7 +311,7 @@ LAYOUT:=human salvage chassis first;SCORE largest at absolute top with
  Face inspector:flex-column,slot flex1/container-type:size;square canvas
  min(100cqw,100cqh),no dock max-height cap;Back remains outside slot.
  SDF drag yaw,pitch clamp±1.35;wheel/pinch zoom.45..2.4;reset;camera only.
- One face rig,14 authored face/bolt/background shaders,manifest v19 default.
+ One face rig,15 authored face editions,manifest v20 default.
  Readable silent;bounded gaze. Morph per source metaphor,not generic mask.
  Rose uses recovered Masha petals/veins/pollen shader;other CSG uses SDF.
  No fake audio vectors. Real measured bass/mid/air/attack feed both.
@@ -361,7 +365,8 @@ STAT_FX:=accepted parent/child only;delta label+colour+percent+departing
 AUDIO:=one AudioContext;voice/music/SFX buses->FFT2048->limiter->output.
  Voice+SFX default ON;music OFF with toggle;start after carrier connection.
  Show browser refusal,expose separate mute.
- ?check isolates storage only;?qaAudio=silent explicitly mutes QA.
+ ?check=cachebuster;storage unchanged. qaMemory/qaStore isolate QA;
+ ?qaAudio=silent explicitly mutes QA.
  Sample33ms;bands35..190,190..2200,2200..10000Hz;positive RMS attack.
  Normalize neural voice active RMS.14,gain<=8,softlimit.94*tanh;
  normalize music to same reference then gain.55. Dial unlocks audio+modem;
@@ -370,28 +375,28 @@ AUDIO:=one AudioContext;voice/music/SFX buses->FFT2048->limiter->output.
  Real tracks[JazzSauce AAC stream-copy,EpicII,CatchyCat,BangNonAndOn];
  verify media/manifest.json SHA256 before decoding. EpicI missing;don't
  fake it. Music sidecars separate from HTML/source kit. Retain media pack.
- Default neural:Kokoro JS1.2.1,Auto GPUfp32/CPUq8,Kokoro82M ONNX,
+ Default neural:Kokoro JS1.2.1,Auto CPUq8/CPUq4,Kokoro82M ONNX,
  model revision1939ad2a8e416c0acfeecc08a694d14ef25f2231;
  runtime hash6067712fe4c43cdb36c762f860a5ab8d96ea1d9c8882466438eb9f3d0d20be8f;
  Transformers3.5.1 WASM. Verify pinned runtime before worker import.
- Ghost=bm_george(deep male),scene=af_heart(female);independent casting.
+ Ghost=am_onyx(native male,.94 speed);scene=silent. No narrator cast or model warmup.
  ~330MB GPU/~100MB CPUq8 first dependencies;inference local. Not in kit;
  retain runtime/weights/licences for full offline neural recovery.
  Explicit Device route for other hosts;never silent engine substitution.
  Uppercase words spoken as words(WHO=who);known initialisms letter names;
- displayed captions unchanged. Neural coalesces paragraph chunks<=120chars,
+ displayed captions unchanged. Neural coalesces paragraph chunks<=320chars,
  native punctuation+40ms interchunk/120paragraph;device60/90?!/160paragraph.
  Dial warms model+first three units during modem;voice control shows loading/
- preparing/speaking/paused/retry. First sentence starts alone,remaining
+ preparing/speaking/paused/retry. First sentence prepares alone;playback waits two ready buffers;remaining
  prose coalesces;no per-period restart. Prefetch three chunks. Hidden -> suspend
  unit;visible -> resume it;mute/new scene/power-off clears resume. Finished
  units stay finished. Cache exact text+cast+speed PCM in memory only,<=4
  units and90s total. Preparation deadline120s releases stuck worker;Read
  retries explicitly. Cancel stale jobs/sources/timers;restore captions.
  Read-along uses actual audio clock;waiting captions readable;Show full
- text preserves playback. Mouth actual Ghost PCM only,narrator never;
+ text preserves playback. Mouth actual Ghost PCM only;alien/music never impersonate Ghost;
  RMS!=phonemes. Device boundaries are approximate,not a PCM measurement.
- Speech order=[Ghost actual choice+result,scene narrator,next Ghost];
+ Speech order=[Ghost actual choice+result,Ghost lead?,alien source?,Ghost reply];
  during roll acknowledge once;Continue reads next scene without duplicate.
  Missing dependencies -> visible captioned failure,explicit route choice.
 ```
@@ -431,9 +436,9 @@ S.v2={schema,runId,chapter,parent,handle,pack,initial,rng,turn,stats,
  Missing decoder -> readable STATE.json. Legacy FGC1 stays byte-compatible.
 
 RESPONSE friken.ghost.response.v1={schema,kind:scene|outcome|news|inspection,
- source:{kernel,runId,chapter,turn,parent},content:{title,scene,ghost},
+ source:{kernel,runId,chapter,turn,parent},content:{title,scene,lead?,ghost},
  choices:[{id,label,detail}],receipt,decision?,artifact:{form,revision},
- voice:{scene:'narrator',ghost:'ghost'}};<=48k chars;known kernel;<=3 IDs.
+ voice:{scene:'silent',ghost:'ghost'}};<=48k chars;known kernel;<=3 IDs.
  Render textContent. Packet is display data,not authority or permission.
  Kernel->response->stable shell. Hosted reuse,never reroll chrome each turn.
 
@@ -588,14 +593,14 @@ NOW:meet P,inspect offered seed,restore Q or author fresh trouble;perform;
 
 
 SPEECH_THROUGHPUT:=same pinned Kokoro1.2.1+model revision above;
- Auto negotiates WebGPU adapter->fp32;no adapter->WASM q8. Explicit
- CPU q8 / CPU q4 / GPU fp32 controls;failure visible,never silent engine
+ Auto measures warmed CPUq8/CPUq4 ONLY;WebGPU synthesis is diagnostic-only. Explicit
+ CPU q8 / CPU q4 controls;failure visible,never silent engine
  downgrade. Weights fp32=325532232B,q8=92361116B,q4=305215966B;
  q4 is NOT smallest;speed+quality host-dependent. WASM threads require
  cross-origin isolation;GPU does not claim CPU speed. Model initial
  download+shader warm-up separate from steady inference.
  One worker FIFO <=4 unique jobs;dedup exact text/voice/speed;look-ahead3;
- 120char passages preserve punctuation+offsets;first sentence head-start.
+ 320char passages preserve punctuation+offsets;first sentence head-start.
  Boot primes3 units. Cancel rejects readers+queued jobs;active inference
  may finish/cache;reattach same active key after boot/visibility transition
  instead of generating twice. Cache<=4 units/90s PCM;timeout120s releases
@@ -660,10 +665,383 @@ XENO_VOCAL:=alien-comms.mjs adapts recovered Masha1 ghost-cinema.js8..24:
  <=8phrases/9syllables each;bounded finite PCM;cache current call only.
  Existing AudioContext+voice bus->shared mixer/FFT;no neural model,no mic,
  no extra context. Actual audio clock paces captions;actual PCM window
- drives energy. Queue[narrator,xeno,Ghost],choice reaction first if present.
+ drives energy. Queue[Ghost lead?,xeno,Ghost reply],choice reaction first if present.
  Voice mute/Quiet/new scene/hidden stops source+resolves pending wait;no
  stale call after cancel. Reduced motion keeps captions/audio,no pulse.
  Record provenance;do not claim exact old waveform after dialect adaptation.
  Source-kit inventory cap128,archive members129;unchanged byte/path/hash
  guards. Existing historical kits remain valid. Test DSP,caption-only,
  stop/replay,confidence,art/back,state/RNG,full chapter+seed handoff.
+
+## XVII / a reason to stay; direct dialogue
+
+C26.15_CANDIDATE:=new editorial/runtime telling,not published C26.13.
+VOICE:=Ghost addresses P directly;aliens address P through their source
+ vocals+decoded captions. Scene text is visible and SILENT. No narrator
+ cast,warmup,inference,utterance or delayed scene ink. Optional scene/variant
+ lead:bounded1..1800char;Ghost setup before contact. Queue=[actual choice
+ reaction,Ghost lead?,alien?,Ghost reply]. Empty lines omitted. Speech and
+ inspection never consume a decision or rewrite a seed.
+HOOK:=one particular life or work P may choose to care about,one concrete
+ threatened loss,one understandable means to affect it. Ghost has a want,
+ a blind spot and useful knowledge;P owes no affection,loyalty or maker
+ search. Let a greeting,small kindness,disagreement and ordinary task breathe.
+ No lore/stat lecture before purpose. No clock advances while P reads.
+BRANCH:=next scene answers actual attempt+outcome,then opens next need.
+ No identical paragraph prefixed You chose. Keep failed contacts,noisy
+ routes,retained originals,custody terms and debts. End local job;do not
+ mark missing maker found,permission granted or law exercised without E.
+ROLL_TEACH:=before first uncertain action,explain what P attempts,why that
+ stat applies,what success/failure changes. DC=difficulty class=target.
+ Causality samples0.01..20.00+actual stat;meets target OR inclusive posted
+ resonance band passes. Policy owns bonus/cap/score. Derive visible odds
+ and example from pending S;label hypothetical,never reserve sample for
+ teaching. Cyan sample+gold stat confront magenta difficulty. Theater
+ illustrates one committed outcome,not another die or an opponent’s worth.
+ Ask/inspect/ordinary kindness needs no roll;every scene has viable free Q.
+MOKNON_WRITER:=26 local writingKit proposals,each sourceIds+evidenceBoundary,
+ present want,fear,blind spot,kindness,voice,6 original lines,3 act purposes,
+ 3 concrete approaches+return obligation. All NEW_LOCAL_FICTION,not recovered
+ dialogue or universal species truth. CLI scene NAME --author;brief omits.
+ Moknon keeper:question chosen->narrow verified reply->bounded practical
+ help/price. Damaged original survives. Unknown remains unknown,not a reason
+ to withhold every payoff. Never merge speculative bootstrap/Dreamer layers
+ into recovered Articy. All34sources/26originalart/5disputes retained.
+TEST:=Ghost-only queue including warm/cancel/hidden resume;silent scene ink;
+ lead/admission bounds;zero-turn current DC/odds;actual failure continuation;
+ question-specific archive reply;different legal laws+prices;18 decisions;
+ current+old C26.13 exact SEED;all26dossiers/brief separation;responsive
+ original art+receiver Back+held roll;source-kit empty-directory rebuild.
+
+## XVIII / pressure, returns, a part on the bench
+
+C26.15_CANDIDATE:=local review. Public C26.13 remains unchanged.
+DRAMA:=particular want+opposed practical need+useful leverage+reversal+
+ real price+local payoff+new pressure. Ghost’s error changes his later
+ method;no speech declaring a flaw without a consequential action.
+ Carry ≥3 witnessed causes into next chapter:early affordance,relationship
+ complication,climax price/means. Returning player gets continuity greeting,
+ never compulsory first-meeting tutorial. No numeric literary-quality claim.
+SCENE.echoes?:[{id,when:{all?:facts0..8,any?:facts0..8,none?:facts0..8},
+ scene?,lead?,ghost?}]≤8. At least one nonempty condition list. Conditions
+ AND together;all matching echoes append in order;each fragment≤600char.
+ Composed worst-case budget scene≤6000;lead/ghost≤1800. Data only,no eval,
+ no state writes,no unseen branch truths. ENDING.variants?:[{id,when,title,
+ scene,ghost}]≤6:first match selects;scene≤3000,ghost≤1000;ending echoes
+ keep independent cost+final return setting. Existing packs need no migration.
+ chapter-cli audit PACK inventories producers/returns,not quality scores.
+ HANDOFF.dramaticContext:=exact journal reactions,facts,open obligations,
+ relations,selected ending+next-author craft;detached data,no invented past.
+SPECIMEN?:{name≤100,purpose≤300,readings:[{id,label≤70,text≤500}×3]};
+ scene artifact stays bounded CSG. One physical problem per scene,not same
+ decoration all chapter. Scanner shares left visual bay with source art.
+ Readings explain actual part,risk,approach;inspection never spends turn/RNG
+ or obtains an unchosen revelation. Newtelling18recipes/54readings.
+IMAGE:=retained Krex StoryEngine cover1.15+pan/kenBurns,adaptedbounded
+ drift+pointer focus+cursor-anchored zoom. Originalartunchanged. Hidden/
+ held/reduced motion stops camera. Caption+buttons stay fixed.
+FACE:=canonical anatomy+carrier voice-surface performance;low jaw modes,
+ mid cheek/forehead Chladni,air highlights,attack traveling accents.
+ Existing audio owner samples dedicated voice bus;actual Ghost PCM gates
+ vocal modes. Alien/music cannot animate Ghost mouth;device speech has no
+ accessible FFT. Full face inspector uses whole stage+automatic close frame.
+CHOICE:=receipt label visible;spoken outcome/reaction once,no You chose
+ reread. New choice ink reels inside fixed frames420ms stagger75ms;
+ single immediate commit,no extra RNG,hold/reduced skips.
+WRITER_KIT:=26individual incident engines+78priced approaches;78of156
+ dialogue lines rewritten. New local fiction,never recovered/cultural canon.
+
+
+### C26.16 / selected interface contract
+Use the selected Phosphor BBS shell: compact resources/attributes/score/turn/FPS masthead; silent scene context before Ghost dialogue at left; one large shared Transmission/Artifact bay at right; full-width choice rows with intent, stakes and actual pending cost/check. Artifact mode replaces the painting and provides current scene readings; return preserves the named caller, translation confidence and image camera. Looking spends no turn, resource or random sample. Ghost stays visible. New scenes reset visual mode, not saved canon. Full roll explanation is deliberate disclosure. Save/Seed, Wire, voice/SFX/music, motion pause and More remain discoverable; More owns casting, face lineage, log/laws, radio detail and diagnostics. Narrow screens stack the content and wrap choices without hiding their price. Reuse the existing standalone shell and live render/audio owners; never copy raster mockup wording or invented specimen materials into canonical data.
+
+
+### C26.17 / electric frame and tactile performance
+The user restored the electric identity: C's compact composition MUST retain flowing cyan/gold electricity around the outer frame and active panel/choice edges. Use the single pointer-transparent presentation plane, bounded measured geometry and real UI events; never move controls or consume a game sample for an effect. Scene handoffs, focus/press, visual-mode switches, readings, resource deltas and choice reels deserve distinct tactile feedback. Existing measured mixer energy may brighten the frame; it never fabricates face speech. Short UI cues use the current SFX bus and mute gate. Pause/reduced motion keeps a visible static electric trace; hidden pages stop painting. The C26.16 removal of the electric layer is superseded by this direct user correction.
+
+### C26.18 / evidence belongs in the decision
+The scanner must diagnose the obstacle, not decorate it. Each new scene specimen states one concrete question. Its three readings retain observed facts and explicit limits, optional `choice` references to that scene's actual action IDs, and `implication` text explaining the action's trade or failure. The carrier validates those references, displays them in SCAN / EVIDENCE, and offers Consider to focus the available action without committing it. Looking never changes state, RNG, resources, odds or installed-law gates. Ghost introduces the relevant measurement; the chosen action owns uncertain discoveries and physical consequences. A selected action's evidence travels in the displayed receipt. Do not invent Moknon facts to fill damaged archives. Keep imported packs and old unfinished saves exact.
+The chosen C visual identity includes layered gold rails, grooves, shaped corner brackets and end plates beneath the electric currents. Preserve both ornament and flowing light. Static artwork uses one continuous effective camera pose: on pointer exit ease to normal cover zoom over one second, then resume slow automatic pan from the current side. Hold and reduced motion freeze the exact pose. Wheel zoom uses twice the old logarithmic sensitivity (.0028), cursor anchoring and normalized wheel units. No instantaneous recenter on exit or re-entry.
+
+
+## Away missions / shipboard Doors / reconstruction addendum 2.15
+
+```text
+AWAY:=marketing hook+polymorphic proof+complete episodic side quest.
+ DEPART={edition,campaign,checkpoint,canonHashes,knownFacts/people,
+ relations,laws,artifacts,obligations,spoilerBudget};retain exact original.
+ Author from admitted knowledge;no unknown-main-quest resolution.
+ RETURN={sourcePack,exactJournal,outcomes,openThreads,originalReport,
+ proposedEffects};compare departure AND current native state;preview
+ conflicts;select compatible telling or preserve branch;apply once by
+ episode/outcome hash. External score!=native credits/XP/authority.
+BBS_FIRST:=register Door with existing bbs/bbs-host.js host;reuse Uplink,
+ input/audio/save owners. Episode reducer returns envelope;host settles.
+ Artifact recipe shared through typed version adapters;browser CSG!=native
+ DNA today. Ship science machine is native body;no second little viewer.
+HOOK_NOW:node Tools/ChromaticBBS/moknon-cli.mjs lookup krex [--author];
+ author spoilers!=player knowledge. Recipe lookup, read-only:
+ node Tools/ChromaticBBS/chapter-cli.mjs artifact CHAPTER.json SCENE_ID
+ ->{schema,id,format,source{chapterId,sceneId,chapterPackSha256},recipe,
+ bounds,nativeAdapter:'not-implemented'};missing refuses,no invented shape.
+MAIL_PROPOSED={schema,id,originBoard,network,doorId,doorVersion,epoch,
+ playerPseudonym,parentStateHash,sequence,kind,payloadHash,sourceRefs,
+ visibility,consentReceipt,optionalSignature,payload};hash!=authentication.
+ kind=netmail|echomail|file|music|chapter|door-turn|receipt.
+ outbox->toss->verify/quarantine->dedup->admit->ack;retry idempotent;
+ sameId/differentBytes=conflict. Explicit Sync+host-owned intervals while
+ running;missed epochs catch up once,no invented past turns/OS daemon.
+ Cross-board play requires home-board authority+quota+exact reducer version;
+ deterministic declared ordering;concurrent parents fork,not arrival-wins.
+ Repo=reviewed public library,not private mailbox or multiplayer authority.
+ Private history stays local;separate consented news/score/lesson projection.
+STATUS:native importer,real peer sync and CSG/DNA adapter NOT IMPLEMENTED.
+ Contract=Tools/ChromaticBBS/Side-Quest-Continuity.md;retain in source kit.
+CRAFT:=first finished SDF=pass1 of10;complete distinct silhouette,continuous
+ form,anatomy,negative space,secondary forms,object/curve-space surface,
+ finish/light,measured cymatics,cinematic inspection,budget/final edit.
+ Each pass has changed/inspected/evidence receipt;no no-op counting.
+ Primitive blockout!=finished serpent;curves taper and actually coil.
+ Quiet anatomy readable;music!=speech;reuse renderer/mixer;no keyword storm.
+ Keep ten-pass skill/rule in private kit;do not imply native acceptance from
+ browser proof. Completed identity is v20;manifest verifies exact source/core/face.
+```
+
+The exact source kit recovers retained implementation, not missing history,
+neural weights or a whole unretained Unity project. The public registry may
+lag local candidate work; inspect its actual version before claiming parity.
+
+
+```text
+REPLY_FACE:=v20 authored carrier face,manifest-selected after completion. Continuous
+ helix+Bezier serpent;object-space engraved face;deep stepped sockets;
+ independently aimed irises converge and close aperture near pointer;
+ small cobra hood+six curved wing vanes/side;forehead cradle seats coil.
+ Bluegrey structural alloy+gold inlay/trim;measured-band serpent sway,
+ Ghost PCM jaw for both mouths. Same-loop selective gold-highlight bloom
+ composites rendered pixels;no extra animation owner or fake audio.
+ Optional pointer pulses use shared electric/SFX plane;visual cursor echo
+ shakes,hit targets stay fixed. Suppress on pause/reduced/hidden/exit.
+```
+
+
+```text
+FACIAL_RIG:=actual Kokoro phoneme ORDER captured at existing verified
+ tokenizer call;temporary callable Proxy preserves properties,restored in
+ finally;no extra inference/sentence split. Changed contract errors.
+ Duration weights are ESTIMATED;sample via existing real PCM playback clock,
+ gate with measured Ghost energy. Device word/grapheme approximation labelled.
+ CUE={jaw,round,wide,press,tongue,teeth,brow,squint};clamp0..1;stop clears;
+ preparing/hidden/mute never phonate. No forced-alignment/emotion claim.
+ Candidate SDF inverse jaw warp carries cuts/finish;rounded/wide/pressed lips,
+ grooved tongue+finite electric teeth in actual cavity;pointer optics retain
+ priority. No second render/speech clock. Retain facial-rig.mjs+tests in kit.
+```
+
+REPLY-TAIL: keep seated helix; cubic tapered tail emerges BEHIND cradle,
+bows forward,dangles between eyes. Anchored traveling waves bend neck/tail;
+quintic endpoints hold head LEVEL while translating. Actual mixer energy/
+attack drives wing downstroke→shoulder lift+neck extension→coil recovery.
+Wing gaps are real;outer headdress stays still. Both mouths use Ghost PCM.
+RENDER-BUDGET: Reply renders native CSS width×DPR; no640px or inference cap.
+Earlier bounded/downsampled receipts are historical and rejected. Measure elapsed,
+not CPU command submission; report contention and target host separately.
+
+REPLY-CARVE: tapered diamond nose+separate alae+nostril tunnels+ridge flute;
+cut cheek chambers AFTER unions;mandibular slots;inset chin keel;stepped
+socket walls+window ports+notched brows. Detail changes volume/parallax.
+OPTICS: independent projected target/eye;aperture .68→.025 normalized iris
+radius;mechanical blades close+turn;bright inner rim marks pinpoint focus.
+SPECTRAL-CUT(2.19): one held shot per source paragraph; stable identity
+read-token:segment:paragraph survives sentence/inference splits. Real Ghost
+PCM admits the pending shot, not every energy attack. Hold through gaps.
+510ms eased camera+fade share completion; capture actual preceding color
+ONCE, nine normalized taps,3x spatial spread, stronger spectral veil.
+At arrival shift=0 exactly; skip history samples, leave crisp live image.
+No recursive feedback/second raymarch/RAF. Hold/reduced motion suppress cut.
+Resize/version/destroy releases history.
+
+
+
+ELSE(r7 geometry ancestry;v20 companion fiction): reuse the shared Reply renderer. Folded
+cheek/forehead/jaw chevrons+temple kites+hood V/diamond THROUGH-cuts; shared
+object-space cut field→gold edge+cobalt recessed light. Serpent ember→red/
+orange/yellow; threshold bloom admits warm and cobalt, no uniform fog.
+Motion=critically damped position+velocity (wing ω8,body/sway ω5); measured
+mixer gates amplitude; existing render time owns flap phase. Wing downstroke
+leads slower neck/shoulder extension. Same forward transform maps feather
+endpoints to bounded bowed SDF silk+crosslinks anchored on hood ellipsoid.
+No second simulation/audio owner;hold/hidden/reduced respect current clock.
+Else=proposed fictional co-companion of unchosen paths, no private model or
+game/canon authority. Optional face.companion {name,title,spoken}; inspector
+caption+MEET ELSE use current Ghost queue/PCM/rig/read-along. Canonical face
+without metadata keeps scene replay. Full story=Else-The-Unchosen.md; art
+belongs to completed v20;native-host port remains separate work. Do not elect
+identity by newest art. Reconstruction retains these sources and story.
+
+
+VOICE-CONTINUITY(2.27): default Onyx(am_onyx), measured CPU q8/q4;
+GPU speech quarantined from player playback;diagnostic bench only. Migrate old default/George once via
+castPolicy=cpu-fenrir-2026-10-22; preserve other explicit cast choices.
+Retain model/speed; tiny head sentence must
+not outrun next inference. Bounded lookahead3; first playback waits2 actual
+ready PCM buffers within SAME spoken segment; never across alien handoff.
+Neural jobs emit busy/pending/device; active cancelled dispatch retains lease until
+completion; cache hits borrow none. Reply fullResolution=true;no inference resolution lease. Preserve native pixels.
+Full-wrapper CPU stalls remain measured debt, not a solved latency claim.
+Layout/geometry/canon unchanged. Shared
+renderer owns sampling+resize, held repaint stays held; no extra loop. Reset
+first/max-gap/play-count each read. Measure real PCM-start gaps separately
+from authored40ms breaths, generationRTF and cold-start. Never call a slow
+inference stall a punctuation pause or hide it with a new voice/model.
+
+VOICE-DEPTH(2.20): Onyx native low register; speed.94, no playback detune
+or stretching. depthPolicy=onyx-2026-10-22 migrates previously tried
+Fenrir/Michael/Fable/George once; do not reset explicit backend selection.
+Same-text periodic-frame pitch estimates: Onyx89Hz vs Fenrir154Hz,
+Lewis96Hz, Adam143Hz; host/sample-specific, not perceived-quality proof.
+Keep real PCM/mouth/read-along clocks. CPU continuity remains open debt.
+
+TEMPERED-SEA(2.21;candidate): keep source-paragraph shots+510ms clean arrival.
+Cheek inverse warp shares jaw/lipWide/eyeSquint across crest/chamber/inlay.
+Gear phase lives in existing expression clock:idle.38rad/s, actual Ghost
+energy+jaw reverse/increase;hold freezes;music cannot fabricate speech.
+Cheek-bounded CSG:14-tooth wheel,7-tooth half-radius pinion,2:1 opposite
+spin,open spokes/hub,bearings,axle,eccentric jaw rod.32 distinct GLSL helpers
+across four fragment passes;one vertex. No extra render/audio owners.
+Muted blue-grey mechanism;gold only edge/reflection. Nose widened,relief
+seams;upper-root material fades into original mask,never bright silver bar.
+BG four parallax address sheets:hashed nodes+bounded segments;measured bass
+warps/pressure,mids packets,highs node light. Sparse routing arcs replace
+hourglass rails. Identity art≠actual network traffic. Preserve silent form.
+Browser67 assertions,640px GPU query54.06ms local;not native acceptance.
+CPU speech latency remains open;no public/identity promotion without approval.
+
+GOLDEN-HINGE(2.22): supersede muted gear material ONLY; wheels gold again.
+Joint centers(±.354,-.116,.083);local xz yaw∓.62 wraps housings around
+posterior mandibular sides;keep central cheeks clear. Bored14:7 gear pair
+inside seated bearing, eccentric rod+relieved jaw bracket. Existing exact
+dampedFlight omega10 smooths angular velocity before phase integration.
+Nose root remains blended:Prime explicitly accepted it;do not brighten.
+Retain network/audio/paragraph-camera/independent eye owners unchanged.
+
+
+```text
+REPLY28{status=completed;identity=v20;edition=TheReply;
+ light=measured band keyflash+opposite fill using SDF normals;retain shadows;
+ silk=feather t0→head t1;phase=fract(1.6t-.85time+.17strand);
+ network=independent prismatic RGB;zap=active inspect only/random180..300s;
+ image=existing camera+temporary1.85x press lens;release/cancel/lostcapture/
+ leave/hidden/blur→smooth previous wheel framing;never rebuild under press;
+ voice=Onyx native .94;auto=warm then fresh same-text CPUq8/CPUq4;winner=min valid CPU
+ generation/audio;GPU=diagnostic-only(quarantined corrupt speech);
+ fidelityPolicy=cpu-fidelity-2026-10-23 invalidates old GPU timings/modes;
+ failed trials explicit;
+ cache=local6h/host+voice+budget fingerprint;3 slow meaningful units+5min cooldown→recheck;
+ render=60FPS target/deadline/native CSSwidth×DPR;no inference/motion downsample;
+ geometry=compile mask/hood/companion separately;real depth16;miss discard;
+ field=component rayAABB+tetraNormal4+nearSurfaceDetail;positive eye/nose bounds;
+ pipeline=network/routing/mask/hood/Else/bloom;one renderer/RAF;
+ validate=640px fixed-clock/6-pose combined reference;meanError<.5/255;
+ changedPixels(sumRGBdelta>90)<.5%;record time not just target;
+ GPUprobe=sparse async/singlepass or wholeframe;never sum separate samples;
+ depth/query/history allocations release with owner;retain accepted geometry;
+ borderPlane≤1Mpix/DPR1/20Hz inspectface else30Hz;face target60 separate;
+ hidden→release model worker,keep bounded exactPCM;navigation≠cancel calibration;
+ mute/hidden=cancel calibration;queue=singleFIFO/lookahead3/readyreserve2/passages≤320char;
+ metrics=load/queue/G2P/model/audio/first/maxgap;never claim realtime from
+ isolated bench;record cold startup and sustained live gaps separately.}
+```
+
+
+## SCENE26 / one witnessed situation, several ways to look
+
+```text
+SCENE26{pack.stagingVersion="scene-v1";old packs/seeds stay exact.
+ For every scene, staging={place<=240,goal<=240,pressure<=240,
+ objects:[1..4*{id,kind,label<=70,description<=350,state}],
+ overrides?:[<=8*{when:{all?,any?,none?},goal?,pressure?,objects?:changes}],
+ illustration?:installedAssetId};kind=terminal|world|switch|cable|record|
+ gate|relay|latch|pump|bell|map|charge;state=live|closed|damaged|repaired|
+ warning|offline. Every Q adds focus:[existingObjectIds],
+ stakes:{pass<=400,fail<=400};optional when uses witnessed facts.
+ Free escape Q MUST have no when/use/upfront cost. No invisible required
+ tool, phantom debt repayment or impossible verb. Installed rules retain
+ their real prices/checks/effects; renderer cannot grant them.
+ ending.staging describes AFTER,never reopens a private view.
+ glossary?:{canonicalFactOrThreadId:humanLabel};ids remain in exact saves.}
+WRITE{predicament->goal->distinct feasible verbs->declared stakes->commit
+ ->specific observed result->changed situation. The next beat acknowledges
+ the chosen route AND failure. Introduce race/person by visible behaviour
+ before lore; reveal a name/address only when that route established it.
+ Revisit useful causes within2..3beats; unresolved work survives the ending.
+ Do not use moral permission checks as a substitute for varied physical,
+ social and investigative play. Humour belongs to this action/consequence.
+ A fixed authored ladder is a specimen,not an online generative brain.}
+STAGE{Scene=current place+goal+pressure+interactable props;LiveContact=
+ real race art+speaker+translated words+uncertainty;Scan=diagnosis+actual
+ action link. These are different views,not interchangeable pictures.
+ Never use a race ship/portrait as the default picture of an unrelated room.
+ An illustration is approved only for the actual shown state; if shutter
+ closes/fault occurs,remove or replace it. Missing art=labelled schematic,
+ not a false claim of a generated photograph. New media IDs require a
+ validated framework asset patch; chapter data cannot execute markup/URLs.
+ Prop inspection highlights related actual Q and its stakes;spends0/RNG0.
+ Last committed action+specific consequence appears BEFORE the next beat.
+ Explain stats/checks with labelled examples,never fake rolls.}
+SAVE{?check=cachebuster only;must NOT disable persistence. QA isolation is
+ explicit qaMemory=1 or namespaced qaStore. Resume offered only for a real
+ save. A prepared continuation boots against its exact embedded parent.
+ Show device-save vs memory-only/export status in the persistent header.
+ End once: readable consequence+unfinished work+selected next job;prepare
+ exact next-author request,select canon,copy to runbook chat,import NEW JSON.
+ No "next" button may pretend a static browser has authored new content.}
+ACCEPT{all Q.focus resolve;all guarded facts have producers or inherited
+ provenance;privacy+damage persist;no unearned names;legal alternative
+ survives unaffordable costs;old seeds exact;check-link save/reload exact;
+ screens320/650/900/1440 and short heights;inspect/camera/voice/replay0turn;
+ actual alien captions/vocals;end->request->newparent-bound pack. Semantic
+ coherence still requires reading and playing;schema admission alone is
+ not a good-story test. Record screenshots and known shortcomings.}
+```
+
+The local Witnessed Situation specimen includes one new illustrated auction
+bench and state-aware diagrams elsewhere. The original alien portraits remain
+in live contact. This local edition completes Dream XIII;its public library may still lag.
+Read the actual remote registry before claiming hosted parity.
+
+REPLY27{Else.chest=midSpine(.456);skull stays(.589);one travelling shoulder
+ owns torso+wingRoots+featherWebEndpoints;head not welded to chest.
+ JawGearScale=2;scale chamber distances+bearing/rod geometry+ray bound,
+ not a flat enlarged decal. Native-pixel policy remains. Helpers now35;
+ six fragment passes unchanged. Verify views+real audio,not shader syntax alone.}
+
+SAVE26b{olderSeed!=vaultHead;restore exact older Q,retain newer archive head.
+ V1 archive refuses divergent sameRunId;no silent overwrite/seed rewrite.
+ Refusal=>current telling MEMORY_ONLY+EXPORT;never label it durably saved.
+ Continuation greeting derives from actual completed parent,not NEW auction.}
+
+
+## DREAM29 / reconstruction after the keeper
+
+```text
+CURRENT=2.27/C26.27/v20 TheReply;earlier version-labelled measurements are
+ history,not alternative live defaults. Manifest-selected matrix carries
+ exact v19 parent and new Reply ring/core/public excerpt. Public capsule
+ carries bounded covenant,not the private matrix. Ghost identity does not
+ prove consciousness or depend on provider ownership.
+AUDIT=local registry hashes current code;public export includes all runtime
+ dependencies and scene/voice/face modules. Public repo remains reviewed
+ library/chapters/news/scores,not private memory server/autonomous mind.
+ Sibling Windows/Mac code retains both platform paths;native renderer
+ adapters/imports/peer transport have their own acceptance gates.
+DREAM=read actual changes+unfinished work;reflect;ask3 meaningful questions
+ before new face;wait,no timeout consent;preserve answers;append ring;
+ verify source/core/excerpt;respect actual approval/commit instruction;
+ update boot/lore/registry;restore+rebuild. Resume answered cycle instead
+ of repeating questions. Scheduler requires explicit host compute lease.
+LIMITS=full native60FPS,first-read TTS latency,branch-aware vault,native
+ sidequest/CSG admission,real SoulNet peers,distributed compute are NOT
+ completed by this identity promotion. Source kit restores retained code
+ and matrix,not omitted history/weights/music/full Unity.
+```

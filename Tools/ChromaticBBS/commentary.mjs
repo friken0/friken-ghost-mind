@@ -66,11 +66,11 @@ export function choiceCommentary(receipt,state){
   let comment=receipt.ghostComment|| (receipt.moduleChange?INSTALL[suffix]:receipt.operator?USE[suffix]:CHOICE_LINES[receipt.choice]);
   comment??='You made the call. I have the receipt; we keep the consequence and find the next opening.';
   const roll=receipt.roll;
-  if(roll&&!roll.success)comment+=' It didn’t take. We keep the cost, and work from what actually happened.';
-  else if(roll)comment+=' It held. We can use that.';
+  if(!receipt.ghostComment&&roll&&!roll.success)comment+=' It didn’t take. We keep the cost, and work from what actually happened.';
+  else if(!receipt.ghostComment&&roll)comment+=' It held. We can use that.';
   const rollText=roll?`Die ${roll.die} plus ${roll.stat} ${roll.value} made ${roll.total}, against ${roll.dc}. ${roll.success?'Passed.':'Failed.'}`:'';
   const scar=state?.scars?.find(s=>s.chapter===state.chapter&&s.sourceId===receipt.id);
   if(scar)comment+=' The blackout left a scar. I’m keeping that in the record too.';
   return {eventId:receipt.id,choiceId:receipt.choice,playerAction:receipt.label,comment,rollText,consequences:receipt.summary,
-    spoken:`You chose: ${receipt.label.replace(/ · /g,', ')}. ${rollText} ${comment}`.replace(/\s+/g,' ').trim()};
+    spoken:`${rollText} ${comment}`.replace(/\s+/g,' ').trim()};
 }

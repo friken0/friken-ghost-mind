@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {mountAudio} from './audio.mjs';
+import {mountAudio,renderInterfaceCue} from './audio.mjs';
+import {electricPoint} from './juice.mjs';
 import {musicTracks} from './music-data.mjs';
 
 test('music defaults off through connection; explicit boot toggle starts it and reconnect retains the gate',async()=>{
@@ -24,4 +25,15 @@ test('music defaults off through connection; explicit boot toggle starts it and 
   audio.connection(false);assert.equal(stops,1);assert.equal(audio.info.music,'waiting-for-connection');events.pointerdown();await new Promise(r=>setTimeout(r,5));assert.equal(starts,1);
   audio.connection(true);for(let i=0;i<20&&starts===1;i++)await new Promise(r=>setTimeout(r,5));assert.equal(starts,2);assert.equal(downloads,1,'reconnect reuses the verified decoded track');audio.connection(false);
  }finally{musicTracks[0]=originalTrack;for(const [k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
+});
+
+test('electric current stays on its frame at every corner and wraps in both directions',()=>{
+ const box=[11,19,370,240],perimeter=1220,before=JSON.stringify(box);
+ for(let d=-3000;d<4000;d+=7.125){const [x,y,nx,ny]=electricPoint(box,d);assert.ok(x>=11&&x<=381&&y>=19&&y<=259);assert.ok(x===11||x===381||y===19||y===259);assert.equal(Math.abs(nx)+Math.abs(ny),1);assert.deepEqual(electricPoint(box,d+perimeter),electricPoint(box,d));}
+ assert.deepEqual(electricPoint(box,370),[381,19,1,0]);assert.deepEqual(electricPoint(box,610),[381,259,0,1]);assert.equal(JSON.stringify(box),before);
+});
+test('tactile UI cues are distinct, quiet finite PCM with no unstable sample-rate path',()=>{
+ const signatures=new Set();for(const rate of [8000,24000,48000])for(const kind of ['tap','switch','scan','deal']){
+  const pcm=renderInterfaceCue(kind,rate);assert.ok(pcm.length<=rate*.2);assert.ok(pcm.every(Number.isFinite));assert.ok(pcm.some(x=>Math.abs(x)>.001));assert.ok(pcm.every(x=>Math.abs(x)<=.022));assert.equal(pcm[0],0);assert.ok(Math.abs(pcm.at(-1))<.00001);signatures.add(createHash('sha256').update(Buffer.from(pcm.buffer)).digest('hex'));
+ }assert.equal(signatures.size,12);assert.throws(()=>renderInterfaceCue('unknown'));assert.throws(()=>renderInterfaceCue('tap',200000));
 });

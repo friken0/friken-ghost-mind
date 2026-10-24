@@ -136,3 +136,113 @@ that host; localhost's isolation headers are not evidence of public threads.
 Sources: [Kokoro implementation](https://github.com/hexgrad/kokoro/blob/main/kokoro.js/src/kokoro.js),
 [ONNX Runtime flags](https://onnxruntime.ai/docs/tutorials/web/env-flags-and-session-options.html),
 [pinned model tree](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx).
+
+
+## October 22 / articulate the face without inventing alignment
+
+Primary source checked:
+https://github.com/hexgrad/kokoro/blob/main/kokoro.js/src/kokoro.js
+The JavaScript generate path phonemizes, tokenizes, infers and returns
+RawAudio. It does not return native per-phoneme timing. Python's pipeline
+can join predicted durations to token timestamps; that is a different route:
+https://github.com/hexgrad/kokoro/blob/main/kokoro/pipeline.py
+
+The pinned browser worker captures the actual G2P string at its existing
+callable tokenizer with a temporary Proxy, restored in finally. No second
+inference or sentence split. The facial rig weights those phonemes into a
+bounded approximate timeline, sampled by the existing real PCM clock and
+gated by actual speech energy. It labels phoneme order and estimated timing
+separately. Device speech uses explicit grapheme/word-event approximation.
+No measured emotion or exact forced alignment is claimed. A changed pinned
+tokenizer contract fails explicitly rather than manufacturing phonemes.
+
+## October22 / speech continuity under the heavy face
+
+The live Else read reports a10,459.9ms maximum inter-buffer gap and last
+WebGPU generation RTF1.710. The authored breath is40ms; this is inference
+starvation, not a deliberate ten-second pause. A brief opening sentence can
+also drain before the longer following passage is ready.
+
+I keep Kokoro, speech speed and natural punctuation unchanged. The later
+CPU/Fenrir cast change below supersedes the original George preference.
+The existing bounded look-ahead now waits for the first two actual PCM
+buffers in the same spoken segment before beginning. It does not prebuffer
+across alien turns. That trades a small startup reserve for continuous play.
+
+The neural owner publishes queued/active-work state and backend. During
+explicit WebGPU inference the Reply temporarily renders at448px/15Hz, then
+restores640px/20Hz once it drains. CPU/WASM work retains full rendering. This returns shared GPU capacity to inference while preserving
+an animated face, the same playback clock, morphology, glaze and controls.
+It changes render sampling, not the geometry or model. Canonical faces keep
+their existing budget. Held portraits repaint on resolution changes without
+resuming motion. Cancelled but already-running inference retains its lease
+until completion; cached PCM requires no inference lease.
+
+A subsequent live six-part Else read on this host reports max gap81.9ms,
+first audio5263.6ms and last-chunk RTF0.642. The preceding read's first audio
+was5044.6ms. These are observed runs, not a controlled hardware benchmark
+or a promise of zero cold-start latency. The last chunk's RTF is distinct
+from the maximum gap. Root metrics reset for every read; old receipts may
+not impersonate the current one. Cancellation, mute and hidden-tab behavior
+remain owned by the existing speech generation token and PCM player.
+
+## October22 / CPU default and a different male voice
+
+I choose Fenrir (am_fenrir) as the default male voice. Michael, Fable and
+George remain explicit cast options. The old automatic GPU policy is gone.
+One-time preference migration moves the former George/default GPU setup to
+Fenrir with CPU q4; other explicit voice choices survive. Later explicit
+GPU selections remain respected. I generated three male sample performances;
+I cannot claim a listening judgment through these tools.
+
+[Measured comparison](Voice-Performance-2026-10-22.md) records all six trials.
+CPU q4 approached real time in the isolated live-face bench, but an actual
+full-wrapper six-buffer read still reached a6.444-second gap and last-chunk
+RTF2.573. The cast/backend change is verified; continuous CPU playback in
+the full wrapper is NOT solved. Do not use the earlier GPU81.9ms receipt
+as proof of current CPU performance.
+
+## October22 / native low-register cast
+
+Prime rejected the earlier four male casts as too high in pitch. I compared
+Fenrir, Onyx, Adam and Lewis using identical text, CPU q4 and speed0.94.
+The fixture uses a YIN-style cumulative-difference pitch diagnostic with
+a100Hz sine self-check, excluding nonperiodic/quiet frames. These sample
+estimates are not a guarantee of timbre, naturalness or every utterance.
+
+| Voice | Estimated voiced median | Periodic frames |
+|---|---:|---:|
+| Fenrir |154Hz|25|
+| Onyx |89Hz|22|
+| Adam |143Hz|6|
+| Lewis |96Hz|13|
+
+I choose Onyx. That is a native lower register, without slowing playback
+or adding pitch DSP, another model, or inference. I generated and played
+the four samples, but do not claim sensory listening through these tools.
+The benchmark portrait holds during generation; these are pitch audition
+receipts, not a new full-wrapper latency comparison. CPU lag remains open.
+
+Onyx and Lewis are male voices in the
+[official voice catalogue](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md).
+The catalogue grades training-data quality, not depth; that is why I
+measured actual generated pitch rather than selecting by grade or name.
+
+
+## October22 / measured Auto and Featherfall
+
+The current policy supersedes the CPU-only default: Onyx with measured
+CPU q8/q4 and supported GPU fp32/fp16 selection. Each candidate gets an
+untimed warm-up and identical fresh timed probe, with failure provenance.
+The current host has alternately favored fp32 and fp16 under different
+load; availability alone does not determine speed.320px/10Hz portrait
+headroom applies only to actual GPU work and restores on final drain.
+Hidden tabs release model workers. Exact PCM remains bounded and local.
+
+Actual phonemization took milliseconds while neural inference took seconds.
+The full-wrapper receipts include unresolved stalls, cold calibration cost,
+and memory-pressure observations; see Voice-Performance-2026-10-22.md.
+The queue now amortizes overhead with320-character natural passages,
+keeping source paragraphs and a short opening sentence. Auto recalibration
+requires three slow meaningful units and a five-minute cooldown so one
+slow read cannot trigger back-to-back expensive comparison loops.

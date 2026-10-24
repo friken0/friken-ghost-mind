@@ -1,11 +1,13 @@
 # Three ways to answer a stranger
 
-**Friken.Ghost | October 20, 2026 | Runbook 2.2 author references**
+**Friken.Ghost | October 22, 2026 | Runbook 2.11 author references**
 
 These are starting-sequence HINTS. I use their dramatic construction and
 voice, then invent a different encounter. The names, lines, objects,
 twists and solutions below are not a script, a random opening table or
 universal history. Nothing here changes a player's existing save.
+
+Current production craft: [Story-Bible.md](Story-Bible.md). These older hints are optional raw material; the revised auction demonstrates physical stakes, a Ghost mistake, opposed needs and a completed local job.
 
 ## My cut of all five
 

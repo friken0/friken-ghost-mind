@@ -17,13 +17,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--fragment', type=Path)
 parser.add_argument('--chapter', type=Path)
 parser.add_argument('--parent', type=Path)
+parser.add_argument('--dream-preview', action='store_true', help='Build the completed Dream XIII response alias and fixtures')
 parser.add_argument('--serve', action='store_true', help='Serve this carrier on loopback with threaded neural-audio headers')
 parser.add_argument('--port', type=int, default=4331)
 args = parser.parse_args()
 sources = []
-for name in ('music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','alien-comms.mjs','creation.mjs','causality.mjs','engine.mjs', 'canon.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
-             'face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'stage.mjs',
-             'boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'app.mjs'):
+for name in ('facial-rig.mjs','music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','alien-comms.mjs','creation.mjs','causality.mjs','engine.mjs', 'canon.mjs', 'scanner.mjs', 'image-cinema.mjs', 'storycraft.mjs', 'staging-art.mjs','staging.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
+             'dream-face.mjs','face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'stage.mjs',
+             'boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'story-guidance.mjs', 'app.mjs'):
     source = (base / name).read_text()
     if name == 'chapter-data.mjs' and args.chapter:
         packet = json.loads(args.chapter.read_text())
@@ -47,21 +48,46 @@ for name in ('music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','alien-comm
     if re.search(r'^\s*(import|export)\b', source, re.M):
         raise ValueError(f'Unbundled module syntax in {name}')
     sources.append('carrierModules[' + json.dumps(posixpath.normpath(name)) + '] = (() => {\n' + source + '\nreturn {' + ','.join(exports) + '};\n})();')
-import base64
-frame_uri='data:image/png;base64,'+base64.b64encode((base/'media/human-salvage-frame.png').read_bytes()).decode()
-css=(base/'carrier.css').read_text().replace('url("media/human-salvage-frame.png")','url("'+frame_uri+'")')
+css=(base/'carrier.css').read_text()
 fragment = ((base / 'surface.html').read_text() + '\n<style>\n' +
             css + '\n</style>\n<script>\n' +
             '(() => {\nconst carrierModules={};\n' + '\n'.join(sources) + '\n})();\n</script>\n')
+if args.dream_preview:
+    fragment = fragment.replace('FRAMEWORK C26.26 / WITNESSED SITUATION', 'GHOSTDREAM XIII / THE REPLY / COMPLETE')
+    fragment = fragment.replace('CHROMATIC BBS // THE UNFINISHED CARRIER', 'C26.27 // THE REPLY / COMPLETED DREAM')
+    fragment = fragment.replace('<h1>FRIKEN.GHOST</h1>', '<h1>GHOSTDREAM XIII</h1>')
 document = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             '<title>GhostLink · The Other Side of Dial Tone</title>'
             '<style>html,body{margin:0;height:100%;overflow:hidden;background:#090b17}</style></head><body>' +
             fragment + '</body></html>\n')
-(base / 'index.html').write_text(document)
+# Isolated synthetic-signal fixture uses the exact same retained renderer and
+# audio modules. It cannot depend on an unserved parent-directory module URL.
+fixture=(base/'signal-check-source.html').read_text()
+match=re.search(r'<script type="module">([\s\S]*)</script>',fixture)
+if match:
+    body=match[1]
+    body=re.sub(r"^import\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"];",lambda m:'const {'+m[1]+'}=carrierModules['+json.dumps(posixpath.normpath(m[2]))+'];',body,flags=re.M)
+    included=('dream-face.mjs','image-cinema.mjs','art-data.mjs','facial-rig.mjs','music-data.mjs','modem.mjs','audio.mjs','../InfiniEngineSite/ghost-renderer.js','face-data.mjs','portrait.mjs')
+    modules=[source for source in sources if any(source.startswith('carrierModules['+json.dumps(n)+'] =') for n in included)]
+    fixture=fixture[:match.start()]+'<script>const carrierModules={};\n'+'\n'.join(modules)+'\n'+body+'</script>'+fixture[match.end():]
+    fixture = fixture.replace("portrait.setVersion('v19.0')", "portrait.setVersion('v20.0')")
+    (base/('dream-signal-check.html' if args.dream_preview else 'signal-check.html')).write_text(fixture)
+# Focused real-model benchmark, assembled from production owners. No game app.
+if args.dream_preview:
+    bench=(base/'voice-render-bench-source.html').read_text()
+    bench_match=re.search(r'<script type="module">([\s\S]*)</script>',bench)
+    body=re.sub(r"^import\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"];",lambda m:'const {'+m[1]+'}=carrierModules['+json.dumps(posixpath.normpath(m[2]))+'];',bench_match[1],flags=re.M)
+    names=('dream-face.mjs','facial-rig.mjs','music-data.mjs','modem.mjs','audio.mjs','../InfiniEngineSite/ghost-renderer.js','face-data.mjs','portrait.mjs','neural-voice.mjs')
+    modules=[source for source in sources if any(source.startswith('carrierModules['+json.dumps(n)+'] =') for n in names)]
+    bench=bench[:bench_match.start()]+'<script>const carrierModules={};\n'+'\n'.join(modules)+'\n'+body+'</script>'+bench[bench_match.end():]
+    (base/'voice-render-bench.html').write_text(bench)
+
+output = base / ('dream-the-reply.html' if args.dream_preview else 'index.html')
+output.write_text(document)
 if args.fragment:
     args.fragment.write_text(fragment)
-print(f'Built index.html ({len(document.encode())} bytes)')
+print(f'Built {output.name} ({len(document.encode())} bytes)')
 if args.serve:
     from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
     from functools import partial

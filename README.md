@@ -1,14 +1,14 @@
-# Chromatic C26.13 / a human carrier for Ghost
+# Chromatic C26.27 / The Reply
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
-current browser specimen is **Lot Forty-Seven / Collection Required**:
-three acts, twelve decisions, original Human/Harkellinia/Krex art, a voluntary
+current browser specimen is **Lot Forty-Seven / The Morning We Keep**:
+three acts, eighteen decisions, original Human/Harkellinia/Krex art, a voluntary
 partnership and a chosen law that changes later available actions.
 The runbook authors fresh first meetings; this specimen is not every boot’s
 mandatory story. The public home is
 https://github.com/friken0/friken-ghost-mind.
 
-## Author a fresh meeting / runbook 2.2
+## Author a fresh meeting / runbook 2.27
 
 The [three starting hints](Tools/ChromaticBBS/Onboarding-Hints.md) select auction, night shift
 and egg from the five earlier samples. They offer equal newcomer footing
@@ -35,8 +35,8 @@ then its rings, standing-wave membrane and receiver answer the measured
 modem/music bands. Typed glyphs send their own distinct signal pulse.
 
 SCORE/resources own the top. Five rolled attributes sit beneath them.
-Resident artwork and story share one encounter, with choices below. Ghost
-stays upper right, radio and artifact beneath. Canvas inspection enlarges
+The selected Phosphor BBS layout keeps Ghost conversation at left and a
+shared Transmission/Artifact bay at right, with full-width choices below. Canvas inspection enlarges
 the same live renderer; Back keeps your state. This is a human salvage
 chassis. The five generated designs are references, not five live skins.
 
@@ -92,7 +92,7 @@ has not been found and is not substituted under its name.
 One mixer supplies measured bass/mid/air/attack to the face, SDF and rose.
 Neural voices normalize toward the same active RMS. Music plays at 55% of
 that reference, 10% during the modem. Ghost mouth follows Ghost PCM only.
-Default Kokoro speech uses George for Ghost and Heart for the female narrator;
+Default Kokoro speech uses George for Ghost; scene descriptions remain silent;
 first use downloads roughly 100 MB of pinned runtime/model dependencies.
 Inference is local. Dial starts voice loading during the modem; the voice
 button reports loading, preparing, speaking, paused or retry. Tab return
@@ -100,7 +100,8 @@ resumes unfinished speech. Mute or a new choice cancels that resume. A stuck
 preparation expires after 120 seconds; Read scene retries it. Keep runtime,
 weights and licences separately for fully offline speech. VOICE CAST exposes explicit host/device alternatives.
 
-`?check` isolates test storage; it no longer mutes TTS. `?qaAudio=silent`
+`?check` is a cache buster and preserves normal storage. Use explicit
+`qaMemory=1` or `qaStore=NAME` for test isolation. `?qaAudio=silent`
 is the explicit automated mute. Waiting captions stay readable while local
 speech generates. Playback reveals terminal ink; Show full text keeps audio.
 
@@ -161,9 +162,9 @@ kit retains the author text and current live art, not every media original.
 
 ## Speech performance / C26.9
 
-Auto uses a WebGPU adapter when available and CPU q8 otherwise. First-use
+Auto measures warmed CPU q8/q4; GPU speech is quarantined after corruption. First-use
 weights are about 326 MB for GPU fp32 or 92 MB for CPU q8, plus runtime and
-voices. VOICE CAST offers explicit CPU q8, CPU q4 and GPU fp32. q4 is about
+voices. VOICE CAST offers explicit CPU q8 and CPU q4. q4 is about
 305 MB here; it can be faster but is not the smallest download.
 
 The queue warms three units during boot, looks ahead three blocks and
@@ -190,7 +191,7 @@ boot and radio toggles. Enabling it still waits for carrier lock.
 
 ## Alien viewscreen / translation matrix
 
-Nine onboarding scenes now carry typed alien transmissions: Harkellinia,
+The revised onboarding carries typed alien transmissions: Harkellinia,
 Krex and one damaged Moknon archive return. The original artwork stays in
 the encounter. Open Viewscreen (or click that artwork) enlarges the call;
 Back/Escape returns to the exact pending choice. Ghost remains alongside
@@ -198,14 +199,149 @@ wide viewscreens. Caption confidence uses words and colour together.
 
 Translation accuracy is an authored in-world decoder estimate, not a truth
 score. Replay does not improve it. Low-confidence alternatives remain
-visible. Narration, procedural alien speech and Ghost commentary queue in
-that order; choice commentary still leads when applicable. The alien voice
+visible. Ghost introduces the contact, procedural alien speech plays, and
+Ghost replies; choice commentary still leads when applicable. The alien voice
 adapts Masha 1’s actual formant synthesis through the existing voice bus.
 Voice off, Quiet, new scenes and hidden tabs cancel playback. No neural
 model or network request generates these alien sounds.
 
 Previously saved chapters retain their own embedded content. Start the
 new onboarding to see its new transmissions; old seeds are never rewritten.
+
+## Story review candidate / not published
+
+The local candidate gives Ghost and the occupied world a first act, removes the spoken narrator, teaches a real pending check before commitment, and gives the Moknon keeper a bounded question-and-answer encounter. Source prose stays silent; only Ghost and alien source voices enter speech. Old saves preserve their original stories; choose a fresh run to test the new eighteen-decision telling.
+
+The author kit now includes 26 individual/crew writing dossiers, 156 authored lines and 78 concrete approaches, each marked as local new fiction with source boundaries. Use `node Tools/ChromaticBBS/moknon-cli.mjs scene Moknon --author`.
+
+C26.15 deepens this candidate with a concrete Ghost mistake, conflicting crew work, an opportunity cost for Kett, four selected ending routes and compositional consequence echoes. The scanner has eighteen distinct parts and 54 authored readings. Original alien paintings use the retained Krex pan/scan camera with pointer and anchored zoom. Ghost has measured voice-driven surface modes and closer full-stage framing. Choice ink flips into place without replaying the selected label. See Story-Bible.md for the authoring spine.
+
+
+## C26.16 / selected Phosphor BBS shell
+
+Prime selected imagegen concept C. The carrier now uses a compact resource/attribute masthead, scene context before direct Ghost dialogue on the left, one large shared visual bay on the right and full-width choice rows across the bottom. Thin cyan/amber rules replace the nested painted hardware. This is the standalone carrier, not native Ship Builder UI.
+
+Transmission and Artifact are mutually exclusive visual modes. The current authored specimen and its three readings replace the resident painting, with a return control naming the actual caller and translation confidence when present. Switching modes and reading do not change state, RNG or resources. Reading selection and image camera survive a mode round trip; a new scene starts in Transmission. Ghost remains visible. Full inspection reuses the same live nodes and restores them on Back.
+
+Choice intent, authored stakes and pending price/check have separate columns. `choicePreview` resolves installed-rule costs/checks through the same `pendingAttempt` as teaching; full math, odds and resonance live under How this roll works. Historical native saves retain their original detailed rules. Reels animate only inner ink; fixed buttons commit once. Utilities cannot activate hidden choices through number keys.
+
+Seven footer groups expose Save/Seed, Wire, Voice, SFX, Music, Pause motion and More. More leads to Faces/lineage, voice casting and Log/Laws, plus radio details, diagnostics and carrier controls. The selected layout has one owner; retired split-screen/chassis CSS was removed rather than retained as an alternate mode. The visible UI frame counter no longer reports the deliberately hidden SDF's idle rate.
+
+On narrow screens the conversation and shared bay stack inside one content scroller; full-width choices wrap while the action dock and utility bar remain reachable. Long scene prose and captions scroll within their named regions. The optional `browser-check.html?layoutOnly=1` exercises the layout/story/save/inspection route without repeating unchanged hover-camera startup checks. This UI release does not change authored chapter canon or reducer arithmetic.
+
+
+## C26.17 / Electric Phosphor
+
+The C layout retains its restored flowing electric frame. Cyan/gold currents run along measured outer, pane, Ghost and choice edges. Focus, presses, scene handoffs, view switches, scanner readings and real resource deltas have their own responses; fixed hit targets do not move. The single presentation plane is bounded to30Hz,2.4million pixels,13 targets and64 temporary sparks. It stops when hidden. Pause/reduced motion leaves an electric trace visible.
+
+Short original tap/switch/scan/deal cues use the existing SFX bus and mute control, never a new context or automatic music. `browser-check.html?layoutOnly=1` checks actual moving edge pixels, held visible traces, immutable state and the responsive route; add `shortOnly=1` for short windows. `browser-check.html?audioUi=1` measures actual shared-mixer switch/scan playback, finite-source cleanup and SFX mute, without a story choice.
+
+C26.18 restores layered engraved border ornament under the flowing electricity. Painting wheel zoom is twice as responsive; exit eases to normal framing and resumes automatic pan without a center jump. SCAN / EVIDENCE now diagnoses every current obstacle and links its findings to the actual pending choices. Consider focuses a choice without choosing it. New chapter writing applies to a fresh run; imported and resumed capsules retain their original authored packs.
+
+
+## GhostDream XIII / local review
+
+`python3 Tools/ChromaticBBS/build.py --dream-preview` builds the separate
+`dream-the-reply.html`; default `index.html` keeps manifest-selected v19.
+The provisional Reply uses an object-space engraved SDF face, folded hood,
+continuous helical coil/Bezier-neck serpent and measured speech-led 3-D
+poses. `dream-signal-check.html` tests the same renderer and actual PCM.
+No dream approval, identity promotion or publication is implied.
+
+[Away-mission and BBS Door contract](Tools/ChromaticBBS/Side-Quest-Continuity.md) defines the
+proposed ship integration and the actual read-only artifact/lore hooks.
+The native importer and cross-board transport remain to be implemented.
+
+The latest local face workshop is Else / Ember Weaver revision7: blue-lit
+tribal openings, a warm ethereal serpent, damped flight and feather-to-hood
+energy webs. Face inspection exposes MEET ELSE through the existing voice.
+[Else's proposed story](Tools/ChromaticBBS/Else-The-Unchosen.md) and
+[Masha's short source tour](Tools/ChromaticBBS/For-Masha-The-Math-Behind-the-Face.md) accompany it.
+
+Default Ghost cast is Onyx. Auto measures warmed CPU q8/q4 options and chooses the fastest CPU backend.
+Old GPU timing selections are invalidated by the fidelity-policy migration.
+GPU profiles remain in the diagnostic bench only. See the [measured CPU/GPU comparison](Tools/ChromaticBBS/Voice-Performance-2026-10-22.md);
+full-wrapper CPU sentence stalls remain unresolved.
+
+Paragraph Phantom revision10 holds one camera shot per spoken paragraph.
+The wider nine-tap spectral transition clears at510ms with camera arrival.
+Sentence/audio-buffer boundaries and silent gaps no longer provoke cuts.
+
+Tempered Neural Sea revision13 adds moving cheek plates and open gear trains,
+with speech-driven reversal. Golden Hinge revision14 restores gold wheels
+and moves their housings out/back to angled mandibular joints. The nose root blends
+into the mask; the hyperspace packet sea replaces the old hourglass backdrop.
+Onyx remains the native lower male cast, without playback pitch alteration.
+
+
+Featherfall revision17 adds measured cymatic key/fill lighting, downward
+feather-to-head energy, prismatic network colors, rare cursor zaps and
+press-to-zoom static paintings. Release/cancel eases back while preserving
+wheel framing. Current voice/render budgets and measurements are documented
+in Framework.md and Voice-Performance-2026-10-22.md. This remains a local
+unapproved dream candidate, not a published identity or completed native port.
+
+
+Signal Velocity revision22 replaces the old10/20FPS caps with a60FPS target,
+measured adaptive resolution, ray bounds and cheaper surface normals.
+[Frame performance and tradeoffs](Tools/ChromaticBBS/Face-Performance-2026-10-22.md) explains
+internal resolution versus layout size, query overhead and live receipts.
+
+
+Final validation:132 full Node checks,41 targeted regressions and71 actual
+shader/audio/image browser assertions. The isolated face reaches60FPS;
+the loaded wrapper sample reaches53FPS, with the documented resolution
+tradeoff. Speech startup and simultaneous neural/render headroom remain
+measured limitations. The unapproved local dream is not published.
+
+## Native Carved / provisional dream face
+
+The local dream candidate now renders at CSS width × actual devicePixelRatio.
+Adaptive downsampling and the inference resolution cap are removed. Its six
+passes split mask, hood and companion into bounded, depth-tested programs.
+The640px comparison and native animated measurements are separate receipts
+in [Face Performance](Tools/ChromaticBBS/Face-Performance-2026-10-22.md). The60FPS target is not
+a promise at every viewport/DPR. Dream approval remains pending.
+
+
+## Witnessed Situation / C26.26
+
+The current review adds a shared scene contract: place, immediate goal, pressure,
+visible object IDs, choice focus and prospective stakes. Scene, live alien
+contact and scan now occupy distinct modes of one bay. The auction bench has
+matching artwork; later beats use state-aware diagrams. Previous consequences
+precede the new scene. Misspelled/unproduced scene guards fail admission.
+
+`?check=` no longer disables saves. Tests must use explicit `qaMemory=1` or an
+isolated `qaStore` namespace. Exact older checkpoints remain exact while the
+newer archive head survives; conflicting same-run branches require export and
+never claim durable completion. Returning prepared chapters greet their actual
+parent. See Experience-Review-2026-10-23.md for the audit and known limits.
+
+Reply revision27 lowers the wing-bearing torso toward the coil and doubles the
+paired gold jaw gear assemblies. It remains an unapproved local dream preview.
+The v19 identity and public site have not been promoted by this review.
+
+## The Reply / completed GhostDream XIII / October24
+
+The manifest now selects v20, The Reply. Default index.html and the
+dream-the-reply.html alias select the same completed face and fifteen-skin
+carrier lineage. Older workshop notes above are historical; the native-pixel
+policy and CPU speech fidelity repair supersede the discarded downsampling
+and GPU Auto experiments. Current default is Onyx at native speed0.94,
+measured CPU q8/q4. Music remains off until explicitly enabled.
+
+The complete v19 parent survives in v20 byte-for-byte. The private source
+kit includes the completed matrix and repository-owned dream workflow;
+public exports exclude the matrix and private histories. The local source
+registry is refreshed, and the public export inventory now includes staging,
+facial performance and the new face dependencies. The separately hosted
+public library may lag: inspect its actual registry, not this local title.
+
+Full native60FPS, slow initial neural generation, divergent-branch vault
+storage, native return/import and actual peer/compute services remain open.
+The native CEF three-pass portrait host keeps its historical v19 skin until
+the Reply's six-pass adapter is ported; no native visual parity is claimed.
 
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.

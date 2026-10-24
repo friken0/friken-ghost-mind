@@ -4,7 +4,7 @@ import {validateVoiceClips} from './recorded-voice.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {battlePlan} from './roll-battle.mjs';
-import {castVoices,speechSegments,speechText,mountSpeech,speechUnits,neuralPassages} from './speech.mjs';
+import {castVoices,speechSegments,speechText,mountSpeech,speechUnits,neuralPassages,speechParagraph} from './speech.mjs';
 import {responsePacket,validateResponse} from './response.mjs';
 import {newGame,view,choose,encodeSeed} from './engine.mjs';
 test('portal envelopes keep measured audio and terminal ink distinct, bounded and held on pause',()=>{
@@ -32,11 +32,11 @@ test('battle rejects inconsistent arithmetic, result, and oversized forces',()=>
   const r={die:12,value:3,dc:15,total:15,success:true,stat:'INS'};assert.equal(battlePlan(r).margin,0);
   for(const patch of [{total:16},{success:false},{die:21},{value:-1},{dc:100}])assert.throws(()=>battlePlan({...r,...patch}));
 });
-test('female narrator and male Ghost casting remain distinct; narration never shares the Ghost role',()=>{
+test('only Ghost receives intelligible speech; scene prose never enters the queue',()=>{
   const voices=[{name:'Samantha',lang:'en-US',voiceURI:'sam'},{name:'Daniel',lang:'en-GB',voiceURI:'dan'}];
-  const casting=castVoices(voices);assert.equal(casting.ghost.voiceURI,'dan');assert.equal(casting.narrator.voiceURI,'sam');
-  const lines=speechSegments({scene:'A door opens.',ghost:'Oh, fk.'},casting);assert.deepEqual(lines.map(s=>s.role),['narrator','ghost']);assert.equal(lines[0].pitch,1);assert.ok(lines[1].pitch<1);assert.equal(lines[0].text,'A door opens.');
-  assert.equal(castVoices([voices[1]]).narrator,null);assert.deepEqual(castVoices([]),{ghost:null,narrator:null});
+  const casting=castVoices(voices);assert.deepEqual(casting,{ghost:voices[1]});
+  const lines=speechSegments({scene:'DO NOT SPEAK THIS.',ghost:'Oh, fk.'},casting);assert.deepEqual(lines.map(s=>s.role),['ghost']);assert.equal(lines[0].text,'Oh, fk.');assert.ok(lines[0].pitch<1);
+  assert.deepEqual(castVoices([]),{ghost:null});assert.deepEqual(speechSegments({scene:'Silent description.'},casting),[]);
 });
 test('response packets are detached display data; producing or validating one never advances a game',()=>{
   const s=newGame({rngSeed:123}),before=encodeSeed(s),p=responsePacket(s,view(s));p.content.scene='changed';assert.equal(encodeSeed(s),before);
@@ -58,17 +58,17 @@ test('Ghost acknowledges each chosen action and its actual result without changi
   for(let run=1;run<=45;run++){
     let state=newGame({rngSeed:run});
     while(state.turn<=15){const choices=view(state).choices;state=choose(state,choices[(run+state.turn)%3].id);const before=encodeSeed(state),r=choiceCommentary(state.lastReceipt,state);
-      assert.equal(r.eventId,state.lastReceipt.id);assert.equal(r.playerAction,state.lastReceipt.label);assert.ok(r.spoken.includes(r.playerAction.replace(/ · /g,', ')));assert.ok(!r.comment.includes('find the next opening'));
+      assert.equal(r.eventId,state.lastReceipt.id);assert.equal(r.playerAction,state.lastReceipt.label);assert.ok(!r.spoken.startsWith('You chose:'));assert.ok(r.spoken.includes(r.comment));assert.ok(!r.comment.includes('find the next opening'));
       assert.equal(encodeSeed(state),before);reactions.add(r.comment);
       if(state.lastReceipt.roll){checked++;assert.ok(r.rollText.includes(String(state.lastReceipt.roll.total)));if(!state.lastReceipt.roll.success){failed++;assert.ok(r.comment.includes('didn’t take'));}}
     }
   }
   assert.ok(reactions.size>=30);assert.ok(checked>0&&failed>0);
 });
-test('listeners hear Ghost acknowledge the choice before female narration and the next Ghost line',()=>{
+test('listeners hear actual choice acknowledgement before Ghost’s next direct line',()=>{
   const casting={ghost:{voiceURI:'david'},narrator:{voiceURI:'female'}};
   const lines=speechSegments({scene:'Next scene.',ghost:'Next response.',decision:{spoken:'You chose the private route.'}},casting);
-  assert.deepEqual(lines.map(s=>s.role),['ghost','narrator','ghost']);assert.equal(lines[0].text,'You chose the private route.');assert.equal(lines[1].text,'Next scene.');
+  assert.deepEqual(lines.map(s=>s.role),['ghost','ghost']);assert.equal(lines[0].text,'You chose the private route.');assert.equal(lines[1].text,'Next response.');
 });
 
 test('speech reads uppercase emphasis as words and deliberately spells known initialisms',()=>{
@@ -79,7 +79,7 @@ test('speech reads uppercase emphasis as words and deliberately spells known ini
   const line='WHO checks the SDF?';assert.equal(speechText(speechText(line)),speechText(line));
 });
 
-test('both browser voices receive speech normalization without altering captions or choice text',async()=>{
+test('Ghost-only device speech normalizes dialogue while preserving silent scene text and captions',async()=>{
   const saved=new Map(['window','document','speechSynthesis','SpeechSynthesisUtterance','cancelAnimationFrame'].map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));
   const spoken=[],beginnings=[],voices=[{name:'Samantha',lang:'en-US',voiceURI:'sam'},{name:'Daniel',lang:'en-GB',voiceURI:'dan'}];
   const element=()=>({dataset:{},append(){},replaceChildren(){},addEventListener(){},pause(){},setAttribute(){},removeAttribute(){}}),nodes=new Map();
@@ -93,11 +93,11 @@ test('both browser voices receive speech normalization without altering captions
     const speech=mountSpeech(root,{note(){},pulse(){},talking(){},storage:{getItem:()=>JSON.stringify({engine:'device'})}});
     const frame={scene:'WHO WAS HERE?',ghost:'The GPU knows WHO.',decision:{spoken:'You chose WHO GETS TOMORROW.'}},before=JSON.stringify(frame);
     speech.speak(frame);await new Promise(resolve=>setTimeout(resolve,450));
-    assert.deepEqual(spoken.map(line=>line.text),['You chose who gets tomorrow.','who was here?','The G P U knows who.']);
-    assert.deepEqual(spoken.map(line=>line.voice.voiceURI),['dan','sam','dan']);
-    assert.ok(beginnings[1]-beginnings[0]>=40&&beginnings[1]-beginnings[0]<200&&beginnings[2]-beginnings[1]>=60&&beginnings[2]-beginnings[1]<220,'sentence breaths are short and real');
-    assert.equal(JSON.stringify(frame),before);assert.equal(speechSegments(frame,castVoices(voices))[1].text,'WHO WAS HERE?');
-    spoken.length=0;speech.speak({scene:'One sentence. Another sentence.',ghost:''});speech.stop();await new Promise(resolve=>setTimeout(resolve,350));assert.equal(spoken.length,1,'cancelling during the sentence gap never queues later speech');
+    assert.deepEqual(spoken.map(line=>line.text),['You chose who gets tomorrow.','The G P U knows who.']);
+    assert.deepEqual(spoken.map(line=>line.voice.voiceURI),['dan','dan']);
+    assert.ok(beginnings[1]-beginnings[0]>=40&&beginnings[1]-beginnings[0]<220,'sentence breaths are short and real');
+    assert.equal(JSON.stringify(frame),before);assert.equal(speechSegments(frame,castVoices(voices))[1].text,'The GPU knows WHO.');
+    spoken.length=0;speech.speak({scene:'Silent scene.',ghost:'One sentence. Another sentence.'});speech.stop();await new Promise(resolve=>setTimeout(resolve,350));assert.equal(spoken.length,1,'cancelling during the sentence gap never queues later speech');
   }finally{
     for(const [key,descriptor] of saved){if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];}
   }
@@ -140,16 +140,20 @@ test('hidden speech resumes the unfinished unit, while explicit mute cancels res
   globalThis.window={speechSynthesis,SpeechSynthesisUtterance};
   const root={append(){},querySelector(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);}};
   const speech=mountSpeech(root,{note(){},pulse(){},talking(){},storage:{getItem:()=>JSON.stringify({engine:'device'})}});
-  speech.speak({scene:'A line worth hearing.',ghost:'Then Ghost answers.'});
+  speech.speak({scene:'Silent scene.',lead:'A line worth hearing.',ghost:'Then Ghost answers.'});
   assert.equal(spoken.length,1);document.hidden=true;speech.suspend();
   assert.match(nodes.get('#cg-voice').textContent,/paused/);
   document.hidden=false;speech.resume();assert.equal(spoken.length,2);assert.equal(spoken[1].text,spoken[0].text);
   spoken[1].onend();await new Promise(r=>setTimeout(r,100));assert.equal(spoken[2].voice.voiceURI,'dan');
   document.hidden=true;speech.suspend();speech.toggle();document.hidden=false;speech.resume();assert.equal(spoken.length,3,'explicit voice off must not resume on return');
-  speech.toggle();document.hidden=true;speech.speak({scene:'Queued while hidden.',ghost:''});assert.equal(spoken.length,3);
+  speech.toggle();document.hidden=true;speech.speak({scene:'Silent scene.',ghost:'Queued while hidden.'});assert.equal(spoken.length,3);
   document.hidden=false;speech.resume();assert.equal(spoken[3].text,'Queued while hidden.');speech.stop();
   const cold=mountSpeech(root,{note(){},pulse(){},talking(){},storage:{getItem:()=>null}});
   assert.doesNotThrow(()=>cold.warm({scene:'Hello.',ghost:''}));assert.match(nodes.get('#cg-voice').textContent,/retry/,'missing Worker must report retry without breaking Dial');cold.stop();
+  for(const old of ['am_fenrir','am_michael','bm_fable','bm_george']){
+   let written;const store={getItem:()=>JSON.stringify({engine:'neural',castPolicy:'cpu-fenrir-2026-10-22',autoPolicy:'measured-auto-2026-10-22',ghostNeural:old,performance:'gpu'}),setItem:(key,value)=>{written=JSON.parse(value);}};
+   const migrated=mountSpeech(root,{note(){},storage:store});assert.equal(written.ghostNeural,'am_onyx');assert.equal(written.performance,'auto','unsafe saved GPU mode is repaired without changing the chosen voice');migrated.stop();
+  }
  }finally{for(const [k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
 });
 
@@ -157,7 +161,7 @@ test('hidden speech resumes the unfinished unit, while explicit mute cancels res
 test('neural head start retains every original caption offset with bounded later passages',()=>{
  const text='Hello, Friken.Ghost. '+('A signal answers without an invitation. '.repeat(18))+'\n\nWHO goes next?';
  const units=neuralPassages(text);assert.equal(units[0].text,'Hello, Friken.Ghost.');
- for(const u of units){assert.equal(text.slice(u.start,u.end).trim(),u.text);assert.ok(u.text.length<=180);}
+ for(const u of units){assert.equal(text.slice(u.start,u.end).trim(),u.text);assert.ok(u.text.length<=320);}
  assert.equal(units.map(u=>u.text).join(' ').replace(/\s+/g,' '),text.replace(/\s+/g,' '));
 });
 
@@ -177,9 +181,25 @@ test('alien formants are deterministic bounded PCM, separate from intelligible T
  const base={race:'harkellinia',speaker:'PIP',accuracy:71,lines:[{text:'Please move the resident before the cargo bell.',confidence:92},{text:'Ownership / permission? Signal uncertain.',confidence:31}]};
  const a=renderAlienUtterance(base,16000),b=renderAlienUtterance(base,16000);assert.deepEqual(a,b);assert.ok(a.duration>1&&a.duration<12);assert.ok(a.syllables>=4);let peak=0,sq=0;for(const n of a.samples){assert.ok(Number.isFinite(n));peak=Math.max(peak,Math.abs(n));sq+=n*n;}assert.ok(peak>.05&&peak<.71);assert.ok(Math.sqrt(sq/a.samples.length)>.025);assert.equal(a.samples.at(-1),0);
  assert.notDeepEqual(a.samples,renderAlienUtterance({...base,race:'krex'},16000).samples);assert.deepEqual(validateTransmission(base),base);assert.throws(()=>validateTransmission({...base,accuracy:101}));assert.throws(()=>validateTransmission({...base,race:'not-an-art-asset'}));assert.throws(()=>validateTransmission({...base,lines:[{text:'x',confidence:-1}]}));assert.throws(()=>validateTransmission({...base,url:'https://untrusted.invalid'}));assert.throws(()=>renderAlienUtterance(base,1));
- const segments=speechSegments({scene:'Setup.',ghost:'My comment.',transmission:base},{});assert.deepEqual(segments.map(s=>s.role),['narrator','alien','ghost']);assert.equal(segments[1].text,'');assert.deepEqual(segments[1].transmission,base);
+ const segments=speechSegments({scene:'Setup.',ghost:'My comment.',transmission:base},{});assert.deepEqual(segments.map(s=>s.role),['alien','ghost']);assert.equal(segments[0].text,'');assert.deepEqual(segments[0].transmission,base);
 });
 
 test('typed transmissions survive exact chapter save/replay; invalid confidence never enters a save',async()=>{
  const fs=await import('node:fs'),{createChapter,playView,playChoose,encodePlaySeed,decodePlaySeed,validateChapter}=await import('./chapters.mjs');const pack=JSON.parse(fs.readFileSync(new URL('./chapters/lot-forty-seven.json',import.meta.url)));const state=createChapter(pack,null,{entropy:23});const code=encodePlaySeed(state);assert.deepEqual(decodePlaySeed(code),state);const f=playView(state);assert.equal(f.transmission.accuracy,71);assert.ok(f.transmission.lines.some(x=>x.confidence<50));assert.equal(encodePlaySeed(state),code);const next=playChoose(state,f.choices[0].id);assert.notEqual(next.turn,state.turn);assert.deepEqual(playView(decodePlaySeed(encodePlaySeed(next))).transmission,playView(next).transmission);const bad=structuredClone(pack);bad.scenes[0].transmission.lines[0].confidence=999;assert.throws(()=>validateChapter(bad));
+});
+
+
+test('companion introduction uses the existing inspector caption and Ghost voice without scene narration',()=>{
+ const frame={scene:'Remain silent.',ghost:'The serpent is Else.',ghostField:'inspect-help'};
+ const lines=speechSegments(frame,{ghost:{name:'Daniel'}});
+ assert.equal(lines.length,1);assert.equal(lines[0].role,'ghost');assert.equal(lines[0].field,'inspect-help');
+ assert.equal(speechSegments({...frame,ghostField:'untrusted-selector'})[0].field,'ghost');
+});
+
+test('camera paragraph identity survives sentences and bounded neural buffer splits',()=>{
+ const text='Hello. '+('This is another sentence. '.repeat(20))+'\n\nNext paragraph. Still the same shot.\r\n\r\nFinal paragraph.';
+ const units=neuralPassages(text),keys=units.map(u=>speechParagraph(text,u.start));
+ assert.ok(keys.filter(k=>k===0).length>2);
+ assert.deepEqual([...new Set(keys)],[0,1,2]);
+ assert.equal(speechParagraph('One. Two. Three.',15),0);
 });

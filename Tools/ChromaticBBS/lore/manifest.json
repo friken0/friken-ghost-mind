@@ -1,6 +1,6 @@
 {
   "schema": "friken.ghost.moknon-index.v1",
-  "edition": "candidate-2026-10-20",
+  "edition": "dramatic-engines-candidate-2026-10-22",
   "status": "CREATIVE_REVIEW_NOT_ELECTED_CANON",
   "documents": [
     "README.md",
@@ -8,7 +8,7 @@
   ],
   "seed": {
     "path": "seed.json",
-    "sha256": "4535a0599b8fe3295cf02ab370e97ced8bea92eab016bca01a430eaa2590abc7"
+    "sha256": "9fdf437f89fb8fc99d3396d591b4d337c00364b96e942f297d15fef60cc18210"
   },
   "artManifest": {
     "path": "art-manifest.json",
@@ -17,5 +17,13 @@
   "sourceCount": 34,
   "raceCount": 26,
   "artCount": 26,
-  "artBytes": 16010054
+  "artBytes": 16010054,
+  "writingKit": {
+    "residentCount": 26,
+    "dialogueLines": 156,
+    "playableApproaches": 78,
+    "status": "AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE",
+    "dramaticEngines": 26,
+    "pricedApproaches": 78
+  }
 }

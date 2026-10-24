@@ -29,3 +29,8 @@ test('standalone CLI actually emits a validation receipt',()=>{
  const r=spawnSync(process.execPath,[fileURLToPath(new URL('./moknon-cli.mjs',import.meta.url)),'validate'],{encoding:'utf8'});
  assert.equal(r.status,0,r.stderr);assert.equal(JSON.parse(r.stdout).valid,true);
 });
+
+
+test('all 26 writing kits have individual motives, six authored lines, three approaches and evidence boundaries',async()=>{
+ const {seed}=await loadSeed();const names=new Set();for(const race of seed.races){const w=race.writingKit;assert.equal(w.status,'AUTHORED_LOCAL_FICTION_NOT_RECOVERED_DIALOGUE');assert.deepEqual(w.sourceIds,race.sourceIds);assert.equal(w.dialogue.length,6);assert.equal(w.playableApproaches.length,3);assert.equal(w.sceneBeats.length,3);for(const key of ['name','role','want','fear','blindSpot','surprisingKindness','voice'])assert.ok(w.resident[key].length>2);assert.equal(w.evidenceBoundary,race.authorOnly);names.add(w.resident.name);assert.equal(lookup(seed,race.name).races[0].writingKit,undefined);}assert.equal(names.size,26);
+});

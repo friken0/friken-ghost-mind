@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mountNeuralVoice} from './neural-voice.mjs';
+import {mountNeuralVoice,pickNeuralProfile,repairNeuralPreferences,neuralPlaybackPolicy} from './neural-voice.mjs';
 
 test('neural warm-up is silent; completed PCM survives cancellation and uses exact cast/text keys',async()=>{
  const names=['Worker','cancelAnimationFrame'],saved=new Map(names.map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));
@@ -57,4 +57,62 @@ test('look-ahead retains FIFO requests, deduplicates live text and reattaches to
  worker.onmessage({data:{type:'audio',id:secondId,samples:new Float32Array([.2]),sampleRate:24000}});assert.equal((await second).samples,(await duplicate).samples);
  voice.stop();
  }finally{for(const [k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
+});
+
+
+test('neural compute lease covers queued and cancelled active inference until the last real job drains',async()=>{
+ const saved=new Map(['Worker','cancelAnimationFrame'].map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));let worker;const states=[];
+ try{globalThis.cancelAnimationFrame=()=>{};globalThis.Worker=class{constructor(){worker=this;}postMessage(m){this.last=m;}terminate(){}};
+ const voice=mountNeuralVoice({status(){},work:x=>states.push(x),audio:{speaking(){}}});
+ const a=voice.prepare('A.',{voice:'bm_george'}),aid=worker.last.id;
+ worker.onmessage({data:{type:'started',id:aid}});
+ const b=voice.prepare('B.',{voice:'bm_george'});assert.equal(states.at(-1).pending,2);
+ voice.stop();await assert.rejects(a,/cancelled/);await assert.rejects(b,/cancelled/);
+ assert.deepEqual(states.at(-1),{busy:true,pending:1,device:'wasm'},'the cancelled active GPU dispatch still owns headroom');
+ worker.onmessage({data:{type:'audio',id:aid,samples:new Float32Array([.1]),sampleRate:24000}});
+ assert.deepEqual(states.at(-1),{busy:false,pending:0,device:'wasm'});
+ const n=states.length;await voice.prepare('A.',{voice:'bm_george'});assert.equal(states.length,n,'cached PCM never borrows GPU budget');voice.stop();
+ }finally{for(const [k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
+});
+
+
+test('same-text benchmark bypass performs fresh inference instead of timing a PCM cache hit',async()=>{
+ const saved=new Map(['Worker','cancelAnimationFrame'].map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));let worker;const sent=[];
+ try{globalThis.cancelAnimationFrame=()=>{};globalThis.Worker=class{constructor(){worker=this;}postMessage(m){sent.push(m);}terminate(){}};
+ const voice=mountNeuralVoice({status(){},audio:{speaking(){}}});
+ let promise=voice.prepare('Same words.',{voice:'am_fenrir'}),id=sent.at(-1).id;
+ worker.onmessage({data:{type:'audio',id,samples:new Float32Array([.1]),sampleRate:24000}});await promise;
+ await voice.prepare('Same words.',{voice:'am_fenrir'});assert.equal(sent.filter(m=>m.type==='generate').length,1);
+ promise=voice.prepare('Same words.',{voice:'am_fenrir',reuse:false});id=sent.at(-1).id;
+ assert.equal(sent.filter(m=>m.type==='generate').length,2);
+ worker.onmessage({data:{type:'audio',id,samples:new Float32Array([.2]),sampleRate:24000}});assert.equal((await promise).samples[0],Math.fround(.2));voice.stop();
+ }finally{for(const [k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
+});
+
+test('automatic selection cannot choose corrupted GPU audio just because it returns fastest',()=>{
+ assert.equal(pickNeuralProfile([{profile:'cpu',rtf:.5},{profile:'compact',rtf:1.18},{profile:'gpu',rtf:.01}]),'cpu');
+ assert.equal(pickNeuralProfile([{profile:'compact',rtf:.8},{profile:'gpu16',rtf:.001}]),'compact');
+ assert.equal(pickNeuralProfile([{profile:'cpu',error:'failed'},{profile:'compact',rtf:1.1}]),'compact');
+ assert.throws(()=>pickNeuralProfile([{profile:'gpu16',rtf:.1},{profile:'cpu',rtf:NaN}]),/No neural backend/);
+});
+
+test('fidelity policy invalidates old GPU timings without touching cast or game data',()=>{
+ for(const performance of ['auto','gpu','gpu16','cpu','compact']){
+  const prefs={performance,ghostNeural:'am_onyx',engine:'neural',autoTiming:{profile:'gpu16',at:123}};
+  assert.equal(repairNeuralPreferences(prefs),true);
+  assert.equal(prefs.performance,['gpu','gpu16'].includes(performance)?'auto':performance);
+  assert.equal(prefs.autoTiming,null);assert.equal(prefs.ghostNeural,'am_onyx');
+  assert.equal(prefs.fidelityPolicy,neuralPlaybackPolicy);assert.equal(repairNeuralPreferences(prefs),false);
+ }
+});
+
+
+test('hidden-tab release frees the model worker while retaining exact completed PCM',async()=>{
+ const saved=new Map(['Worker','cancelAnimationFrame'].map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));let worker,terminated=0,created=0;
+ try{globalThis.cancelAnimationFrame=()=>{};globalThis.Worker=class{constructor(){worker=this;created++;}postMessage(m){this.last=m;}terminate(){terminated++;}};
+ const v=mountNeuralVoice({status(){},audio:{speaking(){}}});const p=v.prepare('Keep.',{voice:'am_onyx'});
+ worker.onmessage({data:{type:'audio',id:worker.last.id,samples:new Float32Array([.2]),sampleRate:24000}});const original=await p;
+ v.release();assert.equal(terminated,1);assert.equal((await v.prepare('Keep.',{voice:'am_onyx'})).samples,original.samples);assert.equal(created,1);
+ const next=v.prepare('New.',{voice:'am_onyx'});assert.equal(created,2);v.release();await assert.rejects(next,/cancelled/);
+ }finally{for(const[k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
 });

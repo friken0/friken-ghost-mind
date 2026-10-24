@@ -1,7 +1,7 @@
 /* CHROMATIC specimen stage. One bounded SDF field consumes committed game
  * state. This renderer has no gameplay authority and never advances a turn. */
 import { roseSource } from './rose-data.mjs';
-import { sdfExpression, contentChecksum } from './chapters.mjs';
+import { sdfExpression, sdfBounds, contentChecksum } from './chapters.mjs';
 export function mountStage(canvas, report = () => {}) {
   const gl = canvas.getContext('webgl', { alpha: false, antialias: false,
     powerPreference: 'low-power', preserveDrawingBuffer: true });
@@ -9,7 +9,7 @@ export function mountStage(canvas, report = () => {}) {
   const vertex = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fragment = `precision highp float;
 uniform vec2 resolution,gaze,orbit;
-uniform float clock,form,noise,seed,mouth,branch,wounds,zoom;
+uniform float clock,form,noise,seed,mouth,branch,wounds,zoom,specimenFrame;
 uniform vec3 ink,accent;
 uniform vec4 cymatics;
 float smoothMin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
@@ -134,20 +134,21 @@ void main(){
   const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
   const attr = gl.getAttribLocation(program, 'p');gl.enableVertexAttribArray(attr);gl.vertexAttribPointer(attr,2,gl.FLOAT,false,0,0);
-  let uniforms = Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics'].map(k=>[k,gl.getUniformLocation(program,k)]));
+  let uniforms = Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics','specimenFrame'].map(k=>[k,gl.getUniformLocation(program,k)]));
   const roseUniforms=Object.fromEntries(['uResolution','uPointer','uModes','uTime','uAudio','cgBranch','cgScars','cgNoise','cgZoom','cgOrbit'].map(k=>[k,gl.getUniformLocation(roseProgram,k)]));
   let audioBands=[0,0,0,0];
-  let recipeKey=null;
+  let recipeKey=null,recipeBounds=null;
   function setRecipe(recipe){
     const key=recipe?contentChecksum(recipe):null;if(key===recipeKey)return;
+    recipeBounds=recipe?sdfBounds(recipe):null;const center=recipeBounds?recipeBounds.min.map((v,i)=>(v+recipeBounds.max[i])/2):[0,0,0];
     const begin=fragment.indexOf('float field(vec3 p){'),end=fragment.indexOf('vec3 normalAt');
     const body=recipe?`float cgBox(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
-float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(orbit.y+gaze.y*.11);return (${sdfExpression(recipe)})*.65;}
+float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(orbit.y+gaze.y*.11);p+=vec3(${center.map(v=>v.toFixed(5)).join(',')});return (${sdfExpression(recipe)})*.65;}
 `:null;
-    const source=recipe?fragment.slice(0,begin)+body+fragment.slice(end):fragment;
+    const source=recipe?(fragment.slice(0,begin)+body+fragment.slice(end)).replace('float framing=form<0.?mix(1.25,1.9,form+1.):mix(1.9,2.55,form*.5);','float framing=specimenFrame;'):fragment;
     const next=gl.createProgram();try{gl.attachShader(next,compile(gl.VERTEX_SHADER,vertex));gl.attachShader(next,compile(gl.FRAGMENT_SHADER,source));gl.linkProgram(next);if(!gl.getProgramParameter(next,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(next));}catch(error){gl.deleteProgram(next);throw error;}
     gl.deleteProgram(program);program=next;recipeKey=key;canvas.dataset.recipe=key||'legacy';
-    uniforms=Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics'].map(k=>[k,gl.getUniformLocation(program,k)]));
+    uniforms=Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics','specimenFrame'].map(k=>[k,gl.getUniformLocation(program,k)]));
   }
   let state=null, currentForm=-1, targetForm=-1, pose=[0,0], target=[0,0], mouthLevel=0;
   let paused=matchMedia('(prefers-reduced-motion: reduce)').matches, raf=0, last=0, elapsed=0;
@@ -179,6 +180,7 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
       gl.uniform1f(roseUniforms.cgBranch,branchValue);gl.uniform1f(roseUniforms.cgScars,state?.scars.length||0);
       gl.uniform1f(roseUniforms.cgNoise,(state?.resources.noise||0)/10);
     }else{
+    if(recipeBounds){const size=recipeBounds.max.map((v,i)=>v-recipeBounds.min[i]),horizontal=Math.hypot(size[0],size[2]),fitting=Math.max(.35,1.12*size[1],1.12*horizontal/(w/h));gl.uniform1f(uniforms.specimenFrame,fitting);canvas.dataset.framing=fitting.toFixed(3);}
     gl.uniform4f(uniforms.cymatics,...audioBands);
     gl.uniform1f(uniforms.zoom,zoom);gl.uniform2f(uniforms.orbit,...orbit);
     gl.uniform2f(uniforms.resolution,w,h);gl.uniform2f(uniforms.gaze,...pose);
