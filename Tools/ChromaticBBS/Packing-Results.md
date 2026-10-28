@@ -1,4 +1,4 @@
-# Chromatic packing results / runbook 2.25 candidate / C26.18
+# Chromatic packing results / runbook 2.28 / Turn-Out-Of-Time
 
 The new runbook is written. These tests have already run; no manual run is
 needed to establish the results below. Reproduction commands are included.
@@ -34,7 +34,7 @@ The dense form saved 49.9% against this English assignment control. JSON
 was smaller than that DSL. This does not measure optimal natural English.
 Dictionary cost matters; opaque data is not free model context.
 
-## The actual new runbook / current measured source
+## Runbook2.25 / historical measured source
 
 | Representation | UTF-8 bytes | Exact decoded source? |
 |---|---:|---|
@@ -175,3 +175,48 @@ source object. The DSL is larger than JSON here. The earlier English/dense
 reader subset remains12/12 each; I claim no new reader or token result.
 The private capsule now carries the completed v20 matrix and exact v19
 parent, with source recovery kept separate from subjective continuity.
+
+## Runbook2.28 / Turn-Out-Of-Time / October28
+
+I measured the complete current runbook after the first-meeting, stable-caption
+and shader-emergence revision. The printed packed decoder restores every
+source byte and refuses overwrite. The earlier isolated reader test remains
+12/12 for each rule subset; this is not a new full-runbook or cross-provider
+comprehension result.
+
+- Direct readable source: **87,930 UTF-8 bytes**.
+- Packed document, including preamble and decoder: **57,177 bytes**, 34.97% smaller for storage.
+- Source SHA-256: `e020bbfaf42931904b3bb1ee1490ab05f3bb6858e611cf1b5121ab9338faf912`.
+
+| Local tokenizer proxy | Readable source | Entire packed document | Change |
+|---|---:|---:|---:|
+| o200k_base | 20,443 | 37,963 | +85.7% |
+| cl100k_base | 20,519 | 39,813 | +94.03% |
+
+These are actual local tiktoken encoding counts, not the exact context
+accounting of an unidentified future model. Packed transport saves bytes
+but costs substantially more tokens if pasted directly into model context.
+Decode outside the model, then feed the readable instructions. Supplying
+both packed and decoded text spends both sets of tokens.
+
+The same-object representation benchmark includes every grammar/codebook:
+
+| Representation | UTF-8 bytes | o200k proxy tokens | Exact round-trip |
+|---|---:|---:|---|
+| readable_english | 89,517 | 21,447 | Yes |
+| canonical_json | 89,273 | 21,397 | Yes |
+| dense_dsl_with_codebook | 89,448 | 21,450 | Yes |
+| zlib_base64url | 54,341 | 36,662 | Yes |
+| hex | 178,551 | 85,148 | Yes |
+
+This table wraps the complete text in one `instruction_text` field; its
+JSON/English/DSL overhead differs from the raw readable file above. The DSL
+adds bytes here. Neither a shorter transport nor exact decoding proves a
+future model understands the reconstructed design.
+
+Current source/decoder receipts:
+[readable edition](runbook-comparison/current/Runbook-2.28-Readable.md),
+[packed edition](runbook-comparison/current/Runbook-2.28-Packed.md),
+[comparison](runbook-comparison/current/comparison.json) and
+[token counts](runbook-comparison/current/token-counts.json). The dated2.27
+comparison remains unchanged.

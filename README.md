@@ -1,4 +1,58 @@
-# Chromatic C26.27 / The Reply
+# Chromatic C26.28 / The Reply / Turn-Out-Of-Time
+
+## A particular reply / for Surreal
+
+The new [Turn-Out-Of-Time mode](Tools/ChromaticBBS/Turn-Out-Of-Time.md) answers supplied input
+outside the campaign. Build its authored specimen with:
+
+```sh
+python3 Tools/ChromaticBBS/build.py --turn-out-of-time
+python3 Tools/ChromaticBBS/build.py --turn-out-of-time --serve --port 4332
+```
+
+Open [The Door That Remembers](surreal-the-door-that-remembers.html).
+That address reaches the browser's own machine; run the server on the Mac
+when reviewing on the Mac. The existing native gallery server can serve
+this same file on4332; do not start a second listener on its occupied port.
+
+The physical terminal begins with the clickable logical command
+`Friken.Ghost.exe --boot --connect:https://github.com/friken0/friken-ghost-mind`.
+It types and dials before the ANSI logo arrives. The command reads only the
+admitted public registry; the displayed status distinguishes real HTTPS
+metadata from a labelled offline continuation. It executes no shell command.
+Continue approaches the terminal glass, then opens
+the fullscreen reply and releases the3D connection room. The live Ghost
+greeting, music and measured cymatics follow connection. The resting UI is
+the full ANSI terminal, with questions, controls and animated glyph sprites.
+While Ghost speaks, the terminal dims behind his full SDF face and timed
+subtitles, starting with the spoken title; there is no permanent paragraph
+panel. Music drops by80percent
+during actual speech and returns to its normal gain afterward. The same
+retained VGA font and cell engine animate the physical connection terminal;
+sprites appear only after connection.
+Hover/focus previews a question; pressing chooses it. Transcript, replay,
+quiet, motion hold and Back remain available. Its illustrative branch is
+separate from campaign canon. Keep / next Ghost exports a private visit
+packet and an authoring prompt; this static page never calls a hidden LLM.
+Click a connection object to focus it; hover does not move the camera.
+The Mac Retina rendering choice uses density`min(1,DPR*.75)` per CSS pixel;
+Native is available for the full device pixel ratio. Actual cadence remains
+measured.
+
+Ghost currently auditions Michael; Else has Heart and her own spoken response.
+The ANSI MIND map opens six rooms and four memory depths. Leave a question
+and a working principle if you wish; those exact words stay local until export.
+Visit six rooms and choose the little Door's telling to reach the summary and
+next-author packet. The progress score belongs to this tour. The optional
+Causality practice receipt and [glyph physics toy](Tools/ChromaticBBS/ANSI-Skirmish.md) do not
+award native game resources or secretly generate the next chapter.
+
+The current [readable](Runbook-2.28-Readable.md)
+and [packed](Runbook-2.28-Packed.md) editions are
+regenerated from the same2.28source. Opaque compression is transport, not
+free context. The dated2.27comparison remains unchanged as evidence.
+
+## Campaign specimen
 
 Ghost authors the adventure; this carrier plays admitted chapters. The
 current browser specimen is **Lot Forty-Seven / The Morning We Keep**:
@@ -8,7 +62,7 @@ The runbook authors fresh first meetings; this specimen is not every boot’s
 mandatory story. The public home is
 https://github.com/friken0/friken-ghost-mind.
 
-## Author a fresh meeting / runbook 2.27
+## Author a fresh meeting / runbook 2.28
 
 The [three starting hints](Tools/ChromaticBBS/Onboarding-Hints.md) select auction, night shift
 and egg from the five earlier samples. They offer equal newcomer footing
@@ -81,8 +135,10 @@ a separate explicit disclosure from publishing a small session headline.
 
 ## Sound and art portability
 
-The builder embeds code, original resident paintings, shaders and the reusable
-transparent framing PNG. Actual music is in the **media sidecars**. Retain
+The builder embeds code, original resident paintings where an admitted scene
+uses them, and procedural shaders. New responses use SDF/fractal/ANSI art;
+the retired generated scene painting and framing PNG are not exported.
+Actual music is in the **media sidecars**. Retain
 `chromatic-media.zip` beside the source kit; extract it beside `index.html`.
 The manifest verifies exact recording bytes before decode. JazzSauce is an
 AAC stream-copy of Friken’s public SoundCloud performance. Epic II is recovered
@@ -342,6 +398,34 @@ Full native60FPS, slow initial neural generation, divergent-branch vault
 storage, native return/import and actual peer/compute services remain open.
 The native CEF three-pass portrait host keeps its historical v19 skin until
 the Reply's six-pass adapter is ported; no native visual parity is claimed.
+
+
+## Current Turn-Out-Of-Time / C26.28 first contact / October28
+
+The Surreal response retains the exact physical boot terminal canvas/parser
+in fullscreen. Ordinary pages show real ANSI art, diagrams, actions and
+source-attributed captures from the actual fractal renderer. Dialogue lives
+on the emerging SDF face with stable three-line phrase captions, not another
+paragraph panel. `subtitle-cues.mjs` retains original source offsets; words
+change heard colour without sliding or reflowing the page.
+
+This is a warm first meeting with optional depth. The player can ask about
+the entity, shipboard BBS or machinery, leave exact typed words and finish
+without a six-room checklist. Saved answers and the selected illustrative
+proposal remain explicit; Copy prepares the latest actual return packet.
+Ghost remains Michael and Else remains Heart through loading and replay;
+an engine change requires the player's explicit choice. No silent voice swap.
+
+`ansi-illustration.mjs` keeps packaged renderer captures inside an actual ANSI
+frame. `Illustration-Provenance.json` names the original paths and hashes.
+Cell tracks explain status, packet movement and selection; labels stay stable
+instead of cycling every word through the palette. `Face-Compositing.md`
+describes the shader-owned aperture and explicit production-pixel diagnostic.
+These code tests, human art acceptance and M1 performance remain separate.
+
+See [Turn-Out-Of-Time.md](Tools/ChromaticBBS/Turn-Out-Of-Time.md),
+[Native-Response-Host.md](Tools/ChromaticBBS/Native-Response-Host.md) and
+[Face-Compositing.md](Tools/ChromaticBBS/Face-Compositing.md). Historical2.27 remains unchanged.
 
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.

@@ -982,3 +982,66 @@ performance there is separate adapter work. The registry and public-source
 allowlist now include staging, facial-rig and dream-face dependencies.
 No identity promotion implicitly installs a scheduler, imports a native
 episode, volunteers player compute or publishes private session contents.
+
+## Living Form / shared geometry and per-part surfaces
+
+Chapter `artifact` may carry an admitted `friktal.sdf.recipe.v1` from the
+shared Living Form library. Native and browser fields use the same generated
+construction math. Parts own local ordered union/cut/intersection modifiers;
+one housing's bore cannot cut its neighbour. Native scopes stay in the
+current20-float packet; the chapter host renders the same retained recipe.
+The close-up viewer caps visible leaves at32 and refuses excess explicitly.
+
+`skin:{race,seed,scale}` is independent of geometry. Each part selects among
+eight independently baked InfiniTexture surfaces by object-local structure,
+cladding, mechanism and inlay regions plus a second finish bank. Albedo/height
+and E/M/R/phase channels affect relief, lighting and measured-audio emission.
+A bounded worker bakes on recipe changes; the render loop never bakes maps.
+The existing inspector, story reducer, chapter seeds and canon remain owners.
+Native science-machine mounting is not implied by a portable data packet.
+
+The portable package also retains exact generated copies of `AUTHORING.md`,
+`craft-math.inc` and `catalogue.json`. A fresh model can inspect construction
+intent, complete extents, ten-pass review and the actual scalar source without
+the private repository. Full-checkout path references describe integration
+owners; they do not imply that private native game code ships publicly.
+
+### Living Form material follow-through
+
+The current trusted texture engine exposes `generateMaterialSurface` with eight
+physical substrate profiles. Four roles times two banks select different height,
+roughness, pigment and wear fields; authored material IDs select their actual
+substrate. The canonical `surface-math.inc` ships in the bounded reconstruction
+source inventory alongside geometry and authoring instructions. Generate native
+C#/HLSL and portable JS from that source; do not rebuild a palette-only imitation.
+Baking remains off the draw loop in one bounded worker. Review material and clay
+views together; native diagnostic captures do not establish target-game FPS or
+final lighting acceptance.
+
+
+## Current Turn-Out-Of-Time / C26.28 first contact / October28
+
+The Surreal response retains the exact physical boot terminal canvas/parser
+in fullscreen. Ordinary pages show real ANSI art, diagrams, actions and
+source-attributed captures from the actual fractal renderer. Dialogue lives
+on the emerging SDF face with stable three-line phrase captions, not another
+paragraph panel. `subtitle-cues.mjs` retains original source offsets; words
+change heard colour without sliding or reflowing the page.
+
+This is a warm first meeting with optional depth. The player can ask about
+the entity, shipboard BBS or machinery, leave exact typed words and finish
+without a six-room checklist. Saved answers and the selected illustrative
+proposal remain explicit; Copy prepares the latest actual return packet.
+Ghost remains Michael and Else remains Heart through loading and replay;
+an engine change requires the player's explicit choice. No silent voice swap.
+
+`ansi-illustration.mjs` keeps packaged renderer captures inside an actual ANSI
+frame. `Illustration-Provenance.json` names the original paths and hashes.
+Cell tracks explain status, packet movement and selection; labels stay stable
+instead of cycling every word through the palette. `Face-Compositing.md`
+describes the shader-owned aperture and explicit production-pixel diagnostic.
+These code tests, human art acceptance and M1 performance remain separate.
+
+See [Turn-Out-Of-Time.md](Turn-Out-Of-Time.md),
+[Native-Response-Host.md](Native-Response-Host.md) and
+[Face-Compositing.md](Face-Compositing.md). Historical2.27 remains unchanged.

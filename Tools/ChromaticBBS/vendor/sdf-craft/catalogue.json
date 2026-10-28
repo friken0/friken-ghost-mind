@@ -1,0 +1,623 @@
+{
+  "schema": "friktal.sdf.catalogue.v1",
+  "edition": "living-form-1",
+  "source": "Tools/SdfCraft/craft-math.inc",
+  "generated": [
+    "Assets/scripts/FriktalCompute/HLSL/FriktalSdfCraft.hlsl",
+    "Assets/scripts/FriktalStarDiver/StarDiverSdfCraft.cs",
+    "Tools/SdfCraft/craft.glsl",
+    "Tools/SdfCraft/craft.mjs",
+    "Tools/SdfCraft/runtime-catalogue.mjs"
+  ],
+  "partAbi": "foundry-20-floats",
+  "geometryKind": "bounded-conservative-distance",
+  "parameters": {
+    "size": "complete local half extents; positive",
+    "variation": "two numbers in 0..1",
+    "material": "existing Foundry material 1..8",
+    "pose": "local rigid transform; motion remains host-owned",
+    "skin": "Canonical race, independent signed seed and texture scale; eight InfiniTexture pages across geometry-aligned per-part regions"
+  },
+  "limits": {
+    "parts": 128,
+    "packetFloatsPerPart": 20,
+    "maximumCoordinate": 10000,
+    "minimumHalfExtent": 0.0001,
+    "constructionCost": 2048,
+    "modifiersPerPart": 8,
+    "browserVisibleLeaves": 32
+  },
+  "primitives": [
+    {
+      "id": 33,
+      "key": "sweep-tube",
+      "function": "CraftSweep",
+      "construction": [
+        "continuous curved shaft",
+        "independent lateral sway",
+        "tapered ends"
+      ],
+      "roles": [
+        "tendon",
+        "cable",
+        "strut",
+        "vascular root"
+      ],
+      "cost": 6,
+      "axes": "spine Z"
+    },
+    {
+      "id": 34,
+      "key": "ribbed-duct",
+      "function": "CraftDuct",
+      "construction": [
+        "open flared bore",
+        "finite collars",
+        "service opening",
+        "mounting flange"
+      ],
+      "roles": [
+        "drive",
+        "breathing channel",
+        "resonator"
+      ],
+      "cost": 20,
+      "axes": "bore Z"
+    },
+    {
+      "id": 35,
+      "key": "aperture-housing",
+      "function": "CraftSocket",
+      "construction": [
+        "deep ellipsoidal cavity",
+        "stepped annuli",
+        "trunnion openings"
+      ],
+      "roles": [
+        "optical socket",
+        "sensor",
+        "instrument"
+      ],
+      "cost": 22,
+      "axes": "opening -Z"
+    },
+    {
+      "id": 36,
+      "key": "hinge-gear",
+      "function": "CraftGear",
+      "construction": [
+        "radial teeth",
+        "open axle",
+        "six spokes",
+        "bearing rings"
+      ],
+      "roles": [
+        "jaw hinge",
+        "gimbal",
+        "mechanical joint"
+      ],
+      "cost": 30,
+      "axes": "axle Z"
+    },
+    {
+      "id": 37,
+      "key": "feather-vane",
+      "function": "CraftVane",
+      "construction": [
+        "cambered membrane",
+        "continuous rachis",
+        "raked through-slits",
+        "tapered planform"
+      ],
+      "roles": [
+        "feather",
+        "radiator",
+        "fin"
+      ],
+      "cost": 22,
+      "axes": "rachis X, camber +Z"
+    },
+    {
+      "id": 38,
+      "key": "vault-plate",
+      "function": "CraftPlate",
+      "construction": [
+        "faceted solid",
+        "recessed bay",
+        "stepped border",
+        "edge vents",
+        "cut chevrons"
+      ],
+      "roles": [
+        "housing",
+        "armor",
+        "console casing"
+      ],
+      "cost": 24,
+      "axes": "recess +Y"
+    },
+    {
+      "id": 39,
+      "key": "lamellar-pod",
+      "function": "CraftPod",
+      "construction": [
+        "hollow shell",
+        "six open lancets",
+        "curved longitudinal ribs",
+        "open crown"
+      ],
+      "roles": [
+        "seed capsule",
+        "organ vault",
+        "relic"
+      ],
+      "cost": 24,
+      "axes": "long axis Y"
+    },
+    {
+      "id": 40,
+      "key": "cleaved-crystal",
+      "function": "CraftCrystal",
+      "construction": [
+        "faceted lattice",
+        "axial opening",
+        "waist cleft",
+        "suspended core",
+        "equatorial clasp"
+      ],
+      "roles": [
+        "mineral",
+        "memory relic",
+        "resonance element"
+      ],
+      "cost": 29,
+      "axes": "long axis Y"
+    },
+    {
+      "id": 41,
+      "key": "coiled-sweep",
+      "function": "CraftCoil",
+      "construction": [
+        "continuous helical spine",
+        "tapered terminal caps",
+        "bounded inverse warp"
+      ],
+      "roles": [
+        "coil",
+        "tendon spring",
+        "serpentine vascular root"
+      ],
+      "cost": 12,
+      "axes": "coil Z"
+    },
+    {
+      "id": 42,
+      "key": "section-loft",
+      "function": "CraftLoft",
+      "construction": [
+        "closed primary mass",
+        "continuous bent sections",
+        "soft-to-faceted section family"
+      ],
+      "roles": [
+        "cranial base",
+        "body mass",
+        "keel",
+        "joint capsule"
+      ],
+      "cost": 14,
+      "axes": "long axis Z"
+    }
+  ],
+  "owners": [
+    {
+      "family": "ships",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalShipCommon.hlsl",
+      "entry": "FndPrim",
+      "generator": "Assets/scripts/FriktalStarDiver/StarDiverFoundry.Modeling.cs",
+      "migration": {
+        "state": "geometry-and-material-candidate",
+        "scope": "Single current native grammar, local canonical roof recesses and culture-owned seated compact systems preserve hull/class/rig owners. All120 sampled race/classes now contain616 Living Form components; complete native scene art and target frame acceptance remain.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "life-upright",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalLifeArt.hlsl",
+      "entry": "LifeUprightMap",
+      "generator": "Assets/scripts/FriktalStarDiver/StarDiverLifeIdentity.cs",
+      "migration": {
+        "state": "body-and-region-candidate",
+        "scope": "Real muscle/fascial channels and deep optical sockets retain26 authored lineage algorithms and native posture rigs. Anatomical roles use independent retained surface seeds and directional grain. Full26-genome Metal fields/312 views pass idle, move and instrument states; native target-game art/performance acceptance remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "life-axial-radial",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalLifeMorphology.hlsl",
+      "entry": "LifeMap",
+      "generator": "Assets/scripts/FriktalStarDiver/StarDiverLifeIdentity.cs",
+      "migration": {
+        "state": "body-and-contact-candidate",
+        "scope": "Axial bodies gain owned spiracles and cranial optical recesses; performer maps mount actual contact-owned instruments. Existing limb counts, score and terrain owners remain. All26 native genomes pass1,791,946 Metal field probes and312 views; no target-game performance acceptance.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "planetary-life",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalSkyLifeBodyGraph.hlsl",
+      "entry": "SkyLife_MakePhenotype",
+      "representation": "projected body graph; distant detail has a pixel budget",
+      "migration": {
+        "state": "projected-geometry-candidate",
+        "scope": "Scale-aware projected body graphs retain their distinct distant representation, topology and simulation. Articulated membranes gain finite windows and rooted struts. Actual projected renderer passes156 views across13 lineages, two seeds, three poses/LODs and adult/birth states; ecology and native frame acceptance remain.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "artifacts",
+      "geometry": "Assets/scripts/FriktalCompute/Resources/FriktalComputeStarDiverOre.compute",
+      "entry": "ArtifactSdf",
+      "generator": "Assets/scripts/FriktalStarDiver/StarDiverWorld.ScienceMachine.cs",
+      "migration": {
+        "state": "geometry-and-material-candidate",
+        "scope": "Fifteen race-owned native grammars share generated browser geometry,8-page regions and retained specimen identity. Metal1,033,815 probes/180 views and10,665 final WebGL comparisons pass. Zoom no longer deforms the specimen. Full native runtime/material and ten-pass acceptance remain.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "minerals",
+      "geometry": "Assets/scripts/FriktalCompute/Resources/FriktalComputeStarDiverOre.compute",
+      "entry": "OreSdf",
+      "migration": {
+        "state": "geometry-and-seed-candidate",
+        "scope": "Eight revised growth/fracture habits share generated science geometry. Moving chunks retain shape seeds; a dyadic integer hash fixes backend divergence. Metal551,368 probes/96 views and5,688 WebGL comparisons pass. Richer mineral material and native gameplay review remain.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "science-machine",
+      "geometry": "Assets/scripts/FriktalCompute/Resources/FriktalComputeStarDiverOre.compute",
+      "entry": "SciMachineMap",
+      "migration": {
+        "state": "hardware-geometry-candidate",
+        "scope": "Tool rigs retain targets and physical screens while servos become recessed geared bearings, link clamps get constructed housings, and bench service vents/cleaved prism gain actual negative space. Four profiles pass275,684 Metal field probes/48 views and actual production import. Standalone diagnostic is expensive; native gameplay/material/frame acceptance remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "jukebox",
+      "geometry": "Assets/scripts/FriktalCompute/Resources/FriktalComputeStarDiverOre.compute",
+      "entry": "JukeMachineMap",
+      "migration": {
+        "state": "hardware-geometry-candidate",
+        "scope": "Existing cabinet/collection/controls retain ownership. Cut speaker wells, seated moving annular cones, geared hubs and cooling voids deepen construction. Audio drives cone travel. Three profiles pass206,763 Metal field probes/36 views and production import; actual audible score/input acceptance remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "ship-props",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalShipCommon.hlsl",
+      "entry": "FndPropSDF",
+      "migration": {
+        "state": "geometry-and-material-candidate",
+        "scope": "Seventeen prop types retain gameplay anchors and gain cavities, keys, vents, braces and mechanical details. Eight existing InfiniTexture pages dress functional regions. Organic center-axis NaN fixed. Final34 type/form Metal fields and408 views pass after crate adjustment; native input/material review remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "cockpits",
+      "geometry": "Assets/scripts/FriktalCompute/Resources/FriktalComputeStarDiverPeople.compute",
+      "entry": "CkpMap",
+      "migration": {
+        "state": "geometry-and-material-candidate",
+        "scope": "Four native styles retain class/seed layouts and gain physical flanges, coupler bores, recessed gauges, optics and finite ring cuts. Existing eight-page hull atlas selects functional regions.16 profiles/192 neutral views pass; native material/input acceptance remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "stations",
+      "geometry": "Assets/scripts/FriktalCompute/Resources/FriktalComputeStarDiverAux.compute",
+      "entry": "StaMap",
+      "representation": "native SDF station; distinct from archived pixel station generator",
+      "migration": {
+        "state": "geometry-candidate",
+        "scope": "Production StaMap has gallery voids, inset ring windows, connected spokes at each seeded ring deck, recessed lift hub and open docking cups. Final68,921 Metal field probes/24 views pass; native scene/material/rig/performance acceptance remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "cities",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalCityscape.hlsl",
+      "entry": "CitySdBuilding",
+      "generator": "Assets/scripts/FriktalCompute/FriktalCompute.Cityscape.cs",
+      "migration": {
+        "state": "architectural-void-candidate",
+        "scope": "Existing24 silhouettes gain family-owned porticoes, courts, cleavage galleries and breathing apertures in the same field used by physics.1,654,104 Metal probes/288 views pass; original lot/envelope and zero-hash march contract retained. Native scene/material/physics review remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "external-chapters",
+      "geometry": "Tools/ChromaticBBS/stage.mjs",
+      "entry": "mountStage",
+      "generator": "Tools/ChromaticBBS/chapters.mjs",
+      "migration": {
+        "state": "live-recipe-adapter",
+        "scope": "Existing chapter admission, exact seed replay and artifact viewport accept Living Form recipes, local cut scopes and static/spin poses. Same generated geometry ships in offline/public allowlist. Browser host caps visible leaves at32; no new gameplay authority.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "reply-face",
+      "geometry": "Tools/ChromaticBBS/dream-face.mjs",
+      "entry": "dreamFace",
+      "representation": "Retained authored Reply face and host audio/rig reference; native portrait adapter remains separate",
+      "migration": {
+        "state": "retained-reference",
+        "next": "Reuse its structural/cymatic lessons without copying its anatomy onto every species; native v20 portrait adapter is pending."
+      }
+    },
+    {
+      "family": "band-instruments",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalLifeArt.hlsl",
+      "entry": "LifeInstrument",
+      "generator": "Assets/scripts/FriktalStarDiver/StarDiverLifeWorkbench.Band.cs",
+      "representation": "Score-owned instrument geometry; keep hand contacts, note timing and performer rig",
+      "migration": {
+        "state": "geometry-and-contact-candidate",
+        "scope": "Score-owned instruments gain finite bores, resonators, strings, stands and grilles in their actual contact frame. Choir uses its microphone. Axial/radial bodies render the instruments they touch. Final11 profiles pass758,131 Metal field probes/132 views; native full-song contact/audio acceptance remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "interior-rooms",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalShipCommon.hlsl",
+      "entry": "FndOrgAir",
+      "generator": "Assets/scripts/FriktalStarDiver/StarDiverShipBaker.Organic.cs",
+      "representation": "Analytic carved room/tube grammar; walk grids remain gameplay projections",
+      "migration": {
+        "state": "ceiling-structure-candidate",
+        "scope": "Six carved room styles retain floor plans, ramps, breathing and machined ceiling caps. Upper shell ribs add geometry above the walk band without floor obstacles.413,526 Metal field probes/72 cutaway views pass; native walk-grid/physics and lighting acceptance remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "deck-fixtures",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalShipCommon.hlsl",
+      "entry": "FndDeckFixtures",
+      "representation": "Visible lamp geometry currently disabled by existing preference; lighting emission has another owner",
+      "migration": {
+        "state": "disabled-geometry-candidate",
+        "scope": "Three replacement housings have optical recesses, ribs and an open shade.206,763 Metal probes/36 views pass. Existing lamp geometry remainsOFF; no automatic preference change.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "warp-projectiles",
+      "geometry": "Assets/scripts/FriktalCompute/HLSL/FriktalShipCommon.hlsl",
+      "entry": "FndWarpOrbs",
+      "representation": "Visible warp-round core geometry; retain the bubble step fence and gameplay ownership",
+      "migration": {
+        "state": "bounded-geometry-candidate",
+        "scope": "Six visually distinct cores retain gameplay radius and existing bubble step fence.24 mode/age profiles pass Metal fields and288 views; damage/travel owners unchanged. Native gameplay/frame review remains.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "modem-gateway",
+      "geometry": "Tools/ChromaticBBS/boot-world.mjs",
+      "entry": "mountBootWorld",
+      "representation": "Existing modem/portal SDF scene and measured audio/cinematic input owner",
+      "migration": {
+        "state": "geometry-and-material-candidate",
+        "scope": "Existing camera/connection/audio owners mount shared cleaved crystal, curved antenna, bearing apertures and8-page Human materials. Production WebGL/worker captures pass acrosswide/modem/portal at the existing30FPS boot cap. Not a native game60FPS claim.",
+        "followThrough": {
+          "state": "four-additional-pass-candidate",
+          "passes": [
+            "physical substrate separation",
+            "finite construction and articulation",
+            "lineage / functional assembly identity",
+            "paired material and clay review with corrections"
+          ],
+          "acceptance": "Source implementation; see current evidence receipt for actual captured coverage. Target-game artistic and frame acceptance remain separate."
+        }
+      }
+    },
+    {
+      "family": "native-portrait",
+      "geometry": "Tools/InfiniEngineSite/ghost-renderer.js",
+      "entry": "GhostPortrait",
+      "representation": "Shared public/browser portrait renderer, not a separate native game SDF grammar; retains authored face lineage",
+      "migration": {
+        "state": "retained-renderer",
+        "scope": "GhostPortrait already hosts the Reply split geometry, measured audio and rig through the Chromatic carrier. Its public archive is a separate distribution; bridging the current Reply into the native game face remains integration work."
+      }
+    }
+  ],
+  "excluded": [
+    "classic mathematical fractal definitions",
+    "third-party text/font SDFs",
+    "archived prototypes",
+    "collision bounds without authored visible surfaces",
+    "pure particle/lighting fields"
+  ],
+  "costMeaning": "Admission weights for bounded recipe complexity, not GPU timings",
+  "materials": {
+    "regions": 4,
+    "banks": 2,
+    "pagesPerPart": 8,
+    "canonicalEngine": "Assets/StreamingAssets/GhostFace/texture-foundry-algos.js",
+    "nativeBake": "StarDiverSdfRecipe.BakeMaterials",
+    "browserBake": "materials-client.mjs / bounded worker",
+    "channels": {
+      "albedo": "RGB + height alpha",
+      "matrix": "emission, metal, roughness, phase"
+    },
+    "canonicalFinishSource": "Tools/SdfCraft/surface-math.inc",
+    "physicalProfiles": [
+      "brushed alloy / dermal fibers",
+      "enamel / keratin scutes",
+      "bearing bronze / porous cartilage",
+      "optical glass / fluid conductors",
+      "woven insulator / collagen",
+      "oxide accretion / lichen",
+      "carbon lamellae / chitin",
+      "opaline inlay / sensory nacre"
+    ],
+    "review": "Matching clay, normal, silhouette and actual material captures; diagnostic lighting qualified separately."
+  }
+}

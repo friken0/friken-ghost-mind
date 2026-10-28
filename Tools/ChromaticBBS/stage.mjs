@@ -1,3 +1,7 @@
+import {compileRecipe as compileLivingRecipe} from './vendor/sdf-craft/recipe.mjs';
+import {requestMaterialAtlas,releaseMaterialOwner} from './vendor/sdf-craft/materials-client.mjs';
+import {surfaceShader,surfaceLighting} from './vendor/sdf-craft/material-glsl.mjs';
+import {isLivingRecipe,recipeShader} from './vendor/sdf-craft/recipe-glsl.mjs';
 /* CHROMATIC specimen stage. One bounded SDF field consumes committed game
  * state. This renderer has no gameplay authority and never advances a turn. */
 import { roseSource } from './rose-data.mjs';
@@ -12,6 +16,7 @@ uniform vec2 resolution,gaze,orbit;
 uniform float clock,form,noise,seed,mouth,branch,wounds,zoom,specimenFrame;
 uniform vec3 ink,accent;
 uniform vec4 cymatics;
+uniform sampler2D skinAlbedo,skinMatrix;uniform vec2 skinSize;uniform float skinScale,skinReady;
 float smoothMin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
 mat2 rot(float a){return mat2(cos(a),-sin(a),sin(a),cos(a));}
 float ellipse(vec3 p,vec3 r){float k0=length(p/r),k1=length(p/(r*r));return k0*(k0-1.)/max(k1,.0001);}
@@ -66,7 +71,7 @@ float field(vec3 p){
   if(wounds>0.)d=max(d,-scar);
   return (d+.0025*noise*sin(p.x*42.+clock)*sin(p.y*38.))*.65;
 }
-vec3 normalAt(vec3 p){vec2 e=vec2(.002,0.);return normalize(vec3(field(p+e.xyy)-field(p-e.xyy),field(p+e.yxy)-field(p-e.yxy),field(p+e.yyx)-field(p-e.yyx)));}
+vec3 normalAt(vec3 p){vec3 n=vec3(0.);for(int i=0;i<4;i++){vec3 e=i==0?vec3(1.,-1.,-1.):i==1?vec3(-1.,-1.,1.):i==2?vec3(-1.,1.,-1.):vec3(1.,1.,1.);n+=e*field(p+e*.0008);}return normalize(n);}
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7))+seed)*43758.5453);}
 void main(){
   vec2 uv=(gl_FragCoord.xy-.5*resolution)/resolution.y;
@@ -134,21 +139,44 @@ void main(){
   const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
   const attr = gl.getAttribLocation(program, 'p');gl.enableVertexAttribArray(attr);gl.vertexAttribPointer(attr,2,gl.FLOAT,false,0,0);
-  let uniforms = Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics','specimenFrame'].map(k=>[k,gl.getUniformLocation(program,k)]));
+  let uniforms = Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics','specimenFrame','skinAlbedo','skinMatrix','skinSize','skinScale','skinReady'].map(k=>[k,gl.getUniformLocation(program,k)]));
   const roseUniforms=Object.fromEntries(['uResolution','uPointer','uModes','uTime','uAudio','cgBranch','cgScars','cgNoise','cgZoom','cgOrbit'].map(k=>[k,gl.getUniformLocation(roseProgram,k)]));
   let audioBands=[0,0,0,0];
-  let recipeKey=null,recipeBounds=null;
+  let recipeKey=null,recipeBounds=null,skinMaps=null,skinEpoch=0,disposed=false;
+  const atlasTexture=(data,w,h)=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,data);return t;};
+  function replaceSkin(recipe){
+    const epoch=++skinEpoch;
+    if(skinMaps){gl.deleteTexture(skinMaps.albedo);gl.deleteTexture(skinMaps.matrix);skinMaps=null;}
+    if(!recipe){releaseMaterialOwner(canvas);return;}
+    canvas.dataset.materialStatus='baking';
+    requestMaterialAtlas(canvas,recipe.skin).then(({baked,bakeMs})=>{
+      if(epoch!==skinEpoch||disposed)return;
+      skinMaps={albedo:atlasTexture(baked.albedo,baked.width,baked.height),matrix:atlasTexture(baked.matrix,baked.width,baked.height),size:[baked.width,baked.height],scale:recipe.skin.scale};
+      canvas.dataset.surfacePages=String(baked.receipts.length);canvas.dataset.textureEngine=baked.engine;canvas.dataset.surfaceBakeMs=bakeMs.toFixed(1);canvas.dataset.materialStatus='ready';
+      report('LIVING FORM / 8 INFINITEXTURE SURFACES');wake(true);
+    }).catch(error=>{if(error.name!=='AbortError'&&epoch===skinEpoch&&!disposed){canvas.dataset.materialStatus='error';report('Surface bake refused: '+error.message);}});
+  }
   function setRecipe(recipe){
     const key=recipe?contentChecksum(recipe):null;if(key===recipeKey)return;
-    recipeBounds=recipe?sdfBounds(recipe):null;const center=recipeBounds?recipeBounds.min.map((v,i)=>(v+recipeBounds.max[i])/2):[0,0,0];
+    const living=isLivingRecipe(recipe)?recipeShader(recipe):null;
+    recipeBounds=living?{min:living.bounds.min.map((v,i)=>(v-living.center[i])/living.unit),max:living.bounds.max.map((v,i)=>(v-living.center[i])/living.unit)}:recipe?sdfBounds(recipe):null;const center=recipeBounds?recipeBounds.min.map((v,i)=>(v+recipeBounds.max[i])/2):[0,0,0];
     const begin=fragment.indexOf('float field(vec3 p){'),end=fragment.indexOf('vec3 normalAt');
-    const body=recipe?`float cgBox(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
+    const literal=v=>Number.isInteger(v)?v+'.0':String(v);
+    const body=living?living.source+surfaceShader.replace('UNIT',literal(living.unit)).replace('ORIGIN','vec3('+living.center.map(literal).join(',')+')')+`
+float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(orbit.y+gaze.y*.11);return LivingField(p*${literal(living.unit)}+vec3(${living.center.map(literal).join(',')}),clock)/${literal(living.unit)};}
+`:recipe?`float cgBox(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
 float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(orbit.y+gaze.y*.11);p+=vec3(${center.map(v=>v.toFixed(5)).join(',')});return (${sdfExpression(recipe)})*.65;}
 `:null;
-    const source=recipe?(fragment.slice(0,begin)+body+fragment.slice(end)).replace('float framing=form<0.?mix(1.25,1.9,form+1.):mix(1.9,2.55,form*.5);','float framing=specimenFrame;'):fragment;
+    let source=recipe?(fragment.slice(0,begin)+body+fragment.slice(end)).replace('float framing=form<0.?mix(1.25,1.9,form+1.):mix(1.9,2.55,form*.5);','float framing=specimenFrame;'):fragment;
+    if(living){
+      const a=source.indexOf('    vec3 spectral='),b=source.indexOf('  }\n  col+=ink',a);
+      source=(source.slice(0,a)+surfaceLighting+source.slice(b)).replace('vec3(.85)),1.)','vec3(.454545)),1.)')
+        .replace('t+=d*.72','t+=d*.88').replace('i<76','i<112').replace('d<.0018','d<.00055');
+    }
     const next=gl.createProgram();try{gl.attachShader(next,compile(gl.VERTEX_SHADER,vertex));gl.attachShader(next,compile(gl.FRAGMENT_SHADER,source));gl.linkProgram(next);if(!gl.getProgramParameter(next,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(next));}catch(error){gl.deleteProgram(next);throw error;}
+    replaceSkin(living?compileLivingRecipe(recipe).recipe:null);
     gl.deleteProgram(program);program=next;recipeKey=key;canvas.dataset.recipe=key||'legacy';
-    uniforms=Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics','specimenFrame'].map(k=>[k,gl.getUniformLocation(program,k)]));
+    uniforms=Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics','specimenFrame','skinAlbedo','skinMatrix','skinSize','skinScale','skinReady'].map(k=>[k,gl.getUniformLocation(program,k)]));
   }
   let state=null, currentForm=-1, targetForm=-1, pose=[0,0], target=[0,0], mouthLevel=0;
   let paused=matchMedia('(prefers-reduced-motion: reduce)').matches, raf=0, last=0, elapsed=0;
@@ -170,7 +198,7 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
     const selected=isRose?roseProgram:program;
     gl.useProgram(selected);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
     const attribute=gl.getAttribLocation(selected,isRose?'aPosition':'p');gl.enableVertexAttribArray(attribute);gl.vertexAttribPointer(attribute,2,gl.FLOAT,false,0,0);
-    canvas.dataset.renderer=state?.pack?'generated-csg':isRose?'golden-whorl-surfaces':'SDF';
+    canvas.dataset.renderer=state?.pack?(isLivingRecipe(state.pack.scenes[Math.min(state.turn-1,state.pack.scenes.length-1)]?.artifact)?'living-form':'generated-csg'):isRose?'golden-whorl-surfaces':'SDF';
     if(isRose){
       const branchValue=Math.max(0,['witness','negative','echo'].indexOf(state?.modules.find(m=>m.id==='observe')?.law.id));
       gl.uniform1f(roseUniforms.cgZoom,zoom);gl.uniform2f(roseUniforms.cgOrbit,...orbit);
@@ -180,7 +208,9 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
       gl.uniform1f(roseUniforms.cgBranch,branchValue);gl.uniform1f(roseUniforms.cgScars,state?.scars.length||0);
       gl.uniform1f(roseUniforms.cgNoise,(state?.resources.noise||0)/10);
     }else{
-    if(recipeBounds){const size=recipeBounds.max.map((v,i)=>v-recipeBounds.min[i]),horizontal=Math.hypot(size[0],size[2]),fitting=Math.max(.35,1.12*size[1],1.12*horizontal/(w/h));gl.uniform1f(uniforms.specimenFrame,fitting);canvas.dataset.framing=fitting.toFixed(3);}
+    if(recipeBounds){const size=recipeBounds.max.map((v,i)=>v-recipeBounds.min[i]),horizontal=Math.hypot(size[0],size[2]),fitting=Math.max(.18,.85*size[1],.85*horizontal/(w/h));gl.uniform1f(uniforms.specimenFrame,fitting);canvas.dataset.framing=fitting.toFixed(3);}
+    gl.uniform1f(uniforms.skinReady,skinMaps?1:0);
+    if(skinMaps){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,skinMaps.albedo);gl.uniform1i(uniforms.skinAlbedo,0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,skinMaps.matrix);gl.uniform1i(uniforms.skinMatrix,1);gl.uniform2f(uniforms.skinSize,...skinMaps.size);gl.uniform1f(uniforms.skinScale,skinMaps.scale);}
     gl.uniform4f(uniforms.cymatics,...audioBands);
     gl.uniform1f(uniforms.zoom,zoom);gl.uniform2f(uniforms.orbit,...orbit);
     gl.uniform2f(uniforms.resolution,w,h);gl.uniform2f(uniforms.gaze,...pose);
@@ -194,7 +224,7 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
     }
     gl.drawArrays(gl.TRIANGLES,0,6);
     frameCount++;
-    if(now-frameAt>1000){fps=Math.round(frameCount*1000/(now-frameAt));frameCount=0;frameAt=now;}
+    if(now-frameAt>1000){fps=Math.round(frameCount*1000/(now-frameAt));canvas.dataset.fps=String(fps);frameCount=0;frameAt=now;}
     if(!paused&&!document.hidden)raf=requestAnimationFrame(draw);else raf=0;
   }
   function wake(force=false){if(force){cancelAnimationFrame(raf);raf=0;visible=canvas.getClientRects().length>0&&canvas.clientWidth>0&&canvas.clientHeight>0;}if(!raf&&visible)draw();}
@@ -230,13 +260,13 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
     zoom:zoomBy,reset,
     cymatics(bands){audioBands=bands.map(x=>Math.max(0,Math.min(1,Number(x)||0)));canvas.dataset.cymatics=audioBands.map(x=>x.toFixed(3)).join(',');},
     update(next){const node=next.pack?.scenes[Math.min(next.turn-1,next.pack.scenes.length-1)];try{setRecipe(node?.artifact||null);}catch(error){report('Generated SDF refused: '+error.message);return;}state=next;targetForm=({seed:-1,rose:0,face:1,gate:2})[next.world.relic.form];
-      report(next.pack?'MODEL CSG / READY':next.world.relic.form==='rose'?'GOLDEN WHORLS / READY':'SDF ready');
+      report(next.pack?(isLivingRecipe(node?.artifact)?'LIVING FORM / SHARED NATIVE GEOMETRY':'MODEL CSG / READY'):next.world.relic.form==='rose'?'GOLDEN WHORLS / READY':'SDF ready');
       const palettes=[[[.23,.95,.91],[.96,.22,.62]],[[.85,.4,1],[.15,.95,.8]],[[1,.65,.23],[.5,.6,1]]];
       palette=palettes[(next.scars.length+next.chapter-1)%3];
       if(paused)currentForm=targetForm;wake(true);},
     hold(value){paused=value;cancelAnimationFrame(raf);raf=0;last=0;wake();},
     pulse(){if(!paused){mouthLevel=.8;wake();}},
     get fps(){return paused?'HELD':fps;}, get paused(){return paused;},
-    dispose(){cancelAnimationFrame(raf);observer.disconnect();visibilityObserver.disconnect();gl.deleteBuffer(buffer);gl.deleteProgram(program);gl.deleteProgram(roseProgram);}
+    dispose(){disposed=true;skinEpoch++;releaseMaterialOwner(canvas);cancelAnimationFrame(raf);observer.disconnect();visibilityObserver.disconnect();gl.deleteBuffer(buffer);gl.deleteProgram(program);gl.deleteProgram(roseProgram);if(skinMaps){gl.deleteTexture(skinMaps.albedo);gl.deleteTexture(skinMaps.matrix);}}
   };
 }

@@ -1,0 +1,32 @@
+[
+  {
+    "title": "01 / THE QUARRY",
+    "note": "A native Kleinian volume. Cyan boxes select usable regions.",
+    "source": "Tools/SdfCraft/fractal-quarry/evidence/kleinian-source-quarry.png",
+    "sha256": "80334523913f31c33086261405224262c69b0f61eaca1a23de8e62eb6ecf6c35"
+  },
+  {
+    "title": "02 / CROP THE PARTS",
+    "note": "Exact retained source regions become independent solid parts.",
+    "source": "Tools/SdfCraft/fractal-quarry/evidence/last-good-idea-captured-chunks.png",
+    "sha256": "e84a599a20ffd7610a83103830487a0c65cc3398de8913c9ed2a372b6fffd54d"
+  },
+  {
+    "title": "03 / ASSEMBLE A HULL",
+    "note": "A clay hull exposes the geometry before materials.",
+    "source": "Tools/SdfCraft/fractal-quarry/evidence/fractal-mandelbox-close.png",
+    "sha256": "fe94467a046fc10cd75c2e4736b410a08b12af122e2c0039b13f83119c5ed8ac"
+  },
+  {
+    "title": "04 / DRESS THE PARTS",
+    "note": "Material boundaries follow hull parts and their roles.",
+    "source": "Tools/SdfCraft/fractal-quarry/evidence/folded-pilgrim-material-close.png",
+    "sha256": "227df67721b246c707d8506e8872042850858be6e378090320657412b24dc5d9"
+  },
+  {
+    "title": "05 / GIVE EACH CULTURE A DRIVE",
+    "note": "Six cultures shown. Native fractal ship prototype captures.",
+    "source": "Tools/SdfCraft/fractal-quarry/evidence/living-drives-preview.jpg",
+    "sha256": "edcb6cd6e4a2b1ca7663ee590b288956dc19c0939ddd7f3d7e9fa6eb88da449a"
+  }
+]

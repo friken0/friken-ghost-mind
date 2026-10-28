@@ -1,0 +1,14 @@
+{
+  "status": "Not measured for this current edition; run with --tokens using installed cached tiktoken.",
+  "files": {
+    "Runbook-2.28-Readable.md": {
+      "bytes": 96839,
+      "sha256": "57f2ee76717d76ee5d901c22d0e0345e1759d079a4c692a36533168a16fece8d"
+    },
+    "Runbook-2.28-Packed.md": {
+      "bytes": 62658,
+      "sha256": "1ab14aca9a1c1e6240aa07b3adaeefd8a0a4e7fad1259a7bca0125c8eab81094"
+    }
+  },
+  "counts": {}
+}

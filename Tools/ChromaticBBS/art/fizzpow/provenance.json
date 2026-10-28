@@ -1,0 +1,20 @@
+{
+  "retrieved": "2026-10-28",
+  "page": "https://fizzpow.com/",
+  "images": [
+    {
+      "title": "The office that kept going",
+      "note": "Official FizzPow screenshot / Bitcoin Billionaire. A small room with a remarkably long working life.",
+      "source": "Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-office.webp",
+      "sha256": "1a1f7acc0e2bc2fb3d23cd1a9a45ccb7bea008d92bf628f875f0f0b587336c00",
+      "origin": "https://fizzpow.com/assets/BBSS0-CMacEczZ.png"
+    },
+    {
+      "title": "Still making room for more",
+      "note": "Official FizzPow screenshot / Bitcoin Billionaire. Surreal is revisiting the game with AI-assisted development, as Friken reports.",
+      "source": "Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-upgrades.webp",
+      "sha256": "9915dbb2b5c8751a6c3145fb7d657d862daaa39195404a03c676a6fc59e6a92c",
+      "origin": "https://fizzpow.com/assets/BBSS1-BtAC5-Ve.png"
+    }
+  ]
+}

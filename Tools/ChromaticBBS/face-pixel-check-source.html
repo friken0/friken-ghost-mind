@@ -1,0 +1,41 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ghost / Real Alpha &amp; Speech Pixel Check</title>
+<style>
+:root{--sd-bg:#071219;--sd-text:#aaffff;--sd-gold:#ffff55;--sd-edge:#1c8188;--sd-dark:#000}
+*{box-sizing:border-box}body{margin:16px;background:var(--sd-bg);color:var(--sd-text);font:16px/1.4 monospace}h1{font-size:22px;color:var(--sd-gold)}button{font:inherit;padding:10px;margin:0 8px 8px 0;background:var(--sd-dark);color:var(--sd-text);border:1px solid var(--sd-edge);cursor:pointer}button:disabled{opacity:.5}button:focus-visible{outline:2px solid var(--sd-gold)}#status{min-height:2em;white-space:pre-wrap}#result{max-height:55vh;overflow:auto;white-space:pre-wrap}#frames{display:flex;flex-wrap:wrap;gap:12px}figure{margin:0;max-width:640px;flex:1 1 320px}figure img{width:100%;max-width:640px;display:block;background:repeating-conic-gradient(#10202b 0 25%,#5b6570 0 50%) 50%/32px 32px}figcaption{padding:6px 0;color:var(--sd-gold)}
+</style>
+<body data-sd-grant="explicit production face pixel diagnostic">
+<h1>Ghost / real alpha &amp; speech pixels</h1>
+<p>Production SDFs at 640×640 native pixels. Fixed camera/time; no anatomy or resolution changes. The checkerboard is behind the actual shader alpha. Neural test uses the existing CPU q8 Kokoro model, Michael, and actual played PCM. It never auditions another model or switches voices.</p>
+<div><button class="sd-btn" id="alpha">Check alpha only / no audio</button><button class="sd-btn" id="neural">Play neural Ghost + check pixels</button><button class="sd-btn" id="shots">Review speaker camera / silent</button><button class="sd-btn" id="stop">Stop</button></div>
+<pre id="status" role="status">Ready / explicit tests only. No automatic model loading.</pre><div id="frames"></div><pre id="result"></pre>
+<script src="./vendor/native-gallery/input.js"></script>
+<script type="module">
+import {runFacePixelCheck,renderSpeakerFraming} from './face-pixel-check.mjs';
+import {mountAudio} from './audio.mjs';
+import {mountNeuralVoice} from './neural-voice.mjs';
+const status=document.querySelector('#status'),result=document.querySelector('#result'),frames=document.querySelector('#frames'),root=document.body;
+let voice=null,audio=null,graph=null,busy=false,serial=0,peak=null;
+function report(text){status.textContent=text;root.dataset.phase=text;}
+function frame({kind,dataURL}){const f=document.createElement('figure'),image=document.createElement('img'),caption=document.createElement('figcaption');image.alt='Production face / '+kind+' / raw shader alpha';image.src=dataURL;caption.textContent=kind+' / actual RGBA alpha';f.append(image,caption);frames.append(f);}
+function lock(value){busy=value;for(const id of ['alpha','neural','shots'])document.querySelector('#'+id).disabled=value;}
+function complete(data){result.textContent=JSON.stringify(data,null,2);root.dataset.result=JSON.stringify(data);report('PASS / '+data.revision+(data.source?' / '+data.source.source+' measured calibration':' / alpha only; speech not tested'));}
+function stop(){serial++;voice?.stop();voice?.release();if(graph)void graph.context.suspend();lock(false);report('Stopped / no incomplete playback receipt');}
+SDUI.press(document.querySelector('#stop'),stop);
+SDUI.press(document.querySelector('#shots'),()=>{if(busy)return;lock(true);frames.replaceChildren();result.textContent='';report('Reviewing production speaker framing / silent…');requestAnimationFrame(()=>{try{const data=renderSpeakerFraming({onFrame:frame});result.textContent=JSON.stringify(data,null,2);report('PASS / three actual camera shots / no audio claim');}catch(error){report('FAIL / '+error.message);}finally{lock(false);}});});
+SDUI.press(document.querySelector('#alpha'),()=>{if(busy)return;lock(true);frames.replaceChildren();result.textContent='';report('Rendering actual alpha frames…');requestAnimationFrame(()=>{try{complete(runFacePixelCheck({alphaOnly:true,onFrame:frame}));}catch(error){report('FAIL / '+error.message);}finally{lock(false);}});});
+SDUI.press(document.querySelector('#neural'),async()=>{
+ if(busy)return;lock(true);frames.replaceChildren();result.textContent='';peak=null;const own=++serial;
+ try{
+  audio??=mountAudio(root,{frame(bands,level,vocal,vocalLevel){if(!peak||vocalLevel>peak.level)peak={source:'neural-pcm',level:vocalLevel,bands:[...vocal],note:'Peak voiced frame captured from actual Kokoro Michael CPU q8 playback through production shared voice analyser'};}});
+  graph=await audio.unlock();if(own!==serial)return;
+  voice??=mountNeuralVoice({audio,profile:'cpu',status:report,level(){},talking(){}});
+  report('Preparing Michael / existing CPU q8 model and device cache. No automatic device substitution.');
+  const message=await voice.prepare('I am Ghost. Same voice. Same story. This face is listening.',{voice:'am_michael',speed:.94});if(own!==serial)return;
+  const receipt=await voice.play(message,{role:'ghost',voice:'am_michael',onStart(){report('Playing actual neural Michael / measuring voice bus…');}});if(own!==serial)return;if(!receipt.played)throw Error('No complete PCM playback receipt');
+  if(!peak||peak.level<=.001)throw Error('No non-silent measured voice frame reached the shared analyser');
+  report('Reading actual silent / voiced shader pixels…');const check=runFacePixelCheck({voiceSample:peak,onFrame:frame});check.playback={voice:message.voice,profile:'cpu',dtype:'q8',receipt,metrics:message.metrics};complete(check);
+ }catch(error){if(own===serial)report('FAIL / '+error.message);}
+ finally{if(own===serial){voice?.release();if(graph)await graph.context.suspend();lock(false);}}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy)stop();});
+</script></body></html>

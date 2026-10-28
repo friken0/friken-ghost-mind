@@ -1,3 +1,4 @@
+import {isLivingRecipe} from './vendor/sdf-craft/recipe-glsl.mjs';
 import {storyAudit} from './storycraft.mjs';
 import {validateChapterRelease} from './chapter-library.mjs';
 /** Code-host entry point used by BOOT: validate before mounting content. */
@@ -10,9 +11,9 @@ if(op==='artifact'){
  const pack=validateChapter(JSON.parse(read(input))),scene=pack.scenes.find(s=>s.id===parent);
  if(!scene)throw Error('No such scene in the validated chapter.');
  console.log(JSON.stringify({schema:'friken.ghost.artifact-recipe.v1',
-  id:pack.id+'/'+scene.id,format:'chromatic-csg-v1',
+  id:pack.id+'/'+scene.id,format:isLivingRecipe(scene.artifact)?'friktal.sdf.recipe.v1':'chromatic-csg-v1',
   source:{chapterId:pack.id,sceneId:scene.id,chapterPackSha256:sha256(canonicalData(pack))},
-  recipe:scene.artifact,bounds:sdfBounds(scene.artifact),nativeAdapter:'not-implemented'},null,2));
+  recipe:scene.artifact,bounds:sdfBounds(scene.artifact),nativeAdapter:isLivingRecipe(scene.artifact)?'StarDiverSdfRecipe.Compile; science-machine mounting pending':'not-implemented'},null,2));
 }
 else if(op==='audit'){const pack=validateChapter(JSON.parse(read(input)));console.log(JSON.stringify(storyAudit(pack),null,2));}
 else if(op==='request')fs.writeFileSync(parent,JSON.stringify(chapterRequest(decodePlaySeed(read(input)),{repository:'https://github.com/friken0/friken-ghost-mind',manifest:'https://raw.githubusercontent.com/friken0/friken-ghost-mind/main/registry.json'}),null,2)+'\n');

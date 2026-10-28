@@ -1,0 +1,193 @@
+{
+  "schema": "friktal.face-compositing-witness.v1",
+  "verifiedAt": "2026-10-28T02:42:34Z",
+  "url": "http://127.0.0.1:4332/face-pixel-check.html?check=emergent-speech-30",
+  "surface": "Codex in-app browser; M1 Mac; explicit SDUI test button",
+  "revision": "emergent-speech-30",
+  "nativeSize": [
+    640,
+    640
+  ],
+  "alpha": {
+    "raw": {
+      "solid": 188139,
+      "partial": 0,
+      "clear": 221461
+    },
+    "settled": {
+      "solid": 98056,
+      "partial": 90084,
+      "clear": 221460
+    },
+    "opening": {
+      "solid": 13196,
+      "partial": 79398,
+      "clear": 317006
+    },
+    "closed": {
+      "solid": 0,
+      "partial": 0,
+      "clear": 409600
+    }
+  },
+  "center": {
+    "x": 320,
+    "y": 320,
+    "rgba": [
+      40,
+      76,
+      87,
+      255
+    ]
+  },
+  "actualGeometryContour": [
+    {
+      "x": 256,
+      "y": 108,
+      "alpha": 217
+    },
+    {
+      "x": 372,
+      "y": 108,
+      "alpha": 224
+    },
+    {
+      "x": 154,
+      "y": 129,
+      "alpha": 111
+    },
+    {
+      "x": 482,
+      "y": 129,
+      "alpha": 117
+    },
+    {
+      "x": 524,
+      "y": 178,
+      "alpha": 87
+    },
+    {
+      "x": 115,
+      "y": 181,
+      "alpha": 90
+    },
+    {
+      "x": 468,
+      "y": 210,
+      "alpha": 228
+    },
+    {
+      "x": 172,
+      "y": 211,
+      "alpha": 230
+    },
+    {
+      "x": 552,
+      "y": 236,
+      "alpha": 69
+    },
+    {
+      "x": 89,
+      "y": 240,
+      "alpha": 75
+    },
+    {
+      "x": 496,
+      "y": 268,
+      "alpha": 215
+    },
+    {
+      "x": 146,
+      "y": 270,
+      "alpha": 222
+    }
+  ],
+  "contourProvenance": "Every listed contour pixel had alpha255 in the same unmasked SDF render; empty-space glow does not count.",
+  "voiceSample": {
+    "source": "neural-pcm",
+    "level": 1,
+    "bands": [
+      0.8294117647058823,
+      0.7626633986928107,
+      0.35130359836242225,
+      0.972656248131529
+    ],
+    "note": "Peak voiced frame captured from actual Kokoro Michael CPU q8 playback through production shared voice analyser; fixed replay for image comparison"
+  },
+  "speechPixels": {
+    "changedPixels": 109468,
+    "comparedPixels": 118034,
+    "meanAbsRGB": 30.923,
+    "reliefSamples": [
+      {
+        "x": 283,
+        "y": 148,
+        "silent": [
+          133,
+          107,
+          74,
+          255
+        ],
+        "voiced": [
+          230,
+          208,
+          163,
+          255
+        ]
+      },
+      {
+        "x": 315,
+        "y": 148,
+        "silent": [
+          33,
+          70,
+          81,
+          255
+        ],
+        "voiced": [
+          50,
+          98,
+          111,
+          255
+        ]
+      },
+      {
+        "x": 352,
+        "y": 148,
+        "silent": [
+          91,
+          73,
+          55,
+          255
+        ],
+        "voiced": [
+          206,
+          178,
+          137,
+          255
+        ]
+      }
+    ]
+  },
+  "playback": {
+    "voice": "am_michael",
+    "profile": "cpu",
+    "dtype": "q8",
+    "played": true,
+    "duration": 5.1,
+    "elapsed": 5.102585034013606,
+    "generateMs": 8648.639999985695,
+    "phonemizeMs": 72.84999999403954,
+    "modelMs": 8575.794999986887,
+    "queueMs": 0.125,
+    "loadMs": 1546.5650000274181,
+    "isolated": true,
+    "cores": 8
+  },
+  "errors": [],
+  "limits": [
+    "This diagnostic directly exercises neural playback plus production SDF pixels; main reply routing is additionally covered by the delayed-playback/replay tests.",
+    "Measured neural compute RTF is1.696, slower than playback; no real-time or60FPS claim.",
+    "640-square is this explicit test viewport at1:1 native pixels, not downsampling of the production face."
+  ]
+}

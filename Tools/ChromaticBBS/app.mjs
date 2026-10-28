@@ -1,7 +1,7 @@
 import {mountStaging,continuityLabel} from './staging.mjs';
 import {mountImageCinema} from './image-cinema.mjs';
 import {mountScanner,specimenFinding} from './scanner.mjs';
-import {firstMeetings,returningMeeting,teachingStaging,seedStaging,explainAttempt,pendingAttempt,choicePreview} from './story-guidance.mjs';
+import {firstMeetings,chapterMeeting,returningMeeting,teachingStaging,seedStaging,explainAttempt,pendingAttempt,choicePreview} from './story-guidance.mjs';
 import {mountAlienComms,alienArtwork} from './alien-comms.mjs';
 import {rollScore} from './causality.mjs';
 import {statGuide} from './creation.mjs';
@@ -40,7 +40,7 @@ const bootParent=authoredBoot?.parent?decodePlaySeed(authoredBoot.parent):null;
 const preparedChapter=authoredBoot?createChapter(authoredBoot.pack,bootParent,{...authoredBoot.options,entropy:crypto.getRandomValues(new Uint32Array(1))[0]}):null;
 let state=preparedChapter||newGame({rngSeed:20261019}), started=false, voice=true;
 const meetings=firstMeetings;
-const greetingMeeting=bootParent?returningMeeting(bootParent,preparedChapter.chapter):meetings.hello;
+const greetingMeeting=bootParent?returningMeeting(bootParent,preparedChapter.chapter):chapterMeeting(preparedChapter);
 let meeting=greetingMeeting;
 const qaMemory=new URL(location.href).searchParams.get('qaMemory')==='1';
 let nativeStorage=null;

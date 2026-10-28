@@ -1,0 +1,31 @@
+{
+  "schema": "friktal.speaker-camera-witness.v1",
+  "at": "2026-10-28T12:59:57.197107+07:00",
+  "revision": "else-speaker-shot-31",
+  "actualNeuralFixture": {
+    "url": "http://127.0.0.1:4332/surreal-the-door-that-remembers.html?build=else-takes-the-mic-46&qaMemory=1&qaSpeakerCheck=1",
+    "sequence": [
+      "ghost",
+      "companion",
+      "ghost"
+    ],
+    "cast": {
+      "ghost": "am_michael",
+      "companion": "af_heart"
+    },
+    "companionStartFocus": 1,
+    "ghostStartFocus": 0,
+    "restGhostMouth": 0,
+    "restCompanionMouth": 0,
+    "status": "Voice finished \u00b7 your move."
+  },
+  "staticCameraReview": {
+    "shots": 3,
+    "nativeSize": [
+      640,
+      640
+    ],
+    "audio": "silent camera review only",
+    "observed": "Actual source renderer shows wide face, continuous travel, and the enlarged winged serpent. No anatomy or pixel-density change."
+  }
+}

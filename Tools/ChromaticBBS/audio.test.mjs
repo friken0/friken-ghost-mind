@@ -27,6 +27,20 @@ test('music defaults off through connection; explicit boot toggle starts it and 
  }finally{musicTracks[0]=originalTrack;for(const [k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
 });
 
+test('speech ducks only the music bus by 80% with a quick attack and restores it on end/cancel',()=>{
+ const names=['window','document'],saved=new Map(names.map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)])),attrs=new Map(),gains=[];
+ const node=()=>({connect(){},disconnect(){}});
+ try{
+  globalThis.document={addEventListener(){}};globalThis.window={addEventListener(){},AudioContext:class{currentTime=7;createGain(){const calls=[],n={...node(),calls,gain:{value:1,setTargetAtTime(...args){calls.push(args);}}};gains.push(n);return n;}createAnalyser(){return {...node(),frequencyBinCount:1024};}createDynamicsCompressor(){return {...node(),threshold:{},knee:{},ratio:{}};}}};
+  const audio=mountAudio({querySelector(){return null;},addEventListener(){},setAttribute(k,v){attrs.set(k,v);}});
+  audio.speaking(true);const graph=audio.graph();assert.ok(Math.abs(graph.music.gain.value-.11)<1e-10,'starting a music bus during dialogue is already ducked');
+  audio.speaking(false);assert.deepEqual(graph.music.calls.at(-1),[.55,7,.18]);
+  audio.speaking(true);const [target,at,attack]=graph.music.calls.at(-1);assert.ok(Math.abs(target-.55*.2)<1e-10);assert.equal(at,7);assert.equal(attack,.025);assert.equal(attrs.get('data-music-gain'),'0.11');assert.equal(audio.info.musicDucked,true);
+  const count=graph.music.calls.length;audio.speaking(true);assert.equal(graph.music.calls.length,count,'unchanged speech state does not reschedule the mixer');
+  audio.speaking(false);assert.equal(audio.info.musicTargetGain,.55);assert.equal(audio.info.musicDucked,false);assert.equal(attrs.get('data-music-gain'),'0.55');assert.equal(graph.voice.gain.value,1,'speech gain itself remains untouched');assert.equal(gains[3].gain.value,.8,'SFX gain remains untouched');
+ }finally{for(const[k,d]of saved){if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];}}
+});
+
 test('electric current stays on its frame at every corner and wraps in both directions',()=>{
  const box=[11,19,370,240],perimeter=1220,before=JSON.stringify(box);
  for(let d=-3000;d<4000;d+=7.125){const [x,y,nx,ny]=electricPoint(box,d);assert.ok(x>=11&&x<=381&&y>=19&&y<=259);assert.ok(x===11||x===381||y===19||y===259);assert.equal(Math.abs(nx)+Math.abs(ny),1);assert.deepEqual(electricPoint(box,d+perimeter),electricPoint(box,d));}

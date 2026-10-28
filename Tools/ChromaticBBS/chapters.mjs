@@ -1,3 +1,4 @@
+import {isLivingRecipe,recipeShader,livingBounds} from './vendor/sdf-craft/recipe-glsl.mjs';
 import {validateStaging,resolveStaging,validateStagingCauses} from './staging.mjs';
 import {validateSpecimen} from './scanner.mjs';
 import {validateEchoes,validateEndingVariants,composeStory,dramaticHandoff,validateCondition,matchesStory} from './storycraft.mjs';
@@ -24,7 +25,7 @@ function object(v,allowed){need(v&&typeof v==='object'&&!Array.isArray(v),'Expec
 function dataOnly(v,depth=0){need(depth<=32,'Data nesting limit');if(v===null||typeof v==='boolean'||typeof v==='string'){if(typeof v==='string')need(v.length<=16000,'Text limit');return;}if(typeof v==='number'){need(Number.isFinite(v),'Nonfinite data');return;}need(v&&typeof v==='object','Data only');if(Array.isArray(v)){need(v.length<=1024,'Array limit');v.forEach(x=>dataOnly(x,depth+1));return;}need(Object.getPrototypeOf(v)===Object.prototype||Object.getPrototypeOf(v)===null,'Plain data only');for(const [k,x]of Object.entries(v)){need(!['__proto__','constructor','prototype'].includes(k),'Forbidden data key');dataOnly(x,depth+1);}}
 function vector(v){return Array.isArray(v)&&v.length===3&&v.every(n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=4);}
 /** Tiny CSG language. Generated GLSL is assembled from numbers + fixed names. */
-export function sdfExpression(recipe){let nodes=0;const f=n=>Number(n).toFixed(5),vec=v=>'vec3('+v.map(f).join(',')+')';
+export function sdfExpression(recipe){if(isLivingRecipe(recipe)){recipeShader(recipe);return 'LivingField(p,clock)';}let nodes=0;const f=n=>Number(n).toFixed(5),vec=v=>'vec3('+v.map(f).join(',')+')';
  function walk(n,p='p',depth=0){need(++nodes<=24&&depth<=6,'SDF recipe budget');need(n&&typeof n==='object','SDF node');
   if(n.op==='sphere'){object(n,['op','radius']);need(n.radius>=.03&&n.radius<=2,'Sphere radius');return '(length('+p+')-'+f(n.radius)+')';}
   if(n.op==='box'){object(n,['op','size']);need(vector(n.size)&&n.size.every(x=>x>=.03),'Box size');return 'cgBox('+p+','+vec(n.size)+')';}
@@ -35,6 +36,7 @@ export function sdfExpression(recipe){let nodes=0;const f=n=>Number(n).toFixed(5
  }return walk(recipe);}
 /** Conservative object-space bounds for fitting authored CSG schematics. */
 export function sdfBounds(recipe){
+ if(isLivingRecipe(recipe)){recipeShader(recipe);return livingBounds(recipe);}
  sdfExpression(recipe);
  function walk(n){
   if(['sphere','box','torus'].includes(n.op)){const r=n.op==='sphere'?[n.radius,n.radius,n.radius]:n.op==='box'?n.size:[n.major+n.minor,n.minor,n.major+n.minor];return {min:r.map(x=>-x),max:[...r]};}

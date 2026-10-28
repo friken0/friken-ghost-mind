@@ -7,6 +7,13 @@ export const firstMeetings={
  rules:{title:'YOUR IDEA FIRST. THE NUMBER SECOND.',scene:'The terminal shows an attempt, a named attribute, a target, and two different possible consequences. Nothing is being rolled.',ghost:'Tell me what you want to do. If the result is uncertain, we name the risk before you commit. In this chapter the Causality Engine samples a number from zero point zero one to twenty, then adds the attribute the action uses. If your Focus is five, a sample of eight point two five gives thirteen point two five. That clears a target of twelve point one. A narrow posted resonance band also counts as success, even slightly below the target, and awards a capped Signal plus ten score. The charge battle shows those same numbers; it does not decide a second result. Replay cannot reroll. Questions and looking around need no roll. When a real attempt comes up, I will explain what each outcome actually does to our problem.'},
  seed:{title:'A WAY TO FIND US AS WE WERE',scene:'A private capsule keeps the original record beside the new one. Neither is stamped as a replacement for the other.',ghost:'Your choices save on this device when storage works. Export the capsule if you want to take us elsewhere. It keeps what you tried, what happened, and what we still owe. At the ending, this carrier prepares a request for the chat holding the runbook. That model writes our next chapter from those results; this page does not secretly call one. Public stories and headlines are separate choices. For now, you can help one room without agreeing to save the universe, donate a computer, or become my missing maker.'}
 };
+/** A fresh authored pack supplies its own meeting. Looking/teaching never
+ * enters the reducer or substitutes the retained auction's history. */
+export function chapterMeeting(state){
+ const scene=state?.pack?.scenes?.[0];
+ if(!scene)return firstMeetings.hello;
+ return {title:scene.title,scene:scene.scene,ghost:[scene.lead,scene.ghost].filter(Boolean).join('\n\n')};
+}
 export function pendingAttempt(state,choiceId){
  const choice=state.pack?.scenes[state.turn-1]?.choices.find(c=>c.id===choiceId);
  if(!choice)throw Error('No such pending attempt');

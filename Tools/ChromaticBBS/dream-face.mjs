@@ -1,11 +1,12 @@
+import {portraitCamera} from '../InfiniEngineSite/ghost-renderer.js';
 /* GhostDream XIII / The Reply. Completed v20 carrier art; identity authority stays in its manifest.
  * Six-pass face for the existing GhostPortrait renderer. No loop,
  * analyser, permission signal or game state lives here. Voice uniforms arrive
  * from the carrier's actual Ghost bus; silent anatomy does not need audio. */
 const common = `precision highp float;
 varying vec2 v_uv;
-uniform float u_time,u_frameScale;
-uniform float u_voiceBass,u_voiceMid,u_voiceAir,u_voiceAttack;
+uniform float u_time,u_frameScale,u_serpentTime;
+uniform float u_voiceBass,u_voiceMid,u_voiceAir,u_voiceAttack,u_voiceEnergy,u_voiceBoundary;
 uniform vec4 u_cymatics;
 const vec3 CYAN=vec3(.12,.88,1.);
 const vec3 GOLD=vec3(1.,.66,.20);
@@ -15,20 +16,43 @@ const vec3 EMBER=vec3(1.,.105,.012);
 float line(float d,float w){return exp(-abs(d)/w);}
 `;
 
+// Frame-only algebra shared by every fragment and every field sample. The
+// renderer prepares these once; all spatial SDF/normal work stays in GLSL.
+export function dreamFrameUniforms(state){
+ const v=(key,fallback=0)=>Number.isFinite(state[key])?state[key]:fallback;
+ const {eye,forward,right,up,distance,roll}=portraitCamera(state);
+ const h=.46445498,settle=h*h*h*(h*(h*6-15)+10),belly=Math.sin(h*3.14159265)**2,time=v('serpentTime',v('time')),sway=v('serpentSway'),lift=v('serpentLift'),wing=v('wingFlex'),gear=v('gearPhase');
+ const shoulder=[-.045+sway*(.11*settle+.10*Math.sin(h*6.2831853-time*2.7)*belly),.456+.038*lift,.240+sway*.045*Math.sin(h*7.5-time*2.1)*belly];
+ const rotate=(a,x,y)=>[Math.cos(a)*x+Math.sin(a)*y,-Math.sin(a)*x+Math.cos(a)*y],tips=new Float32Array(15);
+ for(let k=0;k<5;k++){
+  const span=.244-k*.017,u=.91;let f=[span*u,.032*Math.sin(u*3.14159265),.025*Math.sin(u*3.14159265)];
+  [f[0],f[1]]=rotate(.52-k*.18,f[0],f[1]);[f[0],f[2]]=rotate(-.25+wing*.85,f[0],f[2]);[f[0],f[1]]=rotate(-.08+wing*.35,f[0],f[1]);tips.set([.048+f[0],f[1],f[2]],k*3);
+ }
+ return {cameraDistance:distance,cameraEye:new Float32Array(eye),cameraForward:new Float32Array(forward),cameraRight:new Float32Array(right),cameraUp:new Float32Array(up),cameraRoll:new Float32Array([Math.cos(roll),Math.sin(roll)]),serpentAnchor:new Float32Array(shoulder),wingTurn:new Float32Array([Math.cos(.08-wing*.35),Math.sin(.08-wing*.35),Math.cos(.25-wing*.85),Math.sin(.25-wing*.85)]),gearTurn:new Float32Array([Math.cos(gear),Math.sin(gear),Math.cos(2*gear),Math.sin(2*gear)]),webTips:tips};
+}
+
 export const dreamFace = {
- id:'v20.0', title:'The Reply', revision:'mid-spine-27', renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
+ id:'v20.0', title:'The Reply', revision:'else-speaker-shot-31',frameUniforms:dreamFrameUniforms, renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
+ // Every geometry hit below emits alpha1 and a real fragment depth. This
+ // permits the shared renderer to shade the network only in untouched space.
+ opaqueGeometry:true,geometryLabels:['mask','hood','Else'],
+ // These are the exact conservative ray boxes in main(), in program order.
+ geometryBounds:[
+  {center:[0,-.01,.065],extent:[.64,.59,.42]},
+  {center:[0,0,0],extent:[.78,.82,.63]},
+  {center:[0,.41,.20],extent:[.62,.43,.34]}],
  companion:{name:'Else',title:'ELSE / THE UNCHOSEN',
   spoken:'The serpent is Else. I made room for a second thought, and the little bastard grew wings. Those threads hold the memories while he pulls at what might happen next. He shares my voice for now. He does not get your choices. Neither do I. Put the pointer between my eyes. Yes, he thinks that is hilarious.'},
- defaults:{orbFaceGlow:1,orbEyeBright:1,orbCoronaW:1,orbEyeSize:.15,
+ defaults:{companionTalk:0,orbFaceGlow:1,orbEyeBright:1,orbCoronaW:1,orbEyeSize:.15,
  orbMouthY:-.30,orbScanFreq:30,orbSkullSize:1,orbScale:1,
  orbEyeR:.12,orbEyeG:.88,orbEyeB:1,orbSkullR:.1,orbSkullG:.2,orbSkullB:.3,
  bgAlphaBase:.3,bgAlphaScale:1,bgAlphaMax:1,bgTintR:.07,bgTintG:.15,bgTintB:.24,
  boltCoreW:1,boltGlowW:1,boltAtmoW:1,boltWideW:1,boltFlicker:0,
  boltFlashRate:1,boltMult:1,frameScale:.84,
- voiceBass:0,voiceMid:0,voiceAir:0,voiceAttack:0,
- headYaw:.18,headPitch:-.035,headRoll:0,headZoom:1,hitch:0,
+ voiceBass:0,voiceMid:0,voiceAir:0,voiceAttack:0,voiceEnergy:0,voiceBoundary:0,emergenceReveal:1,
+ headYaw:.18,headPitch:-.035,headRoll:0,headZoom:1,companionFocus:0,hitch:0,
  shift:0,shiftSerial:0,shiftX:0,shiftY:0,gearPhase:0,
- pointerX:0,pointerY:0,pointerActive:0,serpentSway:0,serpentLift:0,wingFlex:0,
+ pointerX:0,pointerY:0,pointerActive:0,serpentTime:8,serpentSway:0,serpentLift:0,wingFlex:0,
  jawOpen:0,lipRound:0,lipWide:0,lipPress:0,tongue:0,teeth:0,browLift:0,eyeSquint:0},
  bgShader:common+`
 vec3 netPrism(float phase){return .12+.88*pow(.5+.5*cos(6.2831853*(phase+vec3(0.,.34,.67))),vec3(.72));}
@@ -95,7 +119,7 @@ void main(){
 }`,
  bloomShader:`precision highp float;
  varying vec2 v_uv;uniform sampler2D u_source,u_history;uniform vec2 u_resolution,u_shiftDirection;uniform vec4 u_cymatics;
- uniform float u_shift,u_historyReady;
+ uniform float u_shift,u_historyReady,u_emergence,u_emergenceReveal;uniform vec2 u_viewAspect;
  vec3 gold(vec2 uv){vec3 c=texture2D(u_source,uv).rgb;
  float warm=smoothstep(c.b*1.35+.015,c.b*1.8+.09,c.r)*smoothstep(.20,.55,dot(c,vec3(.3,.6,.1)));
  float cold=smoothstep(c.r*1.8+.045,c.r*2.3+.18,c.b)*smoothstep(.18,.50,c.b);
@@ -118,12 +142,28 @@ void main(){
  }
  float veil=pow(trail,.72)*.72;
  vec3 live=base.rgb*(1.-veil*.40);
- gl_FragColor=vec4(live+halo/12.*(.20+energy*.85)+spectral/max(weight,1.)*veil,base.a);}`,
+ vec3 radiance=live+halo/12.*(.20+energy*.85)+spectral/max(weight,1.)*veil;
+ // Opaque anatomy/depth stays intact in the source target. Only the final
+ // presentation opens through a spatial alpha aperture: solid central face,
+ // broad ghosted hood edges, and genuine terminal pixels beyond the contour.
+ vec2 p=(v_uv*2.-1.)*u_viewAspect-vec2(0.,.07);
+ float radius=length(p/vec2(.84,1.14));
+ float settled=1.-smoothstep(.55,1.10,radius);
+ float front=mix(-.22,1.44,clamp(u_emergenceReveal,0.,1.));
+ float opening=1.-smoothstep(front-.18,front+.18,radius);
+ float aperture=settled*opening;
+ float coverage=max(base.a,clamp(max(radiance.r,max(radiance.g,radiance.b))*.08,0.,.16));
+ gl_FragColor=vec4(radiance,mix(base.a,coverage*aperture,u_emergence));}`,
  shader:common+`
-uniform float u_talk,u_blink,u_smile;
+uniform float u_talk,u_blink,u_smile,u_companionTalk;
 uniform vec2 u_gaze;
 uniform float u_jawOpen,u_lipRound,u_lipWide,u_lipPress,u_tongue,u_teeth,u_browLift,u_eyeSquint;
 uniform float u_headYaw,u_headPitch,u_headRoll,u_headZoom,u_hitch,u_pointerX,u_pointerY,u_pointerActive,u_serpentSway,u_serpentLift,u_wingFlex,u_gearPhase;
+uniform float u_cameraDistance;
+uniform vec3 u_cameraEye,u_cameraForward,u_cameraRight,u_cameraUp,u_serpentAnchor;
+uniform vec2 u_cameraRoll;
+uniform vec4 u_wingTurn,u_gearTurn;
+uniform vec3 u_webTips[5];
 float ell(vec3 p,vec3 r){float a=length(p/r),b=length(p/(r*r));return a*(a-1.)/max(b,.0001);}
 float box(vec3 p,vec3 b,float r){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.)-r;}
 float capsule(vec3 p,vec3 a,vec3 b,float r){vec3 v=p-a,w=b-a;return length(v-w*clamp(dot(v,w)/dot(w,w),0.,1.))-r;}
@@ -168,6 +208,7 @@ float carvedNose(vec3 p){
 }
 vec2 nearest(vec2 a,vec2 b){return a.x<b.x?a:b;}
 mat2 turn(float a){return mat2(cos(a),-sin(a),sin(a),cos(a));}
+mat2 turnPair(vec2 cs){return mat2(cs.x,-cs.y,cs.y,cs.x);}
 vec3 weaveSpace(vec3 p){
  // One object-space lattice drives geometry, normals and emitted light.
  // Nothing here uses screen UVs or an independent overlay mesh.
@@ -287,25 +328,19 @@ vec3 snakeLocal(vec3 p){
  float h=clamp((s.y+.054)/.211,0.,1.);
  float settle=h*h*h*(h*(h*6.-15.)+10.);
  float belly=sin(h*3.14159265);belly*=belly;
- float wave=sin(h*6.2831853-u_time*2.7)*belly;
+ float wave=sin(h*6.2831853-u_serpentTime*2.7)*belly;
  s.x-=u_serpentSway*(.11*settle+.10*wave);
- s.z-=u_serpentSway*.045*sin(h*7.5-u_time*2.1)*belly;
+ s.z-=u_serpentSway*.045*sin(h*7.5-u_serpentTime*2.1)*belly;
  float tail=clamp((-s.y-.105)/.187,0.,1.);
- s.x-=u_serpentSway*.15*tail*tail*sin(u_time*2.8-tail*4.2);
- s.z-=u_serpentSway*.055*tail*tail*sin(u_time*2.3-tail*3.1);
+ s.x-=u_serpentSway*.15*tail*tail*sin(u_serpentTime*2.8-tail*4.2);
+ s.z-=u_serpentSway*.055*tail*tail*sin(u_serpentTime*2.3-tail*3.1);
  return s;
 }
 // Mid-spine shoulders follow the travelling neck, not the stabilized skull.
 // The chest is halfway between the seated coil and the head. One anchor owns
 // torso, both wing roots and feather/web endpoints; no rigid headband tilt.
-vec3 serpentShoulder(){
- const float h=.46445498;
- float settle=h*h*h*(h*(h*6.-15.)+10.);
- float belly=pow(sin(h*3.14159265),2.);
- float wave=sin(h*6.2831853-u_time*2.7)*belly;
- return vec3(-.045+u_serpentSway*(.11*settle+.10*wave),
-  .456+.038*u_serpentLift,.240+u_serpentSway*.045*sin(h*7.5-u_time*2.1)*belly);
-}
+vec3 serpentShoulder(){return u_serpentAnchor;}
+
 vec2 serpent(vec3 p){
  vec3 s=snakeLocal(p);
  // Below the seated coil only the hanging tail can exist. Bound that field
@@ -328,8 +363,8 @@ vec2 serpent(vec3 p){
  // remains independently stabilized above a visible tapered neck.
  vec3 shoulder=serpentShoulder(),wingRest=p-shoulder;
  vec3 w=vec3(abs(wingRest.x)-.048,wingRest.y,wingRest.z);
- w.xy=turn(.08-u_wingFlex*.35)*w.xy;
- w.xz=turn(.25-u_wingFlex*.85)*w.xz;
+ w.xy=turnPair(u_wingTurn.xy)*w.xy;
+ w.xz=turnPair(u_wingTurn.zw)*w.xz;
  float wings=box(w-vec3(.12,.02,0.),vec3(.15,.16,.11),0.);
  if(wings<.025){
   wings=1.;
@@ -362,9 +397,9 @@ vec2 serpent(vec3 p){
  skull=max(skull,(abs(head.x)*.65+head.z*.76-.033));
  float muzzle=ell(head-vec3(0.,-.010,.021),vec3(.022,.009,.016));
  skull=join(skull,muzzle,.006);
- float mouthOpen=.0015+(u_talk*.004+u_jawOpen*.004)*(1.-u_lipPress*.8);
+ float mouthOpen=.0015+u_companionTalk*.008;
  skull=max(skull,-box(head-vec3(0.,-.011,.029),vec3(.026,mouthOpen,.015),.001));
- float lowerJaw=ell(head-vec3(0.,-.018-u_talk*.008-u_jawOpen*.004,.025),vec3(.020,.004,.012));
+ float lowerJaw=ell(head-vec3(0.,-.018-u_companionTalk*.014,.025),vec3(.020,.004,.012));
  skull=min(skull,lowerJaw);
  for(int i=0;i<2;i++){
   float sg=float(i)*2.-1.;
@@ -380,13 +415,12 @@ vec2 serpent(vec3 p){
  }
  return form;
 }
-vec3 featherTip(float k,float sg,vec3 shoulder){
- float spanLength=.244-k*.017,u=.91;
- vec3 f=vec3(spanLength*u,.032*sin(u*3.14159265),.025*sin(u*3.14159265));
- f.xy=turn(.52-k*.18)*f.xy;
- f.xz=turn(-.25+u_wingFlex*.85)*f.xz;
- f.xy=turn(-.08+u_wingFlex*.35)*f.xy;
- return shoulder+vec3(sg*(.048+f.x),f.y,f.z);
+vec3 featherTip(int k,float sg,vec3 shoulder){
+ // WebGL1 requires constant indices here even after a loop passes k through
+ // a helper. Fixed reads preserve the same five frame-prepared offsets.
+ vec3 f=u_webTips[0];
+ if(k==1)f=u_webTips[1];else if(k==2)f=u_webTips[2];else if(k==3)f=u_webTips[3];else if(k==4)f=u_webTips[4];
+ return shoulder+vec3(sg*f.x,f.y,f.z);
 }
 float silkCurve(vec3 p,vec3 a,vec3 b,float amount){
  vec3 ab=b-a;float t=clamp(dot(p-a,ab)/dot(ab,ab),0.,1.);
@@ -403,7 +437,7 @@ float energyWeb(vec3 p){
  float d=1.;vec3 lastA=vec3(0.),lastB=vec3(0.);
  float energy=.45+u_cymatics.x*.55+u_voiceMid*.25;
  for(int i=0;i<5;i++){
-  float k=float(i);vec3 a=featherTip(k,sg,shoulder);
+  float k=float(i);vec3 a=featherTip(i,sg,shoulder);
   vec3 b=vec3(sg*(.493+k*.013),.41-k*.070,0.);
   b.z=-.09+.405*sqrt(max(.015,1.-pow(b.x/.625,2.)-pow((b.y-.015)/.69,2.)))+.006;
   d=min(d,silkCurve(p,a,b,energy));
@@ -422,7 +456,7 @@ float energyWeb(vec3 p){
 float silkFlow(vec3 p){
  float sg=sign(p.x);vec3 shoulder=serpentShoulder();float nearest=1.,flow=0.;
  for(int i=0;i<5;i++){
-  float k=float(i);vec3 a=featherTip(k,sg,shoulder);
+  float k=float(i);vec3 a=featherTip(i,sg,shoulder);
   vec3 b=vec3(sg*(.493+k*.013),.41-k*.070,0.);
   b.z=-.09+.405*sqrt(max(.015,1.-pow(b.x/.625,2.)-pow((b.y-.015)/.69,2.)))+.006;
   vec3 ab=b-a;float t=clamp(dot(p-a,ab)/dot(ab,ab),0.,1.);
@@ -444,8 +478,8 @@ vec3 faceWarp(vec3 p){
 }
 // Beveled toothed wheel, hollow hub and six curved spoke windows. Cutouts
 // penetrate the disk; the axle and bearing are independent stationary parts.
-float cheekCog(vec3 p,float radius,float angle,float teeth){
- p.xy=turn(angle)*p.xy;float r=length(p.xy),a=atan(p.y,p.x);
+float cheekCog(vec3 p,float radius,vec2 angle,float teeth){
+ p.xy=turnPair(angle)*p.xy;float r=length(p.xy),a=atan(p.y,p.x);
  float crown=radius*(1.+.10*smoothstep(-.32,.32,cos(a*teeth)));
  float wheel=max(r-crown,abs(p.z)-.009)*.72;
  wheel=max(wheel,-(r-radius*.21));
@@ -508,10 +542,13 @@ vec2 anatomy(vec3 p){
   float back=ell(z-vec3(0.,0.,-.085),vec3(.074,.056,.012));
   shape=nearest(shape,vec2((back)*gearScale,14.));
   vec3 g=z-vec3(-.014,.005,-.010);
-  float sg=sign(p.x),phase=u_gearPhase*sg;
+  float sg=sign(p.x);
+  vec2 phase=mix(vec2(1.,0.),vec2(u_gearTurn.x,u_gearTurn.y*sg),abs(sg));
+  float c2=mix(1.,u_gearTurn.z,abs(sg)),s2=u_gearTurn.w*sg;
+  vec2 pinPhase=vec2(.9855847669*c2+.1691823491*s2,.1691823491*c2-.9855847669*s2);
   float wheel=cheekCog(g,.045,phase,14.);
   vec3 pin=z-vec3(.046,-.026,-.009);
-  wheel=min(wheel,cheekCog(pin,.0225,-phase*2.+.17,7.));
+  wheel=min(wheel,cheekCog(pin,.0225,pinPhase,7.));
   shape=nearest(shape,vec2((wheel)*gearScale,17.));
   float axle=max(length(g.xy)-.008,abs(g.z)-.017);
   float bearing=length(vec2(length(g.xy)-.013,g.z-.001))-.003;
@@ -520,7 +557,7 @@ vec2 anatomy(vec3 p){
   float bezel=length(vec2((length(z.xy/vec2(.080,.062))-1.)*.060,z.z+.002))-.0035;
   shape=nearest(shape,vec2((bezel)*gearScale,6.));
   // Twin moving rods couple the lower mandible to the wheel's eccentric.
-  vec3 joint=vec3(-.014+.019*cos(phase),.005+.019*sin(phase),.006);
+  vec3 joint=vec3(-.014+.019*phase.x,.005+.019*phase.y,.006);
   float rod=capsule(z,joint,vec3(-.027,-.074-u_jawOpen*.012,-.020),.0032);
   shape=nearest(shape,vec2((rod)*gearScale,18.));
   float jawArm=capsule(z,vec3(.016,-.045,-.022),vec3(-.025,-.142,-.055),.010);
@@ -689,11 +726,9 @@ vec3 normalAt(vec3 p){vec2 e=vec2(.00034641,-.00034641);return normalize(
  e.yxy*anatomy(p+e.yxy).x+e.xxx*anatomy(p+e.xxx).x);}
 void main(){
  vec2 p=(v_uv*2.-1.)*u_frameScale;
- float distance=2.4/clamp(u_headZoom,.85,1.15);
- vec3 ro=vec3(sin(u_headYaw)*cos(u_headPitch),sin(u_headPitch),cos(u_headYaw)*cos(u_headPitch))*distance;
- vec3 forward=normalize(vec3(0.,-.015,0.)-ro);
- vec3 right=normalize(cross(forward,vec3(0.,1.,0.))),up=cross(right,forward);
- p=turn(u_headRoll)*p;
+ float distance=u_cameraDistance;vec3 ro=u_cameraEye;
+ vec3 forward=u_cameraForward,right=u_cameraRight,up=u_cameraUp;
+ p=turnPair(u_cameraRoll)*p;
  vec3 rd=normalize(forward*2.2+right*p.x+up*p.y);
  // Intersect a conservative object bound before touching the expensive
  // field. Empty corner rays do no anatomy, normal, coil or web evaluation.
@@ -726,7 +761,10 @@ void main(){
   vec3 n=normalAt(q);q=faceWarp(q);vec3 light=normalize(vec3(-.7,.85,1.3));
   // Measured sound drives a soft key flash and opposite fill across real
   // normals. Recesses stay dark; this reveals relief rather than washing it.
-  float flash=clamp(u_cymatics.x*.32+u_cymatics.w*.48+u_voiceAttack*.38+u_voiceMid*.18,0.,1.);
+  // RMS carries measured neural/recorded speech even when no spectrum bus
+  // exists. Device boundaries stay a distinct approximate impulse, never FFT.
+  float speechEnergy=clamp(u_voiceEnergy+u_voiceBoundary*.65,0.,1.);
+  float flash=clamp(u_cymatics.x*.32+u_cymatics.w*.48+u_voiceAttack*.38+u_voiceMid*.18+speechEnergy*.48,0.,1.);
   float fill=max(0.,dot(n,normalize(vec3(.85,.20,.95))));
   float diffuse=max(0.,dot(n,light))*(1.+flash*.72)+fill*flash*.26;
   float rim=pow(1.-max(0.,dot(n,-rd)),2.);
@@ -740,10 +778,10 @@ void main(){
   float facet=mod(cell.x+cell.y+cell.z,2.);
   col*=.88+facet*.16;
   // Grooves were marched into this very surface; highlights share the field.
-  col+=CYAN*grid*(.022+u_voiceBass*.17+u_voiceMid*.39);
+  col+=CYAN*grid*(.022+u_voiceBass*.17+u_voiceMid*.39+speechEnergy*.48);
   col+=GOLD*grid*pow(max(0.,sin(q.z*125.)*sin(q.x*89.)),4.)*u_voiceAir*.65;
   float seam=q.x-(.033+.013*sin(q.y*15.)+.008*sin(q.y*37.));
-  col+=GOLD*line(seam,.004)*(.45+u_voiceAttack*.65);
+  col+=GOLD*line(seam,.004)*(.45+u_voiceAttack*.65+speechEnergy*.72);
   col+=GOLD*line(seam,.021)*line(sin(q.y*63.),.08)*.15;
   // Second finish: inlay and polish read the same geometric cuts. Recesses
   // catch sound-led light; micro wear is attached to the SDF, never the lens.
@@ -751,8 +789,8 @@ void main(){
   float worn=pow(max(0.,sin(q.x*327.+q.y*211.+q.z*183.)),26.);
   col=mix(col,GOLD*(.32+diffuse*.28+shine*.55),clamp(incision*.90,0.,1.));
   float blueEdge=line(cuts(q)+.005,.0028)*smoothstep(.09,.15,q.z);
-  col+=COBALT*blueEdge*(.48+u_voiceMid*.65+u_cymatics.y*.45);
-  col+=GOLD*incision*(.14+u_voiceMid*.48+u_cymatics.x*.22+u_voiceAttack*.25);
+  col+=COBALT*blueEdge*(.48+u_voiceMid*.65+u_cymatics.y*.45+speechEnergy*.60);
+  col+=GOLD*incision*(.14+u_voiceMid*.48+u_cymatics.x*.22+u_voiceAttack*.25+speechEnergy*.56);
   col+=vec3(.16,.25,.27)*worn*(.03+rim*.13);
   if(surface.y>1.5&&surface.y<2.5){
    float arc=pow(.5+.5*sin(q.x*187.+u_time*25.+sin(q.y*190.)*2.),18.);
@@ -764,7 +802,7 @@ void main(){
    vec3 eyeCenter=vec3(sg*.194,.14+k*.012,.093);
    vec3 e=q-eyeCenter;e.xy=turn(-sg*.13)*e.xy;
    // A real target plane and independent eye centres give convergence.
-   vec2 mouse=turn(u_headRoll)*vec2(u_pointerX,u_pointerY)*u_frameScale;
+   vec2 mouse=turnPair(u_cameraRoll)*vec2(u_pointerX,u_pointerY)*u_frameScale;
    vec3 mouseRay=normalize(forward*2.2+right*mouse.x+up*mouse.y);
    vec3 target=ro+mouseRay*((.42-ro.z)/min(-.05,mouseRay.z));
    vec3 aim=normalize(target-eyeCenter);
@@ -810,7 +848,7 @@ void main(){
    float trim=lip+stitches*.28*pleat;
    col=mix(col,vec3(.40,.235,.075)*(diffuse+.35),clamp(trim*.78,0.,.85));
    float carving=line(hoodCuts(q),.006);
-   col+=COBALT*carving*(.58+u_cymatics.y*.65+u_voiceAir*.55);
+   col+=COBALT*carving*(.58+u_cymatics.y*.65+u_voiceAir*.55+speechEnergy*.34);
    col+=GOLD*line(hoodCuts(q)-.012,.004)*(.30+u_cymatics.x*.65);
    col+=GOLD*trim*(.14+u_cymatics.x*.30+u_cymatics.w*.25)+BLUE*rim*.7;
   }

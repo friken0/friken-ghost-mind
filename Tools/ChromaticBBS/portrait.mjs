@@ -38,13 +38,30 @@ export function dampedFlight(value,velocity,target,dt,omega=6){
  return [target+(offset+c*t)*e,(velocity-omega*c*t)*e];
 }
 
-export function mountPortrait(canvas, report=()=>{}) {
+/** PCM energy and device boundaries are different evidence. A device word
+ * boundary may animate a generic pulse, but can never become an FFT band. */
+export function speechSurfaceSignal({speaking=false,measured=false,mouth=0,boundary=0,companion=false,companionMouth=0,companionDevice=false}={}){
+ const unit=x=>Math.max(0,Math.min(1,Number(x)||0));
+ if(companion)return {energy:companionDevice?0:unit(companionMouth),boundary:companionDevice?unit(companionMouth):0,source:companionDevice?'device-boundary-approximate':companionMouth>0?'measured-pcm':'rest'};
+ return {energy:speaking&&measured?unit(mouth):0,boundary:speaking&&!measured?unit(boundary):0,source:!speaking?'rest':measured?'measured-pcm':'device-boundary-approximate'};
+}
+
+export function portraitEmergenceAt(from,to,elapsed,duration=.9){
+ if(![from,to,elapsed,duration].every(Number.isFinite)||duration<=0)throw Error('Finite portrait emergence required');
+ const t=Math.max(0,Math.min(1,elapsed/duration)),ease=t*t*(3-2*t);
+ return from+(to-from)*ease;
+}
+
+export function mountPortrait(canvas, report=()=>{}, options={}) {
   let portrait;
-  const performanceVersion=v=>({...v,shader:performingFace(v.shader),defaults:{...v.defaults,frameScale:1,voiceBass:0,voiceMid:0,voiceAir:0,voiceAttack:0}});
-  try { portrait=new GhostPortrait(canvas,faceData.vertex,report);portrait.setVersion(performanceVersion(faceData.version)); }
-  catch(error){portrait?.destroy();report('Ghost portrait unavailable: '+error.message);return null;}
-  let articulation=null,gearPhase=0,gearRate=.38,gearAcceleration=0;
-  let speaking=false,measured=false,vocal=[0,0,0,0],mouth=0,last=performance.now(),gaze=[0,0],target=[0,0],destroyed=false;
+  const performanceVersion=v=>({...v,shader:performingFace(v.shader),defaults:{...v.defaults,companionTalk:0,frameScale:1,voiceBass:0,voiceMid:0,voiceAir:0,voiceAttack:0,voiceEnergy:0,voiceBoundary:0}});
+  try { portrait=new GhostPortrait(canvas,faceData.vertex,report,options);portrait.setVersion(performanceVersion(faceData.version)); }
+  catch(error){canvas.dataset.error=error.message;portrait?.destroy();report('Ghost portrait unavailable: '+error.message);return null;}
+  let articulation=null,serpentTime=8,gearPhase=0,gearRate=.38,gearAcceleration=0;
+  let speakerRole=null,companionMouth=0,companionDevice=false,companionPlaying=false;
+  let shotRole=null,focus=0,focusFrom=0,focusTo=0,focusAt=performance.now(),focusWait=null;
+  let speaking=false,measured=false,vocal=[0,0,0,0],mouth=0,boundaryEnergy=0,last=performance.now(),gaze=[0,0],target=[0,0],destroyed=false;
+  let emergence=options.background===false?0:1,emergenceFrom=emergence,emergenceTarget=emergence,emergenceAt=last;
   let expression={talk:0,blink:0,smile:.16};
   const poses=[[.38,.05,-.04,1.02],[-.30,-.045,.04,.99],
     [.12,.10,.02,1.08],[-.44,.03,-.025,1.025],[.29,-.025,.025,1.05],[.02,.015,0,1]];
@@ -57,15 +74,16 @@ export function mountPortrait(canvas, report=()=>{}) {
     if(portrait.motion){
       const response=1-Math.exp(-EYE_RESPONSE*dt);
       gaze=gaze.map((v,i)=>v+(target[i]-v)*response);
-      mouth*=Math.exp(-dt*12);
+      mouth*=Math.exp(-dt*12);companionMouth*=Math.exp(-dt*12);boundaryEnergy*=Math.exp(-dt*7);
       const blinkPhase=time%4.7;
-      expression={talk:speaking?(measured?mouth:.18+.40*Math.pow(Math.sin(time*12.1),2)):mouth,blink:blinkPhase<.14?Math.pow(Math.sin(blinkPhase/.14*Math.PI),2):0,smile:.16};
+      expression={talk:speakerRole==='companion'?0:speaking?(measured?mouth:.18+.40*Math.pow(Math.sin(time*12.1),2)):mouth,blink:blinkPhase<.14?Math.pow(Math.sin(blinkPhase/.14*Math.PI),2):0,smile:.16};
       if(portrait.version.id==='v20.0'){
         const jawDrive=speaking&&measured?Math.min(1,mouth*5)*(.55+.45*(articulation?.jaw||0)):0;
         const gearTarget=.38-jawDrive*3.8;
         [gearRate,gearAcceleration]=dampedFlight(gearRate,gearAcceleration,gearTarget,dt,10);gearPhase+=gearRate*dt;
         canvas.dataset.gearRate=gearRate.toFixed(3);canvas.dataset.gearPhase=gearPhase.toFixed(3);
         const mix=portrait.cymatics;
+        if(shotRole!=='ghost'&&!speaking){serpentTime+=dt;
         const drive=Math.min(1,mix[0]*.65+mix[1]*.15+mix[3]*.70);
         const flap=.5+.5*Math.sin(time*5.1);
         const wingTarget=drive*(.24+flap*.76);
@@ -75,7 +93,8 @@ export function mountPortrait(canvas, report=()=>{}) {
         [lift,liftVelocity]=dampedFlight(lift,liftVelocity,wing*.90+drive*.10,dt,5);
         const swayTarget=Math.sin(time*1.85)*Math.min(.20,mix[0]*.22+mix[1]*.08);
         [sway,swayVelocity]=dampedFlight(sway,swayVelocity,swayTarget,dt,5);
-        if(pointerActive&&now-lastLaser>laserDelay&&host.dataset.inspect==='face'){
+        }
+        if(focus<.01&&pointerActive&&now-lastLaser>laserDelay&&host.dataset.inspect==='face'){
           lastLaser=now;laserDelay=180000+Math.random()*120000;laserSerial++;
           // Project the actual snake eye through the same orbit camera.
           const yaw=pose[0],pitch=pose[1],dist=2.4/pose[3];
@@ -86,7 +105,8 @@ export function mountPortrait(canvas, report=()=>{}) {
           const head=[.003+.023*(laserSerial%2?1:-1)+sway*.11,.593+lift*.055,.269];
           const v=head.map((x,i)=>x-ro[i]),z=dot(v,f),x=dot(v,right)*2.2/z/.73,y=dot(v,up)*2.2/z/.73;
           const ca=Math.cos(pose[2]),sa=Math.sin(pose[2]),sx=ca*x-sa*y,sy=sa*x+ca*y,r=canvas.getBoundingClientRect();
-          host.dispatchEvent(new CustomEvent('cg-portrait-pulse',{detail:{from:[r.left+(sx+1)*r.width/2,r.top+(1-sy)*r.height/2],to:[r.left+(pointer[0]+1)*r.width/2,r.top+(1-pointer[1])*r.height/2]}}));
+          const fx=options.viewport==='rect'?Math.min(r.width,r.height)/r.width:1,fy=options.viewport==='rect'?Math.min(r.width,r.height)/r.height:1;
+          host.dispatchEvent(new CustomEvent('cg-portrait-pulse',{detail:{from:[r.left+(sx*fx+1)*r.width/2,r.top+(1-sy*fy)*r.height/2],to:[r.left+(pointer[0]*fx+1)*r.width/2,r.top+(1-pointer[1]*fy)*r.height/2]}}));
           canvas.dataset.laserPulses=String(laserSerial);
         }
         const energy=speaking&&measured?mouth:0;
@@ -105,7 +125,13 @@ export function mountPortrait(canvas, report=()=>{}) {
     // Resize/manual draws while paused must not advance eyes, blink or speech.
     const gain=GAZE_GAIN[portrait.version.id]||1;
     portrait.gaze=gaze.map(value=>value/gain);canvas.dataset.framing=host.dataset.inspect==='face'?'close':'dock';
-    const voice=speaking&&measured?vocal:[0,0,0,0];
+    focus=portraitEmergenceAt(focusFrom,focusTo,(now-focusAt)/1000,.8);
+    canvas.dataset.speakerFraming=shotRole||'wide';canvas.dataset.companionFocus=focus.toFixed(4);canvas.dataset.companionMouth=(speakerRole==='companion'&&companionPlaying?companionMouth:0).toFixed(4);
+    if(focusWait&&Math.abs(focus-focusTo)<.0001){const done=focusWait;focusWait=null;done(true);}
+    const voice=speaking&&speakerRole!=='companion'&&measured?vocal:[0,0,0,0];
+    const signal=speechSurfaceSignal({speaking,measured,mouth,boundary:boundaryEnergy,companion:speakerRole==='companion',companionMouth:companionPlaying?companionMouth:0,companionDevice});
+    emergence=portraitEmergenceAt(emergenceFrom,emergenceTarget,(now-emergenceAt)/1000);
+    canvas.dataset.emergence=emergence.toFixed(4);canvas.dataset.speechSurface=signal.source;canvas.dataset.speechEnergy=signal.energy.toFixed(4);canvas.dataset.boundaryEnergy=signal.boundary.toFixed(4);
     if(portrait.version.id==='v20.0'){
       canvas.dataset.pose=pose.map(x=>x.toFixed(3)).join(',');
       canvas.dataset.performance=speaking&&measured?'measured-voice':'rest';
@@ -113,20 +139,24 @@ export function mountPortrait(canvas, report=()=>{}) {
     }
     const a=articulation||{},v=speaking?Math.min(1,mouth*3):0;
     if(portrait.version.id==='v20.0'){canvas.dataset.articulation=a.kind||'energy';canvas.dataset.faceTiming=a.timing||'energy-only';}
-    return {...expression,jawOpen:(a.jaw||0)*v,lipRound:(a.round||0)*v,lipWide:(a.wide||0)*v,
+    return {...expression,companionFocus:focus,companionTalk:speakerRole==='companion'&&companionPlaying?companionMouth:0,jawOpen:(a.jaw||0)*v,lipRound:(a.round||0)*v,lipWide:(a.wide||0)*v,
       lipPress:articulation?(a.press||0)*v:0,tongue:(a.tongue||0)*v,teeth:(a.teeth||0)*v,
       browLift:(a.brow||0)*v,eyeSquint:(a.squint||0)*v,frameScale:host.dataset.inspect==='face'?.73:.84,
       voiceBass:voice[0],voiceMid:voice[1],voiceAir:voice[2],voiceAttack:voice[3],
+      voiceEnergy:signal.energy,voiceBoundary:signal.boundary,emergenceReveal:emergence,
       headYaw:pose[0],headPitch:pose[1],headRoll:pose[2],headZoom:pose[3],
       shift:portrait.motion?Math.max(0,1-(now-shiftAt)/510):0,shiftSerial,
       shiftX:(poseTarget[0]-poseFrom[0])*.39,shiftY:(poseTarget[1]-poseFrom[1])*.39,
-      gearPhase,hitch:portrait.motion?hitch:0,pointerX:pointer[0],pointerY:pointer[1],pointerActive,serpentSway:sway,serpentLift:lift,wingFlex:wing};
+      gearPhase,hitch:portrait.motion?hitch:0,pointerX:pointer[0],pointerY:pointer[1],pointerActive,serpentTime,serpentSway:sway,serpentLift:lift,wingFlex:wing};
   };
   const host=canvas.closest('#chromatic-carrier')||canvas;
   const move=event=>{
     const next=ocularGazeFromPointer(event.clientX,event.clientY,canvas.getBoundingClientRect());
     if(!next)return;target=next;
-    const r=canvas.getBoundingClientRect();pointer=[(event.clientX-r.left)/r.width*2-1,(r.top-event.clientY)/r.height*2+1];pointerActive=1;
+    const r=canvas.getBoundingClientRect(),edge=Math.min(r.width,r.height);
+    pointer=[(event.clientX-r.left)/r.width*2-1,(r.top-event.clientY)/r.height*2+1];
+    if(options.viewport==='rect')pointer=[pointer[0]*r.width/edge,pointer[1]*r.height/edge];
+    pointerActive=1;
   };
   host.addEventListener('pointermove',move,{passive:true});
   const leavePointer=()=>{pointerActive=0;};host.addEventListener('pointerleave',leavePointer,{passive:true});
@@ -154,17 +184,36 @@ export function mountPortrait(canvas, report=()=>{}) {
     },
     cymatics(bands){portrait.cymatics=bands.map(x=>Math.max(0,Math.min(1,Number(x)||0)));canvas.dataset.cymatics=portrait.cymatics.map(x=>x.toFixed(3)).join(',');},
     voiceSpectrum(bands){vocal=bands.map(x=>Math.max(0,Math.min(1,Number(x)||0)));canvas.dataset.voiceCymatics=(speaking&&measured?vocal:[0,0,0,0]).map(x=>x.toFixed(3)).join(',');},
-    audioLevel(value){measured=true;mouth=Math.max(0,Math.min(1,Number(value)||0));},
+    speaker(role){speakerRole=role;canvas.dataset.speaker=role||'none';if(role!=='companion'){companionMouth=0;companionPlaying=false;}if(role==='companion'){speaking=false;mouth=0;boundaryEnergy=0;articulation=null;}},
+    focusSpeaker(role,{immediate=false,signal}={}){
+      if(destroyed||signal?.aborted)return Promise.resolve(false);
+      const target=role==='companion'?1:0,now=performance.now();shotRole=role||null;
+      if(focusWait){const done=focusWait;focusWait=null;done(false);}
+      focus=portraitEmergenceAt(focusFrom,focusTo,(now-focusAt)/1000,.8);focusFrom=focus;focusTo=target;focusAt=now;
+      if(immediate||!portrait.motion){focus=focusFrom=focusTo;portrait.draw(portrait.time);return Promise.resolve(true);}
+      if(Math.abs(focus-focusTo)<.0001)return Promise.resolve(true);
+      const wait=new Promise(resolve=>{const finish=value=>{signal?.removeEventListener('abort',abort);if(focusWait===finish)focusWait=null;resolve(value);},abort=()=>finish(false);focusWait=finish;signal?.addEventListener('abort',abort,{once:true});});portrait.schedule();return wait;
+    },
+    companionLevel(value){if(companionDevice||!companionPlaying||speakerRole!=='companion')return;companionMouth=Math.max(0,Math.min(1,Number(value)||0));canvas.dataset.companionMouth=companionMouth.toFixed(4);},
+    companionTalking(value,{measured:actualPCM=false}={}){companionPlaying=!!value;if(value)canvas.dataset.companionStartFocus=focus.toFixed(4);companionDevice=!!value&&!actualPCM;if(!value)companionMouth=0;canvas.dataset.companionTiming=value?(actualPCM?'measured-pcm':'device-boundary'):'rest';},
+    companionPulse(){if(companionDevice&&speakerRole==='companion'&&!destroyed){companionMouth=.85;canvas.dataset.companionMouth='0.8500';}},
+    audioLevel(value){measured=true;mouth=speakerRole==='companion'?0:Math.max(0,Math.min(1,Number(value)||0));},
     articulate(cue){articulation=cue;if(typeof cue?.paragraph==='string'&&cue.paragraph!==paragraphKey){paragraphKey=cue.paragraph;pendingParagraph=true;}},
-    talking(value){speaking=!!value;if(!speaking)articulation=null;measured=false;if(!speaking){mouth=0;vocal=[0,0,0,0];}},
-    pulse(){if(!destroyed&&portrait.motion)mouth=.85;},
+    talking(value){speaking=!!value&&speakerRole!=='companion';if(speaking)canvas.dataset.ghostStartFocus=focus.toFixed(4);if(!speaking)articulation=null;measured=false;if(!speaking){mouth=0;boundaryEnergy=0;vocal=[0,0,0,0];}},
+    pulse(){if(!destroyed&&portrait.motion&&speakerRole!=='companion'){mouth=.85;boundaryEnergy=.85;}},
+    emerge(value,{immediate=false}={}){
+      if(destroyed)return;
+      const now=performance.now();emergence=portraitEmergenceAt(emergenceFrom,emergenceTarget,(now-emergenceAt)/1000);emergenceFrom=emergence;emergenceTarget=value?1:0;emergenceAt=now;
+      if(immediate)emergence=emergenceFrom=emergenceTarget;
+      portrait.draw(portrait.time);portrait.schedule();
+    },
     hold(value){
       if(destroyed)return;
       portrait.motion=!value;last=performance.now();
       if(value)mouth=0;
       portrait.resize();portrait.schedule();portrait.draw(portrait.time);
     },
-    destroy(){if(destroyed)return;destroyed=true;host.removeEventListener('pointermove',move);host.removeEventListener('pointerleave',leavePointer);portrait.destroy();}
+    destroy(){if(destroyed)return;destroyed=true;if(focusWait){const done=focusWait;focusWait=null;done(false);}host.removeEventListener('pointermove',move);host.removeEventListener('pointerleave',leavePointer);portrait.destroy();}
   };
 }
 

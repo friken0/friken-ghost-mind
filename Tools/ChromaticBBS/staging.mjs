@@ -37,8 +37,8 @@ const drawings={
 };
 export function mountStaging(host,{consider=()=>{}}={}){
  const doc=host.ownerDocument,node=(tag,cls='',txt='')=>{const n=doc.createElement(tag);n.className=cls;n.textContent=txt;return n;};
- const head=node('div','cg-tableau-head','SCENE RECONSTRUCTION / INTERACTIVE SCHEMATIC'),grid=node('div','cg-tableau-grid'),description=node('p','cg-tableau-reading');description.setAttribute('role','status');const art=node('img','cg-scene-illustration');art.alt='Auction lot: Ghost’s terminal and inhabited blue world share a red reset control.';art.hidden=true;host.append(head,art,grid,description);let key='';
- return {update(value,choices=[]){const next=JSON.stringify([value,choices.map(c=>({id:c.id,label:c.label,focus:c.focus}))]);if(next===key)return;key=next;grid.replaceChildren();host.hidden=!value;if(!value)return;head.textContent='SCENE RECONSTRUCTION / '+(value.illustration?'ILLUSTRATION + INTERACTIVE PARTS':'INTERACTIVE SCHEMATIC');art.hidden=!value.illustration;host.classList.toggle('cg-tableau-illustrated',!!value.illustration);if(value.illustration)art.src=stagingArt[value.illustration];
+ const head=node('div','cg-tableau-head','SCENE RECONSTRUCTION / INTERACTIVE SCHEMATIC'),grid=node('div','cg-tableau-grid'),description=node('p','cg-tableau-reading');description.setAttribute('role','status');host.append(head,grid,description);let key='';
+ return {update(value,choices=[]){const next=JSON.stringify([value,choices.map(c=>({id:c.id,label:c.label,focus:c.focus}))]);if(next===key)return;key=next;grid.replaceChildren();host.hidden=!value;if(!value)return;head.textContent='SCENE RECONSTRUCTION / PROCEDURAL SCHEMATIC';host.classList.remove('cg-tableau-illustrated');
   const ids=new Set(value.objects.map(o=>o.id));for(const c of choices)if(c.focus?.some(id=>!ids.has(id)))throw Error('Choice refers to absent scene object');
   for(const [i,o]of value.objects.entries()){
    const b=node('button','cg-scene-prop');b.type='button';b.dataset.object=o.id;b.dataset.propState=o.state;b.setAttribute('aria-label',o.label+' / '+o.state+' / inspect');
