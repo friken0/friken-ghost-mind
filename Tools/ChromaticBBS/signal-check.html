@@ -148,10 +148,11 @@ function renderBattleCue(kind,side=0,sampleRate=24000){
 }
 /** Short tactile interface cues; bounded PCM on the existing SFX bus. */
 function renderInterfaceCue(kind,sampleRate=24000){
- const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480]};
+ const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480],score:[.26,880,1320],secret:[.7,440,1760]};
  if(!Object.hasOwn(profiles,kind)||!Number.isInteger(sampleRate)||sampleRate<8000||sampleRate>96000)throw Error('Invalid interface cue');
  const [duration,from,to]=profiles[kind],samples=new Float32Array(Math.ceil(duration*sampleRate));let phase=0;
- for(let i=0;i<samples.length;i++){const t=i/sampleRate,u=t/duration;phase+=Math.PI*2*(from+(to-from)*u)/sampleRate;const envelope=Math.min(1,t/.004)*Math.pow(Math.max(0,1-u),2.5);samples[i]=(Math.sin(phase)*.016+Math.sin(phase*1.503)*.005)*envelope*(kind==='deal'?.45+.55*Math.pow(Math.cos(t*100),8):1);}
+ if(kind==='score'||kind==='secret'){const notes=kind==='secret'?[659.25,830.61,987.77,1318.51]:[1046.5];for(let i=0;i<samples.length;i++){const t=i/sampleRate;let sum=0;for(let n=0;n<notes.length;n++){const age=t-n*.10;if(age<0)continue;const attack=Math.min(1,age/.003),tail=Math.exp(-age*14),w=2*Math.PI*notes[n]*age;sum+=(Math.sin(w)*.065+Math.sin(w*2.756)*.018+Math.sin(w*5.404)*.007)*attack*tail;}samples[i]=sum*Math.min(1,(duration-t)/.025);}return samples;}
+ for(let i=0;i<samples.length;i++){const t=i/sampleRate,u=t/duration;phase+=Math.PI*2*(from+(to-from)*u)/sampleRate;const envelope=Math.min(1,t/.004)*Math.pow(Math.max(0,1-u),2.5);const reward=kind==='score'||kind==='secret';samples[i]=(Math.sin(phase)*(reward?.06:.016)+Math.sin(phase*1.503)*(reward?.018:.005))*envelope*(kind==='deal'?.45+.55*Math.pow(Math.cos(t*100),8):1);}
  return samples;
 }
 function mountAudio(root,{frame=()=>{},silent=false}={}){
@@ -1714,6 +1715,7 @@ function mountPortrait(canvas, report=()=>{}, options={}) {
   let pointer=[0,0],pointerActive=0,sway=0,lift=0,wing=0,swayVelocity=0,liftVelocity=0,wingVelocity=0,lastLaser=performance.now(),laserDelay=180000+Math.random()*120000,laserSerial=0;
   let pose=[.18,-.035,0,1],poseTarget=pose.slice(),poseFrom=pose.slice(),shiftAt=-Infinity,shiftSerial=0;
   let beat=0,lastBeat=-Infinity,hitch=0,paragraphKey=null,pendingParagraph=false;
+  let authoredShot=false;
   function cutTo(next,now){poseFrom=pose.slice();poseTarget=next.slice();shiftAt=now;shiftSerial++;}
   portrait.expression=time=>{
     const now=performance.now(),dt=Math.max(0,Math.min(.1,(now-last)/1000));last=now;
@@ -1758,7 +1760,7 @@ function mountPortrait(canvas, report=()=>{}, options={}) {
         const energy=speaking&&measured?mouth:0;
         // One shot per source paragraph, admitted by its real voiced playback.
         // Sentence/PCM buffer boundaries and consonant attacks cannot cut.
-        if(pendingParagraph&&energy>.015){
+        if(!authoredShot&&pendingParagraph&&energy>.015){
           cutTo(poses[beat++%poses.length],now);lastBeat=now;pendingParagraph=false;
         }
         // Most travel happens early; the wider spectral bridge resolves with
@@ -1817,6 +1819,16 @@ function mountPortrait(canvas, report=()=>{}, options={}) {
   }
   announce();
   return {
+    // Recorded monologues use this same camera/RAF and dissolve history.
+    // This is staging, never a new geometry or fabricated speech signal.
+    stageShot({yaw=0,pitch=0,roll=0,zoom=1,gazeX=0,gazeY=0}={}){
+      const values=[yaw,pitch,roll,zoom,gazeX,gazeY];
+      if(values.some(v=>!Number.isFinite(v))||Math.abs(yaw)>1.1||Math.abs(pitch)>.25||Math.abs(roll)>.16||zoom<.85||zoom>1.35||Math.abs(gazeX)>1||Math.abs(gazeY)>1)throw Error('Recorded portrait shot exceeds its camera bounds');
+      authoredShot=true;pendingParagraph=false;
+      target=[gazeX*EYE_TRAVEL_X,gazeY*EYE_TRAVEL_Y];
+      cutTo([yaw,pitch,roll,zoom],performance.now());portrait.schedule();
+    },
+    releaseShot(){authoredShot=false;},
     versions:FACE_VERSIONS,
     get companion(){return portrait.version.companion||null;},
     get version(){const {id,title}=portrait.version;return {id,title};},

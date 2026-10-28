@@ -15,6 +15,7 @@ FILES += ['vendor/sdf-craft/'+name for name in ('craft.mjs','craft-shader.mjs','
 FILES += ['vendor/sdf-craft/'+name for name in ('AUTHORING.md','craft-math.inc','surface-math.inc','catalogue.json')]
 FILES += ['ansi-terminal.mjs', 'ansi-terminal.test.mjs', 'response-theater.mjs', 'response-theater.css', 'turn-out-of-time-data.mjs', 'turn-out-of-time.mjs', 'Turn-Out-Of-Time.md', 'ANSI-Boot.md', 'vendor/native-gallery/input.js']
 FILES += ['ansi-ui.mjs', 'ansi-animation.mjs', 'ansi-animation.test.mjs', 'ANSI-Animation.md', 'vendor/ansi-ui/WebPlus_IBM_VGA_8x16.woff', 'vendor/ansi-ui/LICENSE.TXT', 'vendor/ansi-ui/PROVENANCE.md']
+FILES += ['reply-discoveries.mjs', 'reply-discoveries.test.mjs']
 FILES += ['ansi-ui.test.mjs', 'ansi-sprites.mjs', 'ansi-sprites.test.mjs', 'ANSI-Sprites.md', 'ghostlink-transport.mjs', 'ghostlink-transport.test.mjs']
 FILES += ['response-theater.test.mjs']
 FILES += ['mind-adventure.mjs','mind-adventure.css','mind-adventure.test.mjs','ansi-skirmish.mjs','ansi-skirmish.test.mjs','ANSI-Skirmish.md']

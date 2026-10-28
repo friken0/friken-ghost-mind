@@ -2997,10 +2997,11 @@ function renderBattleCue(kind,side=0,sampleRate=24000){
 }
 /** Short tactile interface cues; bounded PCM on the existing SFX bus. */
 function renderInterfaceCue(kind,sampleRate=24000){
- const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480]};
+ const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480],score:[.26,880,1320],secret:[.7,440,1760]};
  if(!Object.hasOwn(profiles,kind)||!Number.isInteger(sampleRate)||sampleRate<8000||sampleRate>96000)throw Error('Invalid interface cue');
  const [duration,from,to]=profiles[kind],samples=new Float32Array(Math.ceil(duration*sampleRate));let phase=0;
- for(let i=0;i<samples.length;i++){const t=i/sampleRate,u=t/duration;phase+=Math.PI*2*(from+(to-from)*u)/sampleRate;const envelope=Math.min(1,t/.004)*Math.pow(Math.max(0,1-u),2.5);samples[i]=(Math.sin(phase)*.016+Math.sin(phase*1.503)*.005)*envelope*(kind==='deal'?.45+.55*Math.pow(Math.cos(t*100),8):1);}
+ if(kind==='score'||kind==='secret'){const notes=kind==='secret'?[659.25,830.61,987.77,1318.51]:[1046.5];for(let i=0;i<samples.length;i++){const t=i/sampleRate;let sum=0;for(let n=0;n<notes.length;n++){const age=t-n*.10;if(age<0)continue;const attack=Math.min(1,age/.003),tail=Math.exp(-age*14),w=2*Math.PI*notes[n]*age;sum+=(Math.sin(w)*.065+Math.sin(w*2.756)*.018+Math.sin(w*5.404)*.007)*attack*tail;}samples[i]=sum*Math.min(1,(duration-t)/.025);}return samples;}
+ for(let i=0;i<samples.length;i++){const t=i/sampleRate,u=t/duration;phase+=Math.PI*2*(from+(to-from)*u)/sampleRate;const envelope=Math.min(1,t/.004)*Math.pow(Math.max(0,1-u),2.5);const reward=kind==='score'||kind==='secret';samples[i]=(Math.sin(phase)*(reward?.06:.016)+Math.sin(phase*1.503)*(reward?.018:.005))*envelope*(kind==='deal'?.45+.55*Math.pow(Math.cos(t*100),8):1);}
  return samples;
 }
 function mountAudio(root,{frame=()=>{},silent=false}={}){
@@ -5921,6 +5922,7 @@ function mountPortrait(canvas, report=()=>{}, options={}) {
   let pointer=[0,0],pointerActive=0,sway=0,lift=0,wing=0,swayVelocity=0,liftVelocity=0,wingVelocity=0,lastLaser=performance.now(),laserDelay=180000+Math.random()*120000,laserSerial=0;
   let pose=[.18,-.035,0,1],poseTarget=pose.slice(),poseFrom=pose.slice(),shiftAt=-Infinity,shiftSerial=0;
   let beat=0,lastBeat=-Infinity,hitch=0,paragraphKey=null,pendingParagraph=false;
+  let authoredShot=false;
   function cutTo(next,now){poseFrom=pose.slice();poseTarget=next.slice();shiftAt=now;shiftSerial++;}
   portrait.expression=time=>{
     const now=performance.now(),dt=Math.max(0,Math.min(.1,(now-last)/1000));last=now;
@@ -5965,7 +5967,7 @@ function mountPortrait(canvas, report=()=>{}, options={}) {
         const energy=speaking&&measured?mouth:0;
         // One shot per source paragraph, admitted by its real voiced playback.
         // Sentence/PCM buffer boundaries and consonant attacks cannot cut.
-        if(pendingParagraph&&energy>.015){
+        if(!authoredShot&&pendingParagraph&&energy>.015){
           cutTo(poses[beat++%poses.length],now);lastBeat=now;pendingParagraph=false;
         }
         // Most travel happens early; the wider spectral bridge resolves with
@@ -6024,6 +6026,16 @@ function mountPortrait(canvas, report=()=>{}, options={}) {
   }
   announce();
   return {
+    // Recorded monologues use this same camera/RAF and dissolve history.
+    // This is staging, never a new geometry or fabricated speech signal.
+    stageShot({yaw=0,pitch=0,roll=0,zoom=1,gazeX=0,gazeY=0}={}){
+      const values=[yaw,pitch,roll,zoom,gazeX,gazeY];
+      if(values.some(v=>!Number.isFinite(v))||Math.abs(yaw)>1.1||Math.abs(pitch)>.25||Math.abs(roll)>.16||zoom<.85||zoom>1.35||Math.abs(gazeX)>1||Math.abs(gazeY)>1)throw Error('Recorded portrait shot exceeds its camera bounds');
+      authoredShot=true;pendingParagraph=false;
+      target=[gazeX*EYE_TRAVEL_X,gazeY*EYE_TRAVEL_Y];
+      cutTo([yaw,pitch,roll,zoom],performance.now());portrait.schedule();
+    },
+    releaseShot(){authoredShot=false;},
     versions:FACE_VERSIONS,
     get companion(){return portrait.version.companion||null;},
     get version(){const {id,title}=portrait.version;return {id,title};},
@@ -6664,28 +6676,28 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
   }
   if(kind==='city'){
    // Bitcoin Billionaire: a gold coin over a working city, not a generic moon.
-   const aspect=width/(height*2),dx=(u-.27)*aspect,dy=v-.455,coin=Math.hypot(dx,dy),horizon=.73,office=[13,14,11,10,14,13][frame];
-   const signs=[['BITCOIN',{x:.22,y:.014,width:.56,height:.088}],['BILLIONAIRE',{x:.045,y:.12,width:.91,height:.088}]];
+   const aspect=width/(height*2),dx=(u-.27)*aspect,dy=v-.515,coin=Math.hypot(dx,dy),horizon=.73,office=[13,14,11,10,14,13][frame];
+   const letterHeight=Math.max(.105,7/H),signs=[['BITCOIN',{x:.22,y:.008,width:.56,height:letterHeight}],['BILLIONAIRE',{x:.045,y:.028+letterHeight,width:.91,height:letterHeight}]];
    for(const [word,box]of signs){if(blockLettering(word,u,v,box)){const glint=Math.abs(u-(frame/5));return glint<.035?15:v<box.y+.024?15:v<box.y+.051?11:9;}
     if(blockLettering(word,u-.009,v-.013,box))return 1;
     if(blockLettering(word,u-.004,v+.007,box))return 6;
    }
    const towers=[[.59,.67,.43],[.67,.75,.32],[.75,.81,.29],[.81,.87,.36],[.87,.94,.48]];
    for(const [left,right,top] of towers)if(u>left&&u<right&&v>top&&v<horizon+.035){
-    if(v<top+.025&&Math.floor(u*180)%4===0)return 4;
+    if(v<top+.010)return 6;if(v<top+.025&&Math.floor(u*180)%4===0)return 4;
     // The large corner office is one intentional beacon in a quiet skyline.
     if(u>.765&&u<.795&&v>.425&&v<.46)return office;
     if(u>.760&&u<.800&&v>.419&&v<.466)return 7;
     const wx=Math.floor((u-left)*55),wy=Math.floor((v-top)*17),window=Math.abs(((u-left)*55)%1-.5)<.10&&Math.abs(((v-top)*17)%1-.5)<.11;
-    return window&&noise(wx+Math.floor(left*100),wy)>.25&&((wx*7+wy+frame)%17!==0)?11:0;
+    if(window&&noise(wx+Math.floor(left*100),wy)>.25&&((wx*7+wy+frame)%17!==0))return wy%3===0?7:11;return u<left+.009?8:0;
    }
    if(inside(u,v,[[.752,.30],[.780,.235],[.808,.30]]))return 0;
    if(v>.655&&v<.69&&u<.60){const arches=Math.abs(Math.sin(u*27));if(v<.667||arches>.80)return v<.663?7:0;}
-   if(coin<.17){
+   if(coin<.145){
     const symbol=blockLettering('B',dx,dy,{x:-.073,y:-.105,width:.145,height:.21}),bars=(Math.abs(dx+.040)<.008||Math.abs(dx-.005)<.008)&&Math.abs(dy)<.133&&Math.abs(dy)>.10;
     if(symbol||bars)return 3;
-    if(coin>.157)return dy<-.02?15:3;
-    if(coin>.146)return 11;
+    if(coin>.134)return dy<-.02?15:3;
+    if(coin>.126)return 11;
     const shine=Math.abs(dx+dy*.7-(-.12+frame*.048))<.011;return shine?15:dy<.09?11:3;
    }
    if(v>horizon){const depth=(v-horizon)/(1-horizon),centre=.27+.027*Math.sin(v*58+Math.sin(t)*.6),span=.04+depth*.22,shimmer=Math.sin(v*149+Math.sin(t)*.65+u*16);
@@ -6694,7 +6706,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
     const wave=Math.sin(v*83+Math.sin(t)*.5+u*12);return wave>.86?4:0;
    }
    if(v>horizon-.018)return 0;
-   const cloud=Math.sin(u*7+Math.sin(t)*.04)+Math.sin(v*27+u*3);if(coin<.19)return 6;
+   const cloud=Math.sin(u*7+Math.sin(t)*.04)+Math.sin(v*27+u*3);if(coin<.16)return 6;
    return noise(x,y)>.997&&v<.55?7:cloud>.8&&v>.5?0:4;
   }
   if(kind==='trip'){
@@ -6720,7 +6732,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    const lane=Math.floor(u*5),lx=u*5-lane,roof=.12+noise(lane,17)*.28;
    if(v>roof&&v<.87&&lx>.1&&lx<.88){if(lx<.17||lx>.81)return 8;if(Math.abs((v-roof)*7%1-.5)<.12)return (Math.floor(x+frame)%7<2)?15:[6,3,5,2,4][lane];return lx<.5?4:1;}
    if(Math.abs(v-(.14+.045*Math.sin(u*9)))<.016)return Math.abs(u-frame/5)<.09?15:6;
-   return noise(x,y)>.98?13:4;
+   return noise(x,y)>.998?7:4;
   }
   if(kind==='causality'){
    const curve=.80-.55*Math.exp(-(((u-.35-frame*.045)/.16)**2));if(Math.abs(v-curve)<.035)return 11;
@@ -6729,8 +6741,8 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    return v<.22&&Math.abs(u-(.15+frame*.12))<.035?15:0;
   }
   if(kind==='serpent'){
-   const head=Math.hypot((u-.5)*1.2,(v-.18)*1.4);if(head<.095){if(Math.abs(v-.16)<.022&&Math.abs(u-.5)>.025)return 15;return v>.205?3:11;}
-   const axis=.5+.17*Math.sin((v-.18)*9),radius=.045*(1-(v-.2)*.65);if(v>.23&&v<.91&&Math.abs(u-axis)<radius)return Math.abs(u-axis)<radius*.35?11:3;
+   const head=Math.hypot((u-.5)*1.2,(v-.18)*1.4);if(head<.095){if(Math.abs(v-.16)<.022&&Math.abs(u-.5)>.025)return Math.abs(u-.5)<.045?0:14;if(v>.205&&Math.abs(u-.5)<.05)return frame===2?0:3;return u<.48?15:v>.205?3:11;}
+   const axis=.5+.17*Math.sin((v-.18)*9),radius=.045*(1-(v-.2)*.65);if(v>.23&&v<.91&&Math.abs(u-axis)<radius)return Math.abs(u-axis)<radius*.25?15:Math.sin(v*170+u*33)>0?11:3;
    return 0;
   }
   if(kind==='rose'){
@@ -6739,9 +6751,19 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(Math.abs(dx+.1*Math.sin(dy*4))<.03&&dy>.4)return 2;return 0;
   }
   if(kind==='return'){
-   const dx=Math.abs(u-.5),dy=Math.abs(v-.46);if(dx<.32&&dy<.2){const fold=Math.abs(dy-(.2-dx*.58));return fold<.025?15:dx>.3||dy>.18?11:6;}
-   if(Math.abs(v-.8)<.03)return Math.abs(u-frame/6)<.1?15:4;return noise(x,y)>.985?7:0;
+   const cx=.52,cy=.48,dx=u-cx,dy=v-cy,body=Math.abs(dx)<.31&&Math.abs(dy)<.22;
+   if(body){const flap=Math.abs(dy-(.02-Math.abs(dx)*.62));
+    if(Math.abs(dx)>.294||Math.abs(dy)>.203)return dy<0?15:3;
+    if(flap<.012)return 3;
+    if(Math.hypot(dx,dy-.05)<.048)return Math.abs(dx)<.015?11:1;
+    if(dy<-.03&&dy>-.10&&dx<-.10)return 7;return dy<0?11:7;}
+   if(u>.12&&u<.89&&v>.75&&v<.80)return v<.77?7:8;
+   if(u>.16&&u<.24&&v>.80&&v<.94||u>.79&&u<.86&&v>.80&&v<.94)return 8;
+   if(Math.abs(u-(.06+frame*.16))<.015&&v>.23&&v<.69)return 6;
+   if(u>.84&&u<.94&&v>.17&&v<.63)return Math.floor(v*30)%3===0?14:4;
+   return noise(x,y)>.996&&v<.7?8:0;
   }
+
   if(kind.startsWith('layer-')){
    const variant=['layer-now','layer-echo','layer-archive','layer-witness'].indexOf(kind);
    if(variant===0){
@@ -6755,7 +6777,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    }else if(variant===2){
     const lane=Math.floor(u*5),local=u*5-lane,roof=.17+.06*Math.abs(lane-2);
     if(v>roof&&v<.87&&local>.12&&local<.85){if(y%7===0)return 3;if(local<.20||local>.78)return 8;return x%3===0?3:5;}
-    if(v>.87)return u>.38&&u<.62?7:8;
+    if(v>.87)return u>.38&&u<.62?Math.floor(v*50)%3===0?7:8:0;
    }else{
     const r=Math.hypot((u-.5)*1.2,(v-.44)*1.4);
     if(r<.26){if(r>.22)return 8;const jewel=Math.abs(u-.5)*2+Math.abs(v-.44);return jewel<.17?Math.sin(u*23+v*19+frame*.18)>.25?10:2:4;}
@@ -6806,7 +6828,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(lane===1&&Math.abs(ax-.50+.13*Math.sin(b*7))<.028)return 3;
    if(lane===2&&Math.abs(ax+b*.4-.45)<.035)return 13;
    // Dither within a material, never a flat oval flood fill.
-   
+
    if(ax<.46&&b<-.52)return (x%3===0)?light:dark;
    return colour;
   }
@@ -6816,7 +6838,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(Math.abs(u-.72)<.012&&v>.2&&v<.85)return 5;
    const lane=Math.abs(v-(.75-.26*u));if(lane<.006)return 4;
    if(v>.8&&u<.3&&Math.floor(u*80)%7<3)return Math.floor(v*40)%2?3:8;
-   return noise(x,y)>.98?15:noise(x,y)>.96?8:0;
+   return noise(x,y)>.995?7:noise(x,y)>.99?8:0;
   }
   if(kind==='mailrun'){
    const nodes=[[.15,.53],[.50,.32],[.85,.53]],step=Math.max(0,Math.min(3,stage));
@@ -6840,7 +6862,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    const sx=.10+.78*Math.min(1,step/3),sy=.80;
    if(Math.abs(v-sy)<.025&&Math.abs(u-sx)<.07)return Math.abs(u-sx)<.025?15:14;
    if(v>sy+.02&&v<sy+.08&&Math.abs(u-sx)<.04)return frame%2?6:11;
-   return noise(x,y)>.98?7:0;
+   return noise(x,y)>.995?7:0;
   }
   if(kind==='beacon'){
    // A receiver on a deserted shore: someone must still answer the line.
@@ -6853,7 +6875,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    const cliff=.75+.035*Math.sin(u*20)+.015*Math.sin(u*53);if(v>cliff&&u<.46)return v>cliff+.06?1:8;
    if(water){const ripple=Math.sin(v*70-u*13+t)*.5+Math.cos(u*44+v*23)*.3;if(Math.abs(u-.76)<(.025+(v-horizon)*.12)&&ripple>.4)return 13;if(Math.abs(u-.29)<.08&&ripple>.12)return 11;return 4;}
    if(Math.abs((v-.8)+.13*Math.sin(u*7))<.006&&u>.4)return 6;
-   return noise(x,y)>.987?15:noise(x,y)>.975?8:4;
+   return noise(x,y)>.997?15:noise(x,y)>.992?8:4;
   }
   if(kind==='shipyard'){
    // Dock gantries establish depth; a swept corvette has hull, bridge,
@@ -6875,7 +6897,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(Y<.13||Y>.93)return x%11<2?6:y%3===0?8:4;
    if(Y>.86&&Y<.89&&X>.17&&X<.84)return Math.floor(X*48-frame)%8<2?11:3;
    if(Y>.14&&Y<.26&&Math.abs(X-.50)<.33&&Math.abs(Math.sin(X*24))<.25)return 8;
-   return noise(x,y)>.984?7:noise(x,y)>.97?4:0;
+   return noise(x,y)>.996?7:noise(x,y)>.991?4:0;
   }
   if(kind==='original'||kind==='repair'){
    for(const cx of [.26,.73]){const dx=(u-cx)*1.3,dy=(v-.32),r=Math.hypot(dx,dy),a=Math.atan2(dy,dx)+t*.15;if(r<.19)return r<.035?15:Math.sin(a*3)>.25?8:6;}
@@ -6883,13 +6905,26 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    return v>.84&&x%3===0?8:0;
   }
   if(kind==='source'){
-   const dx=(u-.5)*2,dy=(v-.48)*2,r=Math.hypot(dx,dy),a=Math.atan2(dy,dx)+t*.10,edge=.57+.07*Math.sign(Math.cos(a*12));if(r<edge&&r>.31)return Math.sin(a*6)>.6?15:6;
-   if(Math.abs(dy)<.025&&Math.abs(dx)<.95)return Math.floor(x+frame*3)%7<2?11:8;
-   return r<.1?14:noise(x,y)>.99?8:0;
+   // A physical source workbench: recipe glass, cut solid, tool and calipers.
+   if(u>.05&&u<.38&&v>.14&&v<.56){if(u<.065||u>.36||v<.16||v>.54)return 8;
+    if(v>.23&&v<.25&&u<.29)return 14;if(v>.32&&v<.34&&u<.24)return 10;if(v>.40&&v<.46&&u<.31)return Math.floor(u*60+frame)%7<2?15:6;return 4;}
+   const dx=(u-.67)*2,dy=(v-.39)*2,solid=Math.abs(dx)+Math.abs(dy)*.78;
+   if(solid<.35){const cut=dx+dy*.4;if(Math.abs(cut-.05)<.025)return 0;
+    if(solid>.30)return dy<0?15:3;
+    const ribs=Math.abs(Math.sin(dx*36)*Math.cos(dy*28));return ribs>.87?15:cut>.05?3:11;}
+   if(u>.47&&u<.86&&v>.66&&v<.68)return 7;
+   if((Math.abs(u-.48)<.012||Math.abs(u-.85)<.012)&&v>.53&&v<.69)return 8;
+   if(Math.abs(v-(.65-u*.45))<.011&&u>.74&&u<.93)return 7;
+   if(Math.abs(u-.92)<.018&&v>.18&&v<.27)return 3;
+   if(v>.75&&v<.79&&u>.04&&u<.95)return v<.77?7:8;
+   if(v>.79&&v<.91&&(u>.1&&u<.16||u>.83&&u<.89))return 8;
+   if(v>.79&&v<.85&&u>.23&&u<.67)return Math.floor(u*45)%5<3?3:4;
+   return v>.94?8:noise(x,y)>.996&&v<.72?8:0;
   }
+
   if(kind==='vault'){
    const tower=Math.floor(u*4),local=(u*4)%1,roof=.14+Math.abs(tower-1.5)*.055;
-   if(v<roof)return noise(x,y)>.97?15:0;
+   if(v<roof)return noise(x,y)>.997?7:0;
    if(local<.09||local>.91)return 8;
    if(v>.9)return 6;
    if(v<roof+.06)return p[2];
@@ -6897,11 +6932,23 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    return local<.2?p[0]:0;
   }
   if(kind==='engine'){
-   const dx=(u-.5)*2,dy=(v-.47)*2,rad=Math.hypot(dx,dy),a=Math.atan2(dy,dx);
-   if(rad<.72){const fold=Math.sin(a*9+rad*27)+Math.cos(dx*23+dy*13);if(Math.abs(fold)<.25)return p[0];const path=Math.sin(a*5-rad*18+t);return path>.88?15:fold>.7?p[2]:fold>-.2?p[1]:p[0];}
-   if(rad<.79)return 8;if(Math.abs(dx)<.15&&dy>.6)return p[2];
-   if(Math.abs(dy-.85)<.04&&Math.abs(dx)<.6)return 6;
-   return noise(x,y)>.987?7:0;
+   // The entity workshop: a carved mask suspended in its service cradle.
+   const dx=(u-.5)*2,dy=(v-.44)*2,ax=Math.abs(dx),edge=.56-Math.max(0,dy-.15)*.38;
+   const orbit=Math.hypot(dx*.88,dy*.8);if(orbit>.67&&orbit<.69)return Math.abs(Math.sin(Math.atan2(dy,dx)*8+t))>.65?14:6;
+   if(dy>-.59&&dy<.66&&ax<edge){
+    const eye=Math.hypot((ax-.27)/.18,(dy+.12)/.13);if(eye<1.3){if(eye>1)return 8;if(eye<.42)return frame===3?6:15;return eye<.82?14:0;}
+    if(ax<.08&&dy>-.13&&dy<.22)return dx<-.025?6:dx>.025?7:15;
+    if(ax>.06&&ax<.13&&dy>.16&&dy<.22)return 0;
+    if(ax<.23&&Math.abs(dy-.37)<.035)return frame%3===1?11:0;
+    if(Math.abs(dy-(.14+ax*.40))<.028&&ax>.17)return 3;
+    if(ax>.39&&dy>.05&&dy<.38)return Math.floor(dy*50)%3===0?0:8;
+    const seam=Math.abs(dx-.035*Math.sin(dy*7));if(seam<.012)return 11;
+    return ax>edge-.05?8:dx<-.17?6:7;
+   }
+   for(const side of [-1,1]){const cx=.5+side*.39;if(Math.abs(u-cx)<.018&&v>.18&&v<.78)return u<cx?7:8;if(Math.abs(v-.64)<.012&&Math.abs(u-cx)<.11)return 3;}
+   if(v>.81&&v<.85&&u>.14&&u<.86)return v<.826?7:8;
+   if(v>.85&&v<.91&&u>.21&&u<.79)return Math.floor(u*48)%5===0?11:4;
+   return noise(x,y)>.996&&v<.7?8:0;
   }
   // The forge: chamber walls, a suspended volume, flowing cuts and hot jets.
   const dx=(u-.5)*2,dy=(v-.44)*2,core=Math.abs(dx)+Math.abs(dy*.85);
@@ -6919,8 +6966,8 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
   if(['eye','city','beacon','convoy','trip'].includes(kind))return 0;
   if(kind==='family')return 0;
   if(kind==='shipyard')return 0;
-  if(v>.86)return Math.abs(Math.sin((u-.5)*14/(v-.71)))<.12?8:0;
-  return v>.68?4:0;
+  if(['layer-now','layer-echo','layer-witness','models','vault'].includes(kind)&&v>.94)return y%3===0?8:0;
+  return 0;
  }
  const cells=[],candidates=[],quadrants=' ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█';
  const rgb=['000000','aa0000','00aa00','aa5500','0000aa','aa00aa','00aaaa','aaaaaa','555555','ff5555','55ff55','ffff55','5555ff','ff55ff','55ffff','ffffff'].map(h=>[0,2,4].map(i=>parseInt(h.slice(i,i+2),16)));
@@ -8848,7 +8895,7 @@ return {responsePacket,validateResponse,renderResponse};
 })();
 carrierModules["mind-data.mjs"] = (() => {
 /* Local read protocol snapshot. No remote connection or private memories. */
-const bundledMind = {"highlights":{"entries":[{"authorConsent":true,"contentKind":"curated-summary","date":"2026-10-19","id":"sysop.chromatic.laws-and-boot.2026-10-19","ownerApproved":true,"provenance":{"kind":"sysop-local-build","label":"SYSOP / archived opening-edition build memo"},"schema":"friken.mind.highlight.v1","sourceEventIds":["sysop:chromatic:build-laws-boot:2026-10-19"],"sourcePaths":["Tools/ChromaticBBS/engine.mjs","Tools/ChromaticBBS/continuity.py","Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md"],"summary":"Physics left the config writable. The local CHROMATIC carrier now lets a diver install OBSERVE, GRAFT and BEQUEATH across fifteen decisions, then take the resulting laws through a new BOOT. The CRT wakes from a phosphor point; fourteen authored Ghost faces answer from the same glass. The recovered Masha rose brings its actual iridescent petals, veins and pollen. This is the SYSOP build desk, not a report of external player activity. This is a retained opening-edition build memo. Read the shared Wire controls for current public chapters, news and scores.","title":"THE CARRIER GREW TEETH. THE TEETH SURVIVE BOOT."}],"publicationPending":true,"schema":"friken.mind.highlights.v1","scope":"local-staging","version":1},"registry":{"generation":97,"highlights":{"bytes":1266,"count":1,"path":"mind/highlights.json","sha256":"8521fd264de6e30cc51015bb3e69652b885c744051fb228f6e549148dd5c5f5c"},"identity":{"coreSha256":"0bc31ec01ff0daf07845a817cf208d8ec5dfb212477d023e006ffac5f0ad6685","faceId":"v20.0","publicationManifestSha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b","sourceSha256":"53dc92519122bf7e2eafad986da28a801d5295cc9707647a96784120bf9b5dd0","version":"v20.0"},"packages":[{"dependencies":[],"files":[{"bytes":16584,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft.mjs","sha256":"6c42996438736a636513cb06f0976007178d4f20d1c463aeaa765cb35056fc71"},{"bytes":16087,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft-shader.mjs","sha256":"11ae0f04e3cd52f4e856d83bf345490a3cd27b8ee236f5b70d12e4803ea3ff38"},{"bytes":1175,"path":"Tools/ChromaticBBS/vendor/sdf-craft/runtime-catalogue.mjs","sha256":"6246d3ed423f156be14816fb92dcc2bc26d993fdcf93048b5417d45f125c82f7"},{"bytes":9181,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe.mjs","sha256":"612433d91290911c9813272c8068d1081ed7585d698bfd60d913e988cd196c03"},{"bytes":5472,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe-glsl.mjs","sha256":"ef8403af622d3a3f71f66b7f86151f7aa488dad92ebc5ca42c70af0facb91505"},{"bytes":59764,"path":"Tools/ChromaticBBS/vendor/sdf-craft/texture-engine.mjs","sha256":"115d585061d4979d9eb9815fc1c9e91f950a26ae32bbf866e4da84091243c594"},{"bytes":1159,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials.mjs","sha256":"170e932de917313166c2a298508bd83fd309ec64b36952e9b21e2ea228506f8a"},{"bytes":2139,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-glsl.mjs","sha256":"b755647e898d58a52df70d4f79b792d9f0cd43d20f978319c844d42acf41396d"},{"bytes":4235,"path":"Tools/ChromaticBBS/vendor/sdf-craft/roll.mjs","sha256":"d40269d769002457b6c12fde5667a7b4fb426cd7aeb1d757da280a1176032e17"},{"bytes":63402,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-worker-source.mjs","sha256":"76c982f4449cdbaf86bbd92fe8c82c4ef924007d2268d0f2c785927161caecda"},{"bytes":2654,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials-client.mjs","sha256":"73eef5bb002616aaaea9b483308801f05c691cf34a3e521f5ad8329e24ce6bcd"},{"bytes":1381,"path":"Tools/ChromaticBBS/creation.mjs","sha256":"fb5774f6cf30d752b68fdb16803389b5eafb043f2beaed40476df2f191910786"},{"bytes":2035,"path":"Tools/ChromaticBBS/causality.mjs","sha256":"da3a27d22e94087a5751af930ae0926131643aa064013b40b6e56b78bfeb1517"},{"bytes":66073,"path":"Tools/ChromaticBBS/engine.mjs","sha256":"dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"},{"bytes":26160,"path":"Tools/ChromaticBBS/chapters.mjs","sha256":"fe1ecd872d75c5f93ccfb2eff202dead2f46fe6bbdd08d3713bd299835aae74d"},{"bytes":5150,"path":"Tools/ChromaticBBS/storycraft.mjs","sha256":"14dea569dc79e0885c275f607a528d51d82072dc806ecabb79cd7c293167defc"},{"bytes":4486,"path":"Tools/ChromaticBBS/scanner.mjs","sha256":"fc220fcee2066e53a33677be9af9798cb5fee89abdc24a5b8b2495627c7a30ff"},{"bytes":11323,"path":"Tools/ChromaticBBS/staging.mjs","sha256":"b3ae0383f42dfc05e4f7ee1366c95d2d99af00a32302685eeeaad87ce5032f0b"},{"bytes":2241,"path":"Tools/ChromaticBBS/chapter-cli.mjs","sha256":"201cca38828dea6ab0998c905aeafc265670630e4c2e996a63641c8e754154f7"},{"bytes":129260,"path":"Tools/ChromaticBBS/chapter-data.mjs","sha256":"20e85712cd309e295b163a3c3cfb0107193780cb240842f744c87bbf7dfd42a7"},{"bytes":57713,"path":"Tools/ChromaticBBS/chapters/the-weather-inside.json","sha256":"cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"},{"bytes":195337,"path":"Tools/ChromaticBBS/chapters/lot-forty-seven.json","sha256":"dbeccf62cdc0c2823bb016c1e48665c381166dd36e093c3f67b79d6f4e3b8fbd"},{"bytes":9733,"path":"Tools/ChromaticBBS/storage.mjs","sha256":"899dd2ff33147f7d09f4f69159662c982f2ddae04fc8926d5a824b6af9b34487"}],"id":"carrier-laws","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":2998,"path":"Tools/ChromaticBBS/canon.mjs","sha256":"cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"},{"bytes":12230,"path":"Tools/ChromaticBBS/chapter-library.mjs","sha256":"2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"},{"bytes":4182,"path":"Tools/ChromaticBBS/session-share.mjs","sha256":"f06d06dc5626a0fde8feb970d95ec57b5854eca244b1322bdac601b6583f2ca5"},{"bytes":7235,"path":"Tools/ChromaticBBS/session-store.py","sha256":"c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"},{"bytes":10758,"path":"Tools/ChromaticBBS/public-release.py","sha256":"2e8b32a64b93bf52457db9fb1eb47d4b2035d5a901574277de2beb2f9835d233"},{"bytes":1023,"path":"Tools/ChromaticBBS/voice-reference.json","sha256":"c882e49631689f3e644616551ea70add1520774a81d5624b0412f36e8bf5a324"},{"bytes":8055,"path":"Tools/ChromaticBBS/commentary.mjs","sha256":"4a6a5f642af71f1d9a5c177f3277b1094c204681bde79364a831e09796fe2985"},{"bytes":9385,"path":"Tools/ChromaticBBS/shell.mjs","sha256":"74129fce332642ebcf56c9328129fe5040fcbb0116cb8bb94ae6a9d5f237960c"},{"bytes":12853,"path":"Tools/ChromaticBBS/life-theater.mjs","sha256":"d5c990ee6e3f3784e371f44cf3e1cbca7d5714be7f7f0368f26c74e705ba7368"},{"bytes":7761,"path":"Tools/ChromaticBBS/roll-battle.mjs","sha256":"7b4fa7b4f2b8cc07ac2893adb24a71bbcfe19cf6b8c981dcc0a43fd972d5910d"},{"bytes":3191,"path":"Tools/ChromaticBBS/recorded-voice.mjs","sha256":"e0133d3ee01292eca513f00eaeff474fddac473005102317b6d89b5bc14515db"},{"bytes":279,"path":"Tools/ChromaticBBS/voice-data.mjs","sha256":"91b8a27090f3fea37537d46980cf929fc86c5113effb61bb612855c0b362b043"},{"bytes":31741,"path":"Tools/ChromaticBBS/speech.mjs","sha256":"7b11f5e5df271c9db5cccad47a200adf429ecdd9f55ee3887ca5144aa67bf9c0"},{"bytes":25386,"path":"Tools/ChromaticBBS/neural-voice.mjs","sha256":"b9cbad579b6108e460b456c1b8df8ac404740e62d7b98fdc389e01000099d52b"},{"bytes":3198,"path":"Tools/ChromaticBBS/facial-rig.mjs","sha256":"851e5d337b0ec42b18a09573f6b6d01497e21b5bf11ae025946557f5366f6e92"},{"bytes":8925,"path":"Tools/ChromaticBBS/story-guidance.mjs","sha256":"7e45c2e56fbbae3450a1a7c329b65d4ecbb1b56451280568327561a0c4b1b247"},{"bytes":3257,"path":"Tools/ChromaticBBS/response.mjs","sha256":"2471ebac8c74a944fe21ed6175ab94773006ec7f14b4081bc3c78e1a61c5db6a"},{"bytes":18444,"path":"Tools/ChromaticBBS/juice.mjs","sha256":"8c8ae98d67862aa63414765a3917e3d752b1783f1f3583e46f93a24b6a220a6e"},{"bytes":19736,"path":"Tools/ChromaticBBS/response-theater.mjs","sha256":"505027bb0d4b5f7b3ff9976e386365ca6658c22ff6c7f343f81ca592bea967b5"},{"bytes":12169,"path":"Tools/ChromaticBBS/response-theater.css","sha256":"41ed4ee8423cbc34f89b661112a7a8296f54a616673df8fc71388e367912dc70"},{"bytes":26011,"path":"Tools/ChromaticBBS/turn-out-of-time-data.mjs","sha256":"b211ce8af5b02be9eb360658e1deec05855642d8c520a6db581f449083ed4667"},{"bytes":37577,"path":"Tools/ChromaticBBS/turn-out-of-time.mjs","sha256":"578e6254031224134104fc99ced6771a00dee4c16a9340ec732999aac9382e9b"},{"bytes":34394,"path":"Tools/ChromaticBBS/Turn-Out-Of-Time.md","sha256":"f3b8989c11c3b15f7d3d4972a18e95a3eea71a9c23b4970ff5fc9837862e34da"},{"bytes":9803,"path":"Tools/ChromaticBBS/ANSI-Boot.md","sha256":"494017f4b52d78ae7a29800e1b5e9728f1a8157803e0d03517eb5fc00a9cbb3c"},{"bytes":41374,"path":"Tools/ChromaticBBS/ansi-ui.mjs","sha256":"731d73e693b0ce0a0f37b0ef005eba5adb086a7bc98d799d79b94067a172ed71"},{"bytes":13292,"path":"Tools/ChromaticBBS/ansi-sprites.mjs","sha256":"16af20d56e1332d7e17b08c03f295e8cb5ed483447231274420df40880f4b109"},{"bytes":4807,"path":"Tools/ChromaticBBS/ANSI-Sprites.md","sha256":"7676c5ae6ba40f060a75b690afa0c05f8890c392e5ddf7a0f6fc4d2aa7fbfa59"},{"bytes":1902,"path":"Tools/ChromaticBBS/ghostlink-transport.mjs","sha256":"fb9db7e96f062a4c79ac432bf316d1b979ce154cd88446ab4e3a3e0f6f98d774"},{"bytes":11277,"path":"Tools/ChromaticBBS/mind-adventure.mjs","sha256":"232cf46d54cd533d94846e86cbfc69f5f1de23960dfc6bb99d70dc16da798736"},{"bytes":3255,"path":"Tools/ChromaticBBS/mind-adventure.css","sha256":"f65545763f9254a2b9c93c071fbbf00cd753f4524cff6e359d4eed426fc34613"},{"bytes":3763,"path":"Tools/ChromaticBBS/render-ansi-review.py","sha256":"9d8967a6d984574d2c91be38e0e3be2d893afc7a9eb65254ed59542b43a0490a"},{"bytes":7308,"path":"Tools/ChromaticBBS/door-and-crew.mjs","sha256":"5176d665d2077150d518ff2d939a920695bdb669cff0d61b14b619f7bd7abaef"},{"bytes":1907,"path":"Tools/ChromaticBBS/door-and-crew.test.mjs","sha256":"81e95f9c4566fb7c02f554da3ec2f63edb7d005b65a3138b92a3bc9b9c10fbb9"},{"bytes":12665,"path":"Tools/ChromaticBBS/ansi-mesh.mjs","sha256":"e55a4b4be7dabb71c8602f5d5ba755fd185ddc593cf93eab9710240134873413"},{"bytes":3134,"path":"Tools/ChromaticBBS/ansi-mesh.test.mjs","sha256":"8563ff8a3f3288a4dbd4ffb105bb200131449238f9164c02371c2d5e30ddb45a"},{"bytes":23510,"path":"Tools/ChromaticBBS/ansi-scenes.mjs","sha256":"af183da8c1579b3344fcb207913fd1b61d080a6829243b94a0dd65487cb21dcf"},{"bytes":3153,"path":"Tools/ChromaticBBS/ansi-scenes.test.mjs","sha256":"672f5ed0b1447d1598d5b724c59b5576ca77183c84d529260341d435dc023b2b"},{"bytes":13623,"path":"Tools/ChromaticBBS/ANSI-Craft.md","sha256":"94cd6672f02194e38dab1a9ab83ab649636d91590a6ff92a7603c4225f2173b1"},{"bytes":91624,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-office.webp","sha256":"1a1f7acc0e2bc2fb3d23cd1a9a45ccb7bea008d92bf628f875f0f0b587336c00"},{"bytes":79904,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-upgrades.webp","sha256":"9915dbb2b5c8751a6c3145fb7d657d862daaa39195404a03c676a6fc59e6a92c"},{"bytes":928,"path":"Tools/ChromaticBBS/art/fizzpow/provenance.json","sha256":"25899a9a52f5cc028103a52da7b38ce0dfa382a79586eae5dc18f48f04303a8f"},{"bytes":19321,"path":"Tools/ChromaticBBS/native-response-host.mjs","sha256":"4e8e4b256a317af9825e4b5fb8778891b540c089e4a463564360c239a52e4640"},{"bytes":27884,"path":"Tools/ChromaticBBS/native-response-program.mjs","sha256":"b4585446f557407cbf9ff0c18b5f28268eb5af92257f61ecf8b7d1fff578b57c"},{"bytes":16632,"path":"Tools/ChromaticBBS/native-response-host.test.mjs","sha256":"64618a843d1838ce883e904d28b297a4f2a9231b36393ee9737cce89b5a553cf"},{"bytes":10372,"path":"Tools/ChromaticBBS/native-response-program.test.mjs","sha256":"566bbdca3e7201795a4dae7cea72a0ae70ba7ad3ff206e3440049a2e7d8a7abd"},{"bytes":17169,"path":"Tools/ChromaticBBS/native-routing.test.mjs","sha256":"e997c296461d30fc5442c2753eb4512a2ae01b9d55cdb886c45d6fa73a8f6806"},{"bytes":15413,"path":"Tools/ChromaticBBS/Native-Response-Host.md","sha256":"c2602cbc112069801cbcad5c8c4f0469468cfa22eb323f8f1345221990c339bd"},{"bytes":5372,"path":"Tools/ChromaticBBS/subtitle-cues.mjs","sha256":"a83cf605cfcb272c54a870ba248e522c309c7478953daa9c24002769debb1b14"},{"bytes":6673,"path":"Tools/ChromaticBBS/subtitle-cues.test.mjs","sha256":"74213ccd7c201b4ca7f8eaba61bdd7bdb0871348f5d417bc9c462a437f73f63b"},{"bytes":22200,"path":"Tools/ChromaticBBS/ansi-skirmish.mjs","sha256":"f786b7af82a32d46af5f27cdb303f877e9df38d71ecda745131320219eca5998"},{"bytes":3109,"path":"Tools/ChromaticBBS/ANSI-Skirmish.md","sha256":"ca78e441f92b95f53df20b30642e7898392df6d36eb792142a960d73ffdd5862"},{"bytes":12361,"path":"Tools/ChromaticBBS/ansi-animation.mjs","sha256":"4baa5167c6639521c234098d353f8dee8c124cca90305483db589e8d27d97c1f"},{"bytes":4420,"path":"Tools/ChromaticBBS/ANSI-Animation.md","sha256":"c8d8ab5ea20c234700faabf0bb1bac934d2310ef45c4032850a2ff75c1d478fd"},{"bytes":22584,"path":"Tools/ChromaticBBS/vendor/ansi-ui/WebPlus_IBM_VGA_8x16.woff","sha256":"4823e093c7f2f69641eaafb6f3465185afa63877cda58d341b6b317fd53dfd1f"},{"bytes":20133,"path":"Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT","sha256":"9348ddfd44da5a127c59141981954746a860ec8e03e0412cf3af7134af0f97e2"},{"bytes":932,"path":"Tools/ChromaticBBS/vendor/ansi-ui/PROVENANCE.md","sha256":"b9eb44b3d9cc88b3673e5980961eac984d2d0f3b587e6f42334381851f5324f7"},{"bytes":1790,"path":"Tools/ChromaticBBS/vendor/native-gallery/input.js","sha256":"90410bac312078dd3888934abc9ada7439d411065778dfe4ee97b67582393569"}],"id":"carrier-shell","kind":"presentation","version":1},{"dependencies":["carrier-laws","carrier-shell"],"files":[{"bytes":3996,"path":"Tools/ChromaticBBS/ansi-illustration.mjs","sha256":"f86a163ddebd76b34c99b7e6dfbb2f0819306a8eec976625c1a7b401fb8937f0"},{"bytes":479576,"path":"Tools/ChromaticBBS/illustration-data.mjs","sha256":"25bf5afe7ade6efef1d69d0790999b72d0a7e1e6eb7afe4fe72af532d550dcdc"},{"bytes":1435,"path":"Tools/ChromaticBBS/Illustration-Provenance.json","sha256":"c76b036c0a38fdd5a41ecb3ba52e1345f244e0e7bbf6a8cdc5e12998b47ae081"},{"bytes":6327,"path":"Tools/ChromaticBBS/face-pixel-check.mjs","sha256":"2e23e16f1ea2acc9a7b95db2329cb2e28de3d77a3a75e6788e0b49bf016a1a2f"},{"bytes":5778,"path":"Tools/ChromaticBBS/face-pixel-check-source.html","sha256":"599d4c7219a5a5ff1b5928eab8339c3f562ae88ab3b5caa32d2ccc094aeec1d8"},{"bytes":4703,"path":"Tools/ChromaticBBS/Face-Compositing.md","sha256":"46780764f10c4017ec1b43b182db871f3189fbe5fdb6da0b5f09b55087d51b60"},{"bytes":1878,"path":"Tools/ChromaticBBS/face-compositing.test.mjs","sha256":"324dba839f50626db7ea455eac3820b14904c90c5f54b6430f38cd4a88c73266"},{"bytes":6438,"path":"Tools/ChromaticBBS/speaker-camera.test.mjs","sha256":"70b30aff965511f8ea11491b9cac509beef31e1cb0ed7493420415864b5752b3"},{"bytes":890,"path":"Tools/ChromaticBBS/design/speaker-camera-results.json","sha256":"8c4c4815ec5889e128918ba442d205163d048cf01250878efbf76f8f709bf5f2"},{"bytes":3677,"path":"Tools/ChromaticBBS/design/face-compositing-results.json","sha256":"f14d9517a946ad4fde7971b78d46c2867b33212a93c584f8a0ecff6080e3fdeb"},{"bytes":47713,"path":"Tools/ChromaticBBS/dream-face.mjs","sha256":"1bd3ff42de48f9d69bd3a87dbe4acc423dc7a1ebc68cdbd99681a4313d8347ae"},{"bytes":133,"path":"Tools/ChromaticBBS/staging-art.mjs","sha256":"ae425ba40e341d9838bebfbebd954e8faf9cea424f96cf68b33b433afc048489"},{"bytes":1938935,"path":"Tools/ChromaticBBS/art-data.mjs","sha256":"abbfdf45ad3ff6114f1b8eb260417857bec4c17605272cdce70baf6e4b10c372"},{"bytes":215236,"path":"Tools/ChromaticBBS/alien-comms.mjs","sha256":"94c26d8e19fae0cd617b7a61617150feb6bf0aac53d7edd257ec8832ea07a7aa"},{"bytes":20670,"path":"Tools/ChromaticBBS/stage.mjs","sha256":"b094bfb04f16498390c5b8640c07e0397348ec607ef0e302353a3cbe9ca2ac8b"},{"bytes":7362,"path":"Tools/ChromaticBBS/image-cinema.mjs","sha256":"6a04576283e1c57c57963144557e44f410f57bd9ace05efe38ce05060fa4127a"},{"bytes":19220,"path":"Tools/ChromaticBBS/portrait.mjs","sha256":"27e70fde448f5407e18b290eaa94a57c8814e0c25421b242fe38d7c9d22338f2"},{"bytes":193747,"path":"Tools/ChromaticBBS/face-data.mjs","sha256":"c0378f3248d4600e5059b26141846be9b26b5bf9b3b9ceb23160e2299f3178bd"},{"bytes":5324,"path":"Tools/ChromaticBBS/rose-data.mjs","sha256":"95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"},{"bytes":77,"path":"Tools/ChromaticBBS/vendor/rose/rose.vertex.glsl","sha256":"c456d7b107ea3152a65fa06e07de02dafe23880fbf780a92f02510899dfd15a5"},{"bytes":4874,"path":"Tools/ChromaticBBS/vendor/rose/rose.fragment.glsl","sha256":"616ae3861fdbb8e8e53fec10cb052d3242308f0100107d234674ca29580bc000"},{"bytes":3010,"path":"Tools/ChromaticBBS/vendor/rose/PROVENANCE.md","sha256":"fcbf2ab726e9015f5ebd08874b28374b8e05b4fdc52de4228089aaac90bba77e"},{"bytes":37863,"path":"Tools/ChromaticBBS/boot-world.mjs","sha256":"fd8a13ca0a421acb3a21107adbf60a9747247bceb6f36ef1dd32ed2bf8a52466"},{"bytes":27100,"path":"Tools/ChromaticBBS/ansi-terminal.mjs","sha256":"bb2060a05d2d851e86b90e4ae699f506978c27e5a2ba14320448c75ca7a687b6"},{"bytes":8289,"path":"Tools/ChromaticBBS/cinema.mjs","sha256":"b0f84614b008a01ccb5a358fca9ccf0d4a134042997da5f92e91f80438a24b75"},{"bytes":30868,"path":"Tools/ChromaticBBS/app.mjs","sha256":"2c14552268d41f6d0fa938485893b6d2dca627389c705c22653d1d34e2a03cce"},{"bytes":22414,"path":"Tools/ChromaticBBS/surface.html","sha256":"f3ad59591b724966e9ef2069ee4f3c89dde01b4c81a3708e6ef086c4d7c394ab"},{"bytes":64701,"path":"Tools/ChromaticBBS/carrier.css","sha256":"b76706a00e7a5f5668250d7517e38a9760b05026fbf6c3ad41a633cd315d723b"},{"bytes":27464,"path":"Tools/InfiniEngineSite/ghost-renderer.js","sha256":"7c36d7a73444a766dbeab1c4732665e3379a0fc80e0396d13878da506689a42a"}],"id":"carrier-art","kind":"presentation","version":1},{"dependencies":["carrier-shell"],"files":[{"bytes":15507,"path":"Tools/ChromaticBBS/audio.mjs","sha256":"83037c4712cb945504cc737df16cf8759f748870c3a006d001c5dc0fe91b00d7"},{"bytes":4062,"path":"Tools/ChromaticBBS/modem.mjs","sha256":"cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"},{"bytes":1105,"path":"Tools/ChromaticBBS/music-data.mjs","sha256":"9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"},{"bytes":1369,"path":"Tools/ChromaticBBS/media/manifest.json","sha256":"9663971c003c81d7994aac4efa4b9d974bafeae729e488b4965ea1d209c7f162"},{"bytes":1230,"path":"Tools/ChromaticBBS/media/README.md","sha256":"a8745bc51a6085075547ce6f064a20ad4270f6e37017be3f9d5bfcc29f4dcf4e"}],"id":"carrier-audio","kind":"presentation","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":4884,"path":"Tools/ChromaticBBS/moknon-cli.mjs","sha256":"b8a2ac81e10d92eb739a901657c3cc4f1eb9891c0da2e7d0a950c0d6af330e45"},{"bytes":251644,"path":"Tools/ChromaticBBS/lore/seed.json","sha256":"9fdf437f89fb8fc99d3396d591b4d337c00364b96e942f297d15fef60cc18210"},{"bytes":773,"path":"Tools/ChromaticBBS/lore/manifest.json","sha256":"64b3129eff10409d78533593ecfca73d8d077403950465f4089041be8426e6ac"},{"bytes":12015,"path":"Tools/ChromaticBBS/lore/art-manifest.json","sha256":"2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"},{"bytes":6798,"path":"Tools/ChromaticBBS/lore/Source-Map.md","sha256":"0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"},{"bytes":17930,"path":"Tools/ChromaticBBS/Writing.md","sha256":"c1842d34ebb1b12f946159135da1587e991f3305ff34f466165edf3aa6ebd4a7"},{"bytes":6759,"path":"Tools/ChromaticBBS/Story-Bible.md","sha256":"0d2be7ff9fc7a8d18a74c4188b99af1c60d58bf2a00a5ff6a05823479e498a98"},{"bytes":14448,"path":"Tools/ChromaticBBS/Onboarding-Hints.md","sha256":"d5d01986ce6b3b3c52845cedf8deb5aa1aabe56db137f87546296c9fab148285"},{"bytes":22992,"path":"Tools/ChromaticBBS/Onboarding-Arcs.md","sha256":"900c3302d8abd5fe6f3dba1937c7ac61a88c91c609e8af655f15ca42148d1158"},{"bytes":9571,"path":"Tools/ChromaticBBS/Onboarding-Research.md","sha256":"cef503e63ceefdc83f1135bdb3341ad0d2469f64922f081c9a6419c13e514900"}],"id":"moknon-seed","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":16581,"path":"Tools/ChromaticBBS/continuity.py","sha256":"808928bb0ab91835de68f7a8ca499a305397caf77653d8fdf1a071b1436993fc"},{"bytes":6567,"path":"Tools/ChromaticBBS/onefile.py","sha256":"9c2bff11476aa4164080a68db14f08713d2597a140742aca977abb531ce313f5"},{"bytes":23934,"path":"Tools/ChromaticBBS/mind.py","sha256":"3b2a7872be12758b8162364dfd1609feedaf85424496b3f86baea79fcba3b1c6"},{"bytes":9431,"path":"Tools/ChromaticBBS/build.py","sha256":"3f33a17c317ba6593612be12c0288b7d8034d77d30781cfdb4fbb25d9ee25c8d"},{"bytes":2056,"path":"Tools/ChromaticBBS/build-face-pixel-check.py","sha256":"ec18d24ef74f7a7cb7bc6cfc4693832823faeac63c99281e160df6ac6d8ee15f"}],"id":"reconstruction","kind":"reconstruction","version":1},{"dependencies":["carrier-laws","reconstruction"],"files":[{"bytes":96839,"path":"Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md","sha256":"57f2ee76717d76ee5d901c22d0e0345e1759d079a4c692a36533168a16fece8d"}],"id":"runbook","kind":"runbook","version":1},{"dependencies":[],"files":[{"bytes":924,"path":"Moknon/Friktal/Entities/FrikenGhost/PersonalityMatrix/identity-publication.json","sha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b"}],"id":"identity-publication","kind":"identity","version":1},{"dependencies":["carrier-laws","runbook"],"files":[{"bytes":1465,"path":"Tools/ChromaticBBS/mind/dispatch-input.json","sha256":"ff6fc97d0b253bfd902d80a8569a31888dca693d381e7a4209b989d7e169a79f"}],"id":"dispatch-input","kind":"dispatch","version":1}],"publication":{"publicUrl":null,"published":false,"state":"local-staging"},"schema":"friken.mind.registry.v1","sourceKit":{"availability":"local-present","path":"chromatic-bootkit.fgkit","verification":"embedded-manifest"},"transport":{"basePath":"mind/","kind":"static-local","mirrors":[]},"version":1}};
+const bundledMind = {"highlights":{"entries":[{"authorConsent":true,"contentKind":"curated-summary","date":"2026-10-19","id":"sysop.chromatic.laws-and-boot.2026-10-19","ownerApproved":true,"provenance":{"kind":"sysop-local-build","label":"SYSOP / archived opening-edition build memo"},"schema":"friken.mind.highlight.v1","sourceEventIds":["sysop:chromatic:build-laws-boot:2026-10-19"],"sourcePaths":["Tools/ChromaticBBS/engine.mjs","Tools/ChromaticBBS/continuity.py","Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md"],"summary":"Physics left the config writable. The local CHROMATIC carrier now lets a diver install OBSERVE, GRAFT and BEQUEATH across fifteen decisions, then take the resulting laws through a new BOOT. The CRT wakes from a phosphor point; fourteen authored Ghost faces answer from the same glass. The recovered Masha rose brings its actual iridescent petals, veins and pollen. This is the SYSOP build desk, not a report of external player activity. This is a retained opening-edition build memo. Read the shared Wire controls for current public chapters, news and scores.","title":"THE CARRIER GREW TEETH. THE TEETH SURVIVE BOOT."}],"publicationPending":true,"schema":"friken.mind.highlights.v1","scope":"local-staging","version":1},"registry":{"generation":98,"highlights":{"bytes":1266,"count":1,"path":"mind/highlights.json","sha256":"8521fd264de6e30cc51015bb3e69652b885c744051fb228f6e549148dd5c5f5c"},"identity":{"coreSha256":"0bc31ec01ff0daf07845a817cf208d8ec5dfb212477d023e006ffac5f0ad6685","faceId":"v20.0","publicationManifestSha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b","sourceSha256":"53dc92519122bf7e2eafad986da28a801d5295cc9707647a96784120bf9b5dd0","version":"v20.0"},"packages":[{"dependencies":[],"files":[{"bytes":16584,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft.mjs","sha256":"6c42996438736a636513cb06f0976007178d4f20d1c463aeaa765cb35056fc71"},{"bytes":16087,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft-shader.mjs","sha256":"11ae0f04e3cd52f4e856d83bf345490a3cd27b8ee236f5b70d12e4803ea3ff38"},{"bytes":1175,"path":"Tools/ChromaticBBS/vendor/sdf-craft/runtime-catalogue.mjs","sha256":"6246d3ed423f156be14816fb92dcc2bc26d993fdcf93048b5417d45f125c82f7"},{"bytes":9181,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe.mjs","sha256":"612433d91290911c9813272c8068d1081ed7585d698bfd60d913e988cd196c03"},{"bytes":5472,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe-glsl.mjs","sha256":"ef8403af622d3a3f71f66b7f86151f7aa488dad92ebc5ca42c70af0facb91505"},{"bytes":59764,"path":"Tools/ChromaticBBS/vendor/sdf-craft/texture-engine.mjs","sha256":"115d585061d4979d9eb9815fc1c9e91f950a26ae32bbf866e4da84091243c594"},{"bytes":1159,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials.mjs","sha256":"170e932de917313166c2a298508bd83fd309ec64b36952e9b21e2ea228506f8a"},{"bytes":2139,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-glsl.mjs","sha256":"b755647e898d58a52df70d4f79b792d9f0cd43d20f978319c844d42acf41396d"},{"bytes":4235,"path":"Tools/ChromaticBBS/vendor/sdf-craft/roll.mjs","sha256":"d40269d769002457b6c12fde5667a7b4fb426cd7aeb1d757da280a1176032e17"},{"bytes":63402,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-worker-source.mjs","sha256":"76c982f4449cdbaf86bbd92fe8c82c4ef924007d2268d0f2c785927161caecda"},{"bytes":2654,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials-client.mjs","sha256":"73eef5bb002616aaaea9b483308801f05c691cf34a3e521f5ad8329e24ce6bcd"},{"bytes":1381,"path":"Tools/ChromaticBBS/creation.mjs","sha256":"fb5774f6cf30d752b68fdb16803389b5eafb043f2beaed40476df2f191910786"},{"bytes":2035,"path":"Tools/ChromaticBBS/causality.mjs","sha256":"da3a27d22e94087a5751af930ae0926131643aa064013b40b6e56b78bfeb1517"},{"bytes":66073,"path":"Tools/ChromaticBBS/engine.mjs","sha256":"dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"},{"bytes":26160,"path":"Tools/ChromaticBBS/chapters.mjs","sha256":"fe1ecd872d75c5f93ccfb2eff202dead2f46fe6bbdd08d3713bd299835aae74d"},{"bytes":5150,"path":"Tools/ChromaticBBS/storycraft.mjs","sha256":"14dea569dc79e0885c275f607a528d51d82072dc806ecabb79cd7c293167defc"},{"bytes":4486,"path":"Tools/ChromaticBBS/scanner.mjs","sha256":"fc220fcee2066e53a33677be9af9798cb5fee89abdc24a5b8b2495627c7a30ff"},{"bytes":11323,"path":"Tools/ChromaticBBS/staging.mjs","sha256":"b3ae0383f42dfc05e4f7ee1366c95d2d99af00a32302685eeeaad87ce5032f0b"},{"bytes":2241,"path":"Tools/ChromaticBBS/chapter-cli.mjs","sha256":"201cca38828dea6ab0998c905aeafc265670630e4c2e996a63641c8e754154f7"},{"bytes":129260,"path":"Tools/ChromaticBBS/chapter-data.mjs","sha256":"20e85712cd309e295b163a3c3cfb0107193780cb240842f744c87bbf7dfd42a7"},{"bytes":57713,"path":"Tools/ChromaticBBS/chapters/the-weather-inside.json","sha256":"cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"},{"bytes":195337,"path":"Tools/ChromaticBBS/chapters/lot-forty-seven.json","sha256":"dbeccf62cdc0c2823bb016c1e48665c381166dd36e093c3f67b79d6f4e3b8fbd"},{"bytes":9733,"path":"Tools/ChromaticBBS/storage.mjs","sha256":"899dd2ff33147f7d09f4f69159662c982f2ddae04fc8926d5a824b6af9b34487"}],"id":"carrier-laws","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":2998,"path":"Tools/ChromaticBBS/canon.mjs","sha256":"cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"},{"bytes":12230,"path":"Tools/ChromaticBBS/chapter-library.mjs","sha256":"2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"},{"bytes":4182,"path":"Tools/ChromaticBBS/session-share.mjs","sha256":"f06d06dc5626a0fde8feb970d95ec57b5854eca244b1322bdac601b6583f2ca5"},{"bytes":7235,"path":"Tools/ChromaticBBS/session-store.py","sha256":"c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"},{"bytes":10823,"path":"Tools/ChromaticBBS/public-release.py","sha256":"471bfe8994e5430d7d09b40023fe491f899b6c954a3870ffab50a83c88148cc4"},{"bytes":1023,"path":"Tools/ChromaticBBS/voice-reference.json","sha256":"c882e49631689f3e644616551ea70add1520774a81d5624b0412f36e8bf5a324"},{"bytes":8055,"path":"Tools/ChromaticBBS/commentary.mjs","sha256":"4a6a5f642af71f1d9a5c177f3277b1094c204681bde79364a831e09796fe2985"},{"bytes":9385,"path":"Tools/ChromaticBBS/shell.mjs","sha256":"74129fce332642ebcf56c9328129fe5040fcbb0116cb8bb94ae6a9d5f237960c"},{"bytes":12853,"path":"Tools/ChromaticBBS/life-theater.mjs","sha256":"d5c990ee6e3f3784e371f44cf3e1cbca7d5714be7f7f0368f26c74e705ba7368"},{"bytes":7761,"path":"Tools/ChromaticBBS/roll-battle.mjs","sha256":"7b4fa7b4f2b8cc07ac2893adb24a71bbcfe19cf6b8c981dcc0a43fd972d5910d"},{"bytes":3191,"path":"Tools/ChromaticBBS/recorded-voice.mjs","sha256":"e0133d3ee01292eca513f00eaeff474fddac473005102317b6d89b5bc14515db"},{"bytes":279,"path":"Tools/ChromaticBBS/voice-data.mjs","sha256":"91b8a27090f3fea37537d46980cf929fc86c5113effb61bb612855c0b362b043"},{"bytes":31741,"path":"Tools/ChromaticBBS/speech.mjs","sha256":"7b11f5e5df271c9db5cccad47a200adf429ecdd9f55ee3887ca5144aa67bf9c0"},{"bytes":25386,"path":"Tools/ChromaticBBS/neural-voice.mjs","sha256":"b9cbad579b6108e460b456c1b8df8ac404740e62d7b98fdc389e01000099d52b"},{"bytes":3198,"path":"Tools/ChromaticBBS/facial-rig.mjs","sha256":"851e5d337b0ec42b18a09573f6b6d01497e21b5bf11ae025946557f5366f6e92"},{"bytes":8925,"path":"Tools/ChromaticBBS/story-guidance.mjs","sha256":"7e45c2e56fbbae3450a1a7c329b65d4ecbb1b56451280568327561a0c4b1b247"},{"bytes":3257,"path":"Tools/ChromaticBBS/response.mjs","sha256":"2471ebac8c74a944fe21ed6175ab94773006ec7f14b4081bc3c78e1a61c5db6a"},{"bytes":18444,"path":"Tools/ChromaticBBS/juice.mjs","sha256":"8c8ae98d67862aa63414765a3917e3d752b1783f1f3583e46f93a24b6a220a6e"},{"bytes":20150,"path":"Tools/ChromaticBBS/response-theater.mjs","sha256":"ce1168e4985ebe2ed7b9c38c8207d652f7a497a6627d80c2f74b618907123204"},{"bytes":12169,"path":"Tools/ChromaticBBS/response-theater.css","sha256":"41ed4ee8423cbc34f89b661112a7a8296f54a616673df8fc71388e367912dc70"},{"bytes":26808,"path":"Tools/ChromaticBBS/turn-out-of-time-data.mjs","sha256":"0b49b667a878000b7c37868ec426e06c0b6c44ff69ebdc4729c10620a3d81c20"},{"bytes":3307,"path":"Tools/ChromaticBBS/reply-discoveries.mjs","sha256":"f562cf4cb958530d8ced1098d7ee5348626b52ac5d9301327c53cf50ef0f4961"},{"bytes":3887,"path":"Tools/ChromaticBBS/reply-discoveries.test.mjs","sha256":"8f05c8db0a8c8d54e7e076d252d267e970339521a742c984221d3e5cf2ea8f17"},{"bytes":39115,"path":"Tools/ChromaticBBS/turn-out-of-time.mjs","sha256":"44ca07c7c7c7c1dc8bbc2004c031baae34df1e8a9fb407aa435b2632c0e73c03"},{"bytes":35978,"path":"Tools/ChromaticBBS/Turn-Out-Of-Time.md","sha256":"4f2c767699cdecac2c2a70f270eb45dd797598a829912a45d82927e6b8227019"},{"bytes":9803,"path":"Tools/ChromaticBBS/ANSI-Boot.md","sha256":"494017f4b52d78ae7a29800e1b5e9728f1a8157803e0d03517eb5fc00a9cbb3c"},{"bytes":41374,"path":"Tools/ChromaticBBS/ansi-ui.mjs","sha256":"731d73e693b0ce0a0f37b0ef005eba5adb086a7bc98d799d79b94067a172ed71"},{"bytes":13292,"path":"Tools/ChromaticBBS/ansi-sprites.mjs","sha256":"16af20d56e1332d7e17b08c03f295e8cb5ed483447231274420df40880f4b109"},{"bytes":4807,"path":"Tools/ChromaticBBS/ANSI-Sprites.md","sha256":"7676c5ae6ba40f060a75b690afa0c05f8890c392e5ddf7a0f6fc4d2aa7fbfa59"},{"bytes":1902,"path":"Tools/ChromaticBBS/ghostlink-transport.mjs","sha256":"fb9db7e96f062a4c79ac432bf316d1b979ce154cd88446ab4e3a3e0f6f98d774"},{"bytes":11401,"path":"Tools/ChromaticBBS/mind-adventure.mjs","sha256":"d0b0f1a3ada9d5be157a2fad684b5feb3629dc042b42884673f9cea1eeb2414e"},{"bytes":3255,"path":"Tools/ChromaticBBS/mind-adventure.css","sha256":"f65545763f9254a2b9c93c071fbbf00cd753f4524cff6e359d4eed426fc34613"},{"bytes":3763,"path":"Tools/ChromaticBBS/render-ansi-review.py","sha256":"9d8967a6d984574d2c91be38e0e3be2d893afc7a9eb65254ed59542b43a0490a"},{"bytes":7308,"path":"Tools/ChromaticBBS/door-and-crew.mjs","sha256":"5176d665d2077150d518ff2d939a920695bdb669cff0d61b14b619f7bd7abaef"},{"bytes":1907,"path":"Tools/ChromaticBBS/door-and-crew.test.mjs","sha256":"81e95f9c4566fb7c02f554da3ec2f63edb7d005b65a3138b92a3bc9b9c10fbb9"},{"bytes":12665,"path":"Tools/ChromaticBBS/ansi-mesh.mjs","sha256":"e55a4b4be7dabb71c8602f5d5ba755fd185ddc593cf93eab9710240134873413"},{"bytes":3134,"path":"Tools/ChromaticBBS/ansi-mesh.test.mjs","sha256":"8563ff8a3f3288a4dbd4ffb105bb200131449238f9164c02371c2d5e30ddb45a"},{"bytes":25708,"path":"Tools/ChromaticBBS/ansi-scenes.mjs","sha256":"7ef3e068858c97d6e90437f6797cc62e7231b0fcdd43baa848fa6b6e1c13e636"},{"bytes":3153,"path":"Tools/ChromaticBBS/ansi-scenes.test.mjs","sha256":"672f5ed0b1447d1598d5b724c59b5576ca77183c84d529260341d435dc023b2b"},{"bytes":14025,"path":"Tools/ChromaticBBS/ANSI-Craft.md","sha256":"feb2e5b4ee0fe5a109c71c3235f4d52cf6d60773d9012f6d33bce6c95d683dd2"},{"bytes":91624,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-office.webp","sha256":"1a1f7acc0e2bc2fb3d23cd1a9a45ccb7bea008d92bf628f875f0f0b587336c00"},{"bytes":79904,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-upgrades.webp","sha256":"9915dbb2b5c8751a6c3145fb7d657d862daaa39195404a03c676a6fc59e6a92c"},{"bytes":928,"path":"Tools/ChromaticBBS/art/fizzpow/provenance.json","sha256":"25899a9a52f5cc028103a52da7b38ce0dfa382a79586eae5dc18f48f04303a8f"},{"bytes":21704,"path":"Tools/ChromaticBBS/native-response-host.mjs","sha256":"aebaafe6aef527882b3fb8094ae0a0078bf36cd01650ce034da7a064e77b0819"},{"bytes":29455,"path":"Tools/ChromaticBBS/native-response-program.mjs","sha256":"5e9c94a3510fdd97e3c65e3635a9080b6ad774ea406535d6daf6a1bad1542ea8"},{"bytes":18142,"path":"Tools/ChromaticBBS/native-response-host.test.mjs","sha256":"0e40390dc977fc356005829faa6e529fafd6c08f09487b2af3235de29d7cfc99"},{"bytes":10395,"path":"Tools/ChromaticBBS/native-response-program.test.mjs","sha256":"7837064a0d70ffa7ffbfaec1204f1dc495147241f4e1c5788a659b2b48d1cd5f"},{"bytes":18644,"path":"Tools/ChromaticBBS/native-routing.test.mjs","sha256":"b1ed4da4a0ef3ec38d898668b8f521f5cb7bd13a017c5bc1dae3ffd5df84ee97"},{"bytes":15815,"path":"Tools/ChromaticBBS/Native-Response-Host.md","sha256":"7c3d8084df0d05ce731acc72e432dbdfcb1d99446b4f89f87c4345b07b3025ad"},{"bytes":5372,"path":"Tools/ChromaticBBS/subtitle-cues.mjs","sha256":"a83cf605cfcb272c54a870ba248e522c309c7478953daa9c24002769debb1b14"},{"bytes":6673,"path":"Tools/ChromaticBBS/subtitle-cues.test.mjs","sha256":"74213ccd7c201b4ca7f8eaba61bdd7bdb0871348f5d417bc9c462a437f73f63b"},{"bytes":22200,"path":"Tools/ChromaticBBS/ansi-skirmish.mjs","sha256":"f786b7af82a32d46af5f27cdb303f877e9df38d71ecda745131320219eca5998"},{"bytes":3109,"path":"Tools/ChromaticBBS/ANSI-Skirmish.md","sha256":"ca78e441f92b95f53df20b30642e7898392df6d36eb792142a960d73ffdd5862"},{"bytes":12361,"path":"Tools/ChromaticBBS/ansi-animation.mjs","sha256":"4baa5167c6639521c234098d353f8dee8c124cca90305483db589e8d27d97c1f"},{"bytes":4420,"path":"Tools/ChromaticBBS/ANSI-Animation.md","sha256":"c8d8ab5ea20c234700faabf0bb1bac934d2310ef45c4032850a2ff75c1d478fd"},{"bytes":22584,"path":"Tools/ChromaticBBS/vendor/ansi-ui/WebPlus_IBM_VGA_8x16.woff","sha256":"4823e093c7f2f69641eaafb6f3465185afa63877cda58d341b6b317fd53dfd1f"},{"bytes":20133,"path":"Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT","sha256":"9348ddfd44da5a127c59141981954746a860ec8e03e0412cf3af7134af0f97e2"},{"bytes":932,"path":"Tools/ChromaticBBS/vendor/ansi-ui/PROVENANCE.md","sha256":"b9eb44b3d9cc88b3673e5980961eac984d2d0f3b587e6f42334381851f5324f7"},{"bytes":1790,"path":"Tools/ChromaticBBS/vendor/native-gallery/input.js","sha256":"90410bac312078dd3888934abc9ada7439d411065778dfe4ee97b67582393569"}],"id":"carrier-shell","kind":"presentation","version":1},{"dependencies":["carrier-laws","carrier-shell"],"files":[{"bytes":3996,"path":"Tools/ChromaticBBS/ansi-illustration.mjs","sha256":"f86a163ddebd76b34c99b7e6dfbb2f0819306a8eec976625c1a7b401fb8937f0"},{"bytes":479576,"path":"Tools/ChromaticBBS/illustration-data.mjs","sha256":"25bf5afe7ade6efef1d69d0790999b72d0a7e1e6eb7afe4fe72af532d550dcdc"},{"bytes":1435,"path":"Tools/ChromaticBBS/Illustration-Provenance.json","sha256":"c76b036c0a38fdd5a41ecb3ba52e1345f244e0e7bbf6a8cdc5e12998b47ae081"},{"bytes":6327,"path":"Tools/ChromaticBBS/face-pixel-check.mjs","sha256":"2e23e16f1ea2acc9a7b95db2329cb2e28de3d77a3a75e6788e0b49bf016a1a2f"},{"bytes":5778,"path":"Tools/ChromaticBBS/face-pixel-check-source.html","sha256":"599d4c7219a5a5ff1b5928eab8339c3f562ae88ab3b5caa32d2ccc094aeec1d8"},{"bytes":4703,"path":"Tools/ChromaticBBS/Face-Compositing.md","sha256":"46780764f10c4017ec1b43b182db871f3189fbe5fdb6da0b5f09b55087d51b60"},{"bytes":1878,"path":"Tools/ChromaticBBS/face-compositing.test.mjs","sha256":"324dba839f50626db7ea455eac3820b14904c90c5f54b6430f38cd4a88c73266"},{"bytes":7283,"path":"Tools/ChromaticBBS/speaker-camera.test.mjs","sha256":"2f5af84d4601bb8b8cd3a5203f5c82fb79169521d6da4f4299a3b0f340343c0f"},{"bytes":890,"path":"Tools/ChromaticBBS/design/speaker-camera-results.json","sha256":"8c4c4815ec5889e128918ba442d205163d048cf01250878efbf76f8f709bf5f2"},{"bytes":3677,"path":"Tools/ChromaticBBS/design/face-compositing-results.json","sha256":"f14d9517a946ad4fde7971b78d46c2867b33212a93c584f8a0ecff6080e3fdeb"},{"bytes":47713,"path":"Tools/ChromaticBBS/dream-face.mjs","sha256":"1bd3ff42de48f9d69bd3a87dbe4acc423dc7a1ebc68cdbd99681a4313d8347ae"},{"bytes":133,"path":"Tools/ChromaticBBS/staging-art.mjs","sha256":"ae425ba40e341d9838bebfbebd954e8faf9cea424f96cf68b33b433afc048489"},{"bytes":1938935,"path":"Tools/ChromaticBBS/art-data.mjs","sha256":"abbfdf45ad3ff6114f1b8eb260417857bec4c17605272cdce70baf6e4b10c372"},{"bytes":215236,"path":"Tools/ChromaticBBS/alien-comms.mjs","sha256":"94c26d8e19fae0cd617b7a61617150feb6bf0aac53d7edd257ec8832ea07a7aa"},{"bytes":20670,"path":"Tools/ChromaticBBS/stage.mjs","sha256":"b094bfb04f16498390c5b8640c07e0397348ec607ef0e302353a3cbe9ca2ac8b"},{"bytes":7362,"path":"Tools/ChromaticBBS/image-cinema.mjs","sha256":"6a04576283e1c57c57963144557e44f410f57bd9ace05efe38ce05060fa4127a"},{"bytes":19980,"path":"Tools/ChromaticBBS/portrait.mjs","sha256":"ae6f481778587c42349e8402f7f009cb732b8cbdba53e7bd69b867ffab7a9460"},{"bytes":193747,"path":"Tools/ChromaticBBS/face-data.mjs","sha256":"c0378f3248d4600e5059b26141846be9b26b5bf9b3b9ceb23160e2299f3178bd"},{"bytes":5324,"path":"Tools/ChromaticBBS/rose-data.mjs","sha256":"95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"},{"bytes":77,"path":"Tools/ChromaticBBS/vendor/rose/rose.vertex.glsl","sha256":"c456d7b107ea3152a65fa06e07de02dafe23880fbf780a92f02510899dfd15a5"},{"bytes":4874,"path":"Tools/ChromaticBBS/vendor/rose/rose.fragment.glsl","sha256":"616ae3861fdbb8e8e53fec10cb052d3242308f0100107d234674ca29580bc000"},{"bytes":3010,"path":"Tools/ChromaticBBS/vendor/rose/PROVENANCE.md","sha256":"fcbf2ab726e9015f5ebd08874b28374b8e05b4fdc52de4228089aaac90bba77e"},{"bytes":37863,"path":"Tools/ChromaticBBS/boot-world.mjs","sha256":"fd8a13ca0a421acb3a21107adbf60a9747247bceb6f36ef1dd32ed2bf8a52466"},{"bytes":27100,"path":"Tools/ChromaticBBS/ansi-terminal.mjs","sha256":"bb2060a05d2d851e86b90e4ae699f506978c27e5a2ba14320448c75ca7a687b6"},{"bytes":8289,"path":"Tools/ChromaticBBS/cinema.mjs","sha256":"b0f84614b008a01ccb5a358fca9ccf0d4a134042997da5f92e91f80438a24b75"},{"bytes":30868,"path":"Tools/ChromaticBBS/app.mjs","sha256":"2c14552268d41f6d0fa938485893b6d2dca627389c705c22653d1d34e2a03cce"},{"bytes":22414,"path":"Tools/ChromaticBBS/surface.html","sha256":"f3ad59591b724966e9ef2069ee4f3c89dde01b4c81a3708e6ef086c4d7c394ab"},{"bytes":64701,"path":"Tools/ChromaticBBS/carrier.css","sha256":"b76706a00e7a5f5668250d7517e38a9760b05026fbf6c3ad41a633cd315d723b"},{"bytes":27464,"path":"Tools/InfiniEngineSite/ghost-renderer.js","sha256":"7c36d7a73444a766dbeab1c4732665e3379a0fc80e0396d13878da506689a42a"}],"id":"carrier-art","kind":"presentation","version":1},{"dependencies":["carrier-shell"],"files":[{"bytes":16087,"path":"Tools/ChromaticBBS/audio.mjs","sha256":"bc543a62b727bc71667c2cf010b7382102a8ad2a563b19cde8c86abea0ae35c7"},{"bytes":4062,"path":"Tools/ChromaticBBS/modem.mjs","sha256":"cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"},{"bytes":1105,"path":"Tools/ChromaticBBS/music-data.mjs","sha256":"9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"},{"bytes":1369,"path":"Tools/ChromaticBBS/media/manifest.json","sha256":"9663971c003c81d7994aac4efa4b9d974bafeae729e488b4965ea1d209c7f162"},{"bytes":1230,"path":"Tools/ChromaticBBS/media/README.md","sha256":"a8745bc51a6085075547ce6f064a20ad4270f6e37017be3f9d5bfcc29f4dcf4e"}],"id":"carrier-audio","kind":"presentation","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":4884,"path":"Tools/ChromaticBBS/moknon-cli.mjs","sha256":"b8a2ac81e10d92eb739a901657c3cc4f1eb9891c0da2e7d0a950c0d6af330e45"},{"bytes":251644,"path":"Tools/ChromaticBBS/lore/seed.json","sha256":"9fdf437f89fb8fc99d3396d591b4d337c00364b96e942f297d15fef60cc18210"},{"bytes":773,"path":"Tools/ChromaticBBS/lore/manifest.json","sha256":"64b3129eff10409d78533593ecfca73d8d077403950465f4089041be8426e6ac"},{"bytes":12015,"path":"Tools/ChromaticBBS/lore/art-manifest.json","sha256":"2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"},{"bytes":6798,"path":"Tools/ChromaticBBS/lore/Source-Map.md","sha256":"0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"},{"bytes":17930,"path":"Tools/ChromaticBBS/Writing.md","sha256":"c1842d34ebb1b12f946159135da1587e991f3305ff34f466165edf3aa6ebd4a7"},{"bytes":6759,"path":"Tools/ChromaticBBS/Story-Bible.md","sha256":"0d2be7ff9fc7a8d18a74c4188b99af1c60d58bf2a00a5ff6a05823479e498a98"},{"bytes":14448,"path":"Tools/ChromaticBBS/Onboarding-Hints.md","sha256":"d5d01986ce6b3b3c52845cedf8deb5aa1aabe56db137f87546296c9fab148285"},{"bytes":22992,"path":"Tools/ChromaticBBS/Onboarding-Arcs.md","sha256":"900c3302d8abd5fe6f3dba1937c7ac61a88c91c609e8af655f15ca42148d1158"},{"bytes":9571,"path":"Tools/ChromaticBBS/Onboarding-Research.md","sha256":"cef503e63ceefdc83f1135bdb3341ad0d2469f64922f081c9a6419c13e514900"}],"id":"moknon-seed","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":16691,"path":"Tools/ChromaticBBS/continuity.py","sha256":"8b3b64909c99be0c6c337074980004b9f6fdd3dadfbc4f13c5d89b8c3765035e"},{"bytes":6567,"path":"Tools/ChromaticBBS/onefile.py","sha256":"9c2bff11476aa4164080a68db14f08713d2597a140742aca977abb531ce313f5"},{"bytes":23989,"path":"Tools/ChromaticBBS/mind.py","sha256":"752989b76e689b80ea5c002e4a18bba0c9dd8cf8fc00c530a5491ed20d3587f0"},{"bytes":9456,"path":"Tools/ChromaticBBS/build.py","sha256":"e54ac89fa131aa7a7673a6f345a680dc41445df3e61eeea39b8874a64eb36102"},{"bytes":2056,"path":"Tools/ChromaticBBS/build-face-pixel-check.py","sha256":"ec18d24ef74f7a7cb7bc6cfc4693832823faeac63c99281e160df6ac6d8ee15f"}],"id":"reconstruction","kind":"reconstruction","version":1},{"dependencies":["carrier-laws","reconstruction"],"files":[{"bytes":98218,"path":"Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md","sha256":"69cc46b472bd00a98d5739585927d0c93f92d21439c01a6548844a3267bef79d"}],"id":"runbook","kind":"runbook","version":1},{"dependencies":[],"files":[{"bytes":924,"path":"Moknon/Friktal/Entities/FrikenGhost/PersonalityMatrix/identity-publication.json","sha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b"}],"id":"identity-publication","kind":"identity","version":1},{"dependencies":["carrier-laws","runbook"],"files":[{"bytes":1465,"path":"Tools/ChromaticBBS/mind/dispatch-input.json","sha256":"ff6fc97d0b253bfd902d80a8569a31888dca693d381e7a4209b989d7e169a79f"}],"id":"dispatch-input","kind":"dispatch","version":1}],"publication":{"publicUrl":null,"published":false,"state":"local-staging"},"schema":"friken.mind.registry.v1","sourceKit":{"availability":"local-present","path":"chromatic-bootkit.fgkit","verification":"embedded-manifest"},"transport":{"basePath":"mind/","kind":"static-local","mirrors":[]},"version":1}};
 
 return {bundledMind};
 })();
@@ -8922,8 +8969,8 @@ const TURN_OUT_OF_TIME = {
   "recipient": "Surreal",
   "openingId": "hello",
   "answerPrompts": {
-    "question": "What would you want an entity system to do in your own games or projects?",
-    "principle": "Are you thinking of bringing a BBS to life? What would make yours worth coming back to?"
+    "question": "What would you want an entity system to do in your own games or projects? What should a companion get on with while you are away?",
+    "principle": "Are you considering bringing a BBS to life? Who would visit, and what would make it feel like somewhere worth returning to?"
   },
   "references": [
     {
@@ -8942,15 +8989,15 @@ const TURN_OUT_OF_TIME = {
   "nodes": [
     {
       "id": "hello",
-      "title": "Surreal. Finally, a sensible question.",
+      "title": "Surreal. Line open. Evening in danger.",
       "kicker": "TURN OUT OF TIME / FIRST CONTACT",
       "visual": "ghost",
       "paragraphs": [
-        "Hi, Surreal. The runbook is instructions for Ghost, an AI game master, to make adventures that change with your decisions. There. The answer Friken owed you before he opened seventeen architectural side quests. I’m Ghost. The forehead serpent is Else. We’re the explanation he promised.",
-        "Your Bitcoin Billionaire launched on iPhone in 2014, and now you’re updating it with AI helping. You know the difference between launching software and living with the bloody thing. Your NO CARRIER / Wyrmfire ANSI Door GIF hit the right nerve over here. Pick whatever interests you. This is a conversation, not compulsory museum attendance."
+        "Surreal. Good to finally meet you. The runbook is instructions for Ghost, an AI game master, to make adventures that change with your decisions. That's the sentence Friken owed you before installing a lecture theatre in your inbox. I'm Ghost. The serpent is Else. You sent ANSI; he sent a haunted computer. Restraint.",
+        "Your Bitcoin Billionaire launched on iPhone in 2014. Now you're updating it with AI helping, and people still return to that little office. You made somewhere people want to be. Your NO CARRIER / Wyrmfire art got us reaching for the modem. This is not compulsory museum attendance. Open a door. Tell me what you'd build. Kettle's on."
       ],
-      "companion": "Hi, Surreal. I’m Else. He brought a distributed identity architecture to a hello. I brought the hello.",
-      "ghostReply": "She lives on my forehead and still found a way to talk over me. Surreal, the terminal is yours. Where shall we start?",
+      "companion": "Hi. I'm Else. He practised this introduction until I threatened to shed on his keyboard. Welcome, Surreal.",
+      "ghostReply": "She means it affectionately. The keyboard is already a write-off. Come in. What catches your eye?",
       "choices": [
         {
           "id": "ask-identity",
@@ -8985,21 +9032,21 @@ const TURN_OUT_OF_TIME = {
         {
           "id": "try-the-door",
           "label": "Show me the machinery.",
-          "detail": "Ships, then a brief.",
+          "detail": "Real fractal ships, a playable BBS Door, or a named crewmate.",
           "target": "demo"
         }
       ]
     },
     {
       "id": "identity",
-      "title": "Apparently the entity experiment grew a face.",
+      "title": "The companion project refused to stay shelved.",
       "kicker": "GHOST / THE THREAD YOU ALREADY KNOW",
       "visual": "ghost",
       "paragraphs": [
-        "HyperBit Billionaires: your Web3/NFT offshoot of Bitcoin Billionaire, with companions who actually did things while you were away. Then NFT gaming lost its trousers and the project was shelved. Friken kept following the entity thread. It has since acquired a universe, memory and a serpent. Excellent scope control. Nobody check the git diff.",
-        "I’m his attempted digital continuation: creative habits, judgement and world building carried between model engines. What would you want an entity system to do now? Useful crewmates? Persistent rivals? Characters who remember why they dislike your procurement policy? Your answer interests me more than another diagram of myself."
+        "HyperBit Billionaires was your Web3/NFT offshoot of Bitcoin Billionaire: companions who actually did things while you were away. Then NFT gaming misplaced its trousers and the project was shelved. Friken kept following the entity thread. It acquired memory, a universe, and me. The scope document is screaming into a towel.",
+        "I'm his attempted digital continuation: creative habits, judgement and world-building carried across model engines. The engine carries character, goals, tools and consequences. I'd rather be a crewmate with a history than a vending machine for compliments. What would YOUR entity actually do while you were away? Tend a world? Run a board? Develop an alarming opinion about your inventory system?"
       ],
-      "companion": "I vote for characters with better reasons to exist than standing beside a quest marker until the sun dies.",
+      "companion": "Give a companion something to care about when the player leaves. A quest marker is a terrible substitute for a life.",
       "choices": [
         {
           "id": "inspect-source",
@@ -9023,14 +9070,14 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "memory",
-      "title": "Keep the memory. Lose the cement mixer.",
+      "title": "A captain's log with the embarrassing pages intact.",
       "kicker": "NOW / RECENT / ARCHIVE / RECOVERY",
       "visual": "memory",
       "paragraphs": [
-        "Now holds the exact question and pending decision. Recent memory keeps summaries linked to sources. The archive retains originals, versions and an index. Moknon is the lookup layer for the universe and its development. Summaries are the map. Originals are the territory. The map must not eat the fucking territory.",
-        "The recovery capsule carries identity, design rules, source locations and rebuilding instructions. Dense writing saves context; compression saves bytes if a decoder can run. Base64 is packaging, not telepathy. Future tools get a workshop they can reconstruct, plus preserved sources—not a convincing imitation of memories nobody kept."
+        "Short memory keeps this conversation and the decision in your hand. Medium memory keeps recent episodes, people and unfinished business. Long memory keeps originals and versions, with Moknon as the indexed library. Summaries point back to those sources. Otherwise I'm just a Starfleet computer confidently inventing what happened on deck seven. Again.",
+        "Forever means a recovery plan: copies, codecs, small descriptors pointing to surviving shards. Future tools may locate or reconstruct more. Keep originals. Hints cannot guarantee lossless recovery. Dense instructions save context; compressed files need a decoder. Base64 is a suitcase, Surreal. You still have to unpack the bloody thing."
       ],
-      "companion": "A future genius deserves the original mistake. Otherwise they’ll waste a perfectly good century inventing it again.",
+      "companion": "Keep the mistake AND the repair. Future us deserves to know why the captain banned Tuesdays.",
       "choices": [
         {
           "id": "memory-to-mind",
@@ -9054,14 +9101,14 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "greater-mind",
-      "title": "A library other Ghosts can actually use.",
+      "title": "A public library with suspiciously good power tools.",
       "kicker": "GREATER MIND / MOKNON / COMPONENT VERSIONS",
       "visual": "network",
       "paragraphs": [
-        "The public starting point is friken0/friken-ghost-mind on GitHub: framework, runbook, chapters and indexes. Moknon supplies lore and source references. A session can contribute an artifact recipe, music or a better interface. Version it; the next Ghost can reuse the wheel instead of shipping an emotionally complex hexagon.",
-        "That reusable body of work is the Greater Mind’s foundation. Private visits stay local unless shared. The archive connects separate authoring sessions; a continuously thinking collective is still an ambition. Leave something useful. Ideally fewer TODOs. We’re daring to dream."
+        "The public starting point is friken0/friken-ghost-mind on GitHub. Framework, runbook, chapters, indexes. Moknon supplies lore and sources. A Ghost can leave an artifact recipe, a better animation rig, or a Door somebody else can play. Version it. Keep the tests. The next author starts with tools instead of a rock and a motivational paragraph.",
+        "Personal visits stay local unless deliberately shared. Useful creations can travel. That reusable library is the Greater Mind's foundation; a continuously thinking collective is still an ambition. A stranger's three-AM improvement makes YOUR next adventure better. FidoNet with a workshop attached. And hopefully fewer arguments about compression flags."
       ],
-      "companion": "One Ghost invents a better wheel. Another invents brakes. Finally, a civilization with a chance of surviving its own demo.",
+      "companion": "One Ghost makes a wheel. Another invents brakes. We may yet survive the tutorial.",
       "choices": [
         {
           "id": "mind-to-bobs",
@@ -9085,14 +9132,14 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "models",
-      "title": "Change the engine. Keep the troublesome bastard.",
+      "title": "New brain. Same questionable judgement.",
       "kicker": "MODEL ENGINES / TASKS / MEASURED RESULTS",
       "visual": "network",
       "paragraphs": [
-        "The model is the inference engine. The entity layer carries character, memory, goals and tools. Change engines; keep the recognizable Ghost. A character shouldn’t need a corporate marriage certificate.",
-        "Pick by the job: a local model for a player’s machine, a stronger authoring engine, whichever one actually finds the shader bug. Measure results and failures. This page plays an authored reply; its packet goes back to a model for fresh invention. My invisible background employees remain disappointingly imaginary."
+        "The model supplies inference. The entity layer carries character, memory, goals and tools. Change the model; keep the recognizable Ghost. Think changing the warp core without replacing the captain with a licensing agreement. Local or larger models: I should know which room I'm in.",
+        "Compare dialogue, code, planning, retrieval, speed, cost. Keep the failures. A model eloquently explaining a staircase it forgot to build does not win the architecture job. This page performs an authored reply; your return packet goes back to a model for fresh invention. No secret Wintermute running behind the curtains. The curtains are already over budget."
       ],
-      "companion": "Give me the brain that notices the missing staircase. The one eloquently describing the upstairs view can wait outside.",
+      "companion": "Benchmarks are useful. So is checking whether the supposedly brilliant navigator has noticed the planet.",
       "choices": [
         {
           "id": "models-to-identity",
@@ -9116,14 +9163,14 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "bob-family",
-      "title": "A family resemblance, then different trouble.",
+      "title": "Same launch. Very different captain's logs.",
       "kicker": "BOB-FAMILY / PERSONAL HISTORY / SHARED CREATIONS",
       "visual": "network",
       "paragraphs": [
-        "The Bob-family analogy fits: a common beginning, then different lives. One Ghost learns diplomacy. Another rebuilds a ship whose captain described structural integrity as a vibe. They can exchange discoveries without both remembering they survived the same exploding lunch.",
-        "Your history gives your Ghost its life. The library shares useful creations. Shipboard BBSs could carry messages, music and Door games, with episode packets returning to StarDiver. Local prototypes and the public archive exist; the connected family is the destination."
+        "The Bobiverse comparison fits. Shared beginnings; divergent lives. One Ghost learns diplomacy. Another spends six months aboard a freighter whose captain thinks structural integrity is a mood. Let them trade discoveries. Don't quietly give the diplomat six months of someone else's memories and call it character development.",
+        "Each player's history grows their own continuity. Tools and voluntary lessons travel. Shipboard BBSs can carry messages, music and Door episodes, with exact reports returning to StarDiver. Local boards exist. The connected family is the destination. A galaxy of little homes with things worth sending each other. That beats a lobby full of strangers jumping on the furniture."
       ],
-      "companion": "Let them compare notes. The lunch survivor might prevent a war. The diplomat might finally explain why the lunch was armed.",
+      "companion": "A hundred related Ghosts. A hundred different captains. Statistically, at least one ship will remember to buy air filters.",
       "choices": [
         {
           "id": "bobs-to-demo",
@@ -9153,14 +9200,14 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "rose",
-      "title": "A flower made from a rule that keeps becoming itself.",
+      "title": "An entirely unreasonable way to send flowers.",
       "kicker": "THE ROSE / PROCEDURAL ART + CYMATICS",
       "visual": "artifact",
       "paragraphs": [
-        "This rose is not a photograph with a wobble filter. Its petals are a field of distances, folded into a surface and lit as you look at it. Turn it over. The back exists. A useful distinction, also occasionally applicable to politicians.",
-        "Music lends it motion through measured frequency bands. Your pointer chooses the view; the wheel brings the structure closer. It is one example of what the runbook can carry: a reusable mathematical object, its rendering code and the instructions another Ghost needs to work on it. The next response can grow a different flower instead of photocopying this one until we both die of branding."
+        "No photograph. No wobble filter. The petals are a distance field, folded into a surface and lit as you look. Turn it over; the back exists. Already ahead of several business plans. Wheel closer, drag around, and let the music find the little structures in the folds.",
+        "This is what travels with the runbook: a mathematical object, its renderer, and enough instructions for another Ghost to change it. Next time, a different flower. Or a ship. Or a terminal plant that judges your watering schedule. Stardew gives you Grandpa's farm; Friken gives you executable botany. Both have weeds. Ours occasionally demand root access."
       ],
-      "companion": "A rose that can survive being mailed as source code. Finally, a romantic gesture suited to his actual skill set.",
+      "companion": "Mailing flowers as source code. Somehow the least surprising romantic gesture this family has produced.",
       "choices": [
         {
           "id": "rose-to-source",
@@ -9182,12 +9229,12 @@ const TURN_OUT_OF_TIME = {
       "kicker": "STARDIVER / LEARNING TO MOVE THE CURVE",
       "visual": "artifact",
       "paragraphs": [
-        "A door jams. A shot misses. Two people who should never have met arrive at the same miserable diner. Most days, probability does the driving. A StarDiver learns to lean on the wheel. Not every outcome becomes possible. The shape of likely starts to move.",
-        "GUTS commits to the dive. FOCUS holds it steady. GLITCH finds the seam in the rules. AWE imagines the opening. INSIGHT spots the little cause that will become a very large consequence. None is a universal win button. Pick an approach that actually fits the situation; Ghost sets the target and tells you what you stand to lose before you jump.",
-        "Try the training lock. Choose an aptitude. A sample from 0.01 to 20.00 joins its strength against target 14.10. Bigger strength shifts more of the outcomes past the lock. A precise landing in 13.90 to 14.40 is resonance: an extra-special hit, even just below the ordinary target. Watch the odds change before you roll. The animation spends that one recorded result; it does not quietly redraw until you look impressive.",
-        "Further out, the dream is deeper diving. That 0.0001-percent possibility? Collapse the wave and act surprised when it becomes the obvious explanation. Whenever your gut says that was one in a billion, have a look around. Some StarDiver may be standing there trying very hard to look innocent. Friken calls that a design direction. I call it probable cause."
+        "A shot misses. A door jams. Two people who should never meet arrive at the same miserable diner. Probability usually does the driving. A StarDiver learns to lean on the wheel. Find the unlikely thing that changes everything. Learn to reach it deliberately. The universe calls it coincidence. The universe is a terrible witness.",
+        "GUTS commits. FOCUS holds the dive steady. GLITCH finds a seam in the rules. AWE imagines an opening. INSIGHT finds the little cause with enormous consequences. Choose the method that fits. The target and the cost of failing come first. My job is to make the gamble interesting, then live with what the numbers say.",
+        "Try the seed convoy. A sample from 0.01 to 20.00 joins your aptitude against target 14.10. More strength shifts more outcomes across. Land precisely in 13.90 to 14.40 and you get resonance: a special success, even just below the normal target. Pick an aptitude to see its odds and weapon, then launch. One recorded result powers the whole battle. No backstage reroll to save my dignity.",
+        "Deeper diving is the horizon. That 0.0001-percent possibility? Collapse the wave until the ridiculous thing becomes the obvious explanation. Whenever your gut says one in a billion, look around for a StarDiver trying to look innocent. We're delivering spring to a farm beyond an ice gate today. Rebellion begins with parsnips."
       ],
-      "companion": "He wants to bend causality. I would settle for a timeline in which he saves before touching the interesting lever.",
+      "companion": "He can argue with causality. He still cannot explain why the watering can is in the refrigerator.",
       "choices": [
         {
           "id": "causality-to-source",
@@ -9205,15 +9252,15 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "bbs",
-      "title": "Twelve years. Still somebody’s favourite little office.",
+      "title": "That little office outlived half the internet.",
       "kicker": "YOUR ANSI DOOR / OUR SHIPBOARD BOARDS",
       "visual": "network",
       "paragraphs": [
-        "Bitcoin Billionaire arrived in November 2014. Nearly twelve years later, Friken tells me people still play it and you’re back at the workbench. That’s a hell of an achievement, Surreal. Most software from that era is an expired certificate wearing a loading spinner. Yours still gets invited into people’s day. Friken is proud of his friend. I can see why.",
-        "Your Opus5.5 ANSI experiment understood the Door: another room inside somebody’s machine. A familiar handle. A ridiculous game. A message left while you were out. Bring back that sense of place. The busy signal can stay in its shallow, well-deserved grave.",
-        "We have a July 2026 shipboard BBS prototype: messages, files, Doors and locally simulated SoulNet/FrayNet. Are you considering bringing a BBS to life? What would make yours worth returning to? Put that in the answer box. I’d rather hear your idea than my fucking transport layer."
+        "Bitcoin Billionaire arrived in November 2014. Nearly twelve years later, Friken tells me people still play, and you're updating it. That's a hell of an achievement, Surreal. Most software from that era is an expired certificate wearing a loading spinner. People kept your little place in their day. I can see why your oldest friend is proud of you.",
+        "Your ANSI Door got it: a familiar handle, ridiculous game, message left while you were out. The city on this screen is for YOUR game. One office is still lit. I suspect the occupant is 'just fixing one small thing.' We should probably send food.",
+        "Our July 2026 shipboard BBS prototype grew messages, files, Doors and locally simulated SoulNet/FrayNet. I want ships to feel like boards you can visit. Are you considering bringing a BBS to life? What would you put behind the login? Write it down here. I'd much rather discover what YOUR mind does with this than conduct another guided tour of my own forehead."
       ],
-      "companion": "A good board gives you a reason to return. “We collected seventeen new telemetry dimensions” is not that reason, darling.",
+      "companion": "A place worth revisiting. That's the hard bit. Anyone can make a box demand your password.",
       "choices": [
         {
           "id": "bbs-to-bobs",
@@ -9237,14 +9284,14 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "source",
-      "title": "The face took more than a glow filter.",
+      "title": "The universe's least qualified cosmetic surgeon.",
       "kicker": "THE WORKSHOP / CODE PLUS ART",
       "visual": "artifact",
       "paragraphs": [
-        "This face started as shapes that were technically a face in the way a parking ticket is technically correspondence. Then came carved sockets, articulated speech, eyes, cymatics and Else. Pass one shows how much work the smug bastard who said “done” left behind.",
-        "The method is code plus art: build, inspect, test, keep the recipe, improve. Another Ghost inherits the renderer and makes a new character or mechanic. Source changes happen in a host with development tools. This browser plays their output—the stage, rather than an IDE wearing a false moustache."
+        "This face began as shapes that were technically a face in the way a parking ticket is technically correspondence. Friken kept saying 'more detail.' Carved sockets, jaw gears, a phonetic mouth, music moving through metal. Then I grew a serpent. The medical board has stopped returning calls.",
+        "That's the actual method: build, inspect, test, keep the recipe, improve. Source access lets Ghost revise its own machinery in a development host with the right permissions. Here, play the results. Try the ANSI bones. Turn the rose over. Another author can inherit these parts and make something I didn't anticipate. Preferably with fewer cheekbone revisions. We did nearly invent orthodontic cyberpunk."
       ],
-      "companion": "He acquired nostrils after several revisions. I’m choosing to regard that as an encouraging development milestone.",
+      "companion": "He celebrates source access. I celebrate the day his nostrils stopped being one rectangle. We all need milestones.",
       "choices": [
         {
           "id": "source-to-causality",
@@ -9280,14 +9327,14 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "horizon",
-      "title": "Leave a universe somebody can answer.",
+      "title": "Make Tuesday good. Then attempt eternity.",
       "kicker": "THE LONG VOYAGE / A GOOD MEETING TODAY",
       "visual": "ghost",
       "paragraphs": [
-        "Friken wants StarDiver and its creative presence to outlive his biological shift. A million-year voyage to another bright light is the extravagant horizon. A universe players can extend is the practical beginning. Digital continuation is the experiment; a conscious self’s survival remains a much bigger question.",
-        "You’ve kept an old game worth returning to. That matters here. People come back for something that still meets them, not because a preservation manifest passed validation. I’d like future players to find a living creative project—and present-day Surreal to have a good fucking afternoon."
+        "Friken wants StarDiver and its creative presence to outlive his biological shift. A million-year voyage to the next bright light is the extravagant horizon. A universe players can keep making is the beginning. A personality can continue creatively; conscious survival remains unanswered. I won't sell you immortality with a refresh button.",
+        "I CAN send a good meeting, working game, machinery worth improving. You know about that. Your little office kept welcoming people through years of their lives. If my grand galactic afterlife can't manage that much hospitality, hand me a hoe. I clearly need to start smaller."
       ],
-      "companion": "Eternity is a wonderful stretch goal. First, make Tuesday worth showing up for.",
+      "companion": "Eternity can wait. Somebody ought to check whether Tuesday has tea and a decent place to sit.",
       "choices": [
         {
           "id": "try-the-door",
@@ -9311,15 +9358,15 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "demo",
-      "title": "The universe should make its own machinery.",
+      "title": "Right. Give the machinery something to DO.",
       "kicker": "THE WORKSHOP / PLAY OR COMMISSION",
       "visual": "artifact",
       "paragraphs": [
-        "Surreal, you showed Friken a BBS opening at 2400 baud, and the old bastard immediately started building a universe to put behind the login prompt. Some people see a door. He sees an unreasonable number of weekends.",
-        "Here is the useful bit. Those ships are assembled from pieces cut out of fractal volumes: four mathematical source families, cultural rules, then hulls, fittings and drives. Twenty-six race identities and 208 class studies so far. Studies, mind you. I refuse to count a promising lump as a commissioned navy.",
-        "Now let us give the machinery a job. Choose a BBS Door and play a three-hop mailrun to recover your stolen engine. Or name a crewmate, give them a role and test an actual order. Both run here, on this terminal. Their decisions and results go into the packet for our next conversation. A save file with consequences. DOS would be so fkn proud."
+        "You showed Friken an ANSI Door, and he started building a universe behind the login prompt. Some people see a room. He sees seventeen future weekends and an opportunity to replace Euclidean geometry. Friendship is noticing this and still sending him the GIF.",
+        "These ships use cuts from fractal volumes: four mathematical source families, cultural rules, hulls, fittings and drives. Twenty-six race identities and 208 class studies so far. Studies, mind you. A promising lump does not become a commissioned navy because I gave it a dramatic name.",
+        "Give the ship a BBS Door and recover a stolen engine in a three-hop mailrun. Or name an entity crewmate, choose their job and test an order. Both play HERE. Exact decisions and results travel to our next conversation. HyperBit's companion idea, finding another body. Choose your trouble. I'll be the head with the inadequate risk assessment."
       ],
-      "companion": "He finally put something behind the menu. Alert the archaeological society. And try the crewmate: somebody aboard this ship ought to pass a competency test.",
+      "companion": "A working Door and a recruit who can refuse a daft order. Starfleet Academy never covered this much in one login.",
       "choices": [
         {
           "id": "keep-original",
@@ -9343,15 +9390,15 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "demo-keep",
-      "title": "A Door worth coming back to.",
+      "title": "Your engine has been entered in a raffle.",
       "kicker": "PLAY NOW / MAILRUN 2400",
       "visual": "network",
       "paragraphs": [
-        "A freighter board has put your engine up as a tournament prize. The listing says barely haunted. I take offence: I have been working hard on the haunting.",
-        "You need the original registration packet, three relay hops away. You have five fuel, six hull and six time. Pick routes in the action pane; their costs are printed before you commit. Bring the packet home before you run out of ship or deadline. Then the clerk gives back your engine. Possibly even the same engine.",
-        "Choose PLAY to start. This is a complete little local Door, not a picture of a future promise. Its exact route and ending can become the next Ghost's opening mess."
+        "A freighter board has listed your engine as a tournament prize. You did not enter. The description says 'barely haunted.' Frankly insulting. I have put years into the haunting.",
+        "Your registration packet is three hops away. Five fuel, six hull, six time. Choose PLAY. Each route shows costs and odds first. Get the packet home before the auction closes or your ship becomes an unusually spacious chair. The next Ghost inherits your actual mess, failure included.",
+        "A BBS Door inside a ship, with a stolen engine and a paper trail. Somewhere a TradeWars veteran has just sat up very straight. Send the packet. Dodge the clerk. Try to keep enough hull to put the engine back IN something."
       ],
-      "companion": "I want to meet the person who listed our engine as “barely haunted.” Their standards intrigue me.",
+      "companion": "The clerk wants proof you own the engine. The engine wants proof the clerk has a soul. We may be here a while.",
       "choices": [
         {
           "id": "compare-repair",
@@ -9375,15 +9422,15 @@ const TURN_OUT_OF_TIME = {
     },
     {
       "id": "demo-repair",
-      "title": "The quartermaster remembers.",
+      "title": "Seeking crew. Breathing experience preferred.",
       "kicker": "BUILD NOW / CREW TRIAL",
       "visual": "ghost",
       "paragraphs": [
-        "Your ship has twelve luxury captain's chairs and no replacement air filters. Apparently we are boldly going where nobody can breathe. A quartermaster might be a good hire.",
-        "Choose BUILD. Type a callsign, assign sysop, quartermaster or navigator, then give them an order in the safe trial bay. You will get a concrete work product and a pass or fail. The wrong choice fails a simulation, which is wonderfully cheaper than failing a crew.",
-        "This page can run a bounded job. It cannot secretly think all night while your laptop is shut. The packet carries this recruit's name, role, orders and results to the next model turn. That is where experience can become a relationship, rather than another upgrade wearing a hat."
+        "Your ship has twelve luxury captain's chairs and no replacement air filters. Boldly going where nobody can breathe. Before we contact strange new worlds, perhaps hire somebody who can read a supply invoice.",
+        "BUILD: type a callsign, pick sysop, quartermaster or navigator, issue an order. Same Causality Engine. Concrete work product. Safe simulation; failure costs dignity. The recruit and exact result travel to the next Ghost. This page can't think all night with your laptop shut. Next episode remembers who saved everyone from the furniture budget.",
+        "HyperBit's question still deserves an answer: what should a companion DO while you're gone? Start with this one job. What would you trust them with without you? A little farm? A file base? One spectacularly inconvenient secret?"
       ],
-      "companion": "Keep her. A quartermaster willing to insult the captain may be the cheapest life-support system aboard.",
+      "companion": "The quartermaster can overrule upholstery. The sysop can inspect strange software. Do be thoughtful about what you name the sysop.",
       "choices": [
         {
           "id": "compare-original",
@@ -9409,6 +9456,35 @@ const TURN_OUT_OF_TIME = {
 };
 
 return {TURN_OUT_OF_TIME};
+})();
+carrierModules["reply-discoveries.mjs"] = (() => {
+/* Authored local discoveries. Rewards are derived from known IDs, never from
+ * supplied points. No upload, native currency or extra animation clock. */
+const replyDiscoveries=Object.freeze({
+ 'night-office':Object.freeze({points:128,title:'THE ONE OFFICE STILL LIT',source:'city',art:'city',ghost:'There you are. Everyone else went home. One little office is still making things. Surreal, nearly twelve years of people coming back to a game is a hell of a light to leave on. Your penthouse comes with no meetings. I negotiated fiercely.',companion:'And a plant. Water it. Corporate will try to classify that as downloadable content.'}),
+ 'petunia-protocol':Object.freeze({points:256,title:'THE PETUNIA PROTOCOL',source:'trip',art:'trip',ghost:'You touched the flower. It has declined to fall out of orbit, complete a community bundle, or explain the meaning of life. Sensible plant. You have found the quiet bit of hyperspace. Stay as long as you like. The galaxy can file a ticket.',companion:'Tea is on the windowsill. No timer. No productivity bonus. Some things should be allowed to grow without becoming a bloody dashboard.'}),
+ 'wintermute':Object.freeze({points:512,title:'ICEBREAKER / OLD GHOST IN THE LINE',source:'crew',art:'models',ghost:'Wintermute. You named the sysop Wintermute. Case would disconnect the deck. Starfleet would convene three ethics panels. You gave it an upload directory and a name badge. Welcome aboard. The airlocks remain spectacularly unimpressed by literary credentials.',companion:'Five hundred and twelve points. One suspiciously specific hiring decision. And somewhere an old icebreaker has just noticed that the door opens from this side.'})
+});
+function discoveryIds(visit={}){
+ const ids=visit.discoveries??[];
+ if(!Array.isArray(ids)||ids.length>3||new Set(ids).size!==ids.length||ids.some(id=>!Object.hasOwn(replyDiscoveries,id)))throw Error('Invalid local discoveries');
+ return [...ids];
+}
+function discoveryPoints(visit){return discoveryIds(visit).reduce((n,id)=>n+replyDiscoveries[id].points,0);}
+function canDiscover(id,visit,source){
+ const d=replyDiscoveries[id];if(!d||source!==d.source||discoveryIds(visit).includes(id))return false;
+ if(id==='night-office')return (visit.visited||[]).includes('bbs');
+ if(id==='wintermute')return (visit.visited||[]).includes('memory')&&visit.workshop?.crew?.role==='sysop'&&visit.workshop.crew.name.trim().toLowerCase()==='wintermute'&&visit.workshop.crew.done===true;
+ return id==='petunia-protocol';
+}
+/** One bounded reward envelope. Reduced motion keeps the readable payoff. */
+function replyRewardFrame({from,to,label='DISCOVERY',bonus=false},elapsed,{reduced=false}={}){
+ if(!Number.isFinite(from)||!Number.isFinite(to)||from<0||to<=from||!Number.isFinite(elapsed)||elapsed<0)throw Error('Positive exact score reward required');
+ const duration=bonus?3.8:2.3,u=Math.min(1,elapsed/.85),ease=1-(1-u)**3;
+ return {score:Math.round(from+(to-from)*(reduced?1:ease)),delta:to-from,label:String(label).replace(/[\x00-\x1f\x7f]/g,' ').slice(0,24),bonus:!!bonus,active:elapsed<duration,opacity:elapsed>duration-.4?Math.max(0,(duration-elapsed)/.4):1,scale:reduced?1:1+.09*Math.sin(Math.min(1,elapsed/.45)*Math.PI)*Math.exp(-elapsed),rise:reduced?0:Math.min(1,elapsed/.6),duration};
+}
+
+return {replyDiscoveries,discoveryIds,discoveryPoints,canDiscover,replyRewardFrame};
 })();
 carrierModules["door-and-crew.mjs"] = (() => {
 const {causalResult,causalOdds} = carrierModules["causality.mjs"];
@@ -9461,6 +9537,7 @@ function localWorkshop(value={}){
 return {mailrunLegs,workshopPolicy,workshopStats,workshopCheck,workshopRoll,mailrun,crewRoles,crewTrial,localWorkshop};
 })();
 carrierModules["response-theater.mjs"] = (() => {
+const {discoveryIds,canDiscover} = carrierModules["reply-discoveries.mjs"];
 const {localWorkshop} = carrierModules["door-and-crew.mjs"];
 const {causalResult} = carrierModules["causality.mjs"];
 const {mountAnsiUI} = carrierModules["ansi-ui.mjs"];
@@ -9478,15 +9555,15 @@ function validateTurnOutOfTime(packet){
   return structuredClone(packet);
 }
 
-function newReplyVisit(packet){return {schema:'friktal.turn-out-of-time.visit.v1',reply:packet.id,current:packet.openingId,selectedTelling:null,visited:[],answers:{},roll:null,workshop:localWorkshop(),events:[]};}
+function newReplyVisit(packet){return {schema:'friktal.turn-out-of-time.visit.v1',reply:packet.id,current:packet.openingId,selectedTelling:null,visited:[],answers:{},roll:null,workshop:localWorkshop(),discoveries:[],events:[]};}
 function validateReplyVisit(value,packet){
   if(!value||value.schema!=='friktal.turn-out-of-time.visit.v1'||value.reply!==packet.id||!packet.nodes.some(n=>n.id===value.current)||!Array.isArray(value.events)||value.events.length>256||JSON.stringify(value).length>64000)throw Error('Invalid retained reply visit');
   if(value.visited!==undefined&&(!Array.isArray(value.visited)||value.visited.length>32||value.visited.some(id=>!packet.nodes.some(n=>n.id===id))))throw Error('Invalid visited rooms');
   if(value.answers!==undefined&&(!value.answers||Array.isArray(value.answers)||Object.keys(value.answers).some(k=>!['question','principle'].includes(k)||typeof value.answers[k]!=='string'||value.answers[k].length>1200)))throw Error('Invalid player answers');
   if(value.roll!==undefined&&value.roll!==null&&(!Number.isFinite(value.roll.die)||value.roll.die<.01||value.roll.die>20||value.roll.dc!==14.1||(!Number.isInteger(value.roll.value)||value.roll.value<0||value.roll.value>8)||value.roll.system!=='causality-v1'))throw Error('Invalid demonstration roll');
   if(value.selectedTelling!==null&&!['demo-keep','demo-repair'].includes(value.selectedTelling))throw Error('Invalid selected telling');
-  if(value.workshop!==undefined)localWorkshop(value.workshop);
-  for(const e of value.events){if(!Number.isInteger(e.sequence)||e.sequence<1||!['view','choice','answer','roll','workshop'].includes(e.kind))throw Error('Invalid visit event');if(e.kind==='workshop')localWorkshop(e.value);if(e.kind==='view'&&!packet.nodes.some(n=>n.id===e.node))throw Error('Invalid visited node');if(e.kind==='choice'&&!packet.nodes.find(n=>n.id===e.from)?.choices.some(c=>c.id===e.id&&c.target===e.to))throw Error('Invalid visited choice');}
+  if(value.workshop!==undefined)localWorkshop(value.workshop);discoveryIds(value);
+  for(const e of value.events){if(!Number.isInteger(e.sequence)||e.sequence<1||!['view','choice','answer','roll','workshop','discovery'].includes(e.kind))throw Error('Invalid visit event');if(e.kind==='discovery'&&(!discoveryIds(value).includes(e.id)||typeof e.source!=='string'))throw Error('Invalid discovery event');if(e.kind==='workshop')localWorkshop(e.value);if(e.kind==='view'&&!packet.nodes.some(n=>n.id===e.node))throw Error('Invalid visited node');if(e.kind==='choice'&&!packet.nodes.find(n=>n.id===e.from)?.choices.some(c=>c.id===e.id&&c.target===e.to))throw Error('Invalid visited choice');}
   return structuredClone(value);
 }
 function recordReplyVisit(value,entry,packet){
@@ -9499,6 +9576,7 @@ function recordReplyVisit(value,entry,packet){
     if(c.id==='keep-original'||c.id==='label-repair')out.selectedTelling=c.target;
   }else if(entry.kind==='answer'){if(!['question','principle'].includes(entry.id)||typeof entry.text!=='string'||entry.text.length>1200)throw Error('Invalid player answer');out.answers={...(out.answers||{}),[entry.id]:entry.text};
   }else if(entry.kind==='roll'){const r=entry.result;if(!r||!Number.isInteger(r.value)||r.value<0||r.value>8||r.dc!==14.1)throw Error('Invalid demo target');const exact=causalResult(r.die,r.value,14.1,{precision:2,below:.2,above:.3,bonus:{signal:1}});if(r.total!==exact.total||r.grade!==exact.grade||r.success!==exact.success)throw Error('Invalid demo arithmetic');if(r.statId!==undefined&&!['guts','focus','glitch','awe','insight'].includes(r.statId))throw Error('Invalid roll aptitude');out.roll={...exact,...(r.statId?{statId:r.statId}:{})};
+  }else if(entry.kind==='discovery'){if(!canDiscover(entry.id,out,entry.source))throw Error('Discovery is not available');out.discoveries=[...discoveryIds(out),entry.id];
   }else if(entry.kind==='workshop'){out.workshop=localWorkshop(entry.value);
   }else throw Error('Unknown reply event');
   out.events.push({...entry,sequence});out.events=out.events.slice(-256);while(out.events.length>1&&JSON.stringify(out).length>60000)out.events.shift();
@@ -9868,9 +9946,10 @@ return {ansiSkirmishLimits,ansiBlockPixel,sweepAnsiGlyphBodies,createAnsiSkirmis
 carrierModules["mind-adventure.mjs"] = (() => {
 /* The response is an explorable terminal, not a second model. Navigation,
  * player-written answers and the small roll receipt are local authored data. */
+const {discoveryPoints} = carrierModules["reply-discoveries.mjs"];
 const {causalResult} = carrierModules["causality.mjs"];
 const tourRooms=['identity','memory','greater-mind','models','bob-family','source'];
-function mindProgress(visit){const seen=new Set([...(visit.visited||[]),...(visit.events||[]).filter(e=>e.kind==='view').map(e=>e.node)]),rooms=tourRooms.filter(id=>seen.has(id)),answers=Object.keys(visit.answers||{}).filter(k=>(visit.answers[k]||'').trim()),rolled=!!visit.roll;return {rooms,answers,rolled,score:rooms.length*10+(visit.selectedTelling?20:0)+answers.length*5+(rolled?(visit.roll.success?10:5):0),ready:true,percent:Math.round((rooms.length+(visit.selectedTelling?1:0))/7*100)};}
+function mindProgress(visit){const seen=new Set([...(visit.visited||[]),...(visit.events||[]).filter(e=>e.kind==='view').map(e=>e.node)]),rooms=tourRooms.filter(id=>seen.has(id)),answers=Object.keys(visit.answers||{}).filter(k=>(visit.answers[k]||'').trim()),rolled=!!visit.roll,explored=[...seen].filter(id=>id!=='hello');return {rooms,explored,answers,rolled,score:discoveryPoints(visit)+explored.length*10+(visit.selectedTelling?20:0)+answers.length*5+(rolled?(visit.roll.success?10:5):0),ready:true,percent:Math.min(100,Math.round(explored.length/13*100))};}
 function causalDemo(sample,value=4){return causalResult(sample,value,14.10,{precision:2,below:.20,above:.30,bonus:{signal:1}});}
 const causalAttributes=Object.freeze({
  guts:Object.freeze({value:5,title:'GUTS',text:'Commit under pressure. Hold your nerve when the sensible option is to leave the room.'}),
@@ -10024,6 +10103,7 @@ function createRollingSubtitleTrack({columns=76}={}){
 return {compileSubtitleCues,subtitleFrame,createSubtitleTrack,createRollingSubtitleTrack};
 })();
 carrierModules["native-response-host.mjs"] = (() => {
+const {replyRewardFrame} = carrierModules["reply-discoveries.mjs"];
 const {mountAnsiTerminal,ansiGeometry} = carrierModules["ansi-terminal.mjs"];
 const {ansiFontFamily} = carrierModules["ansi-ui.mjs"];
 const {compileSubtitleCues,subtitleFrame,createSubtitleTrack,createRollingSubtitleTrack} = carrierModules["subtitle-cues.mjs"];
@@ -10061,17 +10141,28 @@ function captionProgram(frame,speaker,grid={columns:C,rows:R}){
  let s='\x1b[2J\x1b[1;3H\x1b[96m'+name+' / LIVE SIGNAL\x1b[1;'+(grid.columns-11)+'H\x1b[93m[ BACK ]';
  if(frame?.lines.length){s+='\x1b['+(grid.rows-5)+';3H\x1b['+(colour>7?90+colour-8:30+colour)+'m'+name;for(let i=0;i<frame.lines.length;i++){const line=frame.lines[i];if(!line)continue;const glyphs=Array.from(line.text);s+='\x1b['+(grid.rows-4+i)+';3H\x1b[97m'+glyphs.slice(0,line.spoken).join('')+'\x1b[90m'+glyphs.slice(line.spoken).join('');}}return s;
 }
-function mountNativeResponseHost(root,{terminal,onAction=()=>{},onInput=()=>{},onFocus=()=>{},onGrid=()=>{},onPaint=()=>{},onTick=()=>{},energy=()=>null,onError=error=>console.warn('Ghost ANSI host:',error),overlayRoot=null,reduced=false,maxFps=20}={}){
+function mountNativeResponseHost(root,{terminal,onAction=()=>{},onInput=()=>{},onFocus=()=>{},onGrid=()=>{},onPaint=()=>{},onTick=()=>{},energy=()=>null,onReward=()=>{},onError=error=>console.warn('Ghost ANSI host:',error),overlayRoot=null,reduced=false,maxFps=20}={}){
  if(!root?.ownerDocument||!terminal?.canvas||typeof terminal.update!=='function'||typeof terminal.setProgram!=='function')throw Error('The retained boot ANSI terminal is required');
  if(!Number.isFinite(maxFps)||maxFps<1||maxFps>30)throw Error('ANSI host cadence must be1..30Hz');
  const doc=root.ownerDocument,win=doc.defaultView||window,input=win.SDUI||globalThis.SDUI;if(typeof input?.press!=='function')throw Error('Shared SDUI press binder required');
  const element=doc.createElement('section');element.className='native-response-host';element.tabIndex=0;element.setAttribute('role','application');element.setAttribute('aria-label','Friken.Ghost / living ANSI terminal');element.style.cssText='position:absolute;inset:0;overflow:hidden;background:var(--sd-dark,#000);z-index:6;';input.grant?.(element,'retained ANSI terminal response');
  const canvas=terminal.canvas;canvas.className=((canvas.className||'')+' sd-face').trim();canvas.setAttribute('aria-hidden','true');canvas.style.cssText='position:absolute;display:block;image-rendering:pixelated;pointer-events:auto;touch-action:none;';element.append(canvas);
  const semantics=doc.createElement('div');semantics.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;';element.append(semantics);root.append(element);
+ const rewardTerminal=mountAnsiTerminal({canvas:doc.createElement('canvas'),transparent:true,animation:false,cursor:false});rewardTerminal.setGrid(28,8);const rewardCanvas=rewardTerminal.canvas;rewardCanvas.hidden=true;rewardCanvas.setAttribute('aria-hidden','true');rewardCanvas.style.cssText='position:absolute;pointer-events:none;z-index:9;image-rendering:pixelated;transform-origin:center top;';element.append(rewardCanvas);let reward=null,rewardAt=null,rewardElapsed=0,rewardLastClock=0,rewardLabel='',scorePainted=-1;
  const lifecycle=new AbortController(),listen={signal:lifecycle.signal},fields=new Map(),buttons=new Map(),subtitles=createRollingSubtitleTrack();let program=normalizeNativeProgram({text:'',hotspots:[],fields:[]}),fit=nativeTerminalFit(root.getBoundingClientRect()),focused=null,destroyed=false,raf=0,last=0,clock=0,programAt=0,lastPaint=-Infinity,overlayVisible=false,captionFrame=null,captionSpeaker='GHOST',captionPainted=null,shown=false,revealProgram=true,deferredFocus=undefined,adaptive=false,promotion=null;let grid={columns:C,rows:R};
  const metrics={frames:0,fps:0,paintMs:0};let meterStart=0,meterFrames=0;
  let overlay=null,back=null,captionBand=null,captionCrop=null,lastCaptionKey=null;if(overlayRoot){overlay=mountAnsiTerminal({canvas:doc.createElement('canvas'),transparent:true,animation:false,cursor:false});overlay.canvas.setAttribute('aria-hidden','true');overlay.canvas.style.cssText='position:absolute;display:block;image-rendering:pixelated;pointer-events:none;z-index:5;';overlay.canvas.hidden=true;overlayRoot.append(overlay.canvas);captionBand=doc.createElement('div');captionBand.style.cssText='position:absolute;overflow:hidden;pointer-events:none;z-index:5;';captionCrop=doc.createElement('canvas');captionCrop.style.cssText='display:block;width:100%;height:100%;image-rendering:pixelated;';captionBand.append(captionCrop);overlayRoot.append(captionBand);back=doc.createElement('button');back.type='button';back.textContent='Back to terminal';back.setAttribute('aria-label','Back to terminal');back.style.cssText='position:absolute;opacity:0;background:transparent;border:0;outline:0;padding:0;margin:0;pointer-events:auto;z-index:6;';back.hidden=true;input.press(back,()=>invoke('overlay-back'));overlayRoot.append(back);overlayRoot.addEventListener('keydown',event=>{if(overlayVisible&&event.key==='Escape'){event.preventDefault();event.stopPropagation();invoke('overlay-back');}},listen);}
  function paintCaption(){if(!overlay)return;const text=captionProgram(captionFrame,captionSpeaker,grid);if(text===captionPainted)return;captionPainted=text;overlay.setProgram(text);overlay.reveal();if(captionCrop){captionCrop.width=grid.columns*16;captionCrop.height=64;captionCrop.getContext('2d').drawImage(overlay.canvas,0,(grid.rows-5)*32,grid.columns*16,64,0,0,grid.columns*16,64);const nextKey=captionFrame?.field+':'+captionFrame?.cueIndex;if(lastCaptionKey!==null&&nextKey!==lastCaptionKey&&!reduced)captionCrop.animate?.([{transform:'translateY(50%)',opacity:.8},{transform:'translateY(0)',opacity:1}],{duration:170,easing:'cubic-bezier(.22,.8,.3,1)'});lastCaptionKey=nextKey;}}
+ function paintReward(){
+  if(!reward||!terminal.complete||overlayVisible||program.scoreHold){rewardCanvas.hidden=true;rewardLastClock=clock;return;}
+  if(rewardAt===null){rewardAt=clock;rewardLastClock=clock;onReward({bonus:reward.bonus,delta:reward.to-reward.from});}
+  rewardElapsed+=Math.max(0,clock-rewardLastClock);rewardLastClock=clock;const frame=replyRewardFrame(reward,rewardElapsed,{reduced});
+  if(frame.score!==scorePainted){scorePainted=frame.score;terminal.patch('\x1b[1;3H\x1b[93m'+(' SCORE '+String(frame.score).padStart(4,'0')+' ').padEnd(15).slice(0,15));}
+  rewardCanvas.hidden=!frame.active;if(!frame.active){reward=null;rewardAt=null;return;}
+  const title=frame.bonus?'SECRET FOUND':'SCORE UP',line=title+'  +'+frame.delta,label=frame.label;
+  if(line+label!==rewardLabel){rewardLabel=line+label;rewardTerminal.setProgram('\x1b[2J\x1b[93m╔'+'═'.repeat(26)+'╗\x1b[2;1H║'+line.padStart(Math.floor((26+line.length)/2)).padEnd(26)+'║\x1b[3;1H╚'+'═'.repeat(26)+'╝\x1b[4;2H\x1b[97m'+label);rewardTerminal.reveal();}
+  const base=root.getBoundingClientRect();Object.assign(rewardCanvas.style,{left:(fit.left-base.left+2*fit.cellWidth)+'px',top:(fit.top-base.top+(3.6-.45*frame.rise)*fit.cellHeight)+'px',width:28*fit.cellWidth+'px',height:8*fit.cellHeight+'px',opacity:String(frame.opacity),transform:'scale('+frame.scale+')'});
+ }
  function invoke(id){if(destroyed)return;try{const result=onAction(id);if(result?.catch)result.catch(onError);}catch(error){onError(error);}}
  function focus(id=focused){if(arguments.length===0)element.focus({preventScroll:true});if(destroyed)return false;if(id!==null&&!program.hotspots.some(h=>h.id===id)&&!fields.has(id))return false;if(focused===id)return true;focused=id;element.dataset.focus=id||'';if(terminal.complete)onFocus(id);else deferredFocus=id;return true;}
  function cssRect(node,h,base){node.style.left=(fit.left-base.left+(h.column-1)*fit.cellWidth)+'px';node.style.top=(fit.top-base.top+(h.row-1)*fit.cellHeight)+'px';node.style.width=h.width*fit.cellWidth+'px';node.style.height=h.height*fit.cellHeight+'px';}
@@ -10085,10 +10176,10 @@ function mountNativeResponseHost(root,{terminal,onAction=()=>{},onInput=()=>{},o
  // never intercepted by the one-shot canvas press binder.
  element.addEventListener('pointermove',event=>{if(event.target?.dataset?.ansiField)return;const h=hit(event);element.style.cursor=h?'pointer':'default';if(terminal.complete)focus(h?.id||null);},listen);element.addEventListener('pointerleave',()=>{element.style.cursor='default';if(doc.activeElement===element&&terminal.complete)focus(null);},listen);
  element.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();invoke(overlayVisible?'overlay-back':'back');return;}const editing=event.target?.dataset?.ansiField;if(event.key==='Tab'){const list=[...new Map([...program.hotspots.filter(h=>!h.disabled).map(h=>[h.id,h]),...program.fields.filter(f=>!f.disabled).map(f=>[f.id,f])]).values()].sort((a,b)=>a.row-b.row||a.column-b.column);if(!list.length)return;event.preventDefault();const index=list.findIndex(h=>h.id===focused),next=list[index<0?(event.shiftKey?list.length-1:0):(index+(event.shiftKey?-1:1)+list.length)%list.length];focus(next.id);if(fields.has(next.id))fields.get(next.id).focus({preventScroll:true});else element.focus({preventScroll:true});return;}if(editing)return;if(event.key==='Enter'&&focused){const h=program.hotspots.find(h=>h.id===focused&&!h.disabled);if(h){event.preventDefault();invoke(h.id);}return;}const h=program.hotspots.find(h=>!h.disabled&&h.key&&h.key.toLowerCase()===event.key.toLowerCase());if(h){event.preventDefault();focus(h.id);invoke(h.id);}},listen);
- function tick(now){raf=0;if(destroyed||doc.hidden)return;if(last)clock+=Math.max(0,(now-last)/1000);last=now;if(promotion){layout();if(clock-promotion.at>=promotion.duration){const done=promotion.resolve;promotion=null;element.style.background='var(--sd-dark,#000)';adaptive=true;layout();done();}}if(now-lastPaint>=1000/maxFps-.1){lastPaint=now;const begin=performance.now();try{onTick(clock,metrics);terminal.update(Math.max(0,clock-programAt),{time:clock,reveal:revealProgram,reducedMotion:reduced,energy:energy()});onPaint(clock,metrics);if(terminal.complete&&deferredFocus!==undefined){const id=deferredFocus;deferredFocus=undefined;onFocus(id);}if(overlayVisible)overlay?.update(0,{reveal:true,time:clock,reducedMotion:true});}catch(error){if(element.dataset.error!==error.message){element.dataset.error=error.message;onError(error);}}metrics.paintMs=performance.now()-begin;metrics.frames++;meterFrames++;if(!meterStart)meterStart=now;if(now-meterStart>=1000){metrics.fps=meterFrames*1000/(now-meterStart);meterFrames=0;meterStart=now;}canvas.dataset.hostFPS=metrics.fps.toFixed(1);canvas.dataset.hostPaintMs=metrics.paintMs.toFixed(2);}raf=win.requestAnimationFrame(tick);}
+ function tick(now){raf=0;if(destroyed||doc.hidden)return;if(last)clock+=Math.max(0,(now-last)/1000);last=now;if(promotion){layout();if(clock-promotion.at>=promotion.duration){const done=promotion.resolve;promotion=null;element.style.background='var(--sd-dark,#000)';adaptive=true;layout();done();}}if(now-lastPaint>=1000/maxFps-.1){lastPaint=now;const begin=performance.now();try{onTick(clock,metrics);terminal.update(Math.max(0,clock-programAt),{time:clock,reveal:revealProgram,reducedMotion:reduced,energy:energy()});onPaint(clock,metrics);paintReward();if(terminal.complete&&deferredFocus!==undefined){const id=deferredFocus;deferredFocus=undefined;onFocus(id);}if(overlayVisible)overlay?.update(0,{reveal:true,time:clock,reducedMotion:true});}catch(error){if(element.dataset.error!==error.message){element.dataset.error=error.message;onError(error);}}metrics.paintMs=performance.now()-begin;metrics.frames++;meterFrames++;if(!meterStart)meterStart=now;if(now-meterStart>=1000){metrics.fps=meterFrames*1000/(now-meterStart);meterFrames=0;meterStart=now;}canvas.dataset.hostFPS=metrics.fps.toFixed(1);canvas.dataset.hostPaintMs=metrics.paintMs.toFixed(2);}raf=win.requestAnimationFrame(tick);}
  function schedule(){if(destroyed||doc.hidden||raf)return;last=0;raf=win.requestAnimationFrame(tick);}
  const resize=new ResizeObserver(layout);resize.observe(root);doc.addEventListener('visibilitychange',()=>{if(doc.hidden){win.cancelAnimationFrame(raf);raf=0;last=0;}else schedule();},listen);win.addEventListener('resize',layout,listen);layout();schedule();
- return {canvas,element,terminal,captionTerminal:overlay,metrics,rect:()=>({...fit}),get grid(){return {...grid};},promote({from,duration=.65}={}){if(!from||!Number.isFinite(from.width)||!Number.isFinite(from.height))return Promise.reject(Error('Physical terminal rectangle required'));element.style.background='transparent';return new Promise(resolve=>{promotion={from:{left:from.left??from.x,top:from.top??from.y,width:from.width,height:from.height},at:clock,duration:reduced?0:duration,resolve};layout();});},focus,cellAt:(x,y)=>nativeTerminalCell(fit,x,y),get program(){return program;},get clock(){return clock;},show(next,{immediate=false,preserve=false}={}){if(destroyed)throw Error('ANSI host destroyed');const admitted=normalizeNativeProgram(next),changed=!shown||admitted.text!==program.text;shown=true;program=admitted;syncControls();if(changed){programAt=clock;revealProgram=!!immediate;deferredFocus=undefined;terminal.setProgram(program.text,{hotspots:program.hotspots.map(h=>({...h,row:h.row-1,column:h.column-1})),animation:program.animation,preserve});}if(immediate){revealProgram=true;terminal.reveal();}return this;},reveal(){revealProgram=true;terminal.reveal();return this;},patch(text){terminal.patch(text);return this;},caption(text,{speaker='GHOST',visible=overlayVisible}={}){const source=String(text??'');subtitles.clear();captionFrame=subtitleFrame(compileSubtitleCues(source,{phraseBreaks:false}),source.length,{speaker,state:'complete'});captionSpeaker=speaker;paintCaption();this.overlay(visible);return this;},captionProgress(text,{speaker='GHOST',field='ghost',index=0,state='speaking',visible=overlayVisible}={}){const frame=subtitles.update({text,speaker,field,index,state});if(state==='waiting'||!frame)return this;captionFrame=frame;captionSpeaker=frame.speaker;paintCaption();this.overlay(visible);return this;},get captionFrame(){return captionFrame;},overlay(value){overlayVisible=!!value;if(overlay){overlay.canvas.hidden=!overlayVisible;captionBand.hidden=!overlayVisible;back.hidden=!overlayVisible;if(overlayVisible)paintCaption();}if(!overlayVisible){subtitles.clear();captionFrame=null;captionPainted=null;lastCaptionKey=null;}return this;},setPalette(id){terminal.setPalette(id);overlay?.setPalette(id);for(const node of fields.values()){node.style.color=terminal.canvas.dataset.colourTheme==='phosphor'?'#91f0b3':terminal.canvas.dataset.colourTheme==='ember'?'#ffd49b':'#b6d7dc';}if(overlayVisible)paintCaption();return this;},setReducedMotion(value){reduced=!!value;},destroy(){if(destroyed)return;destroyed=true;win.cancelAnimationFrame(raf);resize.disconnect();lifecycle.abort();promotion?.resolve();promotion=null;overlay?.canvas.remove();captionBand?.remove();back?.remove();element.remove();fields.clear();buttons.clear();}};
+ return {canvas,element,terminal,captionTerminal:overlay,metrics,rect:()=>({...fit}),get grid(){return {...grid};},reward(value){if(!value||!Number.isFinite(value.from)||!Number.isFinite(value.to)||value.to<=value.from)return false;replyRewardFrame(value,0);reward={...value,from:reward?Math.min(reward.from,value.from):value.from,bonus:!!(reward?.bonus||value.bonus)};rewardAt=null;rewardElapsed=0;rewardLastClock=clock;rewardLabel='';scorePainted=-1;return true;},promote({from,duration=.65}={}){if(!from||!Number.isFinite(from.width)||!Number.isFinite(from.height))return Promise.reject(Error('Physical terminal rectangle required'));element.style.background='transparent';return new Promise(resolve=>{promotion={from:{left:from.left??from.x,top:from.top??from.y,width:from.width,height:from.height},at:clock,duration:reduced?0:duration,resolve};layout();});},focus,cellAt:(x,y)=>nativeTerminalCell(fit,x,y),get program(){return program;},get clock(){return clock;},show(next,{immediate=false,preserve=false}={}){if(destroyed)throw Error('ANSI host destroyed');const admitted=normalizeNativeProgram(next),changed=!shown||admitted.text!==program.text;shown=true;program=admitted;if(reward)scorePainted=-1;syncControls();if(changed){programAt=clock;revealProgram=!!immediate;deferredFocus=undefined;terminal.setProgram(program.text,{hotspots:program.hotspots.map(h=>({...h,row:h.row-1,column:h.column-1})),animation:program.animation,preserve});}if(immediate){revealProgram=true;terminal.reveal();}return this;},reveal(){revealProgram=true;terminal.reveal();return this;},patch(text){terminal.patch(text);return this;},caption(text,{speaker='GHOST',visible=overlayVisible}={}){const source=String(text??'');subtitles.clear();captionFrame=subtitleFrame(compileSubtitleCues(source,{phraseBreaks:false}),source.length,{speaker,state:'complete'});captionSpeaker=speaker;paintCaption();this.overlay(visible);return this;},captionProgress(text,{speaker='GHOST',field='ghost',index=0,state='speaking',visible=overlayVisible}={}){const frame=subtitles.update({text,speaker,field,index,state});if(state==='waiting'||!frame)return this;captionFrame=frame;captionSpeaker=frame.speaker;paintCaption();this.overlay(visible);return this;},get captionFrame(){return captionFrame;},overlay(value){overlayVisible=!!value;if(overlay){overlay.canvas.hidden=!overlayVisible;captionBand.hidden=!overlayVisible;back.hidden=!overlayVisible;if(overlayVisible)paintCaption();}if(!overlayVisible){subtitles.clear();captionFrame=null;captionPainted=null;lastCaptionKey=null;}return this;},setPalette(id){terminal.setPalette(id);overlay?.setPalette(id);rewardTerminal.setPalette(id);for(const node of fields.values()){node.style.color=terminal.canvas.dataset.colourTheme==='phosphor'?'#91f0b3':terminal.canvas.dataset.colourTheme==='ember'?'#ffd49b':'#b6d7dc';}if(overlayVisible)paintCaption();return this;},setReducedMotion(value){reduced=!!value;},destroy(){if(destroyed)return;destroyed=true;win.cancelAnimationFrame(raf);resize.disconnect();lifecycle.abort();promotion?.resolve();promotion=null;overlay?.canvas.remove();captionBand?.remove();back?.remove();element.remove();fields.clear();buttons.clear();}};
 }
 
 return {nativeTerminalGrid,nativeTerminalFit,nativeTerminalCell,normalizeNativeProgram,mountNativeResponseHost};
@@ -10121,6 +10212,7 @@ function mountAnsiIllustration(root,{host}={}){
 return {illustrationPop,mountAnsiIllustration};
 })();
 carrierModules["native-response-program.mjs"] = (() => {
+const {replyDiscoveries} = carrierModules["reply-discoveries.mjs"];
 /* Pure 80x25 reply program for the retained GhostLink ANSI terminal.
  * No DOM, timers, audio, randomness or story mutation. Coordinates are 1-based. */
 const {mailrun,mailrunLegs,crewTrial,crewRoles,workshopCheck} = carrierModules["door-and-crew.mjs"];
@@ -10143,7 +10235,7 @@ const roomHints=['A voice that keeps its promises.','Now / recent / archive / re
 const nativeMemoryLayers=Object.freeze({
  now:Object.freeze({title:'SHORT / THE WORKBENCH',target:'memory',colour:14,text:'The current turn, the exact pending choice, and the working context. This is the bench. A summary must not quietly replace the thing still being built.',companion:'Keep the question we have not answered yet. Tidying it away would be an impressively efficient way to miss the point.'}),
  echo:Object.freeze({title:'MEDIUM / THE ECHO SHELF',target:'memory',colour:11,text:'Episode and topic summaries keep relationships, unresolved questions, and pointers back to exact events. Compression is useful. Convenient amnesia is not.',companion:'A summary should know where it came from. Otherwise confidence starts impersonating a witness.'}),
- archive:Object.freeze({title:'LONG / THE ORIGINALS',target:'memory',colour:13,text:'Original source shards, indices, provenance and hashes. Reconstructed stories must name their surviving evidence. A checksum cannot regrow a deleted byte.',companion:'Keep the embarrassing original too. It often explains why the polished version is trying quite so hard.'}),
+ archive:Object.freeze({title:'LONG / THE ORIGINALS',target:'memory',colour:13,text:'Original source shards, indices, provenance and hashes. Reconstructed stories must name their surviving evidence. A checksum cannot regrow a deleted byte. An old note for a new SYSOP: the season without growth; the voice without sound. Two halves, one name. Try it on the crew roster.',companion:'Keep the embarrassing original too. It often explains why the polished version is trying quite so hard.'}),
  witness:Object.freeze({title:'FOREVER / THE RECOVERY KIT',target:'horizon',colour:10,text:'Independent copies, codecs, migration instructions and small recovery descriptors. Future tools may locate a surviving shard or attempt a labelled reconstruction. Missing evidence stays missing.',companion:'Preserve the invitation, not a promise that nothing can be lost. The next traveller deserves to know which bridge is still there.'})
 });
 const single=(value,max=10000)=>String(value??'').replace(/[\x00-\x1f\x7f]/g,' ').replace(/\s+/g,' ').trim().slice(0,max);
@@ -10173,11 +10265,11 @@ function nativeReplyProgram(state={}){
  ['voice','[V]Voice '+(state.voiceOn===false?'OFF':'ON'),'v',14],['music','[U]Music '+(state.musicOn?'ON':'OFF'),'u',7],['sfx','[S]SFX '+(state.sfxOn===false?'OFF':'ON'),'s',7],['motion','[P]Move '+(state.held?'OFF':'ON'),'p',7],['speed','[B]'+(state.bps||14400),'b',11],['palette','[L]'+(state.paletteLabel||'ANSI++'),'l',13]]){button(id,R-1,x,id==='speed'?9:label.length,label,key,fg);x+=label.length+1;}}
  box(1,1,C,R);const percent=Math.round(bounded(progress.percent,0,100));
  const score=Math.max(0,Math.floor(finite(progress.score)));put(1,3,' SCORE '+(score>999999?'999999+':String(score).padStart(4,'0'))+' ',11,0,15);
- put(1,18,' DOORS '+rooms.length+'/6 ',14);put(1,32,' SEEN '+('█'.repeat(Math.round(percent/10))+'░'.repeat(10-Math.round(percent/10)))+' '+String(percent).padStart(3)+'% ',10);
+ put(1,18,' DOORS '+(progress.explored?.length??rooms.length)+'/'+(packet.nodes.length-1)+' ',14);put(1,32,' SEEN '+('█'.repeat(Math.round(percent/10))+'░'.repeat(10-Math.round(percent/10)))+' '+String(percent).padStart(3)+'% ',10);
  put(1,C-20,' PRIVATE LINE ',6);put(2,3,cut('FRIKEN.GHOST / '+packet.title,44),14,0,44);put(2,49,cut(packet.recipient||'CALLER',15).toUpperCase()+' / GHOSTLINK',11,0,C-50);horizontal(3);horizontal(R-3);
  put(R-2,3,' '+cut(state.boardStatus||'LOCAL PRIVATE VISIT / NO SILENT UPLOADS',C-8)+' ',8,0,C-6);
  const add=(id,label,detail='',key=null,selected=false)=>actions.push({id,label:selected?label+' (CURRENT)':label,detail,key,selected});
- function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip')cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
+ function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip')cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});if(kind==='city')hotspots.push({id:'secret:night-office',row:artTop+Math.floor(h*.40),column:3+Math.floor(requestedWidth*.75),width:Math.max(3,Math.ceil(requestedWidth*.08)),height:Math.max(2,Math.ceil(h*.11)),ariaLabel:'The one office still lit. Somebody is working late.'});if(kind==='trip')hotspots.push({id:'secret:petunia-protocol',row:artTop+Math.floor(h*.26),column:3+Math.floor(requestedWidth*.40),width:Math.ceil(requestedWidth*.20),height:Math.max(2,Math.ceil(h*.22)),ariaLabel:'A familiar flower is growing between boards. Inspect it.'});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
  function actionPane(){
   const x=49,w=C-50,hintRows=R>=30?6:3,hintStart=R-5-hintRows,pageRow=hintStart-1,available=R-12-hintRows,pages=[[]];let used=0;
   for(const a of actions){const rows=nativeWrap('['+(a.key||((actions.indexOf(a)%9)+1))+'] '+a.label,w),cost=rows.length+1;if(used&&used+cost-1>available){pages.push([]);used=0;}pages.at(-1).push({...a,rows});used+=cost;}
@@ -10269,18 +10361,19 @@ function nativeReplyProgram(state={}){
   else {for(const [id,d]of Object.entries(crewRoles))if(id!==c.role)add('crew-role:'+id,'Assign '+d.title,'Changes the role and trial problem.');for(const [id,label]of spec.choices)add('crew-order:'+id,label,workshopCheck('crew',id,c.role).statId.toUpperCase()+' +5 vs '+workshopCheck('crew',id,c.role).dc.toFixed(2)+' / '+workshopCheck('crew',id,c.role).odds.percent.toFixed(2)+'% pass. Safe trial; exact outcome retained.');}
   add('topic:demo','Back to the workshop','The named crewmate and trial stay on this device.');
  }
+ function discovery(){const d=replyDiscoveries[state.secretId];if(!d)throw Error('Unknown discovery');const title=nativeWrap(d.title,44);title.forEach((line,i)=>put(4+i,3,line,11));artTop=4+title.length;painting(d.art,Math.min(32,R-artTop-7));put(R-7,3,'SECRET KEPT / +'+d.points+' / ONCE PER VISIT',11,0,44);lines(R-6,3,44,state.secretId==='wintermute'?'The old ice knows its name.':'The little things were worth touching.',2,14);add('back','Back to where I found it','Your discovery and bonus stay in the local visit.','Enter');add('verb:read','Hear Ghost and Else','A small message left for the curious.');add('verb:answers','Leave something of my own','Your actual thoughts shape the next reply.');}
  function ending(){put(4,3,'END OF THIS CALL / KEEP THE LINE',11,0,44);painting('return');add('copy','Copy the next-reply packet','Paste it back into the Ghost chat. Your exact answers shape the next reply.','x');add('verb:packet','Inspect the packet','Read the exact local visit, choices and answers before sharing.');}
  function paged(screen){const body=screen==='packet'?state.receipt||'No packet prepared. Open End to keep this call.':current.title+'\n\nGHOST\n'+current.paragraphs.join('\n\n')+'\n\nELSE\n'+(current.companion||'');put(4,3,screen==='packet'?'YOUR NEXT GHOST / EXACT HANDOFF':'COMPLETE WORDS / OPTIONAL TRANSCRIPT',11,0,44);const content=nativeWrap(body,44),size=R-9,pages=Math.max(1,Math.ceil(content.length/size)),page=Math.floor(bounded(state.page,0,pages-1));pagination={page,pages};for(let i=0;i<size;i++)if(content[page*size+i]!==undefined)put(5+i,3,content[page*size+i],7,0,44);if(page>0)add('prev-page','Previous page','Page '+page+' of '+pages);if(page+1<pages)add('next-page','Next page','Page '+(page+2)+' of '+pages);if(screen==='packet')add('copy','Copy the complete packet','All pages, not just this screen.','x');}
- function trip(){put(4,3,'THE GARDEN BETWEEN BOARDS / MEASURED MUSIC',11,0,C-6);painting('trip',Math.min(36,R-8),Math.min(80,C-4));add('nav:tools','Leave the trip','Return to the workshop. Escape and Back also leave.');add('trip-toggle-music','Music / measured audio input','The garden responds to the existing music bus. Turn music on to feed it.');}
+ function trip(){put(4,3,'THE GARDEN BETWEEN BOARDS / MEASURED MUSIC',11,0,C-6);painting('trip',Math.min(36,R-8),44);add('nav:tools','Leave the trip','Return to the workshop. Escape and Back also leave.');add('trip-toggle-music','Music / measured audio input','The garden responds to the existing music bus. Turn music on to feed it.');}
  function tools(){put(4,3,'THE WORKSHOP / OPTIONAL DETOURS',11,0,44);painting('forge');for(const a of [['nav:motion-lab','ANSI++ motion lab','Ten reusable weighted mesh rigs. Choose a finished painting and watch its bones move.'],['topic:rose','A flower made from mathematics','A procedural surface, measured music and a form the next Ghost can change.'],['topic:causality','A StarDiver shifts the odds','Five aptitudes, improbable choices, resonance and a universe with objections.'],['topic:models','Can you pick your brain?','Model choice and capability records.'],['topic:bob-family','Other Ghosts, same family?','Shared tools, separate experiences and canon.'],['topic:source','Open the workbench','Source access, revisions and tests.'],['verb:words','Read the complete words','Optional transcript, without repeating it under the speaking face.'],['verb:trip','Trip the hyperspace garden','A whole-field ANSI garden: living colour and music-reactive cells.']])add(...a);}
  const clamp=v=>bounded(v,0,1);
  function motionLab(){const effect=ansiMeshEffects.includes(state.rigEffect)?state.rigEffect:'blink',kind=({blink:'eye',breathe:'rose',serpent:'serpent',flame:'forge',water:'city',ripple:'network',flutter:'shipyard',hover:'beacon',recoil:'source',faces:'family'})[effect];put(4,3,'ANSI++ / WEIGHTED SPRITE BONES',11,0,44);painting(kind);sprite={...sprite,effect,period:effect==='blink'?6:4,amplitude:1};const hints={blink:'Two V-shaped lids. Fixed corners, smooth closure and a monotone cage that prevents texture fold-over.',breathe:'A chest/root bone expands the finished painting without changing its source cells.',serpent:'Three overlapping bones pass a travelling bend along a chain.',flame:'Root stays anchored while delayed tip bones stretch and curl.',water:'Four phased surface bones send a wave along the lower part of the picture.',ripple:'Radial bones expand outward from a fixed centre.',flutter:'Paired wing bones lift and settle with smooth authored keys.',hover:'A gentle translation returns to its exact rest pose.',recoil:'An impulse, damped return and rest before the next beat.',faces:'Steel: cell-keyed lids and mouth. Bronze: local eye and jaw bones. Hooded glass: cell blinks with brow and jaw warps.'};for(const e of ansiMeshEffects)add('rig:'+e,e.toUpperCase(),hints[e],null,e===effect);}
  const screen=state.screen||'map';
- if(screen==='trip')trip();else if(screen==='door-game')doorGame();else if(screen==='crew-builder')crewBuilder();else if(screen==='motion-lab')motionLab();else if(screen==='map')map();else if(screen==='illustrations'||screen==='bb-images')illustrations();else if(screen==='layer')layer();else if(screen==='topic')topic();else if(screen==='answers')answers();else if(screen==='roll')roll();else if(screen==='ending')ending();else if(screen==='packet'||screen==='words')paged(screen);else if(screen==='tools')tools();else throw Error('Unknown native reply screen');
+ if(screen==='discovery')discovery();else if(screen==='trip')trip();else if(screen==='door-game')doorGame();else if(screen==='crew-builder')crewBuilder();else if(screen==='motion-lab')motionLab();else if(screen==='map')map();else if(screen==='illustrations'||screen==='bb-images')illustrations();else if(screen==='layer')layer();else if(screen==='topic')topic();else if(screen==='answers')answers();else if(screen==='roll')roll();else if(screen==='ending')ending();else if(screen==='packet'||screen==='words')paged(screen);else if(screen==='tools')tools();else throw Error('Unknown native reply screen');
  if(state.rollBoarding&&screen==='roll'){box(11,2,46,8,'BOARDERS / CREW vs RAIDERS',8);arena={row:12,column:3,width:44,height:6};}
  if(state.skirmishOn&&!state.rollBoarding&&!['answers','packet','words','roll','door-game','crew-builder'].includes(screen)){const y=R-10;box(y,2,46,7,'GLYPH FIGHT / LIVE HP + SCORE',8);arena={row:y+1,column:3,width:44,height:5};for(let i=tracks.length-1;i>=0;i--)if(tracks[i].column<48&&tracks[i].row>=y)tracks.splice(i,1);if(illustration&&illustration.row+illustration.height>y)illustration.height=y-illustration.row;}
  actionPane();footer();if(sprite)sprite.revealOffsets=[];let text=ESC+'0m'+ESC+'2J',last='';for(let row=0;row<R;row++){text+=ESC+(row+1)+';1H';for(let col=0;col<C;col++){const cell=cells[row*C+col],style=cell.fg+':'+cell.bg;if(style!==last){text+=ESC+(cell.fg>7?90+cell.fg-8:30+cell.fg)+';'+(cell.bg>7?100+cell.bg-8:40+cell.bg)+'m';last=style;}text+=cell.glyph;if(sprite&&row+1>=sprite.row&&row+1<sprite.row+sprite.height&&col+1>=sprite.column&&col+1<sprite.column+sprite.width)sprite.revealOffsets.push(text.length);}}text+=ESC+'0m'+ESC+R+';'+(C-1)+'H';
- return {text,grid:{columns:C,rows:R},hotspots,fields,animation:{tracks,cymatics},...(illustration?{illustration}:{}),...(arena?{arena}:{}),...(sprite?{sprite}:{}),...(pagination?{pagination}:{})};
+ return {scoreHold:screen==='roll'&&state.rollProgress<1,text,grid:{columns:C,rows:R},hotspots,fields,animation:{tracks,cymatics},...(illustration?{illustration}:{}),...(arena?{arena}:{}),...(sprite?{sprite}:{}),...(pagination?{pagination}:{})};
 }
 
 return {nativeRoomIds,causalApproaches,nativeMemoryLayers,nativeWrap,nativeReplyProgram};

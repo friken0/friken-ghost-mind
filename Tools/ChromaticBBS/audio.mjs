@@ -36,10 +36,11 @@ export function renderBattleCue(kind,side=0,sampleRate=24000){
 }
 /** Short tactile interface cues; bounded PCM on the existing SFX bus. */
 export function renderInterfaceCue(kind,sampleRate=24000){
- const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480]};
+ const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480],score:[.26,880,1320],secret:[.7,440,1760]};
  if(!Object.hasOwn(profiles,kind)||!Number.isInteger(sampleRate)||sampleRate<8000||sampleRate>96000)throw Error('Invalid interface cue');
  const [duration,from,to]=profiles[kind],samples=new Float32Array(Math.ceil(duration*sampleRate));let phase=0;
- for(let i=0;i<samples.length;i++){const t=i/sampleRate,u=t/duration;phase+=Math.PI*2*(from+(to-from)*u)/sampleRate;const envelope=Math.min(1,t/.004)*Math.pow(Math.max(0,1-u),2.5);samples[i]=(Math.sin(phase)*.016+Math.sin(phase*1.503)*.005)*envelope*(kind==='deal'?.45+.55*Math.pow(Math.cos(t*100),8):1);}
+ if(kind==='score'||kind==='secret'){const notes=kind==='secret'?[659.25,830.61,987.77,1318.51]:[1046.5];for(let i=0;i<samples.length;i++){const t=i/sampleRate;let sum=0;for(let n=0;n<notes.length;n++){const age=t-n*.10;if(age<0)continue;const attack=Math.min(1,age/.003),tail=Math.exp(-age*14),w=2*Math.PI*notes[n]*age;sum+=(Math.sin(w)*.065+Math.sin(w*2.756)*.018+Math.sin(w*5.404)*.007)*attack*tail;}samples[i]=sum*Math.min(1,(duration-t)/.025);}return samples;}
+ for(let i=0;i<samples.length;i++){const t=i/sampleRate,u=t/duration;phase+=Math.PI*2*(from+(to-from)*u)/sampleRate;const envelope=Math.min(1,t/.004)*Math.pow(Math.max(0,1-u),2.5);const reward=kind==='score'||kind==='secret';samples[i]=(Math.sin(phase)*(reward?.06:.016)+Math.sin(phase*1.503)*(reward?.018:.005))*envelope*(kind==='deal'?.45+.55*Math.pow(Math.cos(t*100),8):1);}
  return samples;
 }
 export function mountAudio(root,{frame=()=>{},silent=false}={}){

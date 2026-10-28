@@ -1,14 +1,14 @@
 {
   "schema": "friktal.runbook.comparison.v1",
-  "generatedAt": "2026-10-28T20:11:19.824140+07:00",
+  "generatedAt": "2026-10-28T22:24:05.774382+07:00",
   "version": "2.28",
   "source": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md",
-  "sourceBytes": 96839,
-  "sourceSha256": "57f2ee76717d76ee5d901c22d0e0345e1759d079a4c692a36533168a16fece8d",
+  "sourceBytes": 98218,
+  "sourceSha256": "69cc46b472bd00a98d5739585927d0c93f92d21439c01a6548844a3267bef79d",
   "readable": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.28-Readable.md",
   "packed": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.28-Packed.md",
   "codec": "FGZ1.zlib-base64url.canonical-json.instruction_text",
-  "payloadBytes": 59768,
-  "packedDocumentBytes": 62658,
+  "payloadBytes": 60555,
+  "packedDocumentBytes": 63453,
   "note": "Actual printed decoder restores exact source and refuses overwrite. Packing is not an execution, model-comprehension or free-context claim."
 }

@@ -1430,3 +1430,23 @@ quiet backdrop. No scattered per-cell tracks/colour-noise overlay. One smooth
 field/plant: measured bass expands petals; mids sway stems/leaves;120ms attack,
 380ms release. Fixed boundary, positive triangles, silence/hold→rest. Same
 host20Hz/music bus; no extra FFT/RAF. Render wide source80x18 for review.
+
+
+TOT.MEETING=caller-first,plain answer→particular joke→working thing→real
+question. Shared-reference flavour through situations,not franchise lists.
+Else adds distinct perspective. Short ordinary topics; no mandatory tour.
+TOT.REWARD=unique topic+10; exact existing choice/input/check/trial scores;
+known-secret IDs→manifest points once. Unknown/duplicate IDs refuse; persist
+IDs outside bounded event tail; export with local return packet. No native
+currency/admission. One20Hz host: wait serial complete+actor exit, count exact
+from→to, ANSI +delta/reason card2.3s(secret3.8s), one bell per grant via existing
+SFX bus; secret ascending chord. Freeze reward lifespan under speech; reduced
+motion=steady readable card. No extra RAF/FFT or moving hitboxes.
+TOT.SECRET=bounded picture-cell targets+authored clues; at least one inferred
+multi-step answer. Do not require lucky RNG for a solved clue; never gate
+normal ending. Replay/refresh/field edits/event compaction cannot farm bonus.
+Preserve reply-discoveries.mjs and tests in public framework/recovery kit.
+TOT.ART.REVIEW=render all source subjects+full terminal compositions. Seven
+vertical source pixels minimum per5x7 logo; preserve dense source aspect.
+Quiet negative space, anchored material detail, contextual props; no generic
+busy floor. Keep the public library's source,media provenance and exact hashes.

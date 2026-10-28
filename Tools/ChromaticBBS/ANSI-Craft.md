@@ -191,3 +191,12 @@ The same20Hz host clock owns this field; no random noise or extra analyser.
 Use `render-ansi-review.py --rows 18 --only trip --output <folder>` to inspect
 its actual wide source aspect. A static source render does not prove live
 music playback; after Prime's stop instruction no further GUI test is made.
+
+
+## First meeting / reward and picture review
+
+The retained host owns `reward({from,to,label,bonus})` on its existing20Hz
+clock. Serial completion, actor overlays and pending Causality resolution
+hold the payoff; reduced motion keeps a steady card. Labels, source inputs
+and hit regions remain fixed. See Turn-Out-Of-Time.md for the shared
+first-meeting, local-discovery and one-time reward contract.

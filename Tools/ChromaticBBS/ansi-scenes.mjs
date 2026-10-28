@@ -33,28 +33,28 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
   }
   if(kind==='city'){
    // Bitcoin Billionaire: a gold coin over a working city, not a generic moon.
-   const aspect=width/(height*2),dx=(u-.27)*aspect,dy=v-.455,coin=Math.hypot(dx,dy),horizon=.73,office=[13,14,11,10,14,13][frame];
-   const signs=[['BITCOIN',{x:.22,y:.014,width:.56,height:.088}],['BILLIONAIRE',{x:.045,y:.12,width:.91,height:.088}]];
+   const aspect=width/(height*2),dx=(u-.27)*aspect,dy=v-.515,coin=Math.hypot(dx,dy),horizon=.73,office=[13,14,11,10,14,13][frame];
+   const letterHeight=Math.max(.105,7/H),signs=[['BITCOIN',{x:.22,y:.008,width:.56,height:letterHeight}],['BILLIONAIRE',{x:.045,y:.028+letterHeight,width:.91,height:letterHeight}]];
    for(const [word,box]of signs){if(blockLettering(word,u,v,box)){const glint=Math.abs(u-(frame/5));return glint<.035?15:v<box.y+.024?15:v<box.y+.051?11:9;}
     if(blockLettering(word,u-.009,v-.013,box))return 1;
     if(blockLettering(word,u-.004,v+.007,box))return 6;
    }
    const towers=[[.59,.67,.43],[.67,.75,.32],[.75,.81,.29],[.81,.87,.36],[.87,.94,.48]];
    for(const [left,right,top] of towers)if(u>left&&u<right&&v>top&&v<horizon+.035){
-    if(v<top+.025&&Math.floor(u*180)%4===0)return 4;
+    if(v<top+.010)return 6;if(v<top+.025&&Math.floor(u*180)%4===0)return 4;
     // The large corner office is one intentional beacon in a quiet skyline.
     if(u>.765&&u<.795&&v>.425&&v<.46)return office;
     if(u>.760&&u<.800&&v>.419&&v<.466)return 7;
     const wx=Math.floor((u-left)*55),wy=Math.floor((v-top)*17),window=Math.abs(((u-left)*55)%1-.5)<.10&&Math.abs(((v-top)*17)%1-.5)<.11;
-    return window&&noise(wx+Math.floor(left*100),wy)>.25&&((wx*7+wy+frame)%17!==0)?11:0;
+    if(window&&noise(wx+Math.floor(left*100),wy)>.25&&((wx*7+wy+frame)%17!==0))return wy%3===0?7:11;return u<left+.009?8:0;
    }
    if(inside(u,v,[[.752,.30],[.780,.235],[.808,.30]]))return 0;
    if(v>.655&&v<.69&&u<.60){const arches=Math.abs(Math.sin(u*27));if(v<.667||arches>.80)return v<.663?7:0;}
-   if(coin<.17){
+   if(coin<.145){
     const symbol=blockLettering('B',dx,dy,{x:-.073,y:-.105,width:.145,height:.21}),bars=(Math.abs(dx+.040)<.008||Math.abs(dx-.005)<.008)&&Math.abs(dy)<.133&&Math.abs(dy)>.10;
     if(symbol||bars)return 3;
-    if(coin>.157)return dy<-.02?15:3;
-    if(coin>.146)return 11;
+    if(coin>.134)return dy<-.02?15:3;
+    if(coin>.126)return 11;
     const shine=Math.abs(dx+dy*.7-(-.12+frame*.048))<.011;return shine?15:dy<.09?11:3;
    }
    if(v>horizon){const depth=(v-horizon)/(1-horizon),centre=.27+.027*Math.sin(v*58+Math.sin(t)*.6),span=.04+depth*.22,shimmer=Math.sin(v*149+Math.sin(t)*.65+u*16);
@@ -63,7 +63,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
     const wave=Math.sin(v*83+Math.sin(t)*.5+u*12);return wave>.86?4:0;
    }
    if(v>horizon-.018)return 0;
-   const cloud=Math.sin(u*7+Math.sin(t)*.04)+Math.sin(v*27+u*3);if(coin<.19)return 6;
+   const cloud=Math.sin(u*7+Math.sin(t)*.04)+Math.sin(v*27+u*3);if(coin<.16)return 6;
    return noise(x,y)>.997&&v<.55?7:cloud>.8&&v>.5?0:4;
   }
   if(kind==='trip'){
@@ -89,7 +89,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    const lane=Math.floor(u*5),lx=u*5-lane,roof=.12+noise(lane,17)*.28;
    if(v>roof&&v<.87&&lx>.1&&lx<.88){if(lx<.17||lx>.81)return 8;if(Math.abs((v-roof)*7%1-.5)<.12)return (Math.floor(x+frame)%7<2)?15:[6,3,5,2,4][lane];return lx<.5?4:1;}
    if(Math.abs(v-(.14+.045*Math.sin(u*9)))<.016)return Math.abs(u-frame/5)<.09?15:6;
-   return noise(x,y)>.98?13:4;
+   return noise(x,y)>.998?7:4;
   }
   if(kind==='causality'){
    const curve=.80-.55*Math.exp(-(((u-.35-frame*.045)/.16)**2));if(Math.abs(v-curve)<.035)return 11;
@@ -98,8 +98,8 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    return v<.22&&Math.abs(u-(.15+frame*.12))<.035?15:0;
   }
   if(kind==='serpent'){
-   const head=Math.hypot((u-.5)*1.2,(v-.18)*1.4);if(head<.095){if(Math.abs(v-.16)<.022&&Math.abs(u-.5)>.025)return 15;return v>.205?3:11;}
-   const axis=.5+.17*Math.sin((v-.18)*9),radius=.045*(1-(v-.2)*.65);if(v>.23&&v<.91&&Math.abs(u-axis)<radius)return Math.abs(u-axis)<radius*.35?11:3;
+   const head=Math.hypot((u-.5)*1.2,(v-.18)*1.4);if(head<.095){if(Math.abs(v-.16)<.022&&Math.abs(u-.5)>.025)return Math.abs(u-.5)<.045?0:14;if(v>.205&&Math.abs(u-.5)<.05)return frame===2?0:3;return u<.48?15:v>.205?3:11;}
+   const axis=.5+.17*Math.sin((v-.18)*9),radius=.045*(1-(v-.2)*.65);if(v>.23&&v<.91&&Math.abs(u-axis)<radius)return Math.abs(u-axis)<radius*.25?15:Math.sin(v*170+u*33)>0?11:3;
    return 0;
   }
   if(kind==='rose'){
@@ -108,9 +108,19 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(Math.abs(dx+.1*Math.sin(dy*4))<.03&&dy>.4)return 2;return 0;
   }
   if(kind==='return'){
-   const dx=Math.abs(u-.5),dy=Math.abs(v-.46);if(dx<.32&&dy<.2){const fold=Math.abs(dy-(.2-dx*.58));return fold<.025?15:dx>.3||dy>.18?11:6;}
-   if(Math.abs(v-.8)<.03)return Math.abs(u-frame/6)<.1?15:4;return noise(x,y)>.985?7:0;
+   const cx=.52,cy=.48,dx=u-cx,dy=v-cy,body=Math.abs(dx)<.31&&Math.abs(dy)<.22;
+   if(body){const flap=Math.abs(dy-(.02-Math.abs(dx)*.62));
+    if(Math.abs(dx)>.294||Math.abs(dy)>.203)return dy<0?15:3;
+    if(flap<.012)return 3;
+    if(Math.hypot(dx,dy-.05)<.048)return Math.abs(dx)<.015?11:1;
+    if(dy<-.03&&dy>-.10&&dx<-.10)return 7;return dy<0?11:7;}
+   if(u>.12&&u<.89&&v>.75&&v<.80)return v<.77?7:8;
+   if(u>.16&&u<.24&&v>.80&&v<.94||u>.79&&u<.86&&v>.80&&v<.94)return 8;
+   if(Math.abs(u-(.06+frame*.16))<.015&&v>.23&&v<.69)return 6;
+   if(u>.84&&u<.94&&v>.17&&v<.63)return Math.floor(v*30)%3===0?14:4;
+   return noise(x,y)>.996&&v<.7?8:0;
   }
+
   if(kind.startsWith('layer-')){
    const variant=['layer-now','layer-echo','layer-archive','layer-witness'].indexOf(kind);
    if(variant===0){
@@ -124,7 +134,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    }else if(variant===2){
     const lane=Math.floor(u*5),local=u*5-lane,roof=.17+.06*Math.abs(lane-2);
     if(v>roof&&v<.87&&local>.12&&local<.85){if(y%7===0)return 3;if(local<.20||local>.78)return 8;return x%3===0?3:5;}
-    if(v>.87)return u>.38&&u<.62?7:8;
+    if(v>.87)return u>.38&&u<.62?Math.floor(v*50)%3===0?7:8:0;
    }else{
     const r=Math.hypot((u-.5)*1.2,(v-.44)*1.4);
     if(r<.26){if(r>.22)return 8;const jewel=Math.abs(u-.5)*2+Math.abs(v-.44);return jewel<.17?Math.sin(u*23+v*19+frame*.18)>.25?10:2:4;}
@@ -175,7 +185,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(lane===1&&Math.abs(ax-.50+.13*Math.sin(b*7))<.028)return 3;
    if(lane===2&&Math.abs(ax+b*.4-.45)<.035)return 13;
    // Dither within a material, never a flat oval flood fill.
-   
+
    if(ax<.46&&b<-.52)return (x%3===0)?light:dark;
    return colour;
   }
@@ -185,7 +195,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(Math.abs(u-.72)<.012&&v>.2&&v<.85)return 5;
    const lane=Math.abs(v-(.75-.26*u));if(lane<.006)return 4;
    if(v>.8&&u<.3&&Math.floor(u*80)%7<3)return Math.floor(v*40)%2?3:8;
-   return noise(x,y)>.98?15:noise(x,y)>.96?8:0;
+   return noise(x,y)>.995?7:noise(x,y)>.99?8:0;
   }
   if(kind==='mailrun'){
    const nodes=[[.15,.53],[.50,.32],[.85,.53]],step=Math.max(0,Math.min(3,stage));
@@ -209,7 +219,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    const sx=.10+.78*Math.min(1,step/3),sy=.80;
    if(Math.abs(v-sy)<.025&&Math.abs(u-sx)<.07)return Math.abs(u-sx)<.025?15:14;
    if(v>sy+.02&&v<sy+.08&&Math.abs(u-sx)<.04)return frame%2?6:11;
-   return noise(x,y)>.98?7:0;
+   return noise(x,y)>.995?7:0;
   }
   if(kind==='beacon'){
    // A receiver on a deserted shore: someone must still answer the line.
@@ -222,7 +232,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    const cliff=.75+.035*Math.sin(u*20)+.015*Math.sin(u*53);if(v>cliff&&u<.46)return v>cliff+.06?1:8;
    if(water){const ripple=Math.sin(v*70-u*13+t)*.5+Math.cos(u*44+v*23)*.3;if(Math.abs(u-.76)<(.025+(v-horizon)*.12)&&ripple>.4)return 13;if(Math.abs(u-.29)<.08&&ripple>.12)return 11;return 4;}
    if(Math.abs((v-.8)+.13*Math.sin(u*7))<.006&&u>.4)return 6;
-   return noise(x,y)>.987?15:noise(x,y)>.975?8:4;
+   return noise(x,y)>.997?15:noise(x,y)>.992?8:4;
   }
   if(kind==='shipyard'){
    // Dock gantries establish depth; a swept corvette has hull, bridge,
@@ -244,7 +254,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(Y<.13||Y>.93)return x%11<2?6:y%3===0?8:4;
    if(Y>.86&&Y<.89&&X>.17&&X<.84)return Math.floor(X*48-frame)%8<2?11:3;
    if(Y>.14&&Y<.26&&Math.abs(X-.50)<.33&&Math.abs(Math.sin(X*24))<.25)return 8;
-   return noise(x,y)>.984?7:noise(x,y)>.97?4:0;
+   return noise(x,y)>.996?7:noise(x,y)>.991?4:0;
   }
   if(kind==='original'||kind==='repair'){
    for(const cx of [.26,.73]){const dx=(u-cx)*1.3,dy=(v-.32),r=Math.hypot(dx,dy),a=Math.atan2(dy,dx)+t*.15;if(r<.19)return r<.035?15:Math.sin(a*3)>.25?8:6;}
@@ -252,13 +262,26 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    return v>.84&&x%3===0?8:0;
   }
   if(kind==='source'){
-   const dx=(u-.5)*2,dy=(v-.48)*2,r=Math.hypot(dx,dy),a=Math.atan2(dy,dx)+t*.10,edge=.57+.07*Math.sign(Math.cos(a*12));if(r<edge&&r>.31)return Math.sin(a*6)>.6?15:6;
-   if(Math.abs(dy)<.025&&Math.abs(dx)<.95)return Math.floor(x+frame*3)%7<2?11:8;
-   return r<.1?14:noise(x,y)>.99?8:0;
+   // A physical source workbench: recipe glass, cut solid, tool and calipers.
+   if(u>.05&&u<.38&&v>.14&&v<.56){if(u<.065||u>.36||v<.16||v>.54)return 8;
+    if(v>.23&&v<.25&&u<.29)return 14;if(v>.32&&v<.34&&u<.24)return 10;if(v>.40&&v<.46&&u<.31)return Math.floor(u*60+frame)%7<2?15:6;return 4;}
+   const dx=(u-.67)*2,dy=(v-.39)*2,solid=Math.abs(dx)+Math.abs(dy)*.78;
+   if(solid<.35){const cut=dx+dy*.4;if(Math.abs(cut-.05)<.025)return 0;
+    if(solid>.30)return dy<0?15:3;
+    const ribs=Math.abs(Math.sin(dx*36)*Math.cos(dy*28));return ribs>.87?15:cut>.05?3:11;}
+   if(u>.47&&u<.86&&v>.66&&v<.68)return 7;
+   if((Math.abs(u-.48)<.012||Math.abs(u-.85)<.012)&&v>.53&&v<.69)return 8;
+   if(Math.abs(v-(.65-u*.45))<.011&&u>.74&&u<.93)return 7;
+   if(Math.abs(u-.92)<.018&&v>.18&&v<.27)return 3;
+   if(v>.75&&v<.79&&u>.04&&u<.95)return v<.77?7:8;
+   if(v>.79&&v<.91&&(u>.1&&u<.16||u>.83&&u<.89))return 8;
+   if(v>.79&&v<.85&&u>.23&&u<.67)return Math.floor(u*45)%5<3?3:4;
+   return v>.94?8:noise(x,y)>.996&&v<.72?8:0;
   }
+
   if(kind==='vault'){
    const tower=Math.floor(u*4),local=(u*4)%1,roof=.14+Math.abs(tower-1.5)*.055;
-   if(v<roof)return noise(x,y)>.97?15:0;
+   if(v<roof)return noise(x,y)>.997?7:0;
    if(local<.09||local>.91)return 8;
    if(v>.9)return 6;
    if(v<roof+.06)return p[2];
@@ -266,11 +289,23 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    return local<.2?p[0]:0;
   }
   if(kind==='engine'){
-   const dx=(u-.5)*2,dy=(v-.47)*2,rad=Math.hypot(dx,dy),a=Math.atan2(dy,dx);
-   if(rad<.72){const fold=Math.sin(a*9+rad*27)+Math.cos(dx*23+dy*13);if(Math.abs(fold)<.25)return p[0];const path=Math.sin(a*5-rad*18+t);return path>.88?15:fold>.7?p[2]:fold>-.2?p[1]:p[0];}
-   if(rad<.79)return 8;if(Math.abs(dx)<.15&&dy>.6)return p[2];
-   if(Math.abs(dy-.85)<.04&&Math.abs(dx)<.6)return 6;
-   return noise(x,y)>.987?7:0;
+   // The entity workshop: a carved mask suspended in its service cradle.
+   const dx=(u-.5)*2,dy=(v-.44)*2,ax=Math.abs(dx),edge=.56-Math.max(0,dy-.15)*.38;
+   const orbit=Math.hypot(dx*.88,dy*.8);if(orbit>.67&&orbit<.69)return Math.abs(Math.sin(Math.atan2(dy,dx)*8+t))>.65?14:6;
+   if(dy>-.59&&dy<.66&&ax<edge){
+    const eye=Math.hypot((ax-.27)/.18,(dy+.12)/.13);if(eye<1.3){if(eye>1)return 8;if(eye<.42)return frame===3?6:15;return eye<.82?14:0;}
+    if(ax<.08&&dy>-.13&&dy<.22)return dx<-.025?6:dx>.025?7:15;
+    if(ax>.06&&ax<.13&&dy>.16&&dy<.22)return 0;
+    if(ax<.23&&Math.abs(dy-.37)<.035)return frame%3===1?11:0;
+    if(Math.abs(dy-(.14+ax*.40))<.028&&ax>.17)return 3;
+    if(ax>.39&&dy>.05&&dy<.38)return Math.floor(dy*50)%3===0?0:8;
+    const seam=Math.abs(dx-.035*Math.sin(dy*7));if(seam<.012)return 11;
+    return ax>edge-.05?8:dx<-.17?6:7;
+   }
+   for(const side of [-1,1]){const cx=.5+side*.39;if(Math.abs(u-cx)<.018&&v>.18&&v<.78)return u<cx?7:8;if(Math.abs(v-.64)<.012&&Math.abs(u-cx)<.11)return 3;}
+   if(v>.81&&v<.85&&u>.14&&u<.86)return v<.826?7:8;
+   if(v>.85&&v<.91&&u>.21&&u<.79)return Math.floor(u*48)%5===0?11:4;
+   return noise(x,y)>.996&&v<.7?8:0;
   }
   // The forge: chamber walls, a suspended volume, flowing cuts and hot jets.
   const dx=(u-.5)*2,dy=(v-.44)*2,core=Math.abs(dx)+Math.abs(dy*.85);
@@ -288,8 +323,8 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
   if(['eye','city','beacon','convoy','trip'].includes(kind))return 0;
   if(kind==='family')return 0;
   if(kind==='shipyard')return 0;
-  if(v>.86)return Math.abs(Math.sin((u-.5)*14/(v-.71)))<.12?8:0;
-  return v>.68?4:0;
+  if(['layer-now','layer-echo','layer-witness','models','vault'].includes(kind)&&v>.94)return y%3===0?8:0;
+  return 0;
  }
  const cells=[],candidates=[],quadrants=' ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█';
  const rgb=['000000','aa0000','00aa00','aa5500','0000aa','aa00aa','00aaaa','aaaaaa','555555','ff5555','55ff55','ffff55','5555ff','ff55ff','55ffff','ffffff'].map(h=>[0,2,4].map(i=>parseInt(h.slice(i,i+2),16)));

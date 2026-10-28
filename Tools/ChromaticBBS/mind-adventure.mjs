@@ -1,8 +1,9 @@
 /* The response is an explorable terminal, not a second model. Navigation,
  * player-written answers and the small roll receipt are local authored data. */
+import {discoveryPoints} from './reply-discoveries.mjs';
 import {causalResult} from './causality.mjs';
 export const tourRooms=['identity','memory','greater-mind','models','bob-family','source'];
-export function mindProgress(visit){const seen=new Set([...(visit.visited||[]),...(visit.events||[]).filter(e=>e.kind==='view').map(e=>e.node)]),rooms=tourRooms.filter(id=>seen.has(id)),answers=Object.keys(visit.answers||{}).filter(k=>(visit.answers[k]||'').trim()),rolled=!!visit.roll;return {rooms,answers,rolled,score:rooms.length*10+(visit.selectedTelling?20:0)+answers.length*5+(rolled?(visit.roll.success?10:5):0),ready:true,percent:Math.round((rooms.length+(visit.selectedTelling?1:0))/7*100)};}
+export function mindProgress(visit){const seen=new Set([...(visit.visited||[]),...(visit.events||[]).filter(e=>e.kind==='view').map(e=>e.node)]),rooms=tourRooms.filter(id=>seen.has(id)),answers=Object.keys(visit.answers||{}).filter(k=>(visit.answers[k]||'').trim()),rolled=!!visit.roll,explored=[...seen].filter(id=>id!=='hello');return {rooms,explored,answers,rolled,score:discoveryPoints(visit)+explored.length*10+(visit.selectedTelling?20:0)+answers.length*5+(rolled?(visit.roll.success?10:5):0),ready:true,percent:Math.min(100,Math.round(explored.length/13*100))};}
 export function causalDemo(sample,value=4){return causalResult(sample,value,14.10,{precision:2,below:.20,above:.30,bonus:{signal:1}});}
 export const causalAttributes=Object.freeze({
  guts:Object.freeze({value:5,title:'GUTS',text:'Commit under pressure. Hold your nerve when the sensible option is to leave the room.'}),

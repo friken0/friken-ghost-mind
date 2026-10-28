@@ -68,6 +68,7 @@ export function mountPortrait(canvas, report=()=>{}, options={}) {
   let pointer=[0,0],pointerActive=0,sway=0,lift=0,wing=0,swayVelocity=0,liftVelocity=0,wingVelocity=0,lastLaser=performance.now(),laserDelay=180000+Math.random()*120000,laserSerial=0;
   let pose=[.18,-.035,0,1],poseTarget=pose.slice(),poseFrom=pose.slice(),shiftAt=-Infinity,shiftSerial=0;
   let beat=0,lastBeat=-Infinity,hitch=0,paragraphKey=null,pendingParagraph=false;
+  let authoredShot=false;
   function cutTo(next,now){poseFrom=pose.slice();poseTarget=next.slice();shiftAt=now;shiftSerial++;}
   portrait.expression=time=>{
     const now=performance.now(),dt=Math.max(0,Math.min(.1,(now-last)/1000));last=now;
@@ -112,7 +113,7 @@ export function mountPortrait(canvas, report=()=>{}, options={}) {
         const energy=speaking&&measured?mouth:0;
         // One shot per source paragraph, admitted by its real voiced playback.
         // Sentence/PCM buffer boundaries and consonant attacks cannot cut.
-        if(pendingParagraph&&energy>.015){
+        if(!authoredShot&&pendingParagraph&&energy>.015){
           cutTo(poses[beat++%poses.length],now);lastBeat=now;pendingParagraph=false;
         }
         // Most travel happens early; the wider spectral bridge resolves with
@@ -171,6 +172,16 @@ export function mountPortrait(canvas, report=()=>{}, options={}) {
   }
   announce();
   return {
+    // Recorded monologues use this same camera/RAF and dissolve history.
+    // This is staging, never a new geometry or fabricated speech signal.
+    stageShot({yaw=0,pitch=0,roll=0,zoom=1,gazeX=0,gazeY=0}={}){
+      const values=[yaw,pitch,roll,zoom,gazeX,gazeY];
+      if(values.some(v=>!Number.isFinite(v))||Math.abs(yaw)>1.1||Math.abs(pitch)>.25||Math.abs(roll)>.16||zoom<.85||zoom>1.35||Math.abs(gazeX)>1||Math.abs(gazeY)>1)throw Error('Recorded portrait shot exceeds its camera bounds');
+      authoredShot=true;pendingParagraph=false;
+      target=[gazeX*EYE_TRAVEL_X,gazeY*EYE_TRAVEL_Y];
+      cutTo([yaw,pitch,roll,zoom],performance.now());portrait.schedule();
+    },
+    releaseShot(){authoredShot=false;},
     versions:FACE_VERSIONS,
     get companion(){return portrait.version.companion||null;},
     get version(){const {id,title}=portrait.version;return {id,title};},

@@ -24,6 +24,18 @@ test('actual portrait closure gates both mouths, freezes Else during Ghost and c
  const back=p.api.focusSpeaker('ghost');p.draw(900);assert.equal(await back,true);assert.equal(+p.canvas.dataset.companionFocus,0);
  p.api.destroy();
 });
+test('authored recording shots retain the requested look across speech cues and reject unsafe camera values',()=>{
+ const p=portraitHarness();
+ assert.throws(()=>p.api.stageShot({zoom:0}));assert.throws(()=>p.api.stageShot({yaw:NaN}));
+ p.api.stageShot({yaw:-.64,pitch:.05,zoom:1.18,gazeX:-1});
+ p.api.speaker('ghost');p.api.talking(true);p.api.audioLevel(.6);
+ p.api.articulate({paragraph:'recorded-1',jaw:.5});p.draw(600);
+ assert.equal(p.canvas.dataset.pose,'-0.640,0.050,0.000,1.180');
+ p.api.articulate({paragraph:'recorded-2',jaw:.7});p.api.audioLevel(.6);p.draw(600);
+ assert.equal(p.canvas.dataset.pose,'-0.640,0.050,0.000,1.180');
+ p.api.releaseShot();p.api.articulate({paragraph:'normal-next',jaw:.4});p.api.audioLevel(.6);p.draw(50);p.draw(600);
+ assert.notEqual(p.canvas.dataset.pose,'-0.640,0.050,0.000,1.180');p.api.destroy();
+});
 test('actual camera focuses the serpent, stays outside its head and shares exact field/scissor vectors throughout travel',()=>{
  const base=portraitCamera({headYaw:.18,headPitch:-.035}),close=portraitCamera({companionFocus:1});assert.ok(close.target[1]>.5);assert.ok(close.distance<base.distance*.25);assert.ok(close.eye[2]>.65,'camera remains in front of the forehead and serpent');
  for(const focus of [0,.1,.3,.5,.8,1]){

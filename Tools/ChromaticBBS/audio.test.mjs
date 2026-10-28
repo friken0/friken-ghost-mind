@@ -51,3 +51,5 @@ test('tactile UI cues are distinct, quiet finite PCM with no unstable sample-rat
   const pcm=renderInterfaceCue(kind,rate);assert.ok(pcm.length<=rate*.2);assert.ok(pcm.every(Number.isFinite));assert.ok(pcm.some(x=>Math.abs(x)>.001));assert.ok(pcm.every(x=>Math.abs(x)<=.022));assert.equal(pcm[0],0);assert.ok(Math.abs(pcm.at(-1))<.00001);signatures.add(createHash('sha256').update(Buffer.from(pcm.buffer)).digest('hex'));
  }assert.equal(signatures.size,12);assert.throws(()=>renderInterfaceCue('unknown'));assert.throws(()=>renderInterfaceCue('tap',200000));
 });
+
+test('score and secret rewards have bounded bell tails on the existing SFX path',()=>{for(const rate of [8000,24000,48000]){const score=renderInterfaceCue('score',rate),secret=renderInterfaceCue('secret',rate);assert.ok(secret.length>score.length*2);for(const pcm of [score,secret]){assert.equal(pcm[0],0);assert.ok(pcm.every(Number.isFinite));assert.ok(Math.max(...pcm)<.2);assert.ok(Math.abs(pcm.at(-1))<.00001);assert.ok(pcm.some(x=>Math.abs(x)>.03));}}});

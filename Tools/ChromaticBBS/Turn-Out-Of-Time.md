@@ -540,3 +540,31 @@ The same20Hz host clock owns this field; no random noise or extra analyser.
 Use `render-ansi-review.py --rows 18 --only trip --output <folder>` to inspect
 its actual wide source aspect. A static source render does not prove live
 music playback; after Prime's stop instruction no further GUI test is made.
+
+
+## First meeting / things worth noticing
+
+The reply greets a specific caller before explaining its machinery. Keep
+ordinary topics short; reference shared interests through the situation,
+not a list of franchises. Else has a separate joke or observation. Typed
+answers remain exact, local, and included with the next-author packet.
+
+Every new authored topic pays exploration once. The score counts upward;
+a short ANSI card shows +delta and its reason. The existing SFX bus plays
+one bell, not one sound per point. Discovery bonuses use an ascending cue.
+The retained20Hz host owns the envelope. Serial completion and actor exit
+hold it; speech pauses its lifetime. Reduced motion retains a steady card.
+No control or hit region scales with the reward. Quiet toggles stay quiet.
+
+`reply-discoveries.mjs` owns three authored secrets and exact points.
+Picture targets are ordinary bounded terminal-cell hotspots, not a second
+choice pane. The harder clue needs an archive visit, an inferred sysop name
+and a completed trial; a bad roll does not make the clue impossible. Known
+IDs in the visit determine points. Repeat discovery, replay, edited input
+and journal compaction never multiply that bonus. Keep discoveries and
+workshop outcomes in the return packet. These are local game scores only.
+
+Review actual source frames and full terminal compositions at several
+aspects. Give lettering at least seven source pixels vertically; otherwise
+the block font silently drops strokes. Match the dense sprite's source
+aspect. Keep the original painting visible from the first serial cell.

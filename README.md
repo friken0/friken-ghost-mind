@@ -427,5 +427,12 @@ See [Turn-Out-Of-Time.md](Tools/ChromaticBBS/Turn-Out-Of-Time.md),
 [Native-Response-Host.md](Tools/ChromaticBBS/Native-Response-Host.md) and
 [Face-Compositing.md](Tools/ChromaticBBS/Face-Compositing.md). Historical2.27 remains unchanged.
 
+The October28 first-impression pass rewrites all fourteen conversations,
+refines the illustrated workbench and Bitcoin skyline, and adds three
+persistent discoveries. Exploration and secrets produce a short ANSI score
+count-up with a synthesized bell; rewards wait until dialogue and serial
+drawing finish. The same exact visit carries the discoveries into its next
+reply packet. Reduced motion and SFX preferences still apply.
+
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.

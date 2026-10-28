@@ -81,7 +81,7 @@ test('the actual generated reply atlas is admitted and drawn by the retained rea
   assert.ok(program.hotspots.length>16,'regression requires the full atlas, not a small mocked command bar');
   host=mountNativeResponseHost(f.root,{terminal:f.terminal});host.show(program,{immediate:true});
   assert.equal(host.canvas,f.canvas);assert.equal(host.terminal.complete,true);assert.equal(host.terminal.hotspots.length,program.hotspots.length);
-  assert.match(host.terminal.buffer.text,/SCORE 0000/);assert.match(host.terminal.buffer.text,/DOORS 0\/6/);
+  assert.match(host.terminal.buffer.text,/SCORE 0000/);assert.match(host.terminal.buffer.text,/DOORS 0\/13/);
   assert.equal(host.terminal.buffer.cells[0].char,'╔');assert.equal(host.terminal.buffer.cells[1999].char,'╝');
   assert.ok(f.paint.some(p=>p[0]==='glyph'&&p[1]==='╔'),'actual terminal glyph printer ran');
   const admitted=Array.from({length:96},(_,i)=>({id:'bounded-'+i,row:1,column:1,width:1,height:1}));
@@ -108,4 +108,20 @@ test('adaptive grid fills viewport height within a single cell without distortin
 test('promotion keeps the exact GhostLink canvas until fullscreen, then the next scene starts cleared',async()=>{
  const f=fakeHost(),old=globalThis.ResizeObserver;globalThis.ResizeObserver=f.ResizeObserver;let host;
  try{f.terminal.setMode('held');const oldCanvas=f.canvas,from={left:120,top:110,width:400,height:250};host=mountNativeResponseHost(f.root,{terminal:f.terminal});const done=host.promote({from,duration:.65});assert.equal(parseFloat(f.canvas.style.width),400);assert.equal(host.canvas,oldCanvas);f.flush(1000);f.flush(1400);assert.ok(parseFloat(f.canvas.style.width)>400);f.flush(1800);await done;assert.equal(host.canvas,oldCanvas);assert.deepEqual(host.grid,nativeTerminalGrid(f.root.getBoundingClientRect()));host.show({grid:host.grid,text:'\x1b[2J\x1b[1;1HNEW SCENE',hotspots:[]});assert.equal(f.terminal.buffer.text.trim(),'');f.flush(1900);assert.ok(!f.terminal.buffer.text.includes('GHOSTLINK'));}finally{host?.destroy();if(old===undefined)delete globalThis.ResizeObserver;else globalThis.ResizeObserver=old;}
+});
+
+test('score payoff waits for serial ink and actor exit, counts once and pauses its lifespan under speech',()=>{
+ const f=fakeHost(),old=globalThis.ResizeObserver;globalThis.ResizeObserver=f.ResizeObserver;let host;const sounds=[];
+ try{
+  host=mountNativeResponseHost(f.root,{terminal:f.terminal,onReward:r=>sounds.push(r)});
+  host.show({text:'\x1b[2J'+('x'.repeat(1000)),hotspots:[]});host.reward({from:10,to:138,label:'OFFICE FOUND',bonus:true});
+  f.flush(1000);f.flush(1100);assert.equal(sounds.length,0,'do not ding while the new screen is still drawing');
+  host.reveal();host.overlay(true);f.flush(1200);assert.equal(sounds.length,0,'do not hide the first payoff behind Ghost');
+  host.overlay(false);f.flush(1300);assert.equal(sounds.length,1);assert.equal(sounds[0].delta,128);
+  f.flush(1800);assert.match(host.terminal.buffer.text,/SCORE 01/);
+  host.overlay(true);f.flush(10000);host.overlay(false);f.flush(10100);
+  const rewardCanvas=host.element.children.find(n=>n!==f.canvas&&n.tagName==='CANVAS');assert.equal(rewardCanvas.hidden,false,'speech pauses the presentation clock instead of swallowing the reward');
+  f.flush(11000);assert.match(host.terminal.buffer.text,/SCORE 0138/);assert.equal(sounds.length,1,'not one sound per counted point');
+  f.flush(15000);assert.equal(rewardCanvas.hidden,true);assert.equal(f.raf.size,1,'the existing host clock owns the reward');
+ }finally{host?.destroy();if(old===undefined)delete globalThis.ResizeObserver;else globalThis.ResizeObserver=old;}
 });

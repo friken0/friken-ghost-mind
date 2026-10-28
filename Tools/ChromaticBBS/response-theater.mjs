@@ -1,3 +1,4 @@
+import {discoveryIds,canDiscover} from './reply-discoveries.mjs';
 import {localWorkshop} from './door-and-crew.mjs';
 import {causalResult} from './causality.mjs';
 import {mountAnsiUI} from './ansi-ui.mjs';
@@ -15,15 +16,15 @@ export function validateTurnOutOfTime(packet){
   return structuredClone(packet);
 }
 
-export function newReplyVisit(packet){return {schema:'friktal.turn-out-of-time.visit.v1',reply:packet.id,current:packet.openingId,selectedTelling:null,visited:[],answers:{},roll:null,workshop:localWorkshop(),events:[]};}
+export function newReplyVisit(packet){return {schema:'friktal.turn-out-of-time.visit.v1',reply:packet.id,current:packet.openingId,selectedTelling:null,visited:[],answers:{},roll:null,workshop:localWorkshop(),discoveries:[],events:[]};}
 export function validateReplyVisit(value,packet){
   if(!value||value.schema!=='friktal.turn-out-of-time.visit.v1'||value.reply!==packet.id||!packet.nodes.some(n=>n.id===value.current)||!Array.isArray(value.events)||value.events.length>256||JSON.stringify(value).length>64000)throw Error('Invalid retained reply visit');
   if(value.visited!==undefined&&(!Array.isArray(value.visited)||value.visited.length>32||value.visited.some(id=>!packet.nodes.some(n=>n.id===id))))throw Error('Invalid visited rooms');
   if(value.answers!==undefined&&(!value.answers||Array.isArray(value.answers)||Object.keys(value.answers).some(k=>!['question','principle'].includes(k)||typeof value.answers[k]!=='string'||value.answers[k].length>1200)))throw Error('Invalid player answers');
   if(value.roll!==undefined&&value.roll!==null&&(!Number.isFinite(value.roll.die)||value.roll.die<.01||value.roll.die>20||value.roll.dc!==14.1||(!Number.isInteger(value.roll.value)||value.roll.value<0||value.roll.value>8)||value.roll.system!=='causality-v1'))throw Error('Invalid demonstration roll');
   if(value.selectedTelling!==null&&!['demo-keep','demo-repair'].includes(value.selectedTelling))throw Error('Invalid selected telling');
-  if(value.workshop!==undefined)localWorkshop(value.workshop);
-  for(const e of value.events){if(!Number.isInteger(e.sequence)||e.sequence<1||!['view','choice','answer','roll','workshop'].includes(e.kind))throw Error('Invalid visit event');if(e.kind==='workshop')localWorkshop(e.value);if(e.kind==='view'&&!packet.nodes.some(n=>n.id===e.node))throw Error('Invalid visited node');if(e.kind==='choice'&&!packet.nodes.find(n=>n.id===e.from)?.choices.some(c=>c.id===e.id&&c.target===e.to))throw Error('Invalid visited choice');}
+  if(value.workshop!==undefined)localWorkshop(value.workshop);discoveryIds(value);
+  for(const e of value.events){if(!Number.isInteger(e.sequence)||e.sequence<1||!['view','choice','answer','roll','workshop','discovery'].includes(e.kind))throw Error('Invalid visit event');if(e.kind==='discovery'&&(!discoveryIds(value).includes(e.id)||typeof e.source!=='string'))throw Error('Invalid discovery event');if(e.kind==='workshop')localWorkshop(e.value);if(e.kind==='view'&&!packet.nodes.some(n=>n.id===e.node))throw Error('Invalid visited node');if(e.kind==='choice'&&!packet.nodes.find(n=>n.id===e.from)?.choices.some(c=>c.id===e.id&&c.target===e.to))throw Error('Invalid visited choice');}
   return structuredClone(value);
 }
 export function recordReplyVisit(value,entry,packet){
@@ -36,6 +37,7 @@ export function recordReplyVisit(value,entry,packet){
     if(c.id==='keep-original'||c.id==='label-repair')out.selectedTelling=c.target;
   }else if(entry.kind==='answer'){if(!['question','principle'].includes(entry.id)||typeof entry.text!=='string'||entry.text.length>1200)throw Error('Invalid player answer');out.answers={...(out.answers||{}),[entry.id]:entry.text};
   }else if(entry.kind==='roll'){const r=entry.result;if(!r||!Number.isInteger(r.value)||r.value<0||r.value>8||r.dc!==14.1)throw Error('Invalid demo target');const exact=causalResult(r.die,r.value,14.1,{precision:2,below:.2,above:.3,bonus:{signal:1}});if(r.total!==exact.total||r.grade!==exact.grade||r.success!==exact.success)throw Error('Invalid demo arithmetic');if(r.statId!==undefined&&!['guts','focus','glitch','awe','insight'].includes(r.statId))throw Error('Invalid roll aptitude');out.roll={...exact,...(r.statId?{statId:r.statId}:{})};
+  }else if(entry.kind==='discovery'){if(!canDiscover(entry.id,out,entry.source))throw Error('Discovery is not available');out.discoveries=[...discoveryIds(out),entry.id];
   }else if(entry.kind==='workshop'){out.workshop=localWorkshop(entry.value);
   }else throw Error('Unknown reply event');
   out.events.push({...entry,sequence});out.events=out.events.slice(-256);while(out.events.length>1&&JSON.stringify(out).length>60000)out.events.shift();

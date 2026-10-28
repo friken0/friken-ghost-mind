@@ -13,7 +13,7 @@ const screens=['map','tools','layer','topic','illustrations','bb-images','answer
 test('every screen fits portrait, classic and wide grids with one action pane and compact settings',()=>{
  for(const grid of [{columns:80,rows:25},{columns:80,rows:39},{columns:108,rows:25},{columns:160,rows:50}])for(const screen of screens){
   const p=nativeReplyProgram({...base,grid,screen,receipt:'ROW\n'.repeat(80)}),b=decode(p);assert.equal(b.cells.length,grid.columns*grid.rows);assert.equal(b.cells[0].char,'╔');assert.equal(b.cells.at(-1).char,'╝');assert.ok(p.text.length<128000);
-  for(const h of [...p.hotspots,...p.fields]){assert.ok(h.row>=1&&h.column>=1&&h.row+h.height<=grid.rows+1&&h.column+h.width<=grid.columns+1);if(['voice','music','sfx','motion','verb:skirmish','speed'].includes(h.id))assert.equal(h.row,grid.rows-1);else if(!p.fields.includes(h))assert.ok(h.column>=49,screen+' has competing actions outside its pane');}
+  for(const h of [...p.hotspots,...p.fields]){assert.ok(h.row>=1&&h.column>=1&&h.row+h.height<=grid.rows+1&&h.column+h.width<=grid.columns+1);if(['voice','music','sfx','motion','verb:skirmish','speed'].includes(h.id))assert.equal(h.row,grid.rows-1);else if(!p.fields.includes(h)&&!h.id.startsWith('secret:'))assert.ok(h.column>=49,screen+' has competing actions outside its pane');}
   for(let i=0;i<p.hotspots.length;i++)for(let j=i+1;j<p.hotspots.length;j++)assert.equal(overlap(p.hotspots[i],p.hotspots[j]),false,screen+': '+p.hotspots[i].id+' vs '+p.hotspots[j].id);
   for(const f of p.fields)for(const h of p.hotspots)assert.equal(overlap(f,h),false);
  }
@@ -47,7 +47,7 @@ test('Causality retains exact result and resonance semantics',()=>{
 
 test('all rigs have actual capture bounds, persistent selection, wrapped titles and explicit Back',()=>{
  for(const effect of ['blink','breathe','serpent','flame','water','ripple','flutter','hover','recoil','faces']){const p=nativeReplyProgram({...base,screen:'motion-lab',rigEffect:effect});assert.ok(p.sprite.width>0&&p.sprite.height>0&&p.sprite.row>0,effect);assert.equal(p.sprite.effect,effect);assert.ok([0,1,2].some(actionPage=>nativeReplyProgram({...base,screen:'motion-lab',rigEffect:effect,actionPage}).hotspots.some(h=>h.id==='rig:'+effect&&h.ariaLabel.includes('CURRENT'))));assert.ok(p.hotspots.some(h=>h.id==='back'));}
- const p=nativeReplyProgram({...base,screen:'topic',current:'bob-family'}),b=decode(p);assert.ok(!b.text.split('\n')[3].includes('...'));assert.ok(b.text.includes('family resemblance'));
+ const p=nativeReplyProgram({...base,screen:'topic',current:'bob-family'}),b=decode(p);assert.ok(!b.text.split('\n')[3].includes('...'));assert.ok(b.text.includes('Same launch.'));
  const images=nativeReplyProgram({...base,screen:'bb-images'});assert.ok(images.hotspots.some(h=>h.id==='illustration:0'&&h.ariaLabel.includes('CURRENT')));
 });
 test('playable Door and crew show resources, typed name and real action routes in the one pane',()=>{for(const grid of [{columns:80,rows:25},{columns:80,rows:39}]){const door=nativeReplyProgram({...base,grid,screen:'door-game'}),crew=nativeReplyProgram({...base,grid,screen:'crew-builder'});assert.match(decode(door).text,/FUEL 5\/5.*HULL 6\/6/);assert.ok(door.hotspots.some(h=>h.id==='door:direct'));assert.ok(crew.fields.some(f=>f.id==='crew-name'));assert.ok(crew.hotspots.some(h=>h.id==='crew-order:sandbox'));}});
