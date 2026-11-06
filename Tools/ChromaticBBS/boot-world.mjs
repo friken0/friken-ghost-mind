@@ -1,3 +1,4 @@
+import {createFrameBudget} from '../InfiniEngineSite/ghost-renderer.js';
 import {mountAnsiTerminal} from './ansi-terminal.mjs';
 import {craftShaderSource} from './vendor/sdf-craft/craft-shader.mjs';
 import {requestMaterialAtlas,releaseMaterialOwner} from './vendor/sdf-craft/materials-client.mjs';
@@ -5,7 +6,7 @@ import {requestMaterialAtlas,releaseMaterialOwner} from './vendor/sdf-craft/mate
  * Presentation follows the connection clock; it has no game/RNG authority.
  * One bounded WebGL canvas. Hidden/reduced/paused scenes stop time; CPU draw
  * submission and visible FPS are measured separately from unmeasured GPU cost. */
-export const bootWorldBudget={steps:76,fps:30,pixelRatio:'auto'};
+export const bootWorldBudget={steps:76,fps:60,pixelRatio:'auto'};
 // One layout anchor drives aperture geometry, light, focus and ray picking.
 export const bootPortalCenter=Object.freeze([2.4,.95,3.8]);
 export function bootRenderScale(requested='auto',{pixelRatio=1,apple=false}={}){
@@ -79,25 +80,49 @@ uniform vec2 uDrive;
 uniform vec3 uEye,uLook;
 uniform float uLens;
 uniform vec4 uLamps;
+uniform vec2 uCoreTurn,uRelayXY,uRelayYZ;
+uniform vec4 uKnotTurns[4];
 uniform sampler2D uSkinAlbedo,uSkinMatrix;
 uniform float uSkinReady;
 uniform sampler2D uTerminal;
 uniform float uTerminalReady;
 ${craftShaderSource}
+// Constant-shape entry points avoid a runtime dispatcher in Apple's Metal
+// translation. Same canonical envelope and primitive, no alternate geometry.
+float bootCrystal(vec3 p,vec3 scale){
+ float unit=min(scale.x,min(scale.y,scale.z)),bound=CraftBox(p.x,p.y,p.z,scale.x,scale.y,scale.z),gate=unit*.16;
+ if(bound>=gate)return bound;
+ vec3 q=p/scale;float d=CraftCrystal(q.x,q.y,q.z,.72,.46);
+ return min(max(d*unit,bound),max(bound,gate));
+}
+float bootBearing(vec3 p){
+ vec3 scale=vec3(.27,.18,.22);float unit=.18,bound=CraftBox(p.x,p.y,p.z,.27,.18,.22),gate=unit*.16;
+ if(bound>=gate)return bound;
+ vec3 q=p/scale;float d=CraftSocket(q.x,q.y,q.z,.5,.4);
+ return min(max(d*unit,bound),max(bound,gate));
+}
 const vec3 BOOT_PORTAL=vec3(${bootPortalCenter.join(',')});
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 float box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
 float rounded(vec3 p,vec3 b,float r){return box(p,b)-r;}
 float torus(vec3 p,vec2 t){return length(vec2(length(p.xy)-t.x,p.z))-t.y;}
 mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+mat2 turnPair(vec2 cs){return mat2(cs.x,-cs.y,cs.y,cs.x);}
 vec2 join(vec2 a,vec2 b){return a.x<b.x?a:b;}
 vec2 map(vec3 p){
+ // Exact union pruning: only enter a component if its conservative box is
+ // nearer than the closest distance already known (the infinite deck).
+ // Boxes never become surfaces. All retained CSG, steps and normals agree
+ // with the unpruned scene; distant rays avoid whole unused call trees.
+ vec2 d=vec2(p.y+1.04,11.);
+ if(box(p-vec3(0.,-.10,-.70),vec3(1.70,1.15,1.15))<d.x){
  // Brushed metal modem with a vented face and armoured corners.
  vec3 m=p-vec3(0.,-.48,-.7);m.xz=rot(-.10)*m.xz;
  float hull=rounded(m,vec3(1.38,.24,.68),.11);
  float hatch=rounded(m-vec3(0.,.26,.02),vec3(.82,.105,.39),.035);
  hull=max(hull,-hatch);
- vec2 d=vec2(hull,1.);
+ vec2 modem=vec2(hull,1.);
+ vec2 prior=d;d=modem;
  d=join(d,vec2(rounded(m-vec3(0.,.20,.02),vec3(.73,.018,.31),.018),2.));
  float panel=rounded(m-vec3(0.,.04,-.81),vec3(1.12,.135,.035),.025);
  d=join(d,vec2(panel,2.));
@@ -110,11 +135,11 @@ vec2 map(vec3 p){
  vec3 foot=m;foot.x=abs(foot.x)-1.10;foot.z=abs(foot.z)-.48;
  d=join(d,vec2(rounded(foot-vec3(0.,-.33,0.),vec3(.14,.09,.13),.04),1.));
  // GHOSTLINK phase modem: suspended octahedral core and three carrier coils.
- vec3 core=m-vec3(0.,.69,.02);core.xz=rot(uTime*.16)*core.xz;
+ vec3 core=m-vec3(0.,.69,.02);core.xz=turnPair(uCoreTurn)*core.xz;
  float pulseScale=1.+uBands.x*.10;
- float crystal=CraftEval(40.,core.x,core.y,core.z,.30*pulseScale,.33*pulseScale,.30*pulseScale,.72,.46);
+ float crystal=bootCrystal(core,vec3(.30,.33,.30)*pulseScale);
  d=join(d,vec2(crystal,13.));
- for(int k=0;k<3;k++){vec3 coil=m-vec3(0.,.42+float(k)*.17,.02);coil.xz=rot(float(k)*.7)*coil.xz;coil.y+=.03*sin(CraftAngle(coil.z,coil.x)*6.+uTime*.7)*uBands.y;d=join(d,vec2(torus(coil.xzy,vec2(.42+float(k)*.07,.023)),14.));}
+ for(int k=0;k<3;k++){vec3 coil=m-vec3(0.,.42+float(k)*.17,.02);coil.xz=rot(float(k)*.7)*coil.xz;if(uBands.y>0.)coil.y+=.03*sin(CraftAngle(coil.z,coil.x)*6.+uTime*.7)*uBands.y;d=join(d,vec2(torus(coil.xzy,vec2(.42+float(k)*.07,.023)),14.));}
  vec3 bolt=m;bolt.x=abs(m.x)-1.24;bolt.z=abs(m.z)-.55;bolt.y-=.23;d=join(d,vec2(length(bolt)-.07,3.));
  vec3 armour=m;armour.x=abs(m.x)-1.35;armour.y-=.02;
  float cheek=max(rounded(armour,vec3(.14,.27,.57),.045),abs(armour.z)+armour.y*.35-.59);d=join(d,vec2(cheek,1.));
@@ -124,6 +149,9 @@ vec2 map(vec3 p){
   vec3 led=m-vec3(-.73+float(i)*.45,.04,-.875);
   d=join(d,vec2(rounded(led,vec3(.12,.045,.026),.02),4.+float(i)));
  }
+ d=join(d,prior);
+ }
+ if(box(p-vec3(-2.75,.35,.85),vec3(1.95,1.55,.65))<d.x){
  // SDF terminal: recessed glass, split bezel, service slots and seated stand.
  vec3 monitor=p-vec3(-2.75,.50,.85);
  float housing=rounded(monitor,vec3(1.83,1.22,.32),.09);
@@ -137,6 +165,8 @@ vec2 map(vec3 p){
  d=join(d,vec2(rounded(monitor-vec3(0.,-1.50,-.02),vec3(.75,.065,.47),.035),16.));
  vec3 screw=monitor-vec3(0.,0.,-.37);screw.xy=abs(screw.xy)-vec2(1.74,1.13);
  d=join(d,vec2(length(screw)-.035,3.));
+ }
+ if(box(p-BOOT_PORTAL,vec3(2.85,2.85,.50))<d.x){
  // Concentric mechanical aperture: brass ribs around a cyan carrier throat.
  vec3 r=p-BOOT_PORTAL;
  d=join(d,vec2(torus(r,vec2(2.30,.12)),3.));
@@ -146,11 +176,12 @@ vec2 map(vec3 p){
  float ang=CraftAngle(r.y,r.x);vec3 ribs=r;
  float sector=floor(ang/.52359878+.5)*.52359878;ribs.xy=rot(sector)*ribs.xy;
  vec3 bearing=ribs-vec3(2.30,0.,0.);
- d=join(d,vec2(CraftEval(35.,bearing.x,bearing.y,bearing.z,.27,.18,.22,.5,.4),3.));
+ d=join(d,vec2(bootBearing(bearing),3.));
  // Keyed collars and the root bus share the nearest angular sector.
  vec3 collar=ribs-vec3(2.52,0.,0.);
  float keyed=rounded(collar,vec3(.12,.065,.085),.02);
  keyed=max(keyed,-box(collar,vec3(.15,.025,.045)));d=join(d,vec2(keyed,2.));
+ }
  // Physical data conduit climbs from the modem into the aperture.
  vec3 cable=p-vec3(0.,-.48,0.);float route=clamp((cable.z+.7)/4.5,0.,1.);route=route*route*(3.-2.*route);
  float pathX=.82*sin(cable.z*.80)*(1.-route)+BOOT_PORTAL.x*route;
@@ -160,15 +191,15 @@ vec2 map(vec3 p){
  conduit=max(conduit,abs(cable.z-1.55)-2.45);d=join(d,vec2(conduit,9.));
  // Distant folded relays: geometry, not a painted tunnel.
  if(p.z>5.){
-  vec3 seed=(p-BOOT_PORTAL-vec3(0.,0.,1.9))/(1.+uDrive.x*.20+uDrive.y*.08);seed.xy=rot(uTime*.12)*seed.xy;seed.yz=rot(.6+uTime*.09)*seed.yz;
+  vec3 seed=(p-BOOT_PORTAL-vec3(0.,0.,1.9))/(1.+uDrive.x*.20+uDrive.y*.08);seed.xy=turnPair(uRelayXY)*seed.xy;seed.yz=turnPair(uRelayYZ)*seed.yz;
   float gem=(dot(abs(seed),vec3(1.))-.44)*.57735;
-  for(int k=0;k<4;k++){vec3 knot=seed;knot.xy=rot(float(k)*.7854+uTime*.07)*knot.xy;knot.yz=rot(float(k)*.64)*knot.yz;gem=min(gem,torus(knot,vec2(.56+float(k)*.075,.022)));}
+  for(int k=0;k<4;k++){vec3 knot=seed;knot.xy=turnPair(uKnotTurns[k].xy)*knot.xy;knot.yz=turnPair(uKnotTurns[k].zw)*knot.yz;gem=min(gem,torus(knot,vec2(.56+float(k)*.075,.022)));}
   d=join(d,vec2(gem,12.));
   vec3 c=p-BOOT_PORTAL-vec3(0.,0.,.2);float z=floor(c.z/3.6);c.z=mod(c.z,3.6)-1.8;c.xy=rot(z*.28+uProgress*.1)*c.xy;
   float frame=max(abs(length(c.xy)-max(2.5,4.8-z*.08))-.055,abs(c.z)-.055);
   d=join(d,vec2(frame,10.));
  }
- d=join(d,vec2(p.y+1.04,11.));return d;
+ return d;
 }
 vec2 bootSkinUv(vec2 uv,float tile){vec2 cell=vec2(mod(tile,4.),floor(tile/4.));return (cell+vec2(1./128.)+fract(uv*2.5)*(1.-2./128.))/vec2(4.,2.);}
 void bootSkin(vec3 p,vec3 n,float id,out vec3 base,out vec4 matrix){
@@ -197,7 +228,7 @@ void main(){
  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
  vec3 ro=uEye;
  vec3 target=uLook;vec3 f=normalize(target-ro),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f);
- vec3 rd=normalize(f*uLens+uv.x*r+uv.y*up),col=sky(rd);float travel=0.,glow=0.;vec2 hit=vec2(1.);
+ vec3 rd=normalize(f*uLens+uv.x*r+uv.y*up),skyColor=sky(rd),col=skyColor;float travel=0.,glow=0.;vec2 hit=vec2(1.);
  // The screen is an analytic world plane inside the SDF bezel. Its direct
  // emission bypasses marching/tonemapping so 80 columns stay pixel-legible.
  float screenDepth=(.53-ro.z)/rd.z;
@@ -214,7 +245,7 @@ void main(){
   if(hit.x<.0015||travel>34.)break;travel+=max(.006,hit.x*.78);
  }
  if(travel<34.&&hit.x<.01){
-  vec3 p=ro+rd*travel,n=normal(p),light=normalize(vec3(-3.,5.,-4.));
+  vec3 p=ro+rd*travel,n=hit.y>10.5&&hit.y<11.5?vec3(0.,1.,0.):normal(p),light=normalize(vec3(-3.,5.,-4.));
   float diffuse=max(dot(n,light),0.),spec=pow(max(dot(reflect(-light,n),-rd),0.),48.);
   float grain=hash(floor(p*220.));vec3 base=vec3(.075,.10,.11);float metal=.6;vec3 emit=vec3(0.);
   if(hit.y>15.5){base=vec3(.08,.11,.14);metal=.8;}
@@ -245,7 +276,7 @@ void main(){
    vec3 hue=k==0?vec3(.02,.8,.7):k==1?vec3(.3,.14,1.):k==2?vec3(.9,.04,.4):vec3(1.,.57,.08);
    col+=hue*crest*exp(-radial*.75)*power*(.17+uDrive.x*.6);
   }
-  col=mix(col,sky(rd),1.-exp(-travel*.034));
+  col=mix(col,skyColor,1.-exp(-travel*.034));
  }
  // Analytic lamp bloom in the same world coordinates; stopped by occluders.
  for(int k=0;k<4;k++){
@@ -279,14 +310,15 @@ const bootGlassFragment=`precision highp float;
 uniform vec2 uRes;uniform vec3 uEye,uLook;uniform float uLens;uniform sampler2D uTerminal,uBackground;
 void main(){vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;vec3 f=normalize(uLook-uEye),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f),rd=normalize(f*uLens+uv.x*r+uv.y*up);float depth=(.53-uEye.z)/rd.z;vec3 p=uEye+rd*depth-vec3(-2.75,.54,.53);vec3 col=texture2D(uBackground,gl_FragCoord.xy/uRes).rgb;
  if(rd.z>0.&&depth>0.&&abs(p.x)<1.6&&abs(p.y)<1.){vec2 tex=vec2(.5-p.x/3.2,.5-p.y/2.);col=texture2D(uTerminal,tex).rgb*pow(1.-max(abs(tex.x-.5),abs(tex.y-.5))*1.25,.3)+vec3(.002,.005,.009);}gl_FragColor=vec4(col,1.);}`;
-export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,0],level=()=>0,reduced=false,pixelRatio='auto',terminal:terminalOptions={}}={}){
+export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,0],level=()=>0,reduced=false,pixelRatio='auto',adaptive=false,terminal:terminalOptions={}}={}){
  let gl=null,program=null,glassProgram=null,backgroundTexture=null,backgroundFramebuffer=null,backgroundSize=[0,0],screenCache=false,skinTextures=[],skinReady=false,terminalTexture=null,terminalRevision=-1,externalDisplay=null,externalRevision=0,terminalReply=false,destroyed=false,vertexBuffer=null,shaderObjects=[],raf=0,last=0,time=0,visible=false,paused=false,phase=0,progress=0;
  let pointer=[0,0],camera=bootCameraView('wide',{aspect:canvas.getBoundingClientRect().width/Math.max(1,canvas.getBoundingClientRect().height)}),focus='wide',candidate=null,candidateAt=0,pointerLast=[-1e4,-1e4],flight=null,flightAge=0,frames=0,stamp=0,read=false;
  let signal={bands:[0,0,0,0],level:0,ink:0},pendingInk=0;
  const terminal=mountAnsiTerminal(terminalOptions);let terminalElapsed=0,terminalManual=false,terminalComplete=false;
+ const frameBudget=createFrameBudget({enabled:adaptive});
  const metrics={frames:0,drawMs:0,fps:0,pixels:0,renderer:'unavailable'};
  try{
-  gl=canvas.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:true,powerPreference:'low-power'});
+  gl=canvas.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:false,powerPreference:'low-power'});
   if(!gl)throw Error('WebGL unavailable');
   const shader=(type,source)=>{const s=gl.createShader(type);shaderObjects.push(s);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
   program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,bootWorldFragment));gl.bindAttribLocation(program,0,'a');gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
@@ -294,7 +326,7 @@ export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>
   gl.useProgram(program);const buffer=vertexBuffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const pos=gl.getAttribLocation(program,'a');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
   metrics.renderer='webgl-sdf';canvas.dataset.renderer='webgl-sdf';canvas.dataset.shader='ready';
  }catch(error){canvas.dataset.shader='failed';canvas.dataset.error=error.message;canvas.setAttribute('aria-label','Signal Dock unavailable: '+error.message);if(fps)fps.textContent='TEXT / NO WEBGL';return {set(){},show(){},focus(){},destroy(){},terminal,metrics};}
- const uniform=name=>gl.getUniformLocation(program,name),u={r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive'),eye:uniform('uEye'),look:uniform('uLook'),lens:uniform('uLens'),lamps:uniform('uLamps'),skinA:uniform('uSkinAlbedo'),skinM:uniform('uSkinMatrix'),skinReady:uniform('uSkinReady'),terminal:uniform('uTerminal'),terminalReady:uniform('uTerminalReady')};
+ const uniform=name=>gl.getUniformLocation(program,name),u={coreTurn:uniform('uCoreTurn'),relayXY:uniform('uRelayXY'),relayYZ:uniform('uRelayYZ'),knotTurns:uniform('uKnotTurns[0]'),r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive'),eye:uniform('uEye'),look:uniform('uLook'),lens:uniform('uLens'),lamps:uniform('uLamps'),skinA:uniform('uSkinAlbedo'),skinM:uniform('uSkinMatrix'),skinReady:uniform('uSkinReady'),terminal:uniform('uTerminal'),terminalReady:uniform('uTerminalReady')};
  // A single admitted Human material bake; no per-frame texture generation.
  const skinOwner={};
  for(let unit=0;unit<2;unit++){
@@ -316,10 +348,10 @@ export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>
  terminalTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
- backgroundTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ backgroundTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
  backgroundFramebuffer=gl.createFramebuffer();
  const glassU=Object.fromEntries(['uRes','uEye','uLook','uLens','uTerminal','uBackground'].map(name=>[name,gl.getUniformLocation(glassProgram,name)]));
- const bandBuffer=new Float32Array(4),lifecycle=new AbortController(),listen={signal:lifecycle.signal};
+ const knotTurns=new Float32Array(16),bandBuffer=new Float32Array(4),lifecycle=new AbortController(),listen={signal:lifecycle.signal};
  function selectView(mode,{reply}={}){const layoutChanged=reply!==undefined&&terminalReply!==reply;if(reply!==undefined)terminalReply=!!reply;if(mode!==focus||layoutChanged){screenCache=false;const entropy=new Uint32Array(1);crypto.getRandomValues(entropy);const rect=canvas.getBoundingClientRect();flight=bootCameraFlight(camera,mode,entropy[0],{aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height),reply:terminalReply});flightAge=0;}focus=mode;candidate=null;canvas.dataset.focus=focus;if(focusLabel)focusLabel.textContent=mode==='wide'?'GHOSTLINK / MODEM · ANSI SCREEN · PORTAL':mode==='modem'?'PHASE MODEM / EDGE TO PULL BACK':mode==='screen'?'ANSI / 80 COLUMNS / 2400 BPS / EDGE TO PULL BACK':'CARRIER APERTURE / EDGE TO PULL BACK';for(const [key,button]of Object.entries(viewButtons))button?.setAttribute('aria-pressed',String(key===mode));if(visible&&!raf)show(true);}
  for(const [mode,button]of Object.entries(viewButtons))button?.addEventListener('click',()=>selectView(mode),listen);selectView('wide');
  function draw(now){
@@ -332,26 +364,31 @@ export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>
    if(!terminalManual)terminalElapsed=progress*terminal.duration;const terminalChanged=terminal.update(terminalElapsed,{reveal:terminalComplete||terminal.mode!=='receiving',time,reducedMotion:reduced});if(terminalChanged&&terminalElapsed>0&&!terminal.complete)pendingInk=Math.max(pendingInk,.65);
    if(terminalRevision!==(externalDisplay?externalRevision:terminal.revision)){gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,externalDisplay||terminal.canvas);terminalRevision=externalDisplay?externalRevision:terminal.revision;}
    if(candidate&&time-candidateAt>(candidate==='wide'?.65:.2))selectView(candidate);if(flight&&!paused){flightAge+=dt;camera=bootCameraAt(flight,flightAge,{reduced});}if(focus==='wide'&&(!flight||flightAge>=flight.duration))camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height)});if(!flight||flightAge>=flight.duration){if(focus==='screen')camera=bootScreenView(rect.width/Math.max(1,rect.height),Math.max(1,rect.height),{reply:terminalReply});else if(focus==='wide')camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height)});}canvas.dataset.cameraTravel=flight?Math.min(1,flightAge/flight.duration).toFixed(3):'1';const lamps=bootLampSignals(progress,phase,signal,time);
-   const begin=performance.now();gl.viewport(0,0,w,h);const heldScreen=focus==='screen'&&(!flight||flightAge>=flight.duration);
-   const drawGlass=()=>{gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.useProgram(glassProgram);gl.uniform2f(glassU.uRes,w,h);gl.uniform3fv(glassU.uEye,camera.eye);gl.uniform3fv(glassU.uLook,camera.look);gl.uniform1f(glassU.uLens,camera.lens);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(glassU.uTerminal,2);gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.uniform1i(glassU.uBackground,3);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-cached-bezel-live-glass';};
+   if(frameBudget.sample(now))screenCache=false;
+   const fieldW=Math.max(1,Math.round(w*frameBudget.scale)),fieldH=Math.max(1,Math.round(h*frameBudget.scale));canvas.dataset.fieldSize=fieldW+'×'+fieldH;canvas.dataset.fieldScale=frameBudget.scale.toFixed(4);
+   const begin=performance.now();gl.viewport(0,0,fieldW,fieldH);const heldScreen=focus==='screen'&&(!flight||flightAge>=flight.duration);
+   const drawGlass=()=>{gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,w,h);gl.useProgram(glassProgram);gl.uniform2f(glassU.uRes,w,h);gl.uniform3fv(glassU.uEye,camera.eye);gl.uniform3fv(glassU.uLook,camera.look);gl.uniform1f(glassU.uLens,camera.lens);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(glassU.uTerminal,2);gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.uniform1i(glassU.uBackground,3);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-cached-bezel-live-glass';};
    if(heldScreen&&screenCache)drawGlass();
    else{
     // Render the retained bezel directly into an RGBA target. Copying the
     // opaque default framebuffer into RGBA is not portable across drivers.
     // The texture is never sampled while its framebuffer is bound.
-    if(heldScreen){
+    {
      gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);
-     if(backgroundSize[0]!==w||backgroundSize[1]!==h){gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);backgroundSize=[w,h];}
+     if(backgroundSize[0]!==fieldW||backgroundSize[1]!==fieldH){gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,fieldW,fieldH,0,gl.RGBA,gl.UNSIGNED_BYTE,null);backgroundSize=[fieldW,fieldH];}
      gl.bindFramebuffer(gl.FRAMEBUFFER,backgroundFramebuffer);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,backgroundTexture,0);
      const status=gl.checkFramebufferStatus(gl.FRAMEBUFFER);canvas.dataset.bezelFramebuffer=String(status);
      if(status!==gl.FRAMEBUFFER_COMPLETE)throw Error('Native bezel framebuffer incomplete: '+status);
-    }else gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-    gl.useProgram(program);gl.uniform2f(u.r,w,h);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.uniform3fv(u.eye,camera.eye);gl.uniform3fv(u.look,camera.look);gl.uniform1f(u.lens,camera.lens);gl.uniform4fv(u.lamps,lamps);
+    }
+    gl.useProgram(program);
+    gl.uniform2f(u.coreTurn,Math.cos(time*.16),Math.sin(time*.16));gl.uniform2f(u.relayXY,Math.cos(time*.12),Math.sin(time*.12));gl.uniform2f(u.relayYZ,Math.cos(.6+time*.09),Math.sin(.6+time*.09));
+    for(let k=0;k<4;k++)knotTurns.set([Math.cos(k*.7854+time*.07),Math.sin(k*.7854+time*.07),Math.cos(k*.64),Math.sin(k*.64)],k*4);gl.uniform4fv(u.knotTurns,knotTurns);
+    gl.uniform2f(u.r,fieldW,fieldH);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.uniform3fv(u.eye,camera.eye);gl.uniform3fv(u.look,camera.look);gl.uniform1f(u.lens,camera.lens);gl.uniform4fv(u.lamps,lamps);
     for(let unit=0;unit<2;unit++){gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,skinTextures[unit]);}
     gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(u.terminal,2);gl.uniform1f(u.terminalReady,1);gl.uniform1i(u.skinA,0);gl.uniform1i(u.skinM,1);gl.uniform1f(u.skinReady,skinReady?1:0);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-sdf';
-    if(heldScreen){screenCache=true;drawGlass();}
+    screenCache=heldScreen;drawGlass();canvas.dataset.renderMode=heldScreen?'native-cached-bezel-live-glass':'sdf-field-native-glass';
    }
-   metrics.frames++;metrics.drawMs=performance.now()-begin;metrics.pixels=w*h;canvas.dataset.drawMs=metrics.drawMs.toFixed(3);canvas.dataset.progress=progress.toFixed(3);canvas.dataset.frames=String(metrics.frames);
+   metrics.frames++;metrics.drawMs=performance.now()-begin;metrics.pixels=fieldW*fieldH;canvas.dataset.drawMs=metrics.drawMs.toFixed(3);canvas.dataset.progress=progress.toFixed(3);canvas.dataset.frames=String(metrics.frames);
    if(!read){const pixels=new Uint8Array(4);gl.readPixels(w>>1,h>>1,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);canvas.dataset.pixel=[...pixels].join(',');read=true;}
    frames++;if(now-stamp>=1000){metrics.fps=Math.round(frames*1000/(now-stamp));frames=0;stamp=now;if(fps)fps.textContent=metrics.fps+' FPS / SDF';
     // Cadence counts actual native draws; screen focus caches its static bezel.
@@ -362,7 +399,7 @@ export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>
   }
   if(!terminalReply||flight&&flightAge<flight.duration)raf=requestAnimationFrame(draw);
  }
- function show(value){if(destroyed)return;visible=!!value;if(!visible){cancelAnimationFrame(raf);raf=0;}else if(!raf){last=performance.now();stamp=last;raf=requestAnimationFrame(draw);}}
+ function show(value){if(destroyed)return;if(!visible&&value)frameBudget.reset();visible=!!value;if(!visible){cancelAnimationFrame(raf);raf=0;}else if(!raf){last=performance.now();stamp=last;raf=requestAnimationFrame(draw);}}
  // Camera focus is selected by explicit press. Pointer motion never flies
  // away from a control; the host uses pick() with its shared press binding.
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}else if(visible)show(true);},listen);

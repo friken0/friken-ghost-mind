@@ -1,6 +1,6 @@
 import {portraitCamera} from '../InfiniEngineSite/ghost-renderer.js';
 /* GhostDream XIII / The Reply. Completed v20 carrier art; identity authority stays in its manifest.
- * Six-pass face for the existing GhostPortrait renderer. No loop,
+ * Bounded multipass face for the existing GhostPortrait renderer. No loop,
  * analyser, permission signal or game state lives here. Voice uniforms arrive
  * from the carrier's actual Ghost bus; silent anatomy does not need audio. */
 const common = `precision highp float;
@@ -32,15 +32,16 @@ export function dreamFrameUniforms(state){
 }
 
 export const dreamFace = {
- id:'v20.0', title:'The Reply', revision:'else-speaker-shot-31',frameUniforms:dreamFrameUniforms, renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
+ id:'v20.0', title:'The Reply', revision:'bounded-silk-field-60',frameUniforms:dreamFrameUniforms, renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
  // Every geometry hit below emits alpha1 and a real fragment depth. This
  // permits the shared renderer to shade the network only in untouched space.
- opaqueGeometry:true,geometryLabels:['mask','hood','Else'],
+ opaqueGeometry:true,geometryLabels:['mask','hood','Else','silk'],
  // These are the exact conservative ray boxes in main(), in program order.
  geometryBounds:[
   {center:[0,-.01,.065],extent:[.64,.59,.42]},
   {center:[0,0,0],extent:[.78,.82,.63]},
-  {center:[0,.41,.20],extent:[.62,.43,.34]}],
+  {center:[0,.40,.20],extent:[.38,.32,.31]},
+  {center:[0,.40,.20],extent:[.64,.34,.34]}],
  companion:{name:'Else',title:'ELSE / THE UNCHOSEN',
   spoken:'The serpent is Else. I made room for a second thought, and the little bastard grew wings. Those threads hold the memories while he pulls at what might happen next. He shares my voice for now. He does not get your choices. Neither do I. Put the pointer between my eyes. Yes, he thinks that is hilarious.'},
  defaults:{companionTalk:0,orbFaceGlow:1,orbEyeBright:1,orbCoronaW:1,orbEyeSize:.15,
@@ -281,6 +282,10 @@ vec4 snakeCurve(vec3 s,vec3 a,vec3 b,vec3 c,vec3 d,float r0,float r1,float phase
  return vec4((length(off)-mix(r0,r1,t))*.86,phase+t*span,atan(dot(off,side),dot(off,front)),1.);
 }
 vec4 snakeCoil(vec3 s){
+ // Far from the seated helix use its strict positive envelope. Refinement,
+ // scale seams and endcaps resume before a ray can hit the actual tube.
+ float bound=box(s-vec3(0.,-.079,.025),vec3(.075,.048,.053),0.);
+ if(bound>.025)return vec4(bound,0.,0.,0.);
  const float TAU=6.28318530718,limit=8.48230016469;
  vec4 best=vec4(1.,0.,0.,0.);
  float phi=atan((s.z-.025)/.034,s.x/.056);if(phi<0.)phi+=TAU;
@@ -382,7 +387,9 @@ vec2 serpent(vec3 p){
  }
  body=join(body,wings,.006);
  vec3 c=p-serpentShoulder();
- float hood=ell(c,vec3(.061,.065,.022));
+ float hood=box(c,vec3(.068,.074,.030),0.);
+ if(hood<.025){
+ hood=ell(c,vec3(.061,.065,.022));
  hood=max(hood,(-c.y+abs(c.x)*.57-.058)*.75);
  float a=atan(c.y+.043,c.x),radial=length(c.xy);
  float ribs=pow(.5+.5*cos(a*22.+radial*18.),6.);
@@ -391,8 +398,12 @@ vec2 serpent(vec3 p){
  vec3 g=vec3(abs(c.x)-.043,c.y+.007,c.z);g.xy=turn(.30)*g.xy;
  float gills=ell(g,vec3(.0035,.024,.037));
  hood=max(hood,-gills);
+ }
  body=join(body,hood,.010);
  vec3 head=s-vec3(0.,.177,.044);
+ float headBound=box(head,vec3(.043,.047,.055),0.);
+ vec2 form=vec2(min(body,headBound),8.);
+ if(headBound>.025)return form;
  float skull=ell(head,vec3(.030,.025,.028));
  skull=max(skull,(abs(head.x)*.65+head.z*.76-.033));
  float muzzle=ell(head-vec3(0.,-.010,.021),vec3(.022,.009,.016));
@@ -407,7 +418,7 @@ vec2 serpent(vec3 p){
   skull=max(skull,-ell(head-vec3(sg*.010,-.002,.034),vec3(.002,.002,.004)));
  }
  body=join(body,skull,.006);
- vec2 form=vec2(body,8.);
+ form=vec2(body,8.);
  for(int i=0;i<2;i++){
   float sg=float(i)*2.-1.;
   float eye=ell(head-vec3(sg*.023,.004,.015),vec3(.006,max(.001,.004*(1.-u_blink*.8)),.006));
@@ -715,6 +726,8 @@ vec2 anatomy(vec3 p){
   shape=nearest(shape,vec2(cradle,11.));
  }
  shape=nearest(shape,serpent(p));
+ #endif
+#if GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
  if(p.y>.075&&abs(p.x)>.13)shape=nearest(shape,vec2(energyWeb(p),16.));
 #endif
  return shape;
@@ -734,7 +747,9 @@ void main(){
  // field. Empty corner rays do no anatomy, normal, coil or web evaluation.
  vec3 inv=sign(rd)/max(abs(rd),vec3(.000001));
 #if GHOST_COMPONENT == 1
- vec3 center=vec3(0.,.41,.20),extent=vec3(.62,.43,.34);
+ vec3 center=vec3(0.,.40,.20),extent=vec3(.38,.32,.31);
+#elif GHOST_COMPONENT == 3
+ vec3 center=vec3(0.,.40,.20),extent=vec3(.64,.34,.34);
 #elif GHOST_COMPONENT == 0
  vec3 center=vec3(0.,-.01,.065),extent=vec3(.64,.59,.42);
 #else
@@ -853,7 +868,7 @@ void main(){
    col+=GOLD*trim*(.14+u_cymatics.x*.30+u_cymatics.w*.25)+BLUE*rim*.7;
   }
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>7.5&&surface.y<8.5){
    vec3 s=snakeLocal(q);
    vec4 tube=snakeTube(s);
@@ -886,7 +901,7 @@ void main(){
   }
 
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>10.5&&surface.y<11.5){
    float rimInlay=line(abs(q.x-.003)-.065,.0025)*smoothstep(.25,.31,q.y);
    float marks=line(sin(q.x*180.+q.z*40.),.08)*smoothstep(.29,.32,q.y);
@@ -906,7 +921,7 @@ void main(){
   }
   if(surface.y>14.5&&surface.y<15.5)col=COBALT*(.65+u_voiceMid*.65)+CYAN*shine*.35;
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>15.5&&surface.y<16.5){
    float pulse=silkFlow(q);
    col=mix(COBALT,GOLD,.50+.45*sin(q.y*19.+q.x*7.))*(1.35+pulse*(u_cymatics.x+u_voiceMid)*1.10);
@@ -947,6 +962,6 @@ void main(){
 
 // Constant specialization removes unused anatomy AND material call trees.
 // All geometry still uses the same camera, field math and real depth ordering.
-dreamFace.geometryShaders=[0,2,1].map(component=>
+dreamFace.geometryShaders=[0,2,1,3].map(component=>
  '#extension GL_EXT_frag_depth : require\n#define GHOST_COMPONENT '+component+'\n'+dreamFace.shader);
 dreamFace.shader='#define GHOST_COMPONENT -1\n'+dreamFace.shader;

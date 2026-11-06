@@ -1,3 +1,25 @@
+/** Opt-in measured render budget. Always begins at full density; a slow
+ * sustained window may shrink only the field target. UI/output pixels never
+ * enter this policy. No device-name guess, timer-query estimate or startup
+ * compile stall may pick a density. Native mode never adapts. */
+export function createFrameBudget({enabled=false,targetFps=40,minScale=.375}={}){
+ if(!Number.isFinite(targetFps)||targetFps<30||!Number.isFinite(minScale)||minScale<=0||minScale>1)throw Error('Invalid field frame budget');
+ let scale=1,last=0,start=0,warmUntil=0,frames=0,recoverAt=0;
+ return {get scale(){return scale;},reset(){last=start=frames=0;warmUntil=0;},
+  sample(now){
+   if(!enabled||!Number.isFinite(now))return false;
+   if(!last||now-last>500){last=now;start=now;warmUntil=now+600;frames=0;return false;}
+   last=now;if(now<warmUntil){start=now;frames=0;return false;}
+   frames++;const elapsed=now-start;if(elapsed<1400||frames<12)return false;
+   const fps=frames*1000/elapsed;let next=scale;
+   if(fps<30)next=Math.max(minScale,Math.floor(scale*Math.sqrt(fps/targetFps)*16)/16);
+   else if(fps>54&&now>recoverAt)next=Math.min(1,scale+1/16);
+   start=now;frames=0;if(next===scale)return false;
+   scale=next;warmUntil=now+600;recoverAt=now+12000;return true;
+  }
+ };
+}
+
 /** Square is the retained portrait contract. A full-stage caller may opt in to
  * rect: physical width/height and height-fitted anatomy on wide screens, with
  * no square texture stretched across the view. This changes no SDF geometry. */
@@ -72,7 +94,7 @@ export class GhostPortrait {
     this.canvas = canvas;
     this.vertex = vertex;
     this.onError = onError;
-    this.gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false, preserveDrawingBuffer: true });
+    this.gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false, preserveDrawingBuffer: false });
     if (!this.gl) throw Error('WebGL unavailable. The rendered portraits still show every version.');
     this.programs = [];
     this.bloom = null; this.bloomTexture = null; this.bloomTarget = null;
@@ -202,18 +224,23 @@ export class GhostPortrait {
     this.canvas.dataset.viewport=this.viewport;
     this.canvas.dataset.resolutionPolicy=this.pixelRatio!==null?'explicit-render-density':this.version?.renderPolicy?.fullResolution?'native-device-pixels':'bounded';
     if (this.canvas.width !== size || this.canvas.height !== height) {this.canvas.width=size;this.canvas.height=height;}
+    // Portrait detail is protected: every SDF/depth/history pixel matches
+    // the output canvas, including Else close-ups and low-cadence frames.
+    // The connection scene may budget its own field; a face never does.
+    const fieldWidth=size,fieldHeight=height;
     this.canvas.dataset.renderBudget='full';
-    if(this.bloom&&(this.bloomSize!==size||this.bloomHeight!==height)){
-      const g=this.gl;this.bloomSize=size;this.bloomHeight=height;g.bindTexture(g.TEXTURE_2D,this.bloomTexture);
-      g.texImage2D(g.TEXTURE_2D,0,g.RGBA,size,height,0,g.RGBA,g.UNSIGNED_BYTE,null);
+    this.canvas.dataset.fieldSize=fieldWidth+'×'+fieldHeight;this.canvas.dataset.fieldScale='1.0000';
+    if(this.bloom&&(this.bloomSize!==fieldWidth||this.bloomHeight!==fieldHeight)){
+      const g=this.gl;this.bloomSize=fieldWidth;this.bloomHeight=fieldHeight;g.bindTexture(g.TEXTURE_2D,this.bloomTexture);
+      g.texImage2D(g.TEXTURE_2D,0,g.RGBA,fieldWidth,fieldHeight,0,g.RGBA,g.UNSIGNED_BYTE,null);
       g.bindFramebuffer(g.FRAMEBUFFER,this.bloomTarget);
       g.framebufferTexture2D(g.FRAMEBUFFER,g.COLOR_ATTACHMENT0,g.TEXTURE_2D,this.bloomTexture,0);
-      if(this.depthTarget){g.bindRenderbuffer(g.RENDERBUFFER,this.depthTarget);g.renderbufferStorage(g.RENDERBUFFER,g.DEPTH_COMPONENT16,size,height);g.framebufferRenderbuffer(g.FRAMEBUFFER,g.DEPTH_ATTACHMENT,g.RENDERBUFFER,this.depthTarget);g.bindRenderbuffer(g.RENDERBUFFER,null);}
+      if(this.depthTarget){g.bindRenderbuffer(g.RENDERBUFFER,this.depthTarget);g.renderbufferStorage(g.RENDERBUFFER,g.DEPTH_COMPONENT16,fieldWidth,fieldHeight);g.framebufferRenderbuffer(g.FRAMEBUFFER,g.DEPTH_ATTACHMENT,g.RENDERBUFFER,this.depthTarget);g.bindRenderbuffer(g.RENDERBUFFER,null);}
       if(g.checkFramebufferStatus(g.FRAMEBUFFER)!==g.FRAMEBUFFER_COMPLETE)throw Error('Gold bloom target incomplete');
       g.bindFramebuffer(g.FRAMEBUFFER,null);
       if(this.historyTexture){
         g.bindTexture(g.TEXTURE_2D,this.historyTexture);
-        g.texImage2D(g.TEXTURE_2D,0,g.RGBA,size,height,0,g.RGBA,g.UNSIGNED_BYTE,null);
+        g.texImage2D(g.TEXTURE_2D,0,g.RGBA,fieldWidth,fieldHeight,0,g.RGBA,g.UNSIGNED_BYTE,null);
       }
       this.historyReady=false;this.bloomReady=false;
     }
@@ -224,7 +251,7 @@ export class GhostPortrait {
     const profiling=!!this.version?.renderPolicy&&this.profileEvery>0&&this.queries.length===0&&(this.profileSerial++%this.profileEvery===0);
     const profilePass=profiling?this.profileCursor++%(this.totalPass+1):-1;
     const frameSample=this.beginTiming(this.totalPass,profiling&&profilePass===this.totalPass);
-    const graphics = this.gl, tune = this.version.defaults, size = this.canvas.width, height = this.canvas.height;
+    const graphics = this.gl, tune = this.version.defaults, outputWidth=this.canvas.width,outputHeight=this.canvas.height,size=this.bloom?this.bloomSize:outputWidth,height=this.bloom?this.bloomHeight:outputHeight;
     const scalar = {
       time, hover: 0, talk: 0, blink: 0, smile: .25,
       faceGlow: tune.orbFaceGlow, eyeBright: tune.orbEyeBright, coronaW: tune.orbCoronaW,
@@ -309,7 +336,7 @@ export class GhostPortrait {
     if(this.bloom){
       const gpuSample=this.beginTiming(this.programs.length,profiling&&profilePass===this.programs.length);
       this.bloomReady=true;
-      graphics.bindFramebuffer(graphics.FRAMEBUFFER,null);graphics.disable(graphics.DEPTH_TEST);graphics.disable(graphics.BLEND);
+      graphics.bindFramebuffer(graphics.FRAMEBUFFER,null);graphics.viewport(0,0,outputWidth,outputHeight);graphics.disable(graphics.DEPTH_TEST);graphics.disable(graphics.BLEND);
       graphics.useProgram(this.bloom.program);graphics.activeTexture(graphics.TEXTURE0);
       graphics.bindTexture(graphics.TEXTURE_2D,this.bloomTexture);
       if(this.historyTexture){graphics.activeTexture(graphics.TEXTURE1);graphics.bindTexture(graphics.TEXTURE_2D,this.historyTexture);graphics.activeTexture(graphics.TEXTURE0);}
@@ -320,7 +347,7 @@ export class GhostPortrait {
         else if(key==='historyReady')graphics.uniform1f(uniform.location,this.historyReady?1:0);
         else if(key==='shift')graphics.uniform1f(uniform.location,scalar.shift||0);
         else if(key==='shiftDirection')graphics.uniform2f(uniform.location,(scalar.shiftX||0)*Math.min(size,height)/size,(scalar.shiftY||0)*Math.min(size,height)/height);
-        else if(key==='resolution')graphics.uniform2f(uniform.location,size,height);
+        else if(key==='resolution')graphics.uniform2f(uniform.location,outputWidth,outputHeight);
         else if(key==='cymatics')graphics.uniform4fv(uniform.location,this.cymatics);
         else if(key==='viewAspect')graphics.uniform2f(uniform.location,size/Math.min(size,height),height/Math.min(size,height));
         else if(key==='emergence')graphics.uniform1f(uniform.location,this.emergence?1:0);

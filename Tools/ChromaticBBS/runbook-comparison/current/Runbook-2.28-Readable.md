@@ -1219,10 +1219,20 @@ ANSI_UI:=RETAIN EXACT boot80x25canvas/buffer/parser/palette/font atfullscreen
  transition,seed};bounded reviewedtextframes+palette;configurable author
  source,not packetcode/raster. Singlecompositorclock+cellanimator;no hit
  occlusion;hold/reduced settles;hide during speakingSDFoverlay.
-PIXELS28:=MacRetina defaultdensity=min(1,DPR*.75) perCSSpixel(authorized);
- manualNative=CSSextent×DPR;show mode+density. No hidden quarterres budget
- called Native. Profile actual CPU/GPUpass,occupancy/container+occluded/static
- work;split/bound/cache before cutting detail.60FPS=target,not witness.
+PIXELS28:=MacRetina output=min(1,DPR*.75)/CSSpixel;manualNative=CSSextent×DPR.
+ Algorithm-first:positivefeaturebounds,constantprimitiveentrypoints,
+ framepreparedrotations,separatesilkpass,analyticdecknormal,no preservedbuffer.
+ PORTRAIT_DETAIL:=Ghost/Else fields+depth+history always=output grid;
+ never adapt/downsample portraits for FPS. Prior scaledface trial REJECTED.
+ CONNECTION ONLY sustained<30FPS:opt-in createFrameBudget starts1,warms600ms,
+ measures>=1.4s+12frames;fieldscale=floor(scale*sqrt(FPS/40)*16)/16,
+ bound.375..1;recover+1/16 only>54FPS and12s hysteresis.
+ Scale only connection SDFtarget;ANSIglass/UI/output staynative.
+ Record actual fieldSize/outputSize+FPS;never call reducedfield Native.
+ ?pixels=native bypasses adaptation. Benchmark isolatedAppleMetal Chrome,
+ cacheoff,identicalviewport;timerqueries perturb/overlap on this driver:
+ use actual completedframe cadence for admission,not pass-sum predictions.
+ 30FPS=floor/60FPS=target,neither a nativeUnity witness.
 VOICE28:=supersedes startupAuto+6h/artRevision expiry:one supportedCPUmodel
  first;no implicit double-model benchmark/download. Stable pinnedCacheStorage
  for model assets;hardware/engine receipts independent of face revision;

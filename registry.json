@@ -25,18 +25,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 27775,
-      "sha256": "61cc20c1e2bd9f4066a8f611cf061e0d9b4a4dfe201b20c6436b33499f23a4c2"
+      "bytes": 28318,
+      "sha256": "52a87d485fe8bed4c56ee5ab63df02a9d0eb180eae7d2d400e38339caa6ae49f"
     },
     {
       "path": "Runbook-2.28-Packed.md",
-      "bytes": 63453,
-      "sha256": "286a096b70407ddacc809f3d3f222fc8eb7e765cb380a6e83f70dfa6850e84ba"
+      "bytes": 63931,
+      "sha256": "9e33adc2e56227eead9c2b3c65f6020a67721acd9c035e888f424373dff941b2"
     },
     {
       "path": "Runbook-2.28-Readable.md",
-      "bytes": 98218,
-      "sha256": "69cc46b472bd00a98d5739585927d0c93f92d21439c01a6548844a3267bef79d"
+      "bytes": 98911,
+      "sha256": "940478917ef3351f1a953f1439beab873603b023948385fd82fb056619016c16"
     },
     {
       "path": "Tools/ChromaticBBS/ANSI-Animation.md",
@@ -75,8 +75,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Face-Performance-2026-10-22.md",
-      "bytes": 9179,
-      "sha256": "e74f25f856fd8ea2154ed3d23111db95de338a9f647b9e1f2275c71a3d0d2710"
+      "bytes": 9417,
+      "sha256": "12c70d96fce6db16987a3748565f1ae498c826093d02cb7842199e9f80ea6cb8"
     },
     {
       "path": "Tools/ChromaticBBS/For-Masha-The-Math-Behind-the-Face.md",
@@ -122,6 +122,11 @@
       "path": "Tools/ChromaticBBS/Packing-Results.md",
       "bytes": 11090,
       "sha256": "928b320c96d36ed5b4c4a6995205cb9c66a1752b096f1741f4ca7ddf31fac7e5"
+    },
+    {
+      "path": "Tools/ChromaticBBS/Render-Performance-2026-11-06.md",
+      "bytes": 4742,
+      "sha256": "30fb62799d0b57c7946280d91a99548374517c2ba319cc87947b669bcb03132c"
     },
     {
       "path": "Tools/ChromaticBBS/Side-Quest-Continuity.md",
@@ -280,8 +285,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/boot-world.mjs",
-      "bytes": 37863,
-      "sha256": "fd8a13ca0a421acb3a21107adbf60a9747247bceb6f36ef1dd32ed2bf8a52466"
+      "bytes": 40288,
+      "sha256": "5c93a0e62ae83f4b1aaa1558427f366061010d7c2e76ee4a00efe3b0209c0428"
     },
     {
       "path": "Tools/ChromaticBBS/browser-check.html",
@@ -405,8 +410,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/dream-face.mjs",
-      "bytes": 47713,
-      "sha256": "1bd3ff42de48f9d69bd3a87dbe4acc423dc7a1ebc68cdbd99681a4313d8347ae"
+      "bytes": 48425,
+      "sha256": "fb3a0c683dce1e4bf86ee032c7a175f938798960719ea025552b64fdc29667ac"
     },
     {
       "path": "Tools/ChromaticBBS/engine.mjs",
@@ -700,8 +705,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
-      "bytes": 21924,
-      "sha256": "2c45bb25219e02c75d203df602bcbd82520d712e36f65fb8ffcde29ccf28da9b"
+      "bytes": 22360,
+      "sha256": "a120192941c0100f1a3dbd7c0d149981e87e37e71a88604d8ebd018355a96c9c"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -775,8 +780,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/portrait.mjs",
-      "bytes": 19980,
-      "sha256": "ae6f481778587c42349e8402f7f009cb732b8cbdba53e7bd69b867ffab7a9460"
+      "bytes": 19986,
+      "sha256": "011a44044fb59c45dfbae4f27cc0bd4e2c72f013bb3ab8fc0f0abe5dde2e7286"
     },
     {
       "path": "Tools/ChromaticBBS/presentation.test.mjs",
@@ -784,9 +789,14 @@
       "sha256": "a8ef0b3c51bf569c0aa7f51211f772bb8dd80fdec37a8f699e53e57a6afa084d"
     },
     {
+      "path": "Tools/ChromaticBBS/profile-renderers.mjs",
+      "bytes": 6453,
+      "sha256": "b46f1a195916ad12a6fe242359832a4979b9d7ca15c044f2a6d8e412c92e98ea"
+    },
+    {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 10823,
-      "sha256": "471bfe8994e5430d7d09b40023fe491f899b6c954a3870ffab50a83c88148cc4"
+      "bytes": 10918,
+      "sha256": "4b26d192b00f391b63f52892094d8b2317ae2ef6ba977aa20c4f47453cdb34e6"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -797,6 +807,11 @@
       "path": "Tools/ChromaticBBS/render-ansi-review.py",
       "bytes": 3763,
       "sha256": "9d8967a6d984574d2c91be38e0e3be2d893afc7a9eb65254ed59542b43a0490a"
+    },
+    {
+      "path": "Tools/ChromaticBBS/render-budget.test.mjs",
+      "bytes": 1862,
+      "sha256": "fcf9e2e5dbf49de40859d9bb639cb156767432e14d0480f8637b5895bcd7222b"
     },
     {
       "path": "Tools/ChromaticBBS/reply-discoveries.mjs",
@@ -840,23 +855,23 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.28-Packed.md",
-      "bytes": 63453,
-      "sha256": "286a096b70407ddacc809f3d3f222fc8eb7e765cb380a6e83f70dfa6850e84ba"
+      "bytes": 63931,
+      "sha256": "9e33adc2e56227eead9c2b3c65f6020a67721acd9c035e888f424373dff941b2"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.28-Readable.md",
-      "bytes": 98218,
-      "sha256": "69cc46b472bd00a98d5739585927d0c93f92d21439c01a6548844a3267bef79d"
+      "bytes": 98911,
+      "sha256": "940478917ef3351f1a953f1439beab873603b023948385fd82fb056619016c16"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/comparison.json",
       "bytes": 793,
-      "sha256": "4196b11f3ab169362697efab62c7db121894c4347174d7008f1bfac556d63bdf"
+      "sha256": "2f1802786585830fde92537b4ff4018fe6c11e509b0025ce95db9d206cdc195c"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/token-counts.json",
       "bytes": 431,
-      "sha256": "ce67e6e609195277d2f7692d5434a9bf067666c969d164c2580860cfd9510184"
+      "sha256": "578516e662a2afb9bdbe7f7fbc882b4fba96f7d74c603b2531ec0651a51d45f7"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
@@ -895,13 +910,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/signal-check.html",
-      "bytes": 2283072,
-      "sha256": "55200be43d325527eab49afb20a4dd74023a92cad98fac16a15137efdee475e9"
+      "bytes": 2285668,
+      "sha256": "1cd05feaea09225c843f4523636f17fcfa47ad142e7580cd1cb2a23c7d679f14"
     },
     {
       "path": "Tools/ChromaticBBS/signal.test.mjs",
       "bytes": 8420,
-      "sha256": "d1089e235e572b3e2d0d34b799494a736221f092ac56b5d183b411cb5c2ad361"
+      "sha256": "e66fc2f3921775f5c0553b41096a018b736d33e16778e7c3a7ac4ff851510f00"
     },
     {
       "path": "Tools/ChromaticBBS/speaker-camera.test.mjs",
@@ -985,8 +1000,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/turn-out-of-time.mjs",
-      "bytes": 39115,
-      "sha256": "44ca07c7c7c7c1dc8bbc2004c031baae34df1e8a9fb407aa435b2632c0e73c03"
+      "bytes": 39164,
+      "sha256": "c8f400093737fe83182a4d59542ee7892fc0916cd1af73a0806641deb93b21a2"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT",
@@ -1115,23 +1130,23 @@
     },
     {
       "path": "Tools/InfiniEngineSite/ghost-renderer.js",
-      "bytes": 27464,
-      "sha256": "7c36d7a73444a766dbeab1c4732665e3379a0fc80e0396d13878da506689a42a"
+      "bytes": 29331,
+      "sha256": "74c7b413d134b37a2ee49b09baad4fbd54c4b90e9a76b2c8862f2acd5d2c156b"
     },
     {
       "path": "Tools/InfiniEngineSite/ghost-renderer.test.mjs",
-      "bytes": 10354,
-      "sha256": "7400b55c7ab887e336165708d725234d3fe90011a7d2de586655f5b0533582b8"
+      "bytes": 10986,
+      "sha256": "50c4ab7c1f5aa31ba3576ac089496a35bc1d4f8c5ec1e6797dedd88369feb6dd"
     },
     {
       "path": "ghostlink.html",
-      "bytes": 4047478,
-      "sha256": "5361a3650065149eeb785de6a00e0ed513a8fc385e766a1125763026ece25593"
+      "bytes": 4052947,
+      "sha256": "6100387f329b7c6266d617538c8b09a253a45eddb76ad29f2cf1d071c5e1b143"
     },
     {
       "path": "index.html",
-      "bytes": 4047478,
-      "sha256": "5361a3650065149eeb785de6a00e0ed513a8fc385e766a1125763026ece25593"
+      "bytes": 4052947,
+      "sha256": "6100387f329b7c6266d617538c8b09a253a45eddb76ad29f2cf1d071c5e1b143"
     },
     {
       "path": "media/bang-non-and-on.mp3",
@@ -1155,13 +1170,13 @@
     },
     {
       "path": "runbook.md",
-      "bytes": 98218,
-      "sha256": "69cc46b472bd00a98d5739585927d0c93f92d21439c01a6548844a3267bef79d"
+      "bytes": 98911,
+      "sha256": "940478917ef3351f1a953f1439beab873603b023948385fd82fb056619016c16"
     },
     {
       "path": "surreal-the-door-that-remembers.html",
-      "bytes": 3985916,
-      "sha256": "32c144295bc0ada6a4115bd1a7548df8a8957517a0a35151ac5afcca8955fa5b"
+      "bytes": 3991434,
+      "sha256": "939b4792ee0687bbad9697688fada97f00de03c55a2955114a98c61f554b00cb"
     }
   ],
   "privateSourceIncluded": false,

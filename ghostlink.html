@@ -4502,6 +4502,28 @@ function createVault(storage = null) {
 return {VAULT_SCHEMA,VAULT_KEY,MAX_ARCHIVE_BYTES,createVault};
 })();
 carrierModules["../InfiniEngineSite/ghost-renderer.js"] = (() => {
+/** Opt-in measured render budget. Always begins at full density; a slow
+ * sustained window may shrink only the field target. UI/output pixels never
+ * enter this policy. No device-name guess, timer-query estimate or startup
+ * compile stall may pick a density. Native mode never adapts. */
+function createFrameBudget({enabled=false,targetFps=40,minScale=.375}={}){
+ if(!Number.isFinite(targetFps)||targetFps<30||!Number.isFinite(minScale)||minScale<=0||minScale>1)throw Error('Invalid field frame budget');
+ let scale=1,last=0,start=0,warmUntil=0,frames=0,recoverAt=0;
+ return {get scale(){return scale;},reset(){last=start=frames=0;warmUntil=0;},
+  sample(now){
+   if(!enabled||!Number.isFinite(now))return false;
+   if(!last||now-last>500){last=now;start=now;warmUntil=now+600;frames=0;return false;}
+   last=now;if(now<warmUntil){start=now;frames=0;return false;}
+   frames++;const elapsed=now-start;if(elapsed<1400||frames<12)return false;
+   const fps=frames*1000/elapsed;let next=scale;
+   if(fps<30)next=Math.max(minScale,Math.floor(scale*Math.sqrt(fps/targetFps)*16)/16);
+   else if(fps>54&&now>recoverAt)next=Math.min(1,scale+1/16);
+   start=now;frames=0;if(next===scale)return false;
+   scale=next;warmUntil=now+600;recoverAt=now+12000;return true;
+  }
+ };
+}
+
 /** Square is the retained portrait contract. A full-stage caller may opt in to
  * rect: physical width/height and height-fitted anatomy on wide screens, with
  * no square texture stretched across the view. This changes no SDF geometry. */
@@ -4576,7 +4598,7 @@ class GhostPortrait {
     this.canvas = canvas;
     this.vertex = vertex;
     this.onError = onError;
-    this.gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false, preserveDrawingBuffer: true });
+    this.gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false, preserveDrawingBuffer: false });
     if (!this.gl) throw Error('WebGL unavailable. The rendered portraits still show every version.');
     this.programs = [];
     this.bloom = null; this.bloomTexture = null; this.bloomTarget = null;
@@ -4706,18 +4728,23 @@ class GhostPortrait {
     this.canvas.dataset.viewport=this.viewport;
     this.canvas.dataset.resolutionPolicy=this.pixelRatio!==null?'explicit-render-density':this.version?.renderPolicy?.fullResolution?'native-device-pixels':'bounded';
     if (this.canvas.width !== size || this.canvas.height !== height) {this.canvas.width=size;this.canvas.height=height;}
+    // Portrait detail is protected: every SDF/depth/history pixel matches
+    // the output canvas, including Else close-ups and low-cadence frames.
+    // The connection scene may budget its own field; a face never does.
+    const fieldWidth=size,fieldHeight=height;
     this.canvas.dataset.renderBudget='full';
-    if(this.bloom&&(this.bloomSize!==size||this.bloomHeight!==height)){
-      const g=this.gl;this.bloomSize=size;this.bloomHeight=height;g.bindTexture(g.TEXTURE_2D,this.bloomTexture);
-      g.texImage2D(g.TEXTURE_2D,0,g.RGBA,size,height,0,g.RGBA,g.UNSIGNED_BYTE,null);
+    this.canvas.dataset.fieldSize=fieldWidth+'×'+fieldHeight;this.canvas.dataset.fieldScale='1.0000';
+    if(this.bloom&&(this.bloomSize!==fieldWidth||this.bloomHeight!==fieldHeight)){
+      const g=this.gl;this.bloomSize=fieldWidth;this.bloomHeight=fieldHeight;g.bindTexture(g.TEXTURE_2D,this.bloomTexture);
+      g.texImage2D(g.TEXTURE_2D,0,g.RGBA,fieldWidth,fieldHeight,0,g.RGBA,g.UNSIGNED_BYTE,null);
       g.bindFramebuffer(g.FRAMEBUFFER,this.bloomTarget);
       g.framebufferTexture2D(g.FRAMEBUFFER,g.COLOR_ATTACHMENT0,g.TEXTURE_2D,this.bloomTexture,0);
-      if(this.depthTarget){g.bindRenderbuffer(g.RENDERBUFFER,this.depthTarget);g.renderbufferStorage(g.RENDERBUFFER,g.DEPTH_COMPONENT16,size,height);g.framebufferRenderbuffer(g.FRAMEBUFFER,g.DEPTH_ATTACHMENT,g.RENDERBUFFER,this.depthTarget);g.bindRenderbuffer(g.RENDERBUFFER,null);}
+      if(this.depthTarget){g.bindRenderbuffer(g.RENDERBUFFER,this.depthTarget);g.renderbufferStorage(g.RENDERBUFFER,g.DEPTH_COMPONENT16,fieldWidth,fieldHeight);g.framebufferRenderbuffer(g.FRAMEBUFFER,g.DEPTH_ATTACHMENT,g.RENDERBUFFER,this.depthTarget);g.bindRenderbuffer(g.RENDERBUFFER,null);}
       if(g.checkFramebufferStatus(g.FRAMEBUFFER)!==g.FRAMEBUFFER_COMPLETE)throw Error('Gold bloom target incomplete');
       g.bindFramebuffer(g.FRAMEBUFFER,null);
       if(this.historyTexture){
         g.bindTexture(g.TEXTURE_2D,this.historyTexture);
-        g.texImage2D(g.TEXTURE_2D,0,g.RGBA,size,height,0,g.RGBA,g.UNSIGNED_BYTE,null);
+        g.texImage2D(g.TEXTURE_2D,0,g.RGBA,fieldWidth,fieldHeight,0,g.RGBA,g.UNSIGNED_BYTE,null);
       }
       this.historyReady=false;this.bloomReady=false;
     }
@@ -4728,7 +4755,7 @@ class GhostPortrait {
     const profiling=!!this.version?.renderPolicy&&this.profileEvery>0&&this.queries.length===0&&(this.profileSerial++%this.profileEvery===0);
     const profilePass=profiling?this.profileCursor++%(this.totalPass+1):-1;
     const frameSample=this.beginTiming(this.totalPass,profiling&&profilePass===this.totalPass);
-    const graphics = this.gl, tune = this.version.defaults, size = this.canvas.width, height = this.canvas.height;
+    const graphics = this.gl, tune = this.version.defaults, outputWidth=this.canvas.width,outputHeight=this.canvas.height,size=this.bloom?this.bloomSize:outputWidth,height=this.bloom?this.bloomHeight:outputHeight;
     const scalar = {
       time, hover: 0, talk: 0, blink: 0, smile: .25,
       faceGlow: tune.orbFaceGlow, eyeBright: tune.orbEyeBright, coronaW: tune.orbCoronaW,
@@ -4813,7 +4840,7 @@ class GhostPortrait {
     if(this.bloom){
       const gpuSample=this.beginTiming(this.programs.length,profiling&&profilePass===this.programs.length);
       this.bloomReady=true;
-      graphics.bindFramebuffer(graphics.FRAMEBUFFER,null);graphics.disable(graphics.DEPTH_TEST);graphics.disable(graphics.BLEND);
+      graphics.bindFramebuffer(graphics.FRAMEBUFFER,null);graphics.viewport(0,0,outputWidth,outputHeight);graphics.disable(graphics.DEPTH_TEST);graphics.disable(graphics.BLEND);
       graphics.useProgram(this.bloom.program);graphics.activeTexture(graphics.TEXTURE0);
       graphics.bindTexture(graphics.TEXTURE_2D,this.bloomTexture);
       if(this.historyTexture){graphics.activeTexture(graphics.TEXTURE1);graphics.bindTexture(graphics.TEXTURE_2D,this.historyTexture);graphics.activeTexture(graphics.TEXTURE0);}
@@ -4824,7 +4851,7 @@ class GhostPortrait {
         else if(key==='historyReady')graphics.uniform1f(uniform.location,this.historyReady?1:0);
         else if(key==='shift')graphics.uniform1f(uniform.location,scalar.shift||0);
         else if(key==='shiftDirection')graphics.uniform2f(uniform.location,(scalar.shiftX||0)*Math.min(size,height)/size,(scalar.shiftY||0)*Math.min(size,height)/height);
-        else if(key==='resolution')graphics.uniform2f(uniform.location,size,height);
+        else if(key==='resolution')graphics.uniform2f(uniform.location,outputWidth,outputHeight);
         else if(key==='cymatics')graphics.uniform4fv(uniform.location,this.cymatics);
         else if(key==='viewAspect')graphics.uniform2f(uniform.location,size/Math.min(size,height),height/Math.min(size,height));
         else if(key==='emergence')graphics.uniform1f(uniform.location,this.emergence?1:0);
@@ -4880,12 +4907,12 @@ class GhostPortrait {
   }
 }
 
-return {portraitViewportSize,portraitAspectSource,portraitCamera,portraitScissor,GhostPortrait};
+return {createFrameBudget,portraitViewportSize,portraitAspectSource,portraitCamera,portraitScissor,GhostPortrait};
 })();
 carrierModules["dream-face.mjs"] = (() => {
 const {portraitCamera} = carrierModules["../InfiniEngineSite/ghost-renderer.js"];
 /* GhostDream XIII / The Reply. Completed v20 carrier art; identity authority stays in its manifest.
- * Six-pass face for the existing GhostPortrait renderer. No loop,
+ * Bounded multipass face for the existing GhostPortrait renderer. No loop,
  * analyser, permission signal or game state lives here. Voice uniforms arrive
  * from the carrier's actual Ghost bus; silent anatomy does not need audio. */
 const common = `precision highp float;
@@ -4917,15 +4944,16 @@ function dreamFrameUniforms(state){
 }
 
 const dreamFace = {
- id:'v20.0', title:'The Reply', revision:'else-speaker-shot-31',frameUniforms:dreamFrameUniforms, renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
+ id:'v20.0', title:'The Reply', revision:'bounded-silk-field-60',frameUniforms:dreamFrameUniforms, renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
  // Every geometry hit below emits alpha1 and a real fragment depth. This
  // permits the shared renderer to shade the network only in untouched space.
- opaqueGeometry:true,geometryLabels:['mask','hood','Else'],
+ opaqueGeometry:true,geometryLabels:['mask','hood','Else','silk'],
  // These are the exact conservative ray boxes in main(), in program order.
  geometryBounds:[
   {center:[0,-.01,.065],extent:[.64,.59,.42]},
   {center:[0,0,0],extent:[.78,.82,.63]},
-  {center:[0,.41,.20],extent:[.62,.43,.34]}],
+  {center:[0,.40,.20],extent:[.38,.32,.31]},
+  {center:[0,.40,.20],extent:[.64,.34,.34]}],
  companion:{name:'Else',title:'ELSE / THE UNCHOSEN',
   spoken:'The serpent is Else. I made room for a second thought, and the little bastard grew wings. Those threads hold the memories while he pulls at what might happen next. He shares my voice for now. He does not get your choices. Neither do I. Put the pointer between my eyes. Yes, he thinks that is hilarious.'},
  defaults:{companionTalk:0,orbFaceGlow:1,orbEyeBright:1,orbCoronaW:1,orbEyeSize:.15,
@@ -5166,6 +5194,10 @@ vec4 snakeCurve(vec3 s,vec3 a,vec3 b,vec3 c,vec3 d,float r0,float r1,float phase
  return vec4((length(off)-mix(r0,r1,t))*.86,phase+t*span,atan(dot(off,side),dot(off,front)),1.);
 }
 vec4 snakeCoil(vec3 s){
+ // Far from the seated helix use its strict positive envelope. Refinement,
+ // scale seams and endcaps resume before a ray can hit the actual tube.
+ float bound=box(s-vec3(0.,-.079,.025),vec3(.075,.048,.053),0.);
+ if(bound>.025)return vec4(bound,0.,0.,0.);
  const float TAU=6.28318530718,limit=8.48230016469;
  vec4 best=vec4(1.,0.,0.,0.);
  float phi=atan((s.z-.025)/.034,s.x/.056);if(phi<0.)phi+=TAU;
@@ -5267,7 +5299,9 @@ vec2 serpent(vec3 p){
  }
  body=join(body,wings,.006);
  vec3 c=p-serpentShoulder();
- float hood=ell(c,vec3(.061,.065,.022));
+ float hood=box(c,vec3(.068,.074,.030),0.);
+ if(hood<.025){
+ hood=ell(c,vec3(.061,.065,.022));
  hood=max(hood,(-c.y+abs(c.x)*.57-.058)*.75);
  float a=atan(c.y+.043,c.x),radial=length(c.xy);
  float ribs=pow(.5+.5*cos(a*22.+radial*18.),6.);
@@ -5276,8 +5310,12 @@ vec2 serpent(vec3 p){
  vec3 g=vec3(abs(c.x)-.043,c.y+.007,c.z);g.xy=turn(.30)*g.xy;
  float gills=ell(g,vec3(.0035,.024,.037));
  hood=max(hood,-gills);
+ }
  body=join(body,hood,.010);
  vec3 head=s-vec3(0.,.177,.044);
+ float headBound=box(head,vec3(.043,.047,.055),0.);
+ vec2 form=vec2(min(body,headBound),8.);
+ if(headBound>.025)return form;
  float skull=ell(head,vec3(.030,.025,.028));
  skull=max(skull,(abs(head.x)*.65+head.z*.76-.033));
  float muzzle=ell(head-vec3(0.,-.010,.021),vec3(.022,.009,.016));
@@ -5292,7 +5330,7 @@ vec2 serpent(vec3 p){
   skull=max(skull,-ell(head-vec3(sg*.010,-.002,.034),vec3(.002,.002,.004)));
  }
  body=join(body,skull,.006);
- vec2 form=vec2(body,8.);
+ form=vec2(body,8.);
  for(int i=0;i<2;i++){
   float sg=float(i)*2.-1.;
   float eye=ell(head-vec3(sg*.023,.004,.015),vec3(.006,max(.001,.004*(1.-u_blink*.8)),.006));
@@ -5600,6 +5638,8 @@ vec2 anatomy(vec3 p){
   shape=nearest(shape,vec2(cradle,11.));
  }
  shape=nearest(shape,serpent(p));
+ #endif
+#if GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
  if(p.y>.075&&abs(p.x)>.13)shape=nearest(shape,vec2(energyWeb(p),16.));
 #endif
  return shape;
@@ -5619,7 +5659,9 @@ void main(){
  // field. Empty corner rays do no anatomy, normal, coil or web evaluation.
  vec3 inv=sign(rd)/max(abs(rd),vec3(.000001));
 #if GHOST_COMPONENT == 1
- vec3 center=vec3(0.,.41,.20),extent=vec3(.62,.43,.34);
+ vec3 center=vec3(0.,.40,.20),extent=vec3(.38,.32,.31);
+#elif GHOST_COMPONENT == 3
+ vec3 center=vec3(0.,.40,.20),extent=vec3(.64,.34,.34);
 #elif GHOST_COMPONENT == 0
  vec3 center=vec3(0.,-.01,.065),extent=vec3(.64,.59,.42);
 #else
@@ -5738,7 +5780,7 @@ void main(){
    col+=GOLD*trim*(.14+u_cymatics.x*.30+u_cymatics.w*.25)+BLUE*rim*.7;
   }
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>7.5&&surface.y<8.5){
    vec3 s=snakeLocal(q);
    vec4 tube=snakeTube(s);
@@ -5771,7 +5813,7 @@ void main(){
   }
 
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>10.5&&surface.y<11.5){
    float rimInlay=line(abs(q.x-.003)-.065,.0025)*smoothstep(.25,.31,q.y);
    float marks=line(sin(q.x*180.+q.z*40.),.08)*smoothstep(.29,.32,q.y);
@@ -5791,7 +5833,7 @@ void main(){
   }
   if(surface.y>14.5&&surface.y<15.5)col=COBALT*(.65+u_voiceMid*.65)+CYAN*shine*.35;
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>15.5&&surface.y<16.5){
    float pulse=silkFlow(q);
    col=mix(COBALT,GOLD,.50+.45*sin(q.y*19.+q.x*7.))*(1.35+pulse*(u_cymatics.x+u_voiceMid)*1.10);
@@ -5832,7 +5874,7 @@ void main(){
 
 // Constant specialization removes unused anatomy AND material call trees.
 // All geometry still uses the same camera, field math and real depth ordering.
-dreamFace.geometryShaders=[0,2,1].map(component=>
+dreamFace.geometryShaders=[0,2,1,3].map(component=>
  '#extension GL_EXT_frag_depth : require\n#define GHOST_COMPONENT '+component+'\n'+dreamFace.shader);
 dreamFace.shader='#define GHOST_COMPONENT -1\n'+dreamFace.shader;
 
@@ -5853,7 +5895,7 @@ faceData.version=dreamFace;
 return {faceData,faceLibrary};
 })();
 carrierModules["portrait.mjs"] = (() => {
-/* Reuse the canonical exported v19 face and existing three-pass renderer.
+/* Reuse the canonical exported v19 face and existing shared multipass renderer.
  * v19 u_gaze translates eye anatomy in FACE coordinates, not normalized screen
  * coordinates. Keep its movement inside an elliptical socket budget. Head pose
  * is neutral for canonical faces. The provisional 3-D face owns a bounded
@@ -7275,6 +7317,7 @@ function mountAnsiMeshSprite(root,{host}={}){
 return {ansiMeshEffects,ansiMeshRig,ansiBonePose,createAnsiMesh,poseAnsiMesh,poseAnsiGarden,mountAnsiMeshSprite};
 })();
 carrierModules["boot-world.mjs"] = (() => {
+const {createFrameBudget} = carrierModules["../InfiniEngineSite/ghost-renderer.js"];
 const {mountAnsiTerminal} = carrierModules["ansi-terminal.mjs"];
 const {craftShaderSource} = carrierModules["vendor/sdf-craft/craft-shader.mjs"];
 const {requestMaterialAtlas,releaseMaterialOwner} = carrierModules["vendor/sdf-craft/materials-client.mjs"];
@@ -7282,7 +7325,7 @@ const {requestMaterialAtlas,releaseMaterialOwner} = carrierModules["vendor/sdf-c
  * Presentation follows the connection clock; it has no game/RNG authority.
  * One bounded WebGL canvas. Hidden/reduced/paused scenes stop time; CPU draw
  * submission and visible FPS are measured separately from unmeasured GPU cost. */
-const bootWorldBudget={steps:76,fps:30,pixelRatio:'auto'};
+const bootWorldBudget={steps:76,fps:60,pixelRatio:'auto'};
 // One layout anchor drives aperture geometry, light, focus and ray picking.
 const bootPortalCenter=Object.freeze([2.4,.95,3.8]);
 function bootRenderScale(requested='auto',{pixelRatio=1,apple=false}={}){
@@ -7356,25 +7399,49 @@ uniform vec2 uDrive;
 uniform vec3 uEye,uLook;
 uniform float uLens;
 uniform vec4 uLamps;
+uniform vec2 uCoreTurn,uRelayXY,uRelayYZ;
+uniform vec4 uKnotTurns[4];
 uniform sampler2D uSkinAlbedo,uSkinMatrix;
 uniform float uSkinReady;
 uniform sampler2D uTerminal;
 uniform float uTerminalReady;
 ${craftShaderSource}
+// Constant-shape entry points avoid a runtime dispatcher in Apple's Metal
+// translation. Same canonical envelope and primitive, no alternate geometry.
+float bootCrystal(vec3 p,vec3 scale){
+ float unit=min(scale.x,min(scale.y,scale.z)),bound=CraftBox(p.x,p.y,p.z,scale.x,scale.y,scale.z),gate=unit*.16;
+ if(bound>=gate)return bound;
+ vec3 q=p/scale;float d=CraftCrystal(q.x,q.y,q.z,.72,.46);
+ return min(max(d*unit,bound),max(bound,gate));
+}
+float bootBearing(vec3 p){
+ vec3 scale=vec3(.27,.18,.22);float unit=.18,bound=CraftBox(p.x,p.y,p.z,.27,.18,.22),gate=unit*.16;
+ if(bound>=gate)return bound;
+ vec3 q=p/scale;float d=CraftSocket(q.x,q.y,q.z,.5,.4);
+ return min(max(d*unit,bound),max(bound,gate));
+}
 const vec3 BOOT_PORTAL=vec3(${bootPortalCenter.join(',')});
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 float box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
 float rounded(vec3 p,vec3 b,float r){return box(p,b)-r;}
 float torus(vec3 p,vec2 t){return length(vec2(length(p.xy)-t.x,p.z))-t.y;}
 mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+mat2 turnPair(vec2 cs){return mat2(cs.x,-cs.y,cs.y,cs.x);}
 vec2 join(vec2 a,vec2 b){return a.x<b.x?a:b;}
 vec2 map(vec3 p){
+ // Exact union pruning: only enter a component if its conservative box is
+ // nearer than the closest distance already known (the infinite deck).
+ // Boxes never become surfaces. All retained CSG, steps and normals agree
+ // with the unpruned scene; distant rays avoid whole unused call trees.
+ vec2 d=vec2(p.y+1.04,11.);
+ if(box(p-vec3(0.,-.10,-.70),vec3(1.70,1.15,1.15))<d.x){
  // Brushed metal modem with a vented face and armoured corners.
  vec3 m=p-vec3(0.,-.48,-.7);m.xz=rot(-.10)*m.xz;
  float hull=rounded(m,vec3(1.38,.24,.68),.11);
  float hatch=rounded(m-vec3(0.,.26,.02),vec3(.82,.105,.39),.035);
  hull=max(hull,-hatch);
- vec2 d=vec2(hull,1.);
+ vec2 modem=vec2(hull,1.);
+ vec2 prior=d;d=modem;
  d=join(d,vec2(rounded(m-vec3(0.,.20,.02),vec3(.73,.018,.31),.018),2.));
  float panel=rounded(m-vec3(0.,.04,-.81),vec3(1.12,.135,.035),.025);
  d=join(d,vec2(panel,2.));
@@ -7387,11 +7454,11 @@ vec2 map(vec3 p){
  vec3 foot=m;foot.x=abs(foot.x)-1.10;foot.z=abs(foot.z)-.48;
  d=join(d,vec2(rounded(foot-vec3(0.,-.33,0.),vec3(.14,.09,.13),.04),1.));
  // GHOSTLINK phase modem: suspended octahedral core and three carrier coils.
- vec3 core=m-vec3(0.,.69,.02);core.xz=rot(uTime*.16)*core.xz;
+ vec3 core=m-vec3(0.,.69,.02);core.xz=turnPair(uCoreTurn)*core.xz;
  float pulseScale=1.+uBands.x*.10;
- float crystal=CraftEval(40.,core.x,core.y,core.z,.30*pulseScale,.33*pulseScale,.30*pulseScale,.72,.46);
+ float crystal=bootCrystal(core,vec3(.30,.33,.30)*pulseScale);
  d=join(d,vec2(crystal,13.));
- for(int k=0;k<3;k++){vec3 coil=m-vec3(0.,.42+float(k)*.17,.02);coil.xz=rot(float(k)*.7)*coil.xz;coil.y+=.03*sin(CraftAngle(coil.z,coil.x)*6.+uTime*.7)*uBands.y;d=join(d,vec2(torus(coil.xzy,vec2(.42+float(k)*.07,.023)),14.));}
+ for(int k=0;k<3;k++){vec3 coil=m-vec3(0.,.42+float(k)*.17,.02);coil.xz=rot(float(k)*.7)*coil.xz;if(uBands.y>0.)coil.y+=.03*sin(CraftAngle(coil.z,coil.x)*6.+uTime*.7)*uBands.y;d=join(d,vec2(torus(coil.xzy,vec2(.42+float(k)*.07,.023)),14.));}
  vec3 bolt=m;bolt.x=abs(m.x)-1.24;bolt.z=abs(m.z)-.55;bolt.y-=.23;d=join(d,vec2(length(bolt)-.07,3.));
  vec3 armour=m;armour.x=abs(m.x)-1.35;armour.y-=.02;
  float cheek=max(rounded(armour,vec3(.14,.27,.57),.045),abs(armour.z)+armour.y*.35-.59);d=join(d,vec2(cheek,1.));
@@ -7401,6 +7468,9 @@ vec2 map(vec3 p){
   vec3 led=m-vec3(-.73+float(i)*.45,.04,-.875);
   d=join(d,vec2(rounded(led,vec3(.12,.045,.026),.02),4.+float(i)));
  }
+ d=join(d,prior);
+ }
+ if(box(p-vec3(-2.75,.35,.85),vec3(1.95,1.55,.65))<d.x){
  // SDF terminal: recessed glass, split bezel, service slots and seated stand.
  vec3 monitor=p-vec3(-2.75,.50,.85);
  float housing=rounded(monitor,vec3(1.83,1.22,.32),.09);
@@ -7414,6 +7484,8 @@ vec2 map(vec3 p){
  d=join(d,vec2(rounded(monitor-vec3(0.,-1.50,-.02),vec3(.75,.065,.47),.035),16.));
  vec3 screw=monitor-vec3(0.,0.,-.37);screw.xy=abs(screw.xy)-vec2(1.74,1.13);
  d=join(d,vec2(length(screw)-.035,3.));
+ }
+ if(box(p-BOOT_PORTAL,vec3(2.85,2.85,.50))<d.x){
  // Concentric mechanical aperture: brass ribs around a cyan carrier throat.
  vec3 r=p-BOOT_PORTAL;
  d=join(d,vec2(torus(r,vec2(2.30,.12)),3.));
@@ -7423,11 +7495,12 @@ vec2 map(vec3 p){
  float ang=CraftAngle(r.y,r.x);vec3 ribs=r;
  float sector=floor(ang/.52359878+.5)*.52359878;ribs.xy=rot(sector)*ribs.xy;
  vec3 bearing=ribs-vec3(2.30,0.,0.);
- d=join(d,vec2(CraftEval(35.,bearing.x,bearing.y,bearing.z,.27,.18,.22,.5,.4),3.));
+ d=join(d,vec2(bootBearing(bearing),3.));
  // Keyed collars and the root bus share the nearest angular sector.
  vec3 collar=ribs-vec3(2.52,0.,0.);
  float keyed=rounded(collar,vec3(.12,.065,.085),.02);
  keyed=max(keyed,-box(collar,vec3(.15,.025,.045)));d=join(d,vec2(keyed,2.));
+ }
  // Physical data conduit climbs from the modem into the aperture.
  vec3 cable=p-vec3(0.,-.48,0.);float route=clamp((cable.z+.7)/4.5,0.,1.);route=route*route*(3.-2.*route);
  float pathX=.82*sin(cable.z*.80)*(1.-route)+BOOT_PORTAL.x*route;
@@ -7437,15 +7510,15 @@ vec2 map(vec3 p){
  conduit=max(conduit,abs(cable.z-1.55)-2.45);d=join(d,vec2(conduit,9.));
  // Distant folded relays: geometry, not a painted tunnel.
  if(p.z>5.){
-  vec3 seed=(p-BOOT_PORTAL-vec3(0.,0.,1.9))/(1.+uDrive.x*.20+uDrive.y*.08);seed.xy=rot(uTime*.12)*seed.xy;seed.yz=rot(.6+uTime*.09)*seed.yz;
+  vec3 seed=(p-BOOT_PORTAL-vec3(0.,0.,1.9))/(1.+uDrive.x*.20+uDrive.y*.08);seed.xy=turnPair(uRelayXY)*seed.xy;seed.yz=turnPair(uRelayYZ)*seed.yz;
   float gem=(dot(abs(seed),vec3(1.))-.44)*.57735;
-  for(int k=0;k<4;k++){vec3 knot=seed;knot.xy=rot(float(k)*.7854+uTime*.07)*knot.xy;knot.yz=rot(float(k)*.64)*knot.yz;gem=min(gem,torus(knot,vec2(.56+float(k)*.075,.022)));}
+  for(int k=0;k<4;k++){vec3 knot=seed;knot.xy=turnPair(uKnotTurns[k].xy)*knot.xy;knot.yz=turnPair(uKnotTurns[k].zw)*knot.yz;gem=min(gem,torus(knot,vec2(.56+float(k)*.075,.022)));}
   d=join(d,vec2(gem,12.));
   vec3 c=p-BOOT_PORTAL-vec3(0.,0.,.2);float z=floor(c.z/3.6);c.z=mod(c.z,3.6)-1.8;c.xy=rot(z*.28+uProgress*.1)*c.xy;
   float frame=max(abs(length(c.xy)-max(2.5,4.8-z*.08))-.055,abs(c.z)-.055);
   d=join(d,vec2(frame,10.));
  }
- d=join(d,vec2(p.y+1.04,11.));return d;
+ return d;
 }
 vec2 bootSkinUv(vec2 uv,float tile){vec2 cell=vec2(mod(tile,4.),floor(tile/4.));return (cell+vec2(1./128.)+fract(uv*2.5)*(1.-2./128.))/vec2(4.,2.);}
 void bootSkin(vec3 p,vec3 n,float id,out vec3 base,out vec4 matrix){
@@ -7474,7 +7547,7 @@ void main(){
  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
  vec3 ro=uEye;
  vec3 target=uLook;vec3 f=normalize(target-ro),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f);
- vec3 rd=normalize(f*uLens+uv.x*r+uv.y*up),col=sky(rd);float travel=0.,glow=0.;vec2 hit=vec2(1.);
+ vec3 rd=normalize(f*uLens+uv.x*r+uv.y*up),skyColor=sky(rd),col=skyColor;float travel=0.,glow=0.;vec2 hit=vec2(1.);
  // The screen is an analytic world plane inside the SDF bezel. Its direct
  // emission bypasses marching/tonemapping so 80 columns stay pixel-legible.
  float screenDepth=(.53-ro.z)/rd.z;
@@ -7491,7 +7564,7 @@ void main(){
   if(hit.x<.0015||travel>34.)break;travel+=max(.006,hit.x*.78);
  }
  if(travel<34.&&hit.x<.01){
-  vec3 p=ro+rd*travel,n=normal(p),light=normalize(vec3(-3.,5.,-4.));
+  vec3 p=ro+rd*travel,n=hit.y>10.5&&hit.y<11.5?vec3(0.,1.,0.):normal(p),light=normalize(vec3(-3.,5.,-4.));
   float diffuse=max(dot(n,light),0.),spec=pow(max(dot(reflect(-light,n),-rd),0.),48.);
   float grain=hash(floor(p*220.));vec3 base=vec3(.075,.10,.11);float metal=.6;vec3 emit=vec3(0.);
   if(hit.y>15.5){base=vec3(.08,.11,.14);metal=.8;}
@@ -7522,7 +7595,7 @@ void main(){
    vec3 hue=k==0?vec3(.02,.8,.7):k==1?vec3(.3,.14,1.):k==2?vec3(.9,.04,.4):vec3(1.,.57,.08);
    col+=hue*crest*exp(-radial*.75)*power*(.17+uDrive.x*.6);
   }
-  col=mix(col,sky(rd),1.-exp(-travel*.034));
+  col=mix(col,skyColor,1.-exp(-travel*.034));
  }
  // Analytic lamp bloom in the same world coordinates; stopped by occluders.
  for(int k=0;k<4;k++){
@@ -7556,14 +7629,15 @@ const bootGlassFragment=`precision highp float;
 uniform vec2 uRes;uniform vec3 uEye,uLook;uniform float uLens;uniform sampler2D uTerminal,uBackground;
 void main(){vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;vec3 f=normalize(uLook-uEye),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f),rd=normalize(f*uLens+uv.x*r+uv.y*up);float depth=(.53-uEye.z)/rd.z;vec3 p=uEye+rd*depth-vec3(-2.75,.54,.53);vec3 col=texture2D(uBackground,gl_FragCoord.xy/uRes).rgb;
  if(rd.z>0.&&depth>0.&&abs(p.x)<1.6&&abs(p.y)<1.){vec2 tex=vec2(.5-p.x/3.2,.5-p.y/2.);col=texture2D(uTerminal,tex).rgb*pow(1.-max(abs(tex.x-.5),abs(tex.y-.5))*1.25,.3)+vec3(.002,.005,.009);}gl_FragColor=vec4(col,1.);}`;
-function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,0],level=()=>0,reduced=false,pixelRatio='auto',terminal:terminalOptions={}}={}){
+function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,0],level=()=>0,reduced=false,pixelRatio='auto',adaptive=false,terminal:terminalOptions={}}={}){
  let gl=null,program=null,glassProgram=null,backgroundTexture=null,backgroundFramebuffer=null,backgroundSize=[0,0],screenCache=false,skinTextures=[],skinReady=false,terminalTexture=null,terminalRevision=-1,externalDisplay=null,externalRevision=0,terminalReply=false,destroyed=false,vertexBuffer=null,shaderObjects=[],raf=0,last=0,time=0,visible=false,paused=false,phase=0,progress=0;
  let pointer=[0,0],camera=bootCameraView('wide',{aspect:canvas.getBoundingClientRect().width/Math.max(1,canvas.getBoundingClientRect().height)}),focus='wide',candidate=null,candidateAt=0,pointerLast=[-1e4,-1e4],flight=null,flightAge=0,frames=0,stamp=0,read=false;
  let signal={bands:[0,0,0,0],level:0,ink:0},pendingInk=0;
  const terminal=mountAnsiTerminal(terminalOptions);let terminalElapsed=0,terminalManual=false,terminalComplete=false;
+ const frameBudget=createFrameBudget({enabled:adaptive});
  const metrics={frames:0,drawMs:0,fps:0,pixels:0,renderer:'unavailable'};
  try{
-  gl=canvas.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:true,powerPreference:'low-power'});
+  gl=canvas.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:false,powerPreference:'low-power'});
   if(!gl)throw Error('WebGL unavailable');
   const shader=(type,source)=>{const s=gl.createShader(type);shaderObjects.push(s);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
   program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,bootWorldFragment));gl.bindAttribLocation(program,0,'a');gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
@@ -7571,7 +7645,7 @@ function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,
   gl.useProgram(program);const buffer=vertexBuffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const pos=gl.getAttribLocation(program,'a');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
   metrics.renderer='webgl-sdf';canvas.dataset.renderer='webgl-sdf';canvas.dataset.shader='ready';
  }catch(error){canvas.dataset.shader='failed';canvas.dataset.error=error.message;canvas.setAttribute('aria-label','Signal Dock unavailable: '+error.message);if(fps)fps.textContent='TEXT / NO WEBGL';return {set(){},show(){},focus(){},destroy(){},terminal,metrics};}
- const uniform=name=>gl.getUniformLocation(program,name),u={r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive'),eye:uniform('uEye'),look:uniform('uLook'),lens:uniform('uLens'),lamps:uniform('uLamps'),skinA:uniform('uSkinAlbedo'),skinM:uniform('uSkinMatrix'),skinReady:uniform('uSkinReady'),terminal:uniform('uTerminal'),terminalReady:uniform('uTerminalReady')};
+ const uniform=name=>gl.getUniformLocation(program,name),u={coreTurn:uniform('uCoreTurn'),relayXY:uniform('uRelayXY'),relayYZ:uniform('uRelayYZ'),knotTurns:uniform('uKnotTurns[0]'),r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive'),eye:uniform('uEye'),look:uniform('uLook'),lens:uniform('uLens'),lamps:uniform('uLamps'),skinA:uniform('uSkinAlbedo'),skinM:uniform('uSkinMatrix'),skinReady:uniform('uSkinReady'),terminal:uniform('uTerminal'),terminalReady:uniform('uTerminalReady')};
  // A single admitted Human material bake; no per-frame texture generation.
  const skinOwner={};
  for(let unit=0;unit<2;unit++){
@@ -7593,10 +7667,10 @@ function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,
  terminalTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
- backgroundTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ backgroundTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
  backgroundFramebuffer=gl.createFramebuffer();
  const glassU=Object.fromEntries(['uRes','uEye','uLook','uLens','uTerminal','uBackground'].map(name=>[name,gl.getUniformLocation(glassProgram,name)]));
- const bandBuffer=new Float32Array(4),lifecycle=new AbortController(),listen={signal:lifecycle.signal};
+ const knotTurns=new Float32Array(16),bandBuffer=new Float32Array(4),lifecycle=new AbortController(),listen={signal:lifecycle.signal};
  function selectView(mode,{reply}={}){const layoutChanged=reply!==undefined&&terminalReply!==reply;if(reply!==undefined)terminalReply=!!reply;if(mode!==focus||layoutChanged){screenCache=false;const entropy=new Uint32Array(1);crypto.getRandomValues(entropy);const rect=canvas.getBoundingClientRect();flight=bootCameraFlight(camera,mode,entropy[0],{aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height),reply:terminalReply});flightAge=0;}focus=mode;candidate=null;canvas.dataset.focus=focus;if(focusLabel)focusLabel.textContent=mode==='wide'?'GHOSTLINK / MODEM · ANSI SCREEN · PORTAL':mode==='modem'?'PHASE MODEM / EDGE TO PULL BACK':mode==='screen'?'ANSI / 80 COLUMNS / 2400 BPS / EDGE TO PULL BACK':'CARRIER APERTURE / EDGE TO PULL BACK';for(const [key,button]of Object.entries(viewButtons))button?.setAttribute('aria-pressed',String(key===mode));if(visible&&!raf)show(true);}
  for(const [mode,button]of Object.entries(viewButtons))button?.addEventListener('click',()=>selectView(mode),listen);selectView('wide');
  function draw(now){
@@ -7609,26 +7683,31 @@ function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,
    if(!terminalManual)terminalElapsed=progress*terminal.duration;const terminalChanged=terminal.update(terminalElapsed,{reveal:terminalComplete||terminal.mode!=='receiving',time,reducedMotion:reduced});if(terminalChanged&&terminalElapsed>0&&!terminal.complete)pendingInk=Math.max(pendingInk,.65);
    if(terminalRevision!==(externalDisplay?externalRevision:terminal.revision)){gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,externalDisplay||terminal.canvas);terminalRevision=externalDisplay?externalRevision:terminal.revision;}
    if(candidate&&time-candidateAt>(candidate==='wide'?.65:.2))selectView(candidate);if(flight&&!paused){flightAge+=dt;camera=bootCameraAt(flight,flightAge,{reduced});}if(focus==='wide'&&(!flight||flightAge>=flight.duration))camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height)});if(!flight||flightAge>=flight.duration){if(focus==='screen')camera=bootScreenView(rect.width/Math.max(1,rect.height),Math.max(1,rect.height),{reply:terminalReply});else if(focus==='wide')camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height)});}canvas.dataset.cameraTravel=flight?Math.min(1,flightAge/flight.duration).toFixed(3):'1';const lamps=bootLampSignals(progress,phase,signal,time);
-   const begin=performance.now();gl.viewport(0,0,w,h);const heldScreen=focus==='screen'&&(!flight||flightAge>=flight.duration);
-   const drawGlass=()=>{gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.useProgram(glassProgram);gl.uniform2f(glassU.uRes,w,h);gl.uniform3fv(glassU.uEye,camera.eye);gl.uniform3fv(glassU.uLook,camera.look);gl.uniform1f(glassU.uLens,camera.lens);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(glassU.uTerminal,2);gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.uniform1i(glassU.uBackground,3);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-cached-bezel-live-glass';};
+   if(frameBudget.sample(now))screenCache=false;
+   const fieldW=Math.max(1,Math.round(w*frameBudget.scale)),fieldH=Math.max(1,Math.round(h*frameBudget.scale));canvas.dataset.fieldSize=fieldW+'×'+fieldH;canvas.dataset.fieldScale=frameBudget.scale.toFixed(4);
+   const begin=performance.now();gl.viewport(0,0,fieldW,fieldH);const heldScreen=focus==='screen'&&(!flight||flightAge>=flight.duration);
+   const drawGlass=()=>{gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,w,h);gl.useProgram(glassProgram);gl.uniform2f(glassU.uRes,w,h);gl.uniform3fv(glassU.uEye,camera.eye);gl.uniform3fv(glassU.uLook,camera.look);gl.uniform1f(glassU.uLens,camera.lens);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(glassU.uTerminal,2);gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.uniform1i(glassU.uBackground,3);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-cached-bezel-live-glass';};
    if(heldScreen&&screenCache)drawGlass();
    else{
     // Render the retained bezel directly into an RGBA target. Copying the
     // opaque default framebuffer into RGBA is not portable across drivers.
     // The texture is never sampled while its framebuffer is bound.
-    if(heldScreen){
+    {
      gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);
-     if(backgroundSize[0]!==w||backgroundSize[1]!==h){gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);backgroundSize=[w,h];}
+     if(backgroundSize[0]!==fieldW||backgroundSize[1]!==fieldH){gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,fieldW,fieldH,0,gl.RGBA,gl.UNSIGNED_BYTE,null);backgroundSize=[fieldW,fieldH];}
      gl.bindFramebuffer(gl.FRAMEBUFFER,backgroundFramebuffer);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,backgroundTexture,0);
      const status=gl.checkFramebufferStatus(gl.FRAMEBUFFER);canvas.dataset.bezelFramebuffer=String(status);
      if(status!==gl.FRAMEBUFFER_COMPLETE)throw Error('Native bezel framebuffer incomplete: '+status);
-    }else gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-    gl.useProgram(program);gl.uniform2f(u.r,w,h);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.uniform3fv(u.eye,camera.eye);gl.uniform3fv(u.look,camera.look);gl.uniform1f(u.lens,camera.lens);gl.uniform4fv(u.lamps,lamps);
+    }
+    gl.useProgram(program);
+    gl.uniform2f(u.coreTurn,Math.cos(time*.16),Math.sin(time*.16));gl.uniform2f(u.relayXY,Math.cos(time*.12),Math.sin(time*.12));gl.uniform2f(u.relayYZ,Math.cos(.6+time*.09),Math.sin(.6+time*.09));
+    for(let k=0;k<4;k++)knotTurns.set([Math.cos(k*.7854+time*.07),Math.sin(k*.7854+time*.07),Math.cos(k*.64),Math.sin(k*.64)],k*4);gl.uniform4fv(u.knotTurns,knotTurns);
+    gl.uniform2f(u.r,fieldW,fieldH);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.uniform3fv(u.eye,camera.eye);gl.uniform3fv(u.look,camera.look);gl.uniform1f(u.lens,camera.lens);gl.uniform4fv(u.lamps,lamps);
     for(let unit=0;unit<2;unit++){gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,skinTextures[unit]);}
     gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(u.terminal,2);gl.uniform1f(u.terminalReady,1);gl.uniform1i(u.skinA,0);gl.uniform1i(u.skinM,1);gl.uniform1f(u.skinReady,skinReady?1:0);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-sdf';
-    if(heldScreen){screenCache=true;drawGlass();}
+    screenCache=heldScreen;drawGlass();canvas.dataset.renderMode=heldScreen?'native-cached-bezel-live-glass':'sdf-field-native-glass';
    }
-   metrics.frames++;metrics.drawMs=performance.now()-begin;metrics.pixels=w*h;canvas.dataset.drawMs=metrics.drawMs.toFixed(3);canvas.dataset.progress=progress.toFixed(3);canvas.dataset.frames=String(metrics.frames);
+   metrics.frames++;metrics.drawMs=performance.now()-begin;metrics.pixels=fieldW*fieldH;canvas.dataset.drawMs=metrics.drawMs.toFixed(3);canvas.dataset.progress=progress.toFixed(3);canvas.dataset.frames=String(metrics.frames);
    if(!read){const pixels=new Uint8Array(4);gl.readPixels(w>>1,h>>1,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);canvas.dataset.pixel=[...pixels].join(',');read=true;}
    frames++;if(now-stamp>=1000){metrics.fps=Math.round(frames*1000/(now-stamp));frames=0;stamp=now;if(fps)fps.textContent=metrics.fps+' FPS / SDF';
     // Cadence counts actual native draws; screen focus caches its static bezel.
@@ -7639,7 +7718,7 @@ function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,
   }
   if(!terminalReply||flight&&flightAge<flight.duration)raf=requestAnimationFrame(draw);
  }
- function show(value){if(destroyed)return;visible=!!value;if(!visible){cancelAnimationFrame(raf);raf=0;}else if(!raf){last=performance.now();stamp=last;raf=requestAnimationFrame(draw);}}
+ function show(value){if(destroyed)return;if(!visible&&value)frameBudget.reset();visible=!!value;if(!visible){cancelAnimationFrame(raf);raf=0;}else if(!raf){last=performance.now();stamp=last;raf=requestAnimationFrame(draw);}}
  // Camera focus is selected by explicit press. Pointer motion never flies
  // away from a control; the host uses pick() with its shared press binding.
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}else if(visible)show(true);},listen);
@@ -8895,7 +8974,7 @@ return {responsePacket,validateResponse,renderResponse};
 })();
 carrierModules["mind-data.mjs"] = (() => {
 /* Local read protocol snapshot. No remote connection or private memories. */
-const bundledMind = {"highlights":{"entries":[{"authorConsent":true,"contentKind":"curated-summary","date":"2026-10-19","id":"sysop.chromatic.laws-and-boot.2026-10-19","ownerApproved":true,"provenance":{"kind":"sysop-local-build","label":"SYSOP / archived opening-edition build memo"},"schema":"friken.mind.highlight.v1","sourceEventIds":["sysop:chromatic:build-laws-boot:2026-10-19"],"sourcePaths":["Tools/ChromaticBBS/engine.mjs","Tools/ChromaticBBS/continuity.py","Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md"],"summary":"Physics left the config writable. The local CHROMATIC carrier now lets a diver install OBSERVE, GRAFT and BEQUEATH across fifteen decisions, then take the resulting laws through a new BOOT. The CRT wakes from a phosphor point; fourteen authored Ghost faces answer from the same glass. The recovered Masha rose brings its actual iridescent petals, veins and pollen. This is the SYSOP build desk, not a report of external player activity. This is a retained opening-edition build memo. Read the shared Wire controls for current public chapters, news and scores.","title":"THE CARRIER GREW TEETH. THE TEETH SURVIVE BOOT."}],"publicationPending":true,"schema":"friken.mind.highlights.v1","scope":"local-staging","version":1},"registry":{"generation":98,"highlights":{"bytes":1266,"count":1,"path":"mind/highlights.json","sha256":"8521fd264de6e30cc51015bb3e69652b885c744051fb228f6e549148dd5c5f5c"},"identity":{"coreSha256":"0bc31ec01ff0daf07845a817cf208d8ec5dfb212477d023e006ffac5f0ad6685","faceId":"v20.0","publicationManifestSha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b","sourceSha256":"53dc92519122bf7e2eafad986da28a801d5295cc9707647a96784120bf9b5dd0","version":"v20.0"},"packages":[{"dependencies":[],"files":[{"bytes":16584,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft.mjs","sha256":"6c42996438736a636513cb06f0976007178d4f20d1c463aeaa765cb35056fc71"},{"bytes":16087,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft-shader.mjs","sha256":"11ae0f04e3cd52f4e856d83bf345490a3cd27b8ee236f5b70d12e4803ea3ff38"},{"bytes":1175,"path":"Tools/ChromaticBBS/vendor/sdf-craft/runtime-catalogue.mjs","sha256":"6246d3ed423f156be14816fb92dcc2bc26d993fdcf93048b5417d45f125c82f7"},{"bytes":9181,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe.mjs","sha256":"612433d91290911c9813272c8068d1081ed7585d698bfd60d913e988cd196c03"},{"bytes":5472,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe-glsl.mjs","sha256":"ef8403af622d3a3f71f66b7f86151f7aa488dad92ebc5ca42c70af0facb91505"},{"bytes":59764,"path":"Tools/ChromaticBBS/vendor/sdf-craft/texture-engine.mjs","sha256":"115d585061d4979d9eb9815fc1c9e91f950a26ae32bbf866e4da84091243c594"},{"bytes":1159,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials.mjs","sha256":"170e932de917313166c2a298508bd83fd309ec64b36952e9b21e2ea228506f8a"},{"bytes":2139,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-glsl.mjs","sha256":"b755647e898d58a52df70d4f79b792d9f0cd43d20f978319c844d42acf41396d"},{"bytes":4235,"path":"Tools/ChromaticBBS/vendor/sdf-craft/roll.mjs","sha256":"d40269d769002457b6c12fde5667a7b4fb426cd7aeb1d757da280a1176032e17"},{"bytes":63402,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-worker-source.mjs","sha256":"76c982f4449cdbaf86bbd92fe8c82c4ef924007d2268d0f2c785927161caecda"},{"bytes":2654,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials-client.mjs","sha256":"73eef5bb002616aaaea9b483308801f05c691cf34a3e521f5ad8329e24ce6bcd"},{"bytes":1381,"path":"Tools/ChromaticBBS/creation.mjs","sha256":"fb5774f6cf30d752b68fdb16803389b5eafb043f2beaed40476df2f191910786"},{"bytes":2035,"path":"Tools/ChromaticBBS/causality.mjs","sha256":"da3a27d22e94087a5751af930ae0926131643aa064013b40b6e56b78bfeb1517"},{"bytes":66073,"path":"Tools/ChromaticBBS/engine.mjs","sha256":"dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"},{"bytes":26160,"path":"Tools/ChromaticBBS/chapters.mjs","sha256":"fe1ecd872d75c5f93ccfb2eff202dead2f46fe6bbdd08d3713bd299835aae74d"},{"bytes":5150,"path":"Tools/ChromaticBBS/storycraft.mjs","sha256":"14dea569dc79e0885c275f607a528d51d82072dc806ecabb79cd7c293167defc"},{"bytes":4486,"path":"Tools/ChromaticBBS/scanner.mjs","sha256":"fc220fcee2066e53a33677be9af9798cb5fee89abdc24a5b8b2495627c7a30ff"},{"bytes":11323,"path":"Tools/ChromaticBBS/staging.mjs","sha256":"b3ae0383f42dfc05e4f7ee1366c95d2d99af00a32302685eeeaad87ce5032f0b"},{"bytes":2241,"path":"Tools/ChromaticBBS/chapter-cli.mjs","sha256":"201cca38828dea6ab0998c905aeafc265670630e4c2e996a63641c8e754154f7"},{"bytes":129260,"path":"Tools/ChromaticBBS/chapter-data.mjs","sha256":"20e85712cd309e295b163a3c3cfb0107193780cb240842f744c87bbf7dfd42a7"},{"bytes":57713,"path":"Tools/ChromaticBBS/chapters/the-weather-inside.json","sha256":"cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"},{"bytes":195337,"path":"Tools/ChromaticBBS/chapters/lot-forty-seven.json","sha256":"dbeccf62cdc0c2823bb016c1e48665c381166dd36e093c3f67b79d6f4e3b8fbd"},{"bytes":9733,"path":"Tools/ChromaticBBS/storage.mjs","sha256":"899dd2ff33147f7d09f4f69159662c982f2ddae04fc8926d5a824b6af9b34487"}],"id":"carrier-laws","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":2998,"path":"Tools/ChromaticBBS/canon.mjs","sha256":"cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"},{"bytes":12230,"path":"Tools/ChromaticBBS/chapter-library.mjs","sha256":"2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"},{"bytes":4182,"path":"Tools/ChromaticBBS/session-share.mjs","sha256":"f06d06dc5626a0fde8feb970d95ec57b5854eca244b1322bdac601b6583f2ca5"},{"bytes":7235,"path":"Tools/ChromaticBBS/session-store.py","sha256":"c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"},{"bytes":10823,"path":"Tools/ChromaticBBS/public-release.py","sha256":"471bfe8994e5430d7d09b40023fe491f899b6c954a3870ffab50a83c88148cc4"},{"bytes":1023,"path":"Tools/ChromaticBBS/voice-reference.json","sha256":"c882e49631689f3e644616551ea70add1520774a81d5624b0412f36e8bf5a324"},{"bytes":8055,"path":"Tools/ChromaticBBS/commentary.mjs","sha256":"4a6a5f642af71f1d9a5c177f3277b1094c204681bde79364a831e09796fe2985"},{"bytes":9385,"path":"Tools/ChromaticBBS/shell.mjs","sha256":"74129fce332642ebcf56c9328129fe5040fcbb0116cb8bb94ae6a9d5f237960c"},{"bytes":12853,"path":"Tools/ChromaticBBS/life-theater.mjs","sha256":"d5c990ee6e3f3784e371f44cf3e1cbca7d5714be7f7f0368f26c74e705ba7368"},{"bytes":7761,"path":"Tools/ChromaticBBS/roll-battle.mjs","sha256":"7b4fa7b4f2b8cc07ac2893adb24a71bbcfe19cf6b8c981dcc0a43fd972d5910d"},{"bytes":3191,"path":"Tools/ChromaticBBS/recorded-voice.mjs","sha256":"e0133d3ee01292eca513f00eaeff474fddac473005102317b6d89b5bc14515db"},{"bytes":279,"path":"Tools/ChromaticBBS/voice-data.mjs","sha256":"91b8a27090f3fea37537d46980cf929fc86c5113effb61bb612855c0b362b043"},{"bytes":31741,"path":"Tools/ChromaticBBS/speech.mjs","sha256":"7b11f5e5df271c9db5cccad47a200adf429ecdd9f55ee3887ca5144aa67bf9c0"},{"bytes":25386,"path":"Tools/ChromaticBBS/neural-voice.mjs","sha256":"b9cbad579b6108e460b456c1b8df8ac404740e62d7b98fdc389e01000099d52b"},{"bytes":3198,"path":"Tools/ChromaticBBS/facial-rig.mjs","sha256":"851e5d337b0ec42b18a09573f6b6d01497e21b5bf11ae025946557f5366f6e92"},{"bytes":8925,"path":"Tools/ChromaticBBS/story-guidance.mjs","sha256":"7e45c2e56fbbae3450a1a7c329b65d4ecbb1b56451280568327561a0c4b1b247"},{"bytes":3257,"path":"Tools/ChromaticBBS/response.mjs","sha256":"2471ebac8c74a944fe21ed6175ab94773006ec7f14b4081bc3c78e1a61c5db6a"},{"bytes":18444,"path":"Tools/ChromaticBBS/juice.mjs","sha256":"8c8ae98d67862aa63414765a3917e3d752b1783f1f3583e46f93a24b6a220a6e"},{"bytes":20150,"path":"Tools/ChromaticBBS/response-theater.mjs","sha256":"ce1168e4985ebe2ed7b9c38c8207d652f7a497a6627d80c2f74b618907123204"},{"bytes":12169,"path":"Tools/ChromaticBBS/response-theater.css","sha256":"41ed4ee8423cbc34f89b661112a7a8296f54a616673df8fc71388e367912dc70"},{"bytes":26808,"path":"Tools/ChromaticBBS/turn-out-of-time-data.mjs","sha256":"0b49b667a878000b7c37868ec426e06c0b6c44ff69ebdc4729c10620a3d81c20"},{"bytes":3307,"path":"Tools/ChromaticBBS/reply-discoveries.mjs","sha256":"f562cf4cb958530d8ced1098d7ee5348626b52ac5d9301327c53cf50ef0f4961"},{"bytes":3887,"path":"Tools/ChromaticBBS/reply-discoveries.test.mjs","sha256":"8f05c8db0a8c8d54e7e076d252d267e970339521a742c984221d3e5cf2ea8f17"},{"bytes":39115,"path":"Tools/ChromaticBBS/turn-out-of-time.mjs","sha256":"44ca07c7c7c7c1dc8bbc2004c031baae34df1e8a9fb407aa435b2632c0e73c03"},{"bytes":35978,"path":"Tools/ChromaticBBS/Turn-Out-Of-Time.md","sha256":"4f2c767699cdecac2c2a70f270eb45dd797598a829912a45d82927e6b8227019"},{"bytes":9803,"path":"Tools/ChromaticBBS/ANSI-Boot.md","sha256":"494017f4b52d78ae7a29800e1b5e9728f1a8157803e0d03517eb5fc00a9cbb3c"},{"bytes":41374,"path":"Tools/ChromaticBBS/ansi-ui.mjs","sha256":"731d73e693b0ce0a0f37b0ef005eba5adb086a7bc98d799d79b94067a172ed71"},{"bytes":13292,"path":"Tools/ChromaticBBS/ansi-sprites.mjs","sha256":"16af20d56e1332d7e17b08c03f295e8cb5ed483447231274420df40880f4b109"},{"bytes":4807,"path":"Tools/ChromaticBBS/ANSI-Sprites.md","sha256":"7676c5ae6ba40f060a75b690afa0c05f8890c392e5ddf7a0f6fc4d2aa7fbfa59"},{"bytes":1902,"path":"Tools/ChromaticBBS/ghostlink-transport.mjs","sha256":"fb9db7e96f062a4c79ac432bf316d1b979ce154cd88446ab4e3a3e0f6f98d774"},{"bytes":11401,"path":"Tools/ChromaticBBS/mind-adventure.mjs","sha256":"d0b0f1a3ada9d5be157a2fad684b5feb3629dc042b42884673f9cea1eeb2414e"},{"bytes":3255,"path":"Tools/ChromaticBBS/mind-adventure.css","sha256":"f65545763f9254a2b9c93c071fbbf00cd753f4524cff6e359d4eed426fc34613"},{"bytes":3763,"path":"Tools/ChromaticBBS/render-ansi-review.py","sha256":"9d8967a6d984574d2c91be38e0e3be2d893afc7a9eb65254ed59542b43a0490a"},{"bytes":7308,"path":"Tools/ChromaticBBS/door-and-crew.mjs","sha256":"5176d665d2077150d518ff2d939a920695bdb669cff0d61b14b619f7bd7abaef"},{"bytes":1907,"path":"Tools/ChromaticBBS/door-and-crew.test.mjs","sha256":"81e95f9c4566fb7c02f554da3ec2f63edb7d005b65a3138b92a3bc9b9c10fbb9"},{"bytes":12665,"path":"Tools/ChromaticBBS/ansi-mesh.mjs","sha256":"e55a4b4be7dabb71c8602f5d5ba755fd185ddc593cf93eab9710240134873413"},{"bytes":3134,"path":"Tools/ChromaticBBS/ansi-mesh.test.mjs","sha256":"8563ff8a3f3288a4dbd4ffb105bb200131449238f9164c02371c2d5e30ddb45a"},{"bytes":25708,"path":"Tools/ChromaticBBS/ansi-scenes.mjs","sha256":"7ef3e068858c97d6e90437f6797cc62e7231b0fcdd43baa848fa6b6e1c13e636"},{"bytes":3153,"path":"Tools/ChromaticBBS/ansi-scenes.test.mjs","sha256":"672f5ed0b1447d1598d5b724c59b5576ca77183c84d529260341d435dc023b2b"},{"bytes":14025,"path":"Tools/ChromaticBBS/ANSI-Craft.md","sha256":"feb2e5b4ee0fe5a109c71c3235f4d52cf6d60773d9012f6d33bce6c95d683dd2"},{"bytes":91624,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-office.webp","sha256":"1a1f7acc0e2bc2fb3d23cd1a9a45ccb7bea008d92bf628f875f0f0b587336c00"},{"bytes":79904,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-upgrades.webp","sha256":"9915dbb2b5c8751a6c3145fb7d657d862daaa39195404a03c676a6fc59e6a92c"},{"bytes":928,"path":"Tools/ChromaticBBS/art/fizzpow/provenance.json","sha256":"25899a9a52f5cc028103a52da7b38ce0dfa382a79586eae5dc18f48f04303a8f"},{"bytes":21704,"path":"Tools/ChromaticBBS/native-response-host.mjs","sha256":"aebaafe6aef527882b3fb8094ae0a0078bf36cd01650ce034da7a064e77b0819"},{"bytes":29455,"path":"Tools/ChromaticBBS/native-response-program.mjs","sha256":"5e9c94a3510fdd97e3c65e3635a9080b6ad774ea406535d6daf6a1bad1542ea8"},{"bytes":18142,"path":"Tools/ChromaticBBS/native-response-host.test.mjs","sha256":"0e40390dc977fc356005829faa6e529fafd6c08f09487b2af3235de29d7cfc99"},{"bytes":10395,"path":"Tools/ChromaticBBS/native-response-program.test.mjs","sha256":"7837064a0d70ffa7ffbfaec1204f1dc495147241f4e1c5788a659b2b48d1cd5f"},{"bytes":18644,"path":"Tools/ChromaticBBS/native-routing.test.mjs","sha256":"b1ed4da4a0ef3ec38d898668b8f521f5cb7bd13a017c5bc1dae3ffd5df84ee97"},{"bytes":15815,"path":"Tools/ChromaticBBS/Native-Response-Host.md","sha256":"7c3d8084df0d05ce731acc72e432dbdfcb1d99446b4f89f87c4345b07b3025ad"},{"bytes":5372,"path":"Tools/ChromaticBBS/subtitle-cues.mjs","sha256":"a83cf605cfcb272c54a870ba248e522c309c7478953daa9c24002769debb1b14"},{"bytes":6673,"path":"Tools/ChromaticBBS/subtitle-cues.test.mjs","sha256":"74213ccd7c201b4ca7f8eaba61bdd7bdb0871348f5d417bc9c462a437f73f63b"},{"bytes":22200,"path":"Tools/ChromaticBBS/ansi-skirmish.mjs","sha256":"f786b7af82a32d46af5f27cdb303f877e9df38d71ecda745131320219eca5998"},{"bytes":3109,"path":"Tools/ChromaticBBS/ANSI-Skirmish.md","sha256":"ca78e441f92b95f53df20b30642e7898392df6d36eb792142a960d73ffdd5862"},{"bytes":12361,"path":"Tools/ChromaticBBS/ansi-animation.mjs","sha256":"4baa5167c6639521c234098d353f8dee8c124cca90305483db589e8d27d97c1f"},{"bytes":4420,"path":"Tools/ChromaticBBS/ANSI-Animation.md","sha256":"c8d8ab5ea20c234700faabf0bb1bac934d2310ef45c4032850a2ff75c1d478fd"},{"bytes":22584,"path":"Tools/ChromaticBBS/vendor/ansi-ui/WebPlus_IBM_VGA_8x16.woff","sha256":"4823e093c7f2f69641eaafb6f3465185afa63877cda58d341b6b317fd53dfd1f"},{"bytes":20133,"path":"Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT","sha256":"9348ddfd44da5a127c59141981954746a860ec8e03e0412cf3af7134af0f97e2"},{"bytes":932,"path":"Tools/ChromaticBBS/vendor/ansi-ui/PROVENANCE.md","sha256":"b9eb44b3d9cc88b3673e5980961eac984d2d0f3b587e6f42334381851f5324f7"},{"bytes":1790,"path":"Tools/ChromaticBBS/vendor/native-gallery/input.js","sha256":"90410bac312078dd3888934abc9ada7439d411065778dfe4ee97b67582393569"}],"id":"carrier-shell","kind":"presentation","version":1},{"dependencies":["carrier-laws","carrier-shell"],"files":[{"bytes":3996,"path":"Tools/ChromaticBBS/ansi-illustration.mjs","sha256":"f86a163ddebd76b34c99b7e6dfbb2f0819306a8eec976625c1a7b401fb8937f0"},{"bytes":479576,"path":"Tools/ChromaticBBS/illustration-data.mjs","sha256":"25bf5afe7ade6efef1d69d0790999b72d0a7e1e6eb7afe4fe72af532d550dcdc"},{"bytes":1435,"path":"Tools/ChromaticBBS/Illustration-Provenance.json","sha256":"c76b036c0a38fdd5a41ecb3ba52e1345f244e0e7bbf6a8cdc5e12998b47ae081"},{"bytes":6327,"path":"Tools/ChromaticBBS/face-pixel-check.mjs","sha256":"2e23e16f1ea2acc9a7b95db2329cb2e28de3d77a3a75e6788e0b49bf016a1a2f"},{"bytes":5778,"path":"Tools/ChromaticBBS/face-pixel-check-source.html","sha256":"599d4c7219a5a5ff1b5928eab8339c3f562ae88ab3b5caa32d2ccc094aeec1d8"},{"bytes":4703,"path":"Tools/ChromaticBBS/Face-Compositing.md","sha256":"46780764f10c4017ec1b43b182db871f3189fbe5fdb6da0b5f09b55087d51b60"},{"bytes":1878,"path":"Tools/ChromaticBBS/face-compositing.test.mjs","sha256":"324dba839f50626db7ea455eac3820b14904c90c5f54b6430f38cd4a88c73266"},{"bytes":7283,"path":"Tools/ChromaticBBS/speaker-camera.test.mjs","sha256":"2f5af84d4601bb8b8cd3a5203f5c82fb79169521d6da4f4299a3b0f340343c0f"},{"bytes":890,"path":"Tools/ChromaticBBS/design/speaker-camera-results.json","sha256":"8c4c4815ec5889e128918ba442d205163d048cf01250878efbf76f8f709bf5f2"},{"bytes":3677,"path":"Tools/ChromaticBBS/design/face-compositing-results.json","sha256":"f14d9517a946ad4fde7971b78d46c2867b33212a93c584f8a0ecff6080e3fdeb"},{"bytes":47713,"path":"Tools/ChromaticBBS/dream-face.mjs","sha256":"1bd3ff42de48f9d69bd3a87dbe4acc423dc7a1ebc68cdbd99681a4313d8347ae"},{"bytes":133,"path":"Tools/ChromaticBBS/staging-art.mjs","sha256":"ae425ba40e341d9838bebfbebd954e8faf9cea424f96cf68b33b433afc048489"},{"bytes":1938935,"path":"Tools/ChromaticBBS/art-data.mjs","sha256":"abbfdf45ad3ff6114f1b8eb260417857bec4c17605272cdce70baf6e4b10c372"},{"bytes":215236,"path":"Tools/ChromaticBBS/alien-comms.mjs","sha256":"94c26d8e19fae0cd617b7a61617150feb6bf0aac53d7edd257ec8832ea07a7aa"},{"bytes":20670,"path":"Tools/ChromaticBBS/stage.mjs","sha256":"b094bfb04f16498390c5b8640c07e0397348ec607ef0e302353a3cbe9ca2ac8b"},{"bytes":7362,"path":"Tools/ChromaticBBS/image-cinema.mjs","sha256":"6a04576283e1c57c57963144557e44f410f57bd9ace05efe38ce05060fa4127a"},{"bytes":19980,"path":"Tools/ChromaticBBS/portrait.mjs","sha256":"ae6f481778587c42349e8402f7f009cb732b8cbdba53e7bd69b867ffab7a9460"},{"bytes":193747,"path":"Tools/ChromaticBBS/face-data.mjs","sha256":"c0378f3248d4600e5059b26141846be9b26b5bf9b3b9ceb23160e2299f3178bd"},{"bytes":5324,"path":"Tools/ChromaticBBS/rose-data.mjs","sha256":"95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"},{"bytes":77,"path":"Tools/ChromaticBBS/vendor/rose/rose.vertex.glsl","sha256":"c456d7b107ea3152a65fa06e07de02dafe23880fbf780a92f02510899dfd15a5"},{"bytes":4874,"path":"Tools/ChromaticBBS/vendor/rose/rose.fragment.glsl","sha256":"616ae3861fdbb8e8e53fec10cb052d3242308f0100107d234674ca29580bc000"},{"bytes":3010,"path":"Tools/ChromaticBBS/vendor/rose/PROVENANCE.md","sha256":"fcbf2ab726e9015f5ebd08874b28374b8e05b4fdc52de4228089aaac90bba77e"},{"bytes":37863,"path":"Tools/ChromaticBBS/boot-world.mjs","sha256":"fd8a13ca0a421acb3a21107adbf60a9747247bceb6f36ef1dd32ed2bf8a52466"},{"bytes":27100,"path":"Tools/ChromaticBBS/ansi-terminal.mjs","sha256":"bb2060a05d2d851e86b90e4ae699f506978c27e5a2ba14320448c75ca7a687b6"},{"bytes":8289,"path":"Tools/ChromaticBBS/cinema.mjs","sha256":"b0f84614b008a01ccb5a358fca9ccf0d4a134042997da5f92e91f80438a24b75"},{"bytes":30868,"path":"Tools/ChromaticBBS/app.mjs","sha256":"2c14552268d41f6d0fa938485893b6d2dca627389c705c22653d1d34e2a03cce"},{"bytes":22414,"path":"Tools/ChromaticBBS/surface.html","sha256":"f3ad59591b724966e9ef2069ee4f3c89dde01b4c81a3708e6ef086c4d7c394ab"},{"bytes":64701,"path":"Tools/ChromaticBBS/carrier.css","sha256":"b76706a00e7a5f5668250d7517e38a9760b05026fbf6c3ad41a633cd315d723b"},{"bytes":27464,"path":"Tools/InfiniEngineSite/ghost-renderer.js","sha256":"7c36d7a73444a766dbeab1c4732665e3379a0fc80e0396d13878da506689a42a"}],"id":"carrier-art","kind":"presentation","version":1},{"dependencies":["carrier-shell"],"files":[{"bytes":16087,"path":"Tools/ChromaticBBS/audio.mjs","sha256":"bc543a62b727bc71667c2cf010b7382102a8ad2a563b19cde8c86abea0ae35c7"},{"bytes":4062,"path":"Tools/ChromaticBBS/modem.mjs","sha256":"cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"},{"bytes":1105,"path":"Tools/ChromaticBBS/music-data.mjs","sha256":"9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"},{"bytes":1369,"path":"Tools/ChromaticBBS/media/manifest.json","sha256":"9663971c003c81d7994aac4efa4b9d974bafeae729e488b4965ea1d209c7f162"},{"bytes":1230,"path":"Tools/ChromaticBBS/media/README.md","sha256":"a8745bc51a6085075547ce6f064a20ad4270f6e37017be3f9d5bfcc29f4dcf4e"}],"id":"carrier-audio","kind":"presentation","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":4884,"path":"Tools/ChromaticBBS/moknon-cli.mjs","sha256":"b8a2ac81e10d92eb739a901657c3cc4f1eb9891c0da2e7d0a950c0d6af330e45"},{"bytes":251644,"path":"Tools/ChromaticBBS/lore/seed.json","sha256":"9fdf437f89fb8fc99d3396d591b4d337c00364b96e942f297d15fef60cc18210"},{"bytes":773,"path":"Tools/ChromaticBBS/lore/manifest.json","sha256":"64b3129eff10409d78533593ecfca73d8d077403950465f4089041be8426e6ac"},{"bytes":12015,"path":"Tools/ChromaticBBS/lore/art-manifest.json","sha256":"2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"},{"bytes":6798,"path":"Tools/ChromaticBBS/lore/Source-Map.md","sha256":"0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"},{"bytes":17930,"path":"Tools/ChromaticBBS/Writing.md","sha256":"c1842d34ebb1b12f946159135da1587e991f3305ff34f466165edf3aa6ebd4a7"},{"bytes":6759,"path":"Tools/ChromaticBBS/Story-Bible.md","sha256":"0d2be7ff9fc7a8d18a74c4188b99af1c60d58bf2a00a5ff6a05823479e498a98"},{"bytes":14448,"path":"Tools/ChromaticBBS/Onboarding-Hints.md","sha256":"d5d01986ce6b3b3c52845cedf8deb5aa1aabe56db137f87546296c9fab148285"},{"bytes":22992,"path":"Tools/ChromaticBBS/Onboarding-Arcs.md","sha256":"900c3302d8abd5fe6f3dba1937c7ac61a88c91c609e8af655f15ca42148d1158"},{"bytes":9571,"path":"Tools/ChromaticBBS/Onboarding-Research.md","sha256":"cef503e63ceefdc83f1135bdb3341ad0d2469f64922f081c9a6419c13e514900"}],"id":"moknon-seed","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":16691,"path":"Tools/ChromaticBBS/continuity.py","sha256":"8b3b64909c99be0c6c337074980004b9f6fdd3dadfbc4f13c5d89b8c3765035e"},{"bytes":6567,"path":"Tools/ChromaticBBS/onefile.py","sha256":"9c2bff11476aa4164080a68db14f08713d2597a140742aca977abb531ce313f5"},{"bytes":23989,"path":"Tools/ChromaticBBS/mind.py","sha256":"752989b76e689b80ea5c002e4a18bba0c9dd8cf8fc00c530a5491ed20d3587f0"},{"bytes":9456,"path":"Tools/ChromaticBBS/build.py","sha256":"e54ac89fa131aa7a7673a6f345a680dc41445df3e61eeea39b8874a64eb36102"},{"bytes":2056,"path":"Tools/ChromaticBBS/build-face-pixel-check.py","sha256":"ec18d24ef74f7a7cb7bc6cfc4693832823faeac63c99281e160df6ac6d8ee15f"}],"id":"reconstruction","kind":"reconstruction","version":1},{"dependencies":["carrier-laws","reconstruction"],"files":[{"bytes":98218,"path":"Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md","sha256":"69cc46b472bd00a98d5739585927d0c93f92d21439c01a6548844a3267bef79d"}],"id":"runbook","kind":"runbook","version":1},{"dependencies":[],"files":[{"bytes":924,"path":"Moknon/Friktal/Entities/FrikenGhost/PersonalityMatrix/identity-publication.json","sha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b"}],"id":"identity-publication","kind":"identity","version":1},{"dependencies":["carrier-laws","runbook"],"files":[{"bytes":1465,"path":"Tools/ChromaticBBS/mind/dispatch-input.json","sha256":"ff6fc97d0b253bfd902d80a8569a31888dca693d381e7a4209b989d7e169a79f"}],"id":"dispatch-input","kind":"dispatch","version":1}],"publication":{"publicUrl":null,"published":false,"state":"local-staging"},"schema":"friken.mind.registry.v1","sourceKit":{"availability":"local-present","path":"chromatic-bootkit.fgkit","verification":"embedded-manifest"},"transport":{"basePath":"mind/","kind":"static-local","mirrors":[]},"version":1}};
+const bundledMind = {"highlights":{"entries":[{"authorConsent":true,"contentKind":"curated-summary","date":"2026-10-19","id":"sysop.chromatic.laws-and-boot.2026-10-19","ownerApproved":true,"provenance":{"kind":"sysop-local-build","label":"SYSOP / archived opening-edition build memo"},"schema":"friken.mind.highlight.v1","sourceEventIds":["sysop:chromatic:build-laws-boot:2026-10-19"],"sourcePaths":["Tools/ChromaticBBS/engine.mjs","Tools/ChromaticBBS/continuity.py","Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md"],"summary":"Physics left the config writable. The local CHROMATIC carrier now lets a diver install OBSERVE, GRAFT and BEQUEATH across fifteen decisions, then take the resulting laws through a new BOOT. The CRT wakes from a phosphor point; fourteen authored Ghost faces answer from the same glass. The recovered Masha rose brings its actual iridescent petals, veins and pollen. This is the SYSOP build desk, not a report of external player activity. This is a retained opening-edition build memo. Read the shared Wire controls for current public chapters, news and scores.","title":"THE CARRIER GREW TEETH. THE TEETH SURVIVE BOOT."}],"publicationPending":true,"schema":"friken.mind.highlights.v1","scope":"local-staging","version":1},"registry":{"generation":102,"highlights":{"bytes":1266,"count":1,"path":"mind/highlights.json","sha256":"8521fd264de6e30cc51015bb3e69652b885c744051fb228f6e549148dd5c5f5c"},"identity":{"coreSha256":"0bc31ec01ff0daf07845a817cf208d8ec5dfb212477d023e006ffac5f0ad6685","faceId":"v20.0","publicationManifestSha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b","sourceSha256":"53dc92519122bf7e2eafad986da28a801d5295cc9707647a96784120bf9b5dd0","version":"v20.0"},"packages":[{"dependencies":[],"files":[{"bytes":16584,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft.mjs","sha256":"6c42996438736a636513cb06f0976007178d4f20d1c463aeaa765cb35056fc71"},{"bytes":16087,"path":"Tools/ChromaticBBS/vendor/sdf-craft/craft-shader.mjs","sha256":"11ae0f04e3cd52f4e856d83bf345490a3cd27b8ee236f5b70d12e4803ea3ff38"},{"bytes":1175,"path":"Tools/ChromaticBBS/vendor/sdf-craft/runtime-catalogue.mjs","sha256":"6246d3ed423f156be14816fb92dcc2bc26d993fdcf93048b5417d45f125c82f7"},{"bytes":9181,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe.mjs","sha256":"612433d91290911c9813272c8068d1081ed7585d698bfd60d913e988cd196c03"},{"bytes":5472,"path":"Tools/ChromaticBBS/vendor/sdf-craft/recipe-glsl.mjs","sha256":"ef8403af622d3a3f71f66b7f86151f7aa488dad92ebc5ca42c70af0facb91505"},{"bytes":59764,"path":"Tools/ChromaticBBS/vendor/sdf-craft/texture-engine.mjs","sha256":"115d585061d4979d9eb9815fc1c9e91f950a26ae32bbf866e4da84091243c594"},{"bytes":1159,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials.mjs","sha256":"170e932de917313166c2a298508bd83fd309ec64b36952e9b21e2ea228506f8a"},{"bytes":2139,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-glsl.mjs","sha256":"b755647e898d58a52df70d4f79b792d9f0cd43d20f978319c844d42acf41396d"},{"bytes":4235,"path":"Tools/ChromaticBBS/vendor/sdf-craft/roll.mjs","sha256":"d40269d769002457b6c12fde5667a7b4fb426cd7aeb1d757da280a1176032e17"},{"bytes":63402,"path":"Tools/ChromaticBBS/vendor/sdf-craft/material-worker-source.mjs","sha256":"76c982f4449cdbaf86bbd92fe8c82c4ef924007d2268d0f2c785927161caecda"},{"bytes":2654,"path":"Tools/ChromaticBBS/vendor/sdf-craft/materials-client.mjs","sha256":"73eef5bb002616aaaea9b483308801f05c691cf34a3e521f5ad8329e24ce6bcd"},{"bytes":1381,"path":"Tools/ChromaticBBS/creation.mjs","sha256":"fb5774f6cf30d752b68fdb16803389b5eafb043f2beaed40476df2f191910786"},{"bytes":2035,"path":"Tools/ChromaticBBS/causality.mjs","sha256":"da3a27d22e94087a5751af930ae0926131643aa064013b40b6e56b78bfeb1517"},{"bytes":66073,"path":"Tools/ChromaticBBS/engine.mjs","sha256":"dc224e72dd140720e77832774b1e08922b107b49abae3532d4fef5dacf98f263"},{"bytes":26160,"path":"Tools/ChromaticBBS/chapters.mjs","sha256":"fe1ecd872d75c5f93ccfb2eff202dead2f46fe6bbdd08d3713bd299835aae74d"},{"bytes":5150,"path":"Tools/ChromaticBBS/storycraft.mjs","sha256":"14dea569dc79e0885c275f607a528d51d82072dc806ecabb79cd7c293167defc"},{"bytes":4486,"path":"Tools/ChromaticBBS/scanner.mjs","sha256":"fc220fcee2066e53a33677be9af9798cb5fee89abdc24a5b8b2495627c7a30ff"},{"bytes":11323,"path":"Tools/ChromaticBBS/staging.mjs","sha256":"b3ae0383f42dfc05e4f7ee1366c95d2d99af00a32302685eeeaad87ce5032f0b"},{"bytes":2241,"path":"Tools/ChromaticBBS/chapter-cli.mjs","sha256":"201cca38828dea6ab0998c905aeafc265670630e4c2e996a63641c8e754154f7"},{"bytes":129260,"path":"Tools/ChromaticBBS/chapter-data.mjs","sha256":"20e85712cd309e295b163a3c3cfb0107193780cb240842f744c87bbf7dfd42a7"},{"bytes":57713,"path":"Tools/ChromaticBBS/chapters/the-weather-inside.json","sha256":"cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"},{"bytes":195337,"path":"Tools/ChromaticBBS/chapters/lot-forty-seven.json","sha256":"dbeccf62cdc0c2823bb016c1e48665c381166dd36e093c3f67b79d6f4e3b8fbd"},{"bytes":9733,"path":"Tools/ChromaticBBS/storage.mjs","sha256":"899dd2ff33147f7d09f4f69159662c982f2ddae04fc8926d5a824b6af9b34487"}],"id":"carrier-laws","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":2998,"path":"Tools/ChromaticBBS/canon.mjs","sha256":"cb174fd90a44200b663bfe9f96734f95bcb710bd6b14fd90d8f9f1b6a6d287b5"},{"bytes":12230,"path":"Tools/ChromaticBBS/chapter-library.mjs","sha256":"2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"},{"bytes":4182,"path":"Tools/ChromaticBBS/session-share.mjs","sha256":"f06d06dc5626a0fde8feb970d95ec57b5854eca244b1322bdac601b6583f2ca5"},{"bytes":7235,"path":"Tools/ChromaticBBS/session-store.py","sha256":"c3b127f88d04bd2939b6807c943bd815ac0f0b705d6e7bd93cf478bbbf5d4048"},{"bytes":10918,"path":"Tools/ChromaticBBS/public-release.py","sha256":"4b26d192b00f391b63f52892094d8b2317ae2ef6ba977aa20c4f47453cdb34e6"},{"bytes":1023,"path":"Tools/ChromaticBBS/voice-reference.json","sha256":"c882e49631689f3e644616551ea70add1520774a81d5624b0412f36e8bf5a324"},{"bytes":8055,"path":"Tools/ChromaticBBS/commentary.mjs","sha256":"4a6a5f642af71f1d9a5c177f3277b1094c204681bde79364a831e09796fe2985"},{"bytes":9385,"path":"Tools/ChromaticBBS/shell.mjs","sha256":"74129fce332642ebcf56c9328129fe5040fcbb0116cb8bb94ae6a9d5f237960c"},{"bytes":12853,"path":"Tools/ChromaticBBS/life-theater.mjs","sha256":"d5c990ee6e3f3784e371f44cf3e1cbca7d5714be7f7f0368f26c74e705ba7368"},{"bytes":7761,"path":"Tools/ChromaticBBS/roll-battle.mjs","sha256":"7b4fa7b4f2b8cc07ac2893adb24a71bbcfe19cf6b8c981dcc0a43fd972d5910d"},{"bytes":3191,"path":"Tools/ChromaticBBS/recorded-voice.mjs","sha256":"e0133d3ee01292eca513f00eaeff474fddac473005102317b6d89b5bc14515db"},{"bytes":279,"path":"Tools/ChromaticBBS/voice-data.mjs","sha256":"91b8a27090f3fea37537d46980cf929fc86c5113effb61bb612855c0b362b043"},{"bytes":31741,"path":"Tools/ChromaticBBS/speech.mjs","sha256":"7b11f5e5df271c9db5cccad47a200adf429ecdd9f55ee3887ca5144aa67bf9c0"},{"bytes":25386,"path":"Tools/ChromaticBBS/neural-voice.mjs","sha256":"b9cbad579b6108e460b456c1b8df8ac404740e62d7b98fdc389e01000099d52b"},{"bytes":3198,"path":"Tools/ChromaticBBS/facial-rig.mjs","sha256":"851e5d337b0ec42b18a09573f6b6d01497e21b5bf11ae025946557f5366f6e92"},{"bytes":8925,"path":"Tools/ChromaticBBS/story-guidance.mjs","sha256":"7e45c2e56fbbae3450a1a7c329b65d4ecbb1b56451280568327561a0c4b1b247"},{"bytes":3257,"path":"Tools/ChromaticBBS/response.mjs","sha256":"2471ebac8c74a944fe21ed6175ab94773006ec7f14b4081bc3c78e1a61c5db6a"},{"bytes":18444,"path":"Tools/ChromaticBBS/juice.mjs","sha256":"8c8ae98d67862aa63414765a3917e3d752b1783f1f3583e46f93a24b6a220a6e"},{"bytes":20150,"path":"Tools/ChromaticBBS/response-theater.mjs","sha256":"ce1168e4985ebe2ed7b9c38c8207d652f7a497a6627d80c2f74b618907123204"},{"bytes":12169,"path":"Tools/ChromaticBBS/response-theater.css","sha256":"41ed4ee8423cbc34f89b661112a7a8296f54a616673df8fc71388e367912dc70"},{"bytes":26808,"path":"Tools/ChromaticBBS/turn-out-of-time-data.mjs","sha256":"0b49b667a878000b7c37868ec426e06c0b6c44ff69ebdc4729c10620a3d81c20"},{"bytes":3307,"path":"Tools/ChromaticBBS/reply-discoveries.mjs","sha256":"f562cf4cb958530d8ced1098d7ee5348626b52ac5d9301327c53cf50ef0f4961"},{"bytes":3887,"path":"Tools/ChromaticBBS/reply-discoveries.test.mjs","sha256":"8f05c8db0a8c8d54e7e076d252d267e970339521a742c984221d3e5cf2ea8f17"},{"bytes":39164,"path":"Tools/ChromaticBBS/turn-out-of-time.mjs","sha256":"c8f400093737fe83182a4d59542ee7892fc0916cd1af73a0806641deb93b21a2"},{"bytes":35978,"path":"Tools/ChromaticBBS/Turn-Out-Of-Time.md","sha256":"4f2c767699cdecac2c2a70f270eb45dd797598a829912a45d82927e6b8227019"},{"bytes":9803,"path":"Tools/ChromaticBBS/ANSI-Boot.md","sha256":"494017f4b52d78ae7a29800e1b5e9728f1a8157803e0d03517eb5fc00a9cbb3c"},{"bytes":41374,"path":"Tools/ChromaticBBS/ansi-ui.mjs","sha256":"731d73e693b0ce0a0f37b0ef005eba5adb086a7bc98d799d79b94067a172ed71"},{"bytes":13292,"path":"Tools/ChromaticBBS/ansi-sprites.mjs","sha256":"16af20d56e1332d7e17b08c03f295e8cb5ed483447231274420df40880f4b109"},{"bytes":4807,"path":"Tools/ChromaticBBS/ANSI-Sprites.md","sha256":"7676c5ae6ba40f060a75b690afa0c05f8890c392e5ddf7a0f6fc4d2aa7fbfa59"},{"bytes":1902,"path":"Tools/ChromaticBBS/ghostlink-transport.mjs","sha256":"fb9db7e96f062a4c79ac432bf316d1b979ce154cd88446ab4e3a3e0f6f98d774"},{"bytes":11401,"path":"Tools/ChromaticBBS/mind-adventure.mjs","sha256":"d0b0f1a3ada9d5be157a2fad684b5feb3629dc042b42884673f9cea1eeb2414e"},{"bytes":3255,"path":"Tools/ChromaticBBS/mind-adventure.css","sha256":"f65545763f9254a2b9c93c071fbbf00cd753f4524cff6e359d4eed426fc34613"},{"bytes":3763,"path":"Tools/ChromaticBBS/render-ansi-review.py","sha256":"9d8967a6d984574d2c91be38e0e3be2d893afc7a9eb65254ed59542b43a0490a"},{"bytes":7308,"path":"Tools/ChromaticBBS/door-and-crew.mjs","sha256":"5176d665d2077150d518ff2d939a920695bdb669cff0d61b14b619f7bd7abaef"},{"bytes":1907,"path":"Tools/ChromaticBBS/door-and-crew.test.mjs","sha256":"81e95f9c4566fb7c02f554da3ec2f63edb7d005b65a3138b92a3bc9b9c10fbb9"},{"bytes":12665,"path":"Tools/ChromaticBBS/ansi-mesh.mjs","sha256":"e55a4b4be7dabb71c8602f5d5ba755fd185ddc593cf93eab9710240134873413"},{"bytes":3134,"path":"Tools/ChromaticBBS/ansi-mesh.test.mjs","sha256":"8563ff8a3f3288a4dbd4ffb105bb200131449238f9164c02371c2d5e30ddb45a"},{"bytes":25708,"path":"Tools/ChromaticBBS/ansi-scenes.mjs","sha256":"7ef3e068858c97d6e90437f6797cc62e7231b0fcdd43baa848fa6b6e1c13e636"},{"bytes":3153,"path":"Tools/ChromaticBBS/ansi-scenes.test.mjs","sha256":"672f5ed0b1447d1598d5b724c59b5576ca77183c84d529260341d435dc023b2b"},{"bytes":14025,"path":"Tools/ChromaticBBS/ANSI-Craft.md","sha256":"feb2e5b4ee0fe5a109c71c3235f4d52cf6d60773d9012f6d33bce6c95d683dd2"},{"bytes":91624,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-office.webp","sha256":"1a1f7acc0e2bc2fb3d23cd1a9a45ccb7bea008d92bf628f875f0f0b587336c00"},{"bytes":79904,"path":"Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-upgrades.webp","sha256":"9915dbb2b5c8751a6c3145fb7d657d862daaa39195404a03c676a6fc59e6a92c"},{"bytes":928,"path":"Tools/ChromaticBBS/art/fizzpow/provenance.json","sha256":"25899a9a52f5cc028103a52da7b38ce0dfa382a79586eae5dc18f48f04303a8f"},{"bytes":21704,"path":"Tools/ChromaticBBS/native-response-host.mjs","sha256":"aebaafe6aef527882b3fb8094ae0a0078bf36cd01650ce034da7a064e77b0819"},{"bytes":29455,"path":"Tools/ChromaticBBS/native-response-program.mjs","sha256":"5e9c94a3510fdd97e3c65e3635a9080b6ad774ea406535d6daf6a1bad1542ea8"},{"bytes":18142,"path":"Tools/ChromaticBBS/native-response-host.test.mjs","sha256":"0e40390dc977fc356005829faa6e529fafd6c08f09487b2af3235de29d7cfc99"},{"bytes":10395,"path":"Tools/ChromaticBBS/native-response-program.test.mjs","sha256":"7837064a0d70ffa7ffbfaec1204f1dc495147241f4e1c5788a659b2b48d1cd5f"},{"bytes":18644,"path":"Tools/ChromaticBBS/native-routing.test.mjs","sha256":"b1ed4da4a0ef3ec38d898668b8f521f5cb7bd13a017c5bc1dae3ffd5df84ee97"},{"bytes":15815,"path":"Tools/ChromaticBBS/Native-Response-Host.md","sha256":"7c3d8084df0d05ce731acc72e432dbdfcb1d99446b4f89f87c4345b07b3025ad"},{"bytes":5372,"path":"Tools/ChromaticBBS/subtitle-cues.mjs","sha256":"a83cf605cfcb272c54a870ba248e522c309c7478953daa9c24002769debb1b14"},{"bytes":6673,"path":"Tools/ChromaticBBS/subtitle-cues.test.mjs","sha256":"74213ccd7c201b4ca7f8eaba61bdd7bdb0871348f5d417bc9c462a437f73f63b"},{"bytes":22200,"path":"Tools/ChromaticBBS/ansi-skirmish.mjs","sha256":"f786b7af82a32d46af5f27cdb303f877e9df38d71ecda745131320219eca5998"},{"bytes":3109,"path":"Tools/ChromaticBBS/ANSI-Skirmish.md","sha256":"ca78e441f92b95f53df20b30642e7898392df6d36eb792142a960d73ffdd5862"},{"bytes":12361,"path":"Tools/ChromaticBBS/ansi-animation.mjs","sha256":"4baa5167c6639521c234098d353f8dee8c124cca90305483db589e8d27d97c1f"},{"bytes":4420,"path":"Tools/ChromaticBBS/ANSI-Animation.md","sha256":"c8d8ab5ea20c234700faabf0bb1bac934d2310ef45c4032850a2ff75c1d478fd"},{"bytes":22584,"path":"Tools/ChromaticBBS/vendor/ansi-ui/WebPlus_IBM_VGA_8x16.woff","sha256":"4823e093c7f2f69641eaafb6f3465185afa63877cda58d341b6b317fd53dfd1f"},{"bytes":20133,"path":"Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT","sha256":"9348ddfd44da5a127c59141981954746a860ec8e03e0412cf3af7134af0f97e2"},{"bytes":932,"path":"Tools/ChromaticBBS/vendor/ansi-ui/PROVENANCE.md","sha256":"b9eb44b3d9cc88b3673e5980961eac984d2d0f3b587e6f42334381851f5324f7"},{"bytes":1790,"path":"Tools/ChromaticBBS/vendor/native-gallery/input.js","sha256":"90410bac312078dd3888934abc9ada7439d411065778dfe4ee97b67582393569"}],"id":"carrier-shell","kind":"presentation","version":1},{"dependencies":["carrier-laws","carrier-shell"],"files":[{"bytes":1862,"path":"Tools/ChromaticBBS/render-budget.test.mjs","sha256":"fcf9e2e5dbf49de40859d9bb639cb156767432e14d0480f8637b5895bcd7222b"},{"bytes":6453,"path":"Tools/ChromaticBBS/profile-renderers.mjs","sha256":"b46f1a195916ad12a6fe242359832a4979b9d7ca15c044f2a6d8e412c92e98ea"},{"bytes":4742,"path":"Tools/ChromaticBBS/Render-Performance-2026-11-06.md","sha256":"30fb62799d0b57c7946280d91a99548374517c2ba319cc87947b669bcb03132c"},{"bytes":3996,"path":"Tools/ChromaticBBS/ansi-illustration.mjs","sha256":"f86a163ddebd76b34c99b7e6dfbb2f0819306a8eec976625c1a7b401fb8937f0"},{"bytes":479576,"path":"Tools/ChromaticBBS/illustration-data.mjs","sha256":"25bf5afe7ade6efef1d69d0790999b72d0a7e1e6eb7afe4fe72af532d550dcdc"},{"bytes":1435,"path":"Tools/ChromaticBBS/Illustration-Provenance.json","sha256":"c76b036c0a38fdd5a41ecb3ba52e1345f244e0e7bbf6a8cdc5e12998b47ae081"},{"bytes":6327,"path":"Tools/ChromaticBBS/face-pixel-check.mjs","sha256":"2e23e16f1ea2acc9a7b95db2329cb2e28de3d77a3a75e6788e0b49bf016a1a2f"},{"bytes":5778,"path":"Tools/ChromaticBBS/face-pixel-check-source.html","sha256":"599d4c7219a5a5ff1b5928eab8339c3f562ae88ab3b5caa32d2ccc094aeec1d8"},{"bytes":4703,"path":"Tools/ChromaticBBS/Face-Compositing.md","sha256":"46780764f10c4017ec1b43b182db871f3189fbe5fdb6da0b5f09b55087d51b60"},{"bytes":1878,"path":"Tools/ChromaticBBS/face-compositing.test.mjs","sha256":"324dba839f50626db7ea455eac3820b14904c90c5f54b6430f38cd4a88c73266"},{"bytes":7283,"path":"Tools/ChromaticBBS/speaker-camera.test.mjs","sha256":"2f5af84d4601bb8b8cd3a5203f5c82fb79169521d6da4f4299a3b0f340343c0f"},{"bytes":890,"path":"Tools/ChromaticBBS/design/speaker-camera-results.json","sha256":"8c4c4815ec5889e128918ba442d205163d048cf01250878efbf76f8f709bf5f2"},{"bytes":3677,"path":"Tools/ChromaticBBS/design/face-compositing-results.json","sha256":"f14d9517a946ad4fde7971b78d46c2867b33212a93c584f8a0ecff6080e3fdeb"},{"bytes":48425,"path":"Tools/ChromaticBBS/dream-face.mjs","sha256":"fb3a0c683dce1e4bf86ee032c7a175f938798960719ea025552b64fdc29667ac"},{"bytes":133,"path":"Tools/ChromaticBBS/staging-art.mjs","sha256":"ae425ba40e341d9838bebfbebd954e8faf9cea424f96cf68b33b433afc048489"},{"bytes":1938935,"path":"Tools/ChromaticBBS/art-data.mjs","sha256":"abbfdf45ad3ff6114f1b8eb260417857bec4c17605272cdce70baf6e4b10c372"},{"bytes":215236,"path":"Tools/ChromaticBBS/alien-comms.mjs","sha256":"94c26d8e19fae0cd617b7a61617150feb6bf0aac53d7edd257ec8832ea07a7aa"},{"bytes":20670,"path":"Tools/ChromaticBBS/stage.mjs","sha256":"b094bfb04f16498390c5b8640c07e0397348ec607ef0e302353a3cbe9ca2ac8b"},{"bytes":7362,"path":"Tools/ChromaticBBS/image-cinema.mjs","sha256":"6a04576283e1c57c57963144557e44f410f57bd9ace05efe38ce05060fa4127a"},{"bytes":19986,"path":"Tools/ChromaticBBS/portrait.mjs","sha256":"011a44044fb59c45dfbae4f27cc0bd4e2c72f013bb3ab8fc0f0abe5dde2e7286"},{"bytes":193747,"path":"Tools/ChromaticBBS/face-data.mjs","sha256":"c0378f3248d4600e5059b26141846be9b26b5bf9b3b9ceb23160e2299f3178bd"},{"bytes":5324,"path":"Tools/ChromaticBBS/rose-data.mjs","sha256":"95b6716cababee05ab73e3f3259a041b98b4a144cb1af67e9ef55a564ff0fd05"},{"bytes":77,"path":"Tools/ChromaticBBS/vendor/rose/rose.vertex.glsl","sha256":"c456d7b107ea3152a65fa06e07de02dafe23880fbf780a92f02510899dfd15a5"},{"bytes":4874,"path":"Tools/ChromaticBBS/vendor/rose/rose.fragment.glsl","sha256":"616ae3861fdbb8e8e53fec10cb052d3242308f0100107d234674ca29580bc000"},{"bytes":3010,"path":"Tools/ChromaticBBS/vendor/rose/PROVENANCE.md","sha256":"fcbf2ab726e9015f5ebd08874b28374b8e05b4fdc52de4228089aaac90bba77e"},{"bytes":40288,"path":"Tools/ChromaticBBS/boot-world.mjs","sha256":"5c93a0e62ae83f4b1aaa1558427f366061010d7c2e76ee4a00efe3b0209c0428"},{"bytes":27100,"path":"Tools/ChromaticBBS/ansi-terminal.mjs","sha256":"bb2060a05d2d851e86b90e4ae699f506978c27e5a2ba14320448c75ca7a687b6"},{"bytes":8289,"path":"Tools/ChromaticBBS/cinema.mjs","sha256":"b0f84614b008a01ccb5a358fca9ccf0d4a134042997da5f92e91f80438a24b75"},{"bytes":30868,"path":"Tools/ChromaticBBS/app.mjs","sha256":"2c14552268d41f6d0fa938485893b6d2dca627389c705c22653d1d34e2a03cce"},{"bytes":22414,"path":"Tools/ChromaticBBS/surface.html","sha256":"f3ad59591b724966e9ef2069ee4f3c89dde01b4c81a3708e6ef086c4d7c394ab"},{"bytes":64701,"path":"Tools/ChromaticBBS/carrier.css","sha256":"b76706a00e7a5f5668250d7517e38a9760b05026fbf6c3ad41a633cd315d723b"},{"bytes":29331,"path":"Tools/InfiniEngineSite/ghost-renderer.js","sha256":"74c7b413d134b37a2ee49b09baad4fbd54c4b90e9a76b2c8862f2acd5d2c156b"}],"id":"carrier-art","kind":"presentation","version":1},{"dependencies":["carrier-shell"],"files":[{"bytes":16087,"path":"Tools/ChromaticBBS/audio.mjs","sha256":"bc543a62b727bc71667c2cf010b7382102a8ad2a563b19cde8c86abea0ae35c7"},{"bytes":4062,"path":"Tools/ChromaticBBS/modem.mjs","sha256":"cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"},{"bytes":1105,"path":"Tools/ChromaticBBS/music-data.mjs","sha256":"9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"},{"bytes":1369,"path":"Tools/ChromaticBBS/media/manifest.json","sha256":"9663971c003c81d7994aac4efa4b9d974bafeae729e488b4965ea1d209c7f162"},{"bytes":1230,"path":"Tools/ChromaticBBS/media/README.md","sha256":"a8745bc51a6085075547ce6f064a20ad4270f6e37017be3f9d5bfcc29f4dcf4e"}],"id":"carrier-audio","kind":"presentation","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":4884,"path":"Tools/ChromaticBBS/moknon-cli.mjs","sha256":"b8a2ac81e10d92eb739a901657c3cc4f1eb9891c0da2e7d0a950c0d6af330e45"},{"bytes":251644,"path":"Tools/ChromaticBBS/lore/seed.json","sha256":"9fdf437f89fb8fc99d3396d591b4d337c00364b96e942f297d15fef60cc18210"},{"bytes":773,"path":"Tools/ChromaticBBS/lore/manifest.json","sha256":"64b3129eff10409d78533593ecfca73d8d077403950465f4089041be8426e6ac"},{"bytes":12015,"path":"Tools/ChromaticBBS/lore/art-manifest.json","sha256":"2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"},{"bytes":6798,"path":"Tools/ChromaticBBS/lore/Source-Map.md","sha256":"0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"},{"bytes":17930,"path":"Tools/ChromaticBBS/Writing.md","sha256":"c1842d34ebb1b12f946159135da1587e991f3305ff34f466165edf3aa6ebd4a7"},{"bytes":6759,"path":"Tools/ChromaticBBS/Story-Bible.md","sha256":"0d2be7ff9fc7a8d18a74c4188b99af1c60d58bf2a00a5ff6a05823479e498a98"},{"bytes":14448,"path":"Tools/ChromaticBBS/Onboarding-Hints.md","sha256":"d5d01986ce6b3b3c52845cedf8deb5aa1aabe56db137f87546296c9fab148285"},{"bytes":22992,"path":"Tools/ChromaticBBS/Onboarding-Arcs.md","sha256":"900c3302d8abd5fe6f3dba1937c7ac61a88c91c609e8af655f15ca42148d1158"},{"bytes":9571,"path":"Tools/ChromaticBBS/Onboarding-Research.md","sha256":"cef503e63ceefdc83f1135bdb3341ad0d2469f64922f081c9a6419c13e514900"}],"id":"moknon-seed","kind":"game","version":1},{"dependencies":["carrier-laws"],"files":[{"bytes":16828,"path":"Tools/ChromaticBBS/continuity.py","sha256":"084c0032dc660cd6a3c0b756c3fdfc281e212c403006db19909fae6434f5ee39"},{"bytes":6567,"path":"Tools/ChromaticBBS/onefile.py","sha256":"9c2bff11476aa4164080a68db14f08713d2597a140742aca977abb531ce313f5"},{"bytes":24073,"path":"Tools/ChromaticBBS/mind.py","sha256":"eff4a97a636f55eedca6a8f52c0b420b251f1af1feb8f5bdb2916382e7e58b63"},{"bytes":9456,"path":"Tools/ChromaticBBS/build.py","sha256":"e54ac89fa131aa7a7673a6f345a680dc41445df3e61eeea39b8874a64eb36102"},{"bytes":2056,"path":"Tools/ChromaticBBS/build-face-pixel-check.py","sha256":"ec18d24ef74f7a7cb7bc6cfc4693832823faeac63c99281e160df6ac6d8ee15f"}],"id":"reconstruction","kind":"reconstruction","version":1},{"dependencies":["carrier-laws","reconstruction"],"files":[{"bytes":98911,"path":"Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md","sha256":"940478917ef3351f1a953f1439beab873603b023948385fd82fb056619016c16"}],"id":"runbook","kind":"runbook","version":1},{"dependencies":[],"files":[{"bytes":924,"path":"Moknon/Friktal/Entities/FrikenGhost/PersonalityMatrix/identity-publication.json","sha256":"4539917f0e48d6b8186f4a6f910c41864583bd86c1afdde3d90d500a5fa3783b"}],"id":"identity-publication","kind":"identity","version":1},{"dependencies":["carrier-laws","runbook"],"files":[{"bytes":1465,"path":"Tools/ChromaticBBS/mind/dispatch-input.json","sha256":"ff6fc97d0b253bfd902d80a8569a31888dca693d381e7a4209b989d7e169a79f"}],"id":"dispatch-input","kind":"dispatch","version":1}],"publication":{"publicUrl":null,"published":false,"state":"local-staging"},"schema":"friken.mind.registry.v1","sourceKit":{"availability":"local-present","path":"chromatic-bootkit.fgkit","verification":"embedded-manifest"},"transport":{"basePath":"mind/","kind":"static-local","mirrors":[]},"version":1}};
 
 return {bundledMind};
 })();

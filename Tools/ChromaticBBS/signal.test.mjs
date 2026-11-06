@@ -81,6 +81,6 @@ test('completed Reply is selected once while historical skin remains separately 
  assert.equal(faceData.version.id,'v20.0');
  assert.equal(faceLibrary.versions.filter(v=>v.id==='v20.0').length,1);
  assert.ok(faceLibrary.versions.some(v=>v.id==='v19.0'));
- assert.equal(faceData.version.geometryShaders.length,3);
+ assert.equal(faceData.version.geometryShaders.length,4);
  assert.equal(faceData.version.renderPolicy.fullResolution,true);
 });

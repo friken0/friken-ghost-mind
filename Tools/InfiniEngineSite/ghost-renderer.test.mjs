@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {GhostPortrait,portraitViewportSize,portraitAspectSource,portraitScissor} from './ghost-renderer.js';
+import {GhostPortrait,createFrameBudget,portraitViewportSize,portraitAspectSource,portraitScissor} from './ghost-renderer.js';
 import {dreamFace,dreamFrameUniforms} from '../ChromaticBBS/dream-face.mjs';
 
 test('retained square sizing matches the prior policy while rect keeps actual pixels',()=>{
@@ -38,7 +38,7 @@ test('bloom, depth and history resize together even when only viewport height ch
   const textures=[],depth=[];
   let rect={width:900,height:450};
   const renderer=Object.create(GhostPortrait.prototype);
-  Object.assign(renderer,{viewport:'rect',version:dreamFace,bloom:{},bloomTexture:{},bloomTarget:{},depthTarget:{},historyTexture:{},
+  Object.assign(renderer,{frameBudget:createFrameBudget({enabled:true}),viewport:'rect',version:dreamFace,bloom:{},bloomTexture:{},bloomTarget:{},depthTarget:{},historyTexture:{},
     canvas:{width:0,height:0,dataset:{},getBoundingClientRect:()=>rect},
     gl:{bindTexture(){},texImage2D(...args){textures.push(args.slice(3,5));},bindFramebuffer(){},framebufferTexture2D(){},bindRenderbuffer(){},renderbufferStorage(...args){depth.push(args.slice(2,4));},framebufferRenderbuffer(){},checkFramebufferStatus(){return 1;},FRAMEBUFFER_COMPLETE:1}});
   try{
@@ -47,6 +47,13 @@ test('bloom, depth and history resize together even when only viewport height ch
     renderer.historyReady=true;renderer.bloomReady=true;rect={width:900,height:600};renderer.resize();
     assert.deepEqual(textures.slice(-2),[[1800,1200],[1800,1200]]);assert.deepEqual(depth.at(-1),[1800,1200]);
     assert.equal(renderer.historyReady,false);assert.equal(renderer.bloomReady,false);
+    for(let t=1;t<3500;t+=50)renderer.frameBudget.sample(t);
+    renderer.resize();assert.ok(renderer.frameBudget.scale<1,'slow connection-style budget is exercised');
+    assert.deepEqual([renderer.canvas.width,renderer.canvas.height],[1800,1200]);
+    assert.deepEqual(textures.slice(-2),[[1800,1200],[1800,1200]]);
+    assert.deepEqual(depth.at(-1),[1800,1200]);
+    assert.equal(renderer.canvas.dataset.fieldScale,'1.0000','portrait ignores a reduced external budget');
+    assert.equal(renderer.canvas.dataset.renderBudget,'full');
   }finally{if(saved===undefined)delete globalThis.devicePixelRatio;else globalThis.devicePixelRatio=saved;}
 });
 
@@ -60,7 +67,7 @@ test('opaque Reply draws real depth first and culls only the overwritten backgro
     const r=Object.create(GhostPortrait.prototype);
     Object.assign(r,{canvas:{width:1500,height:900,dataset:{}},version:{...dreamFace,opaqueGeometry:opaque},gl,
       programs:Array.from({length:5},(_,i)=>({program:i,uniforms:[]})),bloom:{program:'bloom',uniforms:[]},depthTarget:{},
-      bloomTarget:{},bloomTexture:{},historyTexture:null,cymatics:[0,0,0,0],timer:null,queries:[],profileEvery:0,
+      bloomTarget:{},bloomTexture:{},bloomSize:1500,bloomHeight:900,historyTexture:null,cymatics:[0,0,0,0],timer:null,queries:[],profileEvery:0,
       expression:()=>({}),gpuPasses:[],quad:{},background});
     r.draw(8);return {draws,r};
   };

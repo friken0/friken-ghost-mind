@@ -4,7 +4,11 @@ October22,2026. Local Chromium155, eight logical cores,8GB physical RAM.
 This report distinguishes target cadence, observed cadence, drawing-buffer
 resolution and GPU elapsed queries. It does not claim native Unity results.
 
-## Current / Native Carved revision26
+## Historical / Native Carved revision26
+
+November6 update: see [current measured policy](Render-Performance-2026-11-06.md).
+Prime now authorizes field-only scaling after algorithm tuning fails30FPS.
+The historical rejection below still explains why scaling cannot be hidden.
 
 Prime rejected the224px adaptive image. I removed adaptive downsampling,
 the GPU-inference resolution cap and the640px ceiling for Reply. Native

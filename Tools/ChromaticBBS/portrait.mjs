@@ -1,4 +1,4 @@
-/* Reuse the canonical exported v19 face and existing three-pass renderer.
+/* Reuse the canonical exported v19 face and existing shared multipass renderer.
  * v19 u_gaze translates eye anatomy in FACE coordinates, not normalized screen
  * coordinates. Keep its movement inside an elliptical socket budget. Head pose
  * is neutral for canonical faces. The provisional 3-D face owns a bounded

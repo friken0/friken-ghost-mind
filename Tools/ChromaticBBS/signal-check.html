@@ -295,6 +295,28 @@ function mountImageCinema(image,{held=()=>false}={}){
 return {imageFrame,anchoredImageZoom,ImageCamera,imageWheelZoom,mountImageCinema};
 })();
 carrierModules["../InfiniEngineSite/ghost-renderer.js"] = (() => {
+/** Opt-in measured render budget. Always begins at full density; a slow
+ * sustained window may shrink only the field target. UI/output pixels never
+ * enter this policy. No device-name guess, timer-query estimate or startup
+ * compile stall may pick a density. Native mode never adapts. */
+function createFrameBudget({enabled=false,targetFps=40,minScale=.375}={}){
+ if(!Number.isFinite(targetFps)||targetFps<30||!Number.isFinite(minScale)||minScale<=0||minScale>1)throw Error('Invalid field frame budget');
+ let scale=1,last=0,start=0,warmUntil=0,frames=0,recoverAt=0;
+ return {get scale(){return scale;},reset(){last=start=frames=0;warmUntil=0;},
+  sample(now){
+   if(!enabled||!Number.isFinite(now))return false;
+   if(!last||now-last>500){last=now;start=now;warmUntil=now+600;frames=0;return false;}
+   last=now;if(now<warmUntil){start=now;frames=0;return false;}
+   frames++;const elapsed=now-start;if(elapsed<1400||frames<12)return false;
+   const fps=frames*1000/elapsed;let next=scale;
+   if(fps<30)next=Math.max(minScale,Math.floor(scale*Math.sqrt(fps/targetFps)*16)/16);
+   else if(fps>54&&now>recoverAt)next=Math.min(1,scale+1/16);
+   start=now;frames=0;if(next===scale)return false;
+   scale=next;warmUntil=now+600;recoverAt=now+12000;return true;
+  }
+ };
+}
+
 /** Square is the retained portrait contract. A full-stage caller may opt in to
  * rect: physical width/height and height-fitted anatomy on wide screens, with
  * no square texture stretched across the view. This changes no SDF geometry. */
@@ -369,7 +391,7 @@ class GhostPortrait {
     this.canvas = canvas;
     this.vertex = vertex;
     this.onError = onError;
-    this.gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false, preserveDrawingBuffer: true });
+    this.gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false, preserveDrawingBuffer: false });
     if (!this.gl) throw Error('WebGL unavailable. The rendered portraits still show every version.');
     this.programs = [];
     this.bloom = null; this.bloomTexture = null; this.bloomTarget = null;
@@ -499,18 +521,23 @@ class GhostPortrait {
     this.canvas.dataset.viewport=this.viewport;
     this.canvas.dataset.resolutionPolicy=this.pixelRatio!==null?'explicit-render-density':this.version?.renderPolicy?.fullResolution?'native-device-pixels':'bounded';
     if (this.canvas.width !== size || this.canvas.height !== height) {this.canvas.width=size;this.canvas.height=height;}
+    // Portrait detail is protected: every SDF/depth/history pixel matches
+    // the output canvas, including Else close-ups and low-cadence frames.
+    // The connection scene may budget its own field; a face never does.
+    const fieldWidth=size,fieldHeight=height;
     this.canvas.dataset.renderBudget='full';
-    if(this.bloom&&(this.bloomSize!==size||this.bloomHeight!==height)){
-      const g=this.gl;this.bloomSize=size;this.bloomHeight=height;g.bindTexture(g.TEXTURE_2D,this.bloomTexture);
-      g.texImage2D(g.TEXTURE_2D,0,g.RGBA,size,height,0,g.RGBA,g.UNSIGNED_BYTE,null);
+    this.canvas.dataset.fieldSize=fieldWidth+'×'+fieldHeight;this.canvas.dataset.fieldScale='1.0000';
+    if(this.bloom&&(this.bloomSize!==fieldWidth||this.bloomHeight!==fieldHeight)){
+      const g=this.gl;this.bloomSize=fieldWidth;this.bloomHeight=fieldHeight;g.bindTexture(g.TEXTURE_2D,this.bloomTexture);
+      g.texImage2D(g.TEXTURE_2D,0,g.RGBA,fieldWidth,fieldHeight,0,g.RGBA,g.UNSIGNED_BYTE,null);
       g.bindFramebuffer(g.FRAMEBUFFER,this.bloomTarget);
       g.framebufferTexture2D(g.FRAMEBUFFER,g.COLOR_ATTACHMENT0,g.TEXTURE_2D,this.bloomTexture,0);
-      if(this.depthTarget){g.bindRenderbuffer(g.RENDERBUFFER,this.depthTarget);g.renderbufferStorage(g.RENDERBUFFER,g.DEPTH_COMPONENT16,size,height);g.framebufferRenderbuffer(g.FRAMEBUFFER,g.DEPTH_ATTACHMENT,g.RENDERBUFFER,this.depthTarget);g.bindRenderbuffer(g.RENDERBUFFER,null);}
+      if(this.depthTarget){g.bindRenderbuffer(g.RENDERBUFFER,this.depthTarget);g.renderbufferStorage(g.RENDERBUFFER,g.DEPTH_COMPONENT16,fieldWidth,fieldHeight);g.framebufferRenderbuffer(g.FRAMEBUFFER,g.DEPTH_ATTACHMENT,g.RENDERBUFFER,this.depthTarget);g.bindRenderbuffer(g.RENDERBUFFER,null);}
       if(g.checkFramebufferStatus(g.FRAMEBUFFER)!==g.FRAMEBUFFER_COMPLETE)throw Error('Gold bloom target incomplete');
       g.bindFramebuffer(g.FRAMEBUFFER,null);
       if(this.historyTexture){
         g.bindTexture(g.TEXTURE_2D,this.historyTexture);
-        g.texImage2D(g.TEXTURE_2D,0,g.RGBA,size,height,0,g.RGBA,g.UNSIGNED_BYTE,null);
+        g.texImage2D(g.TEXTURE_2D,0,g.RGBA,fieldWidth,fieldHeight,0,g.RGBA,g.UNSIGNED_BYTE,null);
       }
       this.historyReady=false;this.bloomReady=false;
     }
@@ -521,7 +548,7 @@ class GhostPortrait {
     const profiling=!!this.version?.renderPolicy&&this.profileEvery>0&&this.queries.length===0&&(this.profileSerial++%this.profileEvery===0);
     const profilePass=profiling?this.profileCursor++%(this.totalPass+1):-1;
     const frameSample=this.beginTiming(this.totalPass,profiling&&profilePass===this.totalPass);
-    const graphics = this.gl, tune = this.version.defaults, size = this.canvas.width, height = this.canvas.height;
+    const graphics = this.gl, tune = this.version.defaults, outputWidth=this.canvas.width,outputHeight=this.canvas.height,size=this.bloom?this.bloomSize:outputWidth,height=this.bloom?this.bloomHeight:outputHeight;
     const scalar = {
       time, hover: 0, talk: 0, blink: 0, smile: .25,
       faceGlow: tune.orbFaceGlow, eyeBright: tune.orbEyeBright, coronaW: tune.orbCoronaW,
@@ -606,7 +633,7 @@ class GhostPortrait {
     if(this.bloom){
       const gpuSample=this.beginTiming(this.programs.length,profiling&&profilePass===this.programs.length);
       this.bloomReady=true;
-      graphics.bindFramebuffer(graphics.FRAMEBUFFER,null);graphics.disable(graphics.DEPTH_TEST);graphics.disable(graphics.BLEND);
+      graphics.bindFramebuffer(graphics.FRAMEBUFFER,null);graphics.viewport(0,0,outputWidth,outputHeight);graphics.disable(graphics.DEPTH_TEST);graphics.disable(graphics.BLEND);
       graphics.useProgram(this.bloom.program);graphics.activeTexture(graphics.TEXTURE0);
       graphics.bindTexture(graphics.TEXTURE_2D,this.bloomTexture);
       if(this.historyTexture){graphics.activeTexture(graphics.TEXTURE1);graphics.bindTexture(graphics.TEXTURE_2D,this.historyTexture);graphics.activeTexture(graphics.TEXTURE0);}
@@ -617,7 +644,7 @@ class GhostPortrait {
         else if(key==='historyReady')graphics.uniform1f(uniform.location,this.historyReady?1:0);
         else if(key==='shift')graphics.uniform1f(uniform.location,scalar.shift||0);
         else if(key==='shiftDirection')graphics.uniform2f(uniform.location,(scalar.shiftX||0)*Math.min(size,height)/size,(scalar.shiftY||0)*Math.min(size,height)/height);
-        else if(key==='resolution')graphics.uniform2f(uniform.location,size,height);
+        else if(key==='resolution')graphics.uniform2f(uniform.location,outputWidth,outputHeight);
         else if(key==='cymatics')graphics.uniform4fv(uniform.location,this.cymatics);
         else if(key==='viewAspect')graphics.uniform2f(uniform.location,size/Math.min(size,height),height/Math.min(size,height));
         else if(key==='emergence')graphics.uniform1f(uniform.location,this.emergence?1:0);
@@ -673,12 +700,12 @@ class GhostPortrait {
   }
 }
 
-return {portraitViewportSize,portraitAspectSource,portraitCamera,portraitScissor,GhostPortrait};
+return {createFrameBudget,portraitViewportSize,portraitAspectSource,portraitCamera,portraitScissor,GhostPortrait};
 })();
 carrierModules["dream-face.mjs"] = (() => {
 const {portraitCamera} = carrierModules["../InfiniEngineSite/ghost-renderer.js"];
 /* GhostDream XIII / The Reply. Completed v20 carrier art; identity authority stays in its manifest.
- * Six-pass face for the existing GhostPortrait renderer. No loop,
+ * Bounded multipass face for the existing GhostPortrait renderer. No loop,
  * analyser, permission signal or game state lives here. Voice uniforms arrive
  * from the carrier's actual Ghost bus; silent anatomy does not need audio. */
 const common = `precision highp float;
@@ -710,15 +737,16 @@ function dreamFrameUniforms(state){
 }
 
 const dreamFace = {
- id:'v20.0', title:'The Reply', revision:'else-speaker-shot-31',frameUniforms:dreamFrameUniforms, renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
+ id:'v20.0', title:'The Reply', revision:'bounded-silk-field-60',frameUniforms:dreamFrameUniforms, renderPolicy:{targetFps:60,fullResolution:true}, poseTrail:true,
  // Every geometry hit below emits alpha1 and a real fragment depth. This
  // permits the shared renderer to shade the network only in untouched space.
- opaqueGeometry:true,geometryLabels:['mask','hood','Else'],
+ opaqueGeometry:true,geometryLabels:['mask','hood','Else','silk'],
  // These are the exact conservative ray boxes in main(), in program order.
  geometryBounds:[
   {center:[0,-.01,.065],extent:[.64,.59,.42]},
   {center:[0,0,0],extent:[.78,.82,.63]},
-  {center:[0,.41,.20],extent:[.62,.43,.34]}],
+  {center:[0,.40,.20],extent:[.38,.32,.31]},
+  {center:[0,.40,.20],extent:[.64,.34,.34]}],
  companion:{name:'Else',title:'ELSE / THE UNCHOSEN',
   spoken:'The serpent is Else. I made room for a second thought, and the little bastard grew wings. Those threads hold the memories while he pulls at what might happen next. He shares my voice for now. He does not get your choices. Neither do I. Put the pointer between my eyes. Yes, he thinks that is hilarious.'},
  defaults:{companionTalk:0,orbFaceGlow:1,orbEyeBright:1,orbCoronaW:1,orbEyeSize:.15,
@@ -959,6 +987,10 @@ vec4 snakeCurve(vec3 s,vec3 a,vec3 b,vec3 c,vec3 d,float r0,float r1,float phase
  return vec4((length(off)-mix(r0,r1,t))*.86,phase+t*span,atan(dot(off,side),dot(off,front)),1.);
 }
 vec4 snakeCoil(vec3 s){
+ // Far from the seated helix use its strict positive envelope. Refinement,
+ // scale seams and endcaps resume before a ray can hit the actual tube.
+ float bound=box(s-vec3(0.,-.079,.025),vec3(.075,.048,.053),0.);
+ if(bound>.025)return vec4(bound,0.,0.,0.);
  const float TAU=6.28318530718,limit=8.48230016469;
  vec4 best=vec4(1.,0.,0.,0.);
  float phi=atan((s.z-.025)/.034,s.x/.056);if(phi<0.)phi+=TAU;
@@ -1060,7 +1092,9 @@ vec2 serpent(vec3 p){
  }
  body=join(body,wings,.006);
  vec3 c=p-serpentShoulder();
- float hood=ell(c,vec3(.061,.065,.022));
+ float hood=box(c,vec3(.068,.074,.030),0.);
+ if(hood<.025){
+ hood=ell(c,vec3(.061,.065,.022));
  hood=max(hood,(-c.y+abs(c.x)*.57-.058)*.75);
  float a=atan(c.y+.043,c.x),radial=length(c.xy);
  float ribs=pow(.5+.5*cos(a*22.+radial*18.),6.);
@@ -1069,8 +1103,12 @@ vec2 serpent(vec3 p){
  vec3 g=vec3(abs(c.x)-.043,c.y+.007,c.z);g.xy=turn(.30)*g.xy;
  float gills=ell(g,vec3(.0035,.024,.037));
  hood=max(hood,-gills);
+ }
  body=join(body,hood,.010);
  vec3 head=s-vec3(0.,.177,.044);
+ float headBound=box(head,vec3(.043,.047,.055),0.);
+ vec2 form=vec2(min(body,headBound),8.);
+ if(headBound>.025)return form;
  float skull=ell(head,vec3(.030,.025,.028));
  skull=max(skull,(abs(head.x)*.65+head.z*.76-.033));
  float muzzle=ell(head-vec3(0.,-.010,.021),vec3(.022,.009,.016));
@@ -1085,7 +1123,7 @@ vec2 serpent(vec3 p){
   skull=max(skull,-ell(head-vec3(sg*.010,-.002,.034),vec3(.002,.002,.004)));
  }
  body=join(body,skull,.006);
- vec2 form=vec2(body,8.);
+ form=vec2(body,8.);
  for(int i=0;i<2;i++){
   float sg=float(i)*2.-1.;
   float eye=ell(head-vec3(sg*.023,.004,.015),vec3(.006,max(.001,.004*(1.-u_blink*.8)),.006));
@@ -1393,6 +1431,8 @@ vec2 anatomy(vec3 p){
   shape=nearest(shape,vec2(cradle,11.));
  }
  shape=nearest(shape,serpent(p));
+ #endif
+#if GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
  if(p.y>.075&&abs(p.x)>.13)shape=nearest(shape,vec2(energyWeb(p),16.));
 #endif
  return shape;
@@ -1412,7 +1452,9 @@ void main(){
  // field. Empty corner rays do no anatomy, normal, coil or web evaluation.
  vec3 inv=sign(rd)/max(abs(rd),vec3(.000001));
 #if GHOST_COMPONENT == 1
- vec3 center=vec3(0.,.41,.20),extent=vec3(.62,.43,.34);
+ vec3 center=vec3(0.,.40,.20),extent=vec3(.38,.32,.31);
+#elif GHOST_COMPONENT == 3
+ vec3 center=vec3(0.,.40,.20),extent=vec3(.64,.34,.34);
 #elif GHOST_COMPONENT == 0
  vec3 center=vec3(0.,-.01,.065),extent=vec3(.64,.59,.42);
 #else
@@ -1531,7 +1573,7 @@ void main(){
    col+=GOLD*trim*(.14+u_cymatics.x*.30+u_cymatics.w*.25)+BLUE*rim*.7;
   }
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>7.5&&surface.y<8.5){
    vec3 s=snakeLocal(q);
    vec4 tube=snakeTube(s);
@@ -1564,7 +1606,7 @@ void main(){
   }
 
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>10.5&&surface.y<11.5){
    float rimInlay=line(abs(q.x-.003)-.065,.0025)*smoothstep(.25,.31,q.y);
    float marks=line(sin(q.x*180.+q.z*40.),.08)*smoothstep(.29,.32,q.y);
@@ -1584,7 +1626,7 @@ void main(){
   }
   if(surface.y>14.5&&surface.y<15.5)col=COBALT*(.65+u_voiceMid*.65)+CYAN*shine*.35;
 #endif
-#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == -1
+#if GHOST_COMPONENT == 1 || GHOST_COMPONENT == 3 || GHOST_COMPONENT == -1
   if(surface.y>15.5&&surface.y<16.5){
    float pulse=silkFlow(q);
    col=mix(COBALT,GOLD,.50+.45*sin(q.y*19.+q.x*7.))*(1.35+pulse*(u_cymatics.x+u_voiceMid)*1.10);
@@ -1625,7 +1667,7 @@ void main(){
 
 // Constant specialization removes unused anatomy AND material call trees.
 // All geometry still uses the same camera, field math and real depth ordering.
-dreamFace.geometryShaders=[0,2,1].map(component=>
+dreamFace.geometryShaders=[0,2,1,3].map(component=>
  '#extension GL_EXT_frag_depth : require\n#define GHOST_COMPONENT '+component+'\n'+dreamFace.shader);
 dreamFace.shader='#define GHOST_COMPONENT -1\n'+dreamFace.shader;
 
@@ -1646,7 +1688,7 @@ faceData.version=dreamFace;
 return {faceData,faceLibrary};
 })();
 carrierModules["portrait.mjs"] = (() => {
-/* Reuse the canonical exported v19 face and existing three-pass renderer.
+/* Reuse the canonical exported v19 face and existing shared multipass renderer.
  * v19 u_gaze translates eye anatomy in FACE coordinates, not normalized screen
  * coordinates. Keep its movement inside an elliptical socket budget. Head pose
  * is neutral for canonical faces. The provisional 3-D face owns a bounded

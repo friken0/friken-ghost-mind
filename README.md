@@ -434,5 +434,14 @@ count-up with a synthesized bell; rewards wait until dialogue and serial
 drawing finish. The same exact visit carries the discoveries into its next
 reply packet. Reduced motion and SFX preferences still apply.
 
+The November6 M1 render pass profiles before adapting. The connection now
+keeps terminal glass native while only a sustained slow 3D field can scale.
+See [the measured report](Tools/ChromaticBBS/Render-Performance-2026-11-06.md) and the isolated
+`profile-renderers.mjs` witness. Native and auto modes report separate grids.
+
+Prime rejected the M1 portrait downsample: Ghost and Else now keep their
+field/depth/history at full output resolution. Only the connection can
+adapt its 3D target. The earlier scaled-face FPS figures are historical.
+
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.
