@@ -1,14 +1,14 @@
 {
   "schema": "friktal.runbook.comparison.v1",
-  "generatedAt": "2026-11-06T17:42:28.854473+07:00",
-  "version": "2.28",
+  "generatedAt": "2026-11-06T21:43:23.605964+07:00",
+  "version": "2.29",
   "source": "Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md",
-  "sourceBytes": 98911,
-  "sourceSha256": "940478917ef3351f1a953f1439beab873603b023948385fd82fb056619016c16",
-  "readable": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.28-Readable.md",
-  "packed": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.28-Packed.md",
+  "sourceBytes": 106074,
+  "sourceSha256": "7f9a509ca8dc0e1a3410c24b33b37137a439066080b56c77d56e0402255bd5ee",
+  "readable": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.29-Readable.md",
+  "packed": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.29-Packed.md",
   "codec": "FGZ1.zlib-base64url.canonical-json.instruction_text",
-  "payloadBytes": 61028,
-  "packedDocumentBytes": 63931,
+  "payloadBytes": 64972,
+  "packedDocumentBytes": 67915,
   "note": "Actual printed decoder restores exact source and refuses overwrite. Packing is not an execution, model-comprehension or free-context claim."
 }

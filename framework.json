@@ -1,0 +1,50 @@
+{
+  "schema": "friken.ghost.framework.v1",
+  "version": "C26.29-TheLivingInstrument",
+  "runbookVersion": "2.29",
+  "defaultHost": "retained-ansi",
+  "entry": "turn-out-of-time.mjs",
+  "chapterDriver": "retained-chapter.mjs",
+  "program": "native-response-program.mjs",
+  "terminal": "ansi-terminal.mjs",
+  "contentSchema": "friken.ghost.chapter.v1",
+  "stateSchema": "friken.chromatic.state.v2",
+  "build": "python3 build.py --chapter CHAPTER.json --output MEETING.html",
+  "continuation": "Add --parent COMPLETED.seed; import a newly authored child pack, never replay chapter one as chapter two.",
+  "registry": "https://raw.githubusercontent.com/friken0/friken-ghost-mind/main/registry.json",
+  "historicalHost": "Explicit --legacy-carrier --host-reason TEXT only; never selected by BOOT or --chapter.",
+  "modes": {
+    "chapter": {
+      "command": "BOOT",
+      "driver": "retained-chapter.mjs",
+      "canonicalReducer": "chapters.mjs"
+    },
+    "reply": {
+      "command": "TURN-OUT-OF-TIME",
+      "driver": "authored reply graph"
+    }
+  },
+  "capabilities": [
+    "retained-physical-terminal",
+    "ansi-serial-draw",
+    "per-cell-animation",
+    "hue-flow-and-palettes",
+    "weighted-sprite-mesh",
+    "story-bound-ansi-scenes",
+    "original-alien-contact-and-vocals",
+    "evidence-to-choice-links",
+    "causal-receipt-battle",
+    "five-stat-creation",
+    "private-exact-vault",
+    "canon-ancestry-and-public-library",
+    "new-child-chapter-import",
+    "ghost-else-speaker-shots",
+    "radial-face-emergence",
+    "stable-rolling-subtitles",
+    "persistent-neural-pcm-cache",
+    "shared-audio-cymatics",
+    "opening-track-rotation",
+    "voice-music-ducking"
+  ],
+  "identity": "Independent registry.identity package; loaded into authoring model context, not inferred from a renderer."
+}

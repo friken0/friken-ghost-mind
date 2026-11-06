@@ -11,6 +11,7 @@ import json
 import subprocess
 import tempfile
 import posixpath
+import html
 
 base = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
@@ -20,14 +21,31 @@ parser.add_argument('--parent', type=Path)
 parser.add_argument('--output', type=Path, help='Write only this HTML carrier; preserve the default carrier and fixtures')
 parser.add_argument('--dream-preview', action='store_true', help='Build the completed Dream XIII response alias and fixtures')
 parser.add_argument('--turn-out-of-time', action='store_true', help='Build the single-view authored reply for Surreal')
+parser.add_argument('--reply', type=Path, help='Targeted reply JSON in the shared retained ANSI host')
+parser.add_argument('--legacy-carrier', action='store_true', help='Historical diagnostic only; requires --host-reason')
+parser.add_argument('--host-reason', help='Explicit reason for choosing the historical host')
 parser.add_argument('--serve', action='store_true', help='Serve this carrier on loopback with threaded neural-audio headers')
 parser.add_argument('--port', type=int, default=4331)
 args = parser.parse_args()
+if args.legacy_carrier and not args.host_reason:
+    parser.error('--legacy-carrier requires an explicit --host-reason; BOOT defaults to retained ANSI')
+if args.chapter and (args.turn_out_of_time or args.reply):
+    parser.error('Choose chapter content OR a targeted reply; both share the same default host')
+retained = not args.legacy_carrier
+mode = 'reply' if args.turn_out_of_time or args.reply else 'chapter'
+framework = json.loads((base/'framework.json').read_text())
+
 sources = []
-for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','vendor/sdf-craft/runtime-catalogue.mjs','vendor/sdf-craft/recipe.mjs','vendor/sdf-craft/recipe-glsl.mjs','vendor/sdf-craft/texture-engine.mjs','vendor/sdf-craft/material-worker-source.mjs','vendor/sdf-craft/materials-client.mjs','vendor/sdf-craft/materials.mjs','vendor/sdf-craft/material-glsl.mjs','vendor/sdf-craft/roll.mjs','facial-rig.mjs','music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','alien-comms.mjs','creation.mjs','causality.mjs','engine.mjs', 'canon.mjs', 'scanner.mjs', 'image-cinema.mjs', 'storycraft.mjs', 'staging-art.mjs','staging.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
+for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','vendor/sdf-craft/runtime-catalogue.mjs','vendor/sdf-craft/recipe.mjs','vendor/sdf-craft/recipe-glsl.mjs','vendor/sdf-craft/texture-engine.mjs','vendor/sdf-craft/material-worker-source.mjs','vendor/sdf-craft/materials-client.mjs','vendor/sdf-craft/materials.mjs','vendor/sdf-craft/material-glsl.mjs','vendor/sdf-craft/roll.mjs','facial-rig.mjs','music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','alien-comms.mjs','creation.mjs','causality.mjs','engine.mjs', 'canon.mjs', 'scanner.mjs', 'image-cinema.mjs', 'ansi-scenes.mjs', 'storycraft.mjs', 'staging-art.mjs','staging.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
              'dream-face.mjs','face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'stage.mjs',
-             'ansi-animation.mjs','ansi-ui.mjs','ansi-scenes.mjs','ansi-terminal.mjs','ansi-mesh.mjs','boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'story-guidance.mjs', 'turn-out-of-time-data.mjs', 'reply-discoveries.mjs', 'door-and-crew.mjs', 'response-theater.mjs','ghostlink-transport.mjs','ansi-sprites.mjs','ansi-skirmish.mjs','mind-adventure.mjs','subtitle-cues.mjs','native-response-host.mjs','illustration-data.mjs','ansi-illustration.mjs','native-response-program.mjs', 'turn-out-of-time.mjs' if args.turn_out_of_time else 'app.mjs'):
+             'ansi-animation.mjs','ansi-ui.mjs','ansi-terminal.mjs','ansi-mesh.mjs','boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'story-guidance.mjs', 'turn-out-of-time-data.mjs', 'reply-discoveries.mjs', 'door-and-crew.mjs', 'response-theater.mjs','ghostlink-transport.mjs','ansi-sprites.mjs','ansi-skirmish.mjs','mind-adventure.mjs','subtitle-cues.mjs','native-response-host.mjs','illustration-data.mjs','ansi-illustration.mjs','native-response-program.mjs', 'retained-chapter.mjs', 'framework-mode.mjs', 'turn-out-of-time.mjs' if retained else 'app.mjs'):
     source = (base / name).read_text()
+    if name == 'framework-mode.mjs':
+        source = 'export const responseMode='+json.dumps(mode)+';'
+    if name == 'turn-out-of-time-data.mjs' and args.reply:
+        reply = json.loads(args.reply.read_text())
+        validation = subprocess.run(['node', '--input-type=module', '-e', "import {validateTurnOutOfTime} from './response-theater.mjs';let s='';for await(const p of process.stdin)s+=p;validateTurnOutOfTime(JSON.parse(s));"], cwd=base, input=json.dumps(reply), text=True, capture_output=True, check=True)
+        source = 'export const TURN_OUT_OF_TIME='+json.dumps(reply,ensure_ascii=False).replace('</','<\\/')+';'
     if name == 'chapter-data.mjs' and args.chapter:
         packet = json.loads(args.chapter.read_text())
         subprocess.run(['node', str(base/'chapter-cli.mjs'), 'validate', str(args.chapter)], check=True)
@@ -50,9 +68,9 @@ for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','v
     if re.search(r'^\s*(import|export)\b', source, re.M):
         raise ValueError(f'Unbundled module syntax in {name}')
     sources.append('carrierModules[' + json.dumps(posixpath.normpath(name)) + '] = (() => {\n' + source + '\nreturn {' + ','.join(exports) + '};\n})();')
-css=(base/('response-theater.css' if args.turn_out_of_time else 'carrier.css')).read_text()
-if args.turn_out_of_time: css+='\n'+(base/'mind-adventure.css').read_text()
-surface = '<div id="chromatic-carrier" data-sd-grant="single-view reply"></div><script>'+ (base/'vendor/native-gallery/input.js').read_text()+'</script>' if args.turn_out_of_time else (base/'surface.html').read_text()
+css=(base/('response-theater.css' if retained else 'carrier.css')).read_text()
+if retained: css+='\n'+(base/'mind-adventure.css').read_text()
+surface = '<div id="chromatic-carrier" data-sd-grant="single-view reply"></div><script>'+ (base/'vendor/native-gallery/input.js').read_text()+'</script>' if retained else (base/'surface.html').read_text()
 fragment = (surface + '\n<style>\n' +
             css + '\n</style>\n<script>\n' +
             '(() => {\nconst carrierModules={};\n' + '\n'.join(sources) + '\n})();\n</script>\n')
@@ -61,6 +79,7 @@ if args.dream_preview:
     fragment = fragment.replace('CHROMATIC BBS // THE UNFINISHED CARRIER', 'C26.27 // THE REPLY / COMPLETED DREAM')
     fragment = fragment.replace('<h1>FRIKEN.GHOST</h1>', '<h1>GHOSTDREAM XIII</h1>')
 document = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+            '<meta name="ghost-framework" content="'+framework['version']+' / '+('retained-ansi' if retained else 'historical: '+html.escape(args.host_reason,quote=True) )+'">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             '<title>'+('Friken.Ghost · The Door That Remembers · For Surreal' if args.turn_out_of_time else 'GhostLink · The Other Side of Dial Tone')+'</title>'
             '<style>html,body{margin:0;height:100%;overflow:hidden;background:#090b17}</style></head><body>' +

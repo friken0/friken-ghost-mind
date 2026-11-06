@@ -3,13 +3,15 @@ import {validateCondition,matchesStory} from './storycraft.mjs';
 /** One data-only situation for prose, scene props and choice affordances.
  * The tableau is an explicitly labelled schematic, not a recovered photograph.
  * No random stream, save, speech engine or animation loop belongs here. */
+import {ansiSceneKinds} from './ansi-scenes.mjs';
 export const propKinds=['terminal','world','switch','cable','record','gate','relay','latch','pump','bell','map','charge'];
 const states=['live','closed','damaged','repaired','warning','offline'];
 const text=(v,n)=>typeof v==='string'&&v.length>0&&v.length<=n&&!/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(v);
 const fields=(v,names)=>{if(!v||Array.isArray(v)||typeof v!=='object'||Object.keys(v).some(k=>!names.includes(k)))throw Error('Unknown staging field');};
 export function validateStaging(s){
  if(s===undefined)return;
- fields(s,['place','goal','pressure','objects','overrides','illustration']);
+ fields(s,['place','goal','pressure','objects','overrides','illustration','ansi']);
+ if(s.ansi!==undefined){fields(s.ansi,['kind','seed','caption']);if(!ansiSceneKinds.includes(s.ansi.kind)||!Number.isInteger(s.ansi.seed)||s.ansi.seed<0||s.ansi.seed>0xffffffff||!text(s.ansi.caption,200))throw Error('Unknown or unbounded authored ANSI scene');}
  for(const k of ['place','goal','pressure'])if(!text(s[k],240))throw Error('Staging '+k);
  if(!Array.isArray(s.objects)||s.objects.length<1||s.objects.length>4)throw Error('Staging object budget');
  if(s.illustration!==undefined&&!Object.hasOwn(stagingArt,s.illustration))throw Error('Unknown scene illustration');

@@ -1,0 +1,3140 @@
+{
+  "schema": "friken.ghost.chapter.v1",
+  "id": "the-suitcase-that-kept-coming-back",
+  "title": "THE SUITCASE THAT KEPT COMING BACK",
+  "chapter": 1,
+  "parent": null,
+  "statSystem": "human-five-v1",
+  "causality": {
+    "precision": 2,
+    "below": 0.2,
+    "above": 0.3,
+    "bonus": {
+      "signal": 1
+    }
+  },
+  "stagingVersion": "scene-v1",
+  "acts": [
+    "A HANDLE IN THE WALL",
+    "ONE REQUEST, THEN STOP",
+    "DELIVERED MEANS DELIVERED"
+  ],
+  "consequences": [
+    "New local fiction: Len, Orra, Quay Nine and this sorter are authored for this meeting, not recovered player history or species-wide canon.",
+    "Keep pickup agreement, actual checks and failures, old route evidence, rule use or non-use, borrowed equipment, any trolley debt and the chosen next question.",
+    "All scanner forms are unchanged retained service diagnostics from the-bell-without-a-clapper.json; they do not depict new finished art or the suitcase itself."
+  ],
+  "roller": "armies",
+  "rules": [
+    {
+      "id": "one-trip",
+      "name": "ONE TRIP / send once, refuse return",
+      "cost": {
+        "compute": 1
+      },
+      "check": null,
+      "success": {
+        "delta": {
+          "signal": 1,
+          "noise": -1
+        },
+        "facts": [
+          "one-trip-used"
+        ],
+        "threads": [],
+        "resolve": [],
+        "relations": {},
+        "install": null
+      },
+      "failure": {
+        "delta": {
+          "signal": 1,
+          "noise": -1
+        },
+        "facts": [
+          "one-trip-used"
+        ],
+        "threads": [],
+        "resolve": [],
+        "relations": {},
+        "install": null
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "id": "case-01",
+      "act": 1,
+      "title": "THE SUITCASE THAT KEPT COMING BACK",
+      "scene": "A green suitcase slides through the pickup hatch. Len, the human porter, reaches for its handle. The belt changes its mind and carries it back into the wall. A moment later it arrives again, wearing the same battered DO NOT THROW tag. Len has put a cushion where it lands. “It was getting personal.”",
+      "ghost": "Hello. I’m Friken.Ghost: digital recreation of the developer who built StarDiver and got lost in its infinity. He left me to help keep the place running. Today the place is eating somebody’s luggage with excellent manners. You’re at your own computer on a narrow service channel; Len has the actual hands. I can read the sorter, but I need your judgement before I call an impressive loop a successful delivery. Help us get one case to its owner?",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.4,
+            0.16,
+            0.18
+          ]
+        },
+        "b": {
+          "op": "move",
+          "offset": [
+            0.23,
+            0.3,
+            0
+          ],
+          "child": {
+            "op": "box",
+            "size": [
+              0.06,
+              0.17,
+              0.06
+            ]
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "hold-belt",
+          "label": "Ask Len to hold the belt",
+          "detail": "Len stops the motor and catches the case; the relay stays powered for diagnosis.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "belt-held"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "belt-held"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Len catches the handle. The case stops travelling; RETURN is still lit.",
+            "pass": "Len catches the handle. The case stops travelling; RETURN is still lit."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "Len catches the handle. The case stops travelling; RETURN is still lit.",
+            "pass": "Len catches the handle. The case stops travelling; RETURN is still lit."
+          }
+        },
+        {
+          "id": "read-route",
+          "label": "Read the route strip",
+          "detail": "Copy the last three trips while Len keeps the hatch supervised. Nothing is reset.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "route-copied"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "route-copied"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Same case, same exit, same return. The strip is saved; the loop is still running.",
+            "pass": "Same case, same exit, same return. The strip is saved; the loop is still running."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "Same case, same exit, same return. The strip is saved; the loop is still running.",
+            "pass": "Same case, same exit, same return. The strip is saved; the loop is still running."
+          }
+        },
+        {
+          "id": "isolate-motor",
+          "label": "Disconnect the motor feed",
+          "detail": "Len removes motor power while leaving the low-voltage receiver online.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "motor-isolated"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "motor-isolated"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The motor stops. OUT and RETURN remain lit together. That is useful and extremely stupid.",
+            "pass": "The motor stops. OUT and RETURN remain lit together. That is useful and extremely stupid."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "The motor stops. OUT and RETURN remain lit together. That is useful and extremely stupid.",
+            "pass": "The motor stops. OUT and RETURN remain lit together. That is useful and extremely stupid."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Stop the return loop without erasing its cause.",
+        "pressure": "No clock advances while you read. The pickup hatch remains supervised.",
+        "objects": [
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "specimen": {
+        "name": "RELAY / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Stop the return loop without erasing its cause.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Ask Len to hold the belt",
+            "text": "Len stops the motor and catches the case; the relay stays powered for diagnosis.",
+            "choice": "hold-belt",
+            "implication": "Len catches the handle. The case stops travelling; RETURN is still lit."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Read the route strip",
+            "text": "Copy the last three trips while Len keeps the hatch supervised. Nothing is reset.",
+            "choice": "read-route",
+            "implication": "Same case, same exit, same return. The strip is saved; the loop is still running."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Disconnect the motor feed",
+            "text": "Len removes motor power while leaving the low-voltage receiver online.",
+            "choice": "isolate-motor",
+            "implication": "The motor stops. OUT and RETURN remain lit together. That is useful and extremely stupid."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-02",
+      "act": 1,
+      "title": "SOMEONE ON THE OTHER SIDE",
+      "scene": "Len opens the supervised pickup intercom. A broad three-headed traveller leans toward its camera; one head watches the hatch while another threads a needle. “Orra. The green one is mine. Please leave it shut.” Len explains that he can hand it over with the sorter off, but first needs her destination so the next case does not follow it back.",
+      "ghost": "We have a perfectly good human fallback in the fiction: carry the thing. The machine can stay locked out. We also have an owner who has asked for a closed suitcase. No mystery requires us to rummage through her socks.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.24,
+            0.2,
+            0.35
+          ]
+        },
+        "b": {
+          "op": "union",
+          "a": {
+            "op": "move",
+            "offset": [
+              -0.12,
+              0.28,
+              0
+            ],
+            "child": {
+              "op": "box",
+              "size": [
+                0.035,
+                0.12,
+                0.04
+              ]
+            }
+          },
+          "b": {
+            "op": "move",
+            "offset": [
+              0.13,
+              0.24,
+              0
+            ],
+            "child": {
+              "op": "box",
+              "size": [
+                0.04,
+                0.08,
+                0.04
+              ]
+            }
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "counter-pickup",
+          "label": "Offer collection at this counter",
+          "detail": "Orra waits at the hatch. Len will hand the case over after isolating the mechanism.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "counter-pickup"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "counter-pickup"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Orra comes to the counter. We have a reachable destination and no moving belt between them.",
+            "pass": "Orra comes to the counter. We have a reachable destination and no moving belt between them."
+          },
+          "use": null,
+          "focus": [
+            "hatch"
+          ],
+          "stakes": {
+            "fail": "Orra comes to the counter. We have a reachable destination and no moving belt between them.",
+            "pass": "Orra comes to the counter. We have a reachable destination and no moving belt between them."
+          }
+        },
+        {
+          "id": "berth-pickup",
+          "label": "Ask which berth needs the case",
+          "detail": "Orra gives berth twelve for a porter delivery. This creates a local delivery promise.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "berth-pickup"
+            ],
+            "threads": [
+              "deliver-to-twelve"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "berth-pickup"
+            ],
+            "threads": [
+              "deliver-to-twelve"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Berth twelve. Len writes it down; walking it there is now our actual promise.",
+            "pass": "Berth twelve. Len writes it down; walking it there is now our actual promise."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "Berth twelve. Len writes it down; walking it there is now our actual promise.",
+            "pass": "Berth twelve. Len writes it down; walking it there is now our actual promise."
+          }
+        },
+        {
+          "id": "service-pickup",
+          "label": "Arrange collection at the service door",
+          "detail": "Orra agrees to the nearby service door; Len must release its manual catch.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "service-pickup"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "service-pickup"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The service door becomes the destination. Its manual catch will need opening.",
+            "pass": "The service door becomes the destination. Its manual catch will need opening."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "The service door becomes the destination. Its manual catch will need opening.",
+            "pass": "The service door becomes the destination. Its manual catch will need opening."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Agree how Orra will collect her closed suitcase.",
+        "pressure": "Her ship can wait through this service job. We have not promised a departure time.",
+        "objects": [
+          {
+            "id": "hatch",
+            "kind": "gate",
+            "label": "PICKUP HATCH",
+            "description": "A person can collect luggage here with the sorter disabled. It is not an airlock.",
+            "state": "live"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "echoes": [
+        {
+          "id": "return-2-0",
+          "when": {
+            "all": [
+              "belt-held"
+            ]
+          },
+          "scene": "Len keeps his hand on the stopped case while he talks."
+        },
+        {
+          "id": "return-2-1",
+          "when": {
+            "all": [
+              "route-copied"
+            ]
+          },
+          "scene": "Your saved strip stays beside the live receiver."
+        },
+        {
+          "id": "return-2-2",
+          "when": {
+            "all": [
+              "motor-isolated"
+            ]
+          },
+          "scene": "The isolated motor cannot pull the case away during this call."
+        }
+      ],
+      "portrait": {
+        "race": "harkellinia",
+        "caption": "Orra / Harkellinia traveller / speaking through the pickup receiver"
+      },
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "Orra / traveller",
+        "accuracy": 83,
+        "lines": [
+          {
+            "text": "Keep it closed, please. There is half a coat in there, and I would like to be the person who finds the other half.",
+            "confidence": 90
+          }
+        ]
+      },
+      "specimen": {
+        "name": "RECEIVER / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Agree how Orra will collect her closed suitcase.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Offer collection at this counter",
+            "text": "Orra waits at the hatch. Len will hand the case over after isolating the mechanism.",
+            "choice": "counter-pickup",
+            "implication": "Orra comes to the counter. We have a reachable destination and no moving belt between them."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Ask which berth needs the case",
+            "text": "Orra gives berth twelve for a porter delivery. This creates a local delivery promise.",
+            "choice": "berth-pickup",
+            "implication": "Berth twelve. Len writes it down; walking it there is now our actual promise."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Arrange collection at the service door",
+            "text": "Orra agrees to the nearby service door; Len must release its manual catch.",
+            "choice": "service-pickup",
+            "implication": "The service door becomes the destination. Its manual catch will need opening."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-03",
+      "act": 1,
+      "title": "THE MARK UNDER THE MARK",
+      "scene": "The camera can see a fresh passenger tag looped over a much older brass service plate. Len turns only the handle, without opening the case. The service plate points back to this counter. Orra explains that she bought the case from the station’s surplus rack.",
+      "ghost": "Two destinations. The passenger tag says where to go; the old plate says where to return. I was about to wipe the route table. That would remove our evidence and leave the brass plate feeling very smug. Let’s preserve what is actually here.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.24,
+            0.2,
+            0.35
+          ]
+        },
+        "b": {
+          "op": "union",
+          "a": {
+            "op": "move",
+            "offset": [
+              -0.12,
+              0.28,
+              0
+            ],
+            "child": {
+              "op": "box",
+              "size": [
+                0.035,
+                0.12,
+                0.04
+              ]
+            }
+          },
+          "b": {
+            "op": "move",
+            "offset": [
+              0.13,
+              0.24,
+              0
+            ],
+            "child": {
+              "op": "box",
+              "size": [
+                0.04,
+                0.08,
+                0.04
+              ]
+            }
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "copy-both",
+          "label": "Copy both marks before changing anything",
+          "detail": "Keep a legible copy of both destinations. The originals remain attached.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "both-marks-copied"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "both-marks-copied"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Both marks are copied. Nobody has guessed which one the sorter actually obeys.",
+            "pass": "Both marks are copied. Nobody has guessed which one the sorter actually obeys."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "Both marks are copied. Nobody has guessed which one the sorter actually obeys.",
+            "pass": "Both marks are copied. Nobody has guessed which one the sorter actually obeys."
+          }
+        },
+        {
+          "id": "owner-keeps-plate",
+          "label": "Ask Orra to keep the old plate",
+          "detail": "Orra removes the loose service plate and keeps it; the passenger tag stays in view.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "plate-removed"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "plate-removed"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Orra keeps the old plate. The case has one visible destination, but the relay has not been tested.",
+            "pass": "Orra keeps the old plate. The case has one visible destination, but the relay has not been tested."
+          },
+          "use": null,
+          "focus": [
+            "hatch"
+          ],
+          "stakes": {
+            "fail": "Orra keeps the old plate. The case has one visible destination, but the relay has not been tested.",
+            "pass": "Orra keeps the old plate. The case has one visible destination, but the relay has not been tested."
+          }
+        },
+        {
+          "id": "trace-reader",
+          "label": "Trace the reader’s output",
+          "detail": "Spend one compute to compare the two sensor lines without moving the case.",
+          "cost": {
+            "compute": 1
+          },
+          "check": null,
+          "success": {
+            "delta": {
+              "noise": -1
+            },
+            "facts": [
+              "two-inputs-confirmed"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "noise": -1
+            },
+            "facts": [
+              "two-inputs-confirmed"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Both sensor lines reach the relay. This is a routing conflict, not a haunted suitcase.",
+            "pass": "Both sensor lines reach the relay. This is a routing conflict, not a haunted suitcase."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "Both sensor lines reach the relay. This is a routing conflict, not a haunted suitcase.",
+            "pass": "Both sensor lines reach the relay. This is a routing conflict, not a haunted suitcase."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Keep enough evidence to distinguish two destination marks.",
+        "pressure": "The case stays closed. Neither mark alone proves what the relay does.",
+        "objects": [
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "hatch",
+            "kind": "gate",
+            "label": "PICKUP HATCH",
+            "description": "A person can collect luggage here with the sorter disabled. It is not an airlock.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "specimen": {
+        "name": "RECEIVER / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Keep enough evidence to distinguish two destination marks.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Copy both marks before changing anything",
+            "text": "Keep a legible copy of both destinations. The originals remain attached.",
+            "choice": "copy-both",
+            "implication": "Both marks are copied. Nobody has guessed which one the sorter actually obeys."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Ask Orra to keep the old plate",
+            "text": "Orra removes the loose service plate and keeps it; the passenger tag stays in view.",
+            "choice": "owner-keeps-plate",
+            "implication": "Orra keeps the old plate. The case has one visible destination, but the relay has not been tested."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Trace the reader’s output",
+            "text": "Spend one compute to compare the two sensor lines without moving the case.",
+            "choice": "trace-reader",
+            "implication": "Both sensor lines reach the relay. This is a routing conflict, not a haunted suitcase."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-04",
+      "act": 1,
+      "title": "TWO ARROWS, ONE MOTOR",
+      "scene": "On the isolated service bench, Len releases the reader connector. Its OUT and RETURN contacts are latched together. Removing the old plate will prevent another bad read, but this held state also needs clearing. A scrap of tape on the housing reads TEMPORARY FIX; the handwriting is Len’s. He looks at it for a while.",
+      "ghost": "There it is. I withdraw my reset-everything plan. We clear this one unloaded relay, preserve the route record, then test one journey. The first uncertain option uses FOCUS: a sample from 0.01 to 20.00 plus your actual attribute against the posted target. The exact band and both consequences are shown before you commit. Looking here has rolled nothing.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.4,
+            0.16,
+            0.18
+          ]
+        },
+        "b": {
+          "op": "move",
+          "offset": [
+            0.23,
+            0.3,
+            0
+          ],
+          "child": {
+            "op": "box",
+            "size": [
+              0.06,
+              0.17,
+              0.06
+            ]
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "precise-release",
+          "label": "Release only the RETURN contact",
+          "detail": "Use FOCUS on the isolated relay. Pass preserves automatic OUT; failure pits its return contact and requires lockout.",
+          "cost": {
+            "compute": 1
+          },
+          "check": {
+            "stat": "focus",
+            "dc": 13.4
+          },
+          "success": {
+            "delta": {
+              "signal": 1
+            },
+            "facts": [
+              "return-cleared"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "noise": 1
+            },
+            "facts": [
+              "return-contact-pitted"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The return contact pits. Len locks it out; automatic return is unavailable until replacement.",
+            "pass": "RETURN releases cleanly. OUT remains available for a bounded test."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "The return contact pits. Len locks it out; automatic return is unavailable until replacement.",
+            "pass": "RETURN releases cleanly. OUT remains available for a bounded test."
+          }
+        },
+        {
+          "id": "trace-hold",
+          "label": "Find the held bit in the service receiver",
+          "detail": "Use INSIGHT to locate the latch. Pass clears it; failure corrupts only the disposable test buffer.",
+          "cost": {},
+          "check": {
+            "stat": "insight",
+            "dc": 14.1
+          },
+          "success": {
+            "delta": {
+              "signal": 1
+            },
+            "facts": [
+              "latch-cleared"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "compute": -1
+            },
+            "facts": [
+              "test-buffer-lost"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The disposable buffer is unreadable. The original strip survives; we must use physical lockout.",
+            "pass": "The held bit drops. The saved original strip remains intact."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "The disposable buffer is unreadable. The original strip survives; we must use physical lockout.",
+            "pass": "The held bit drops. The saved original strip remains intact."
+          }
+        },
+        {
+          "id": "manual-lockout",
+          "label": "Keep the sorter locked out",
+          "detail": "No roll. Len opens both motor contacts and commits to manual delivery for this case.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {
+              "compute": 1
+            },
+            "facts": [
+              "manual-lockout"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "compute": 1
+            },
+            "facts": [
+              "manual-lockout"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Both motor contacts are open. The case can go by hand; the sorter stays out of service.",
+            "pass": "Both motor contacts are open. The case can go by hand; the sorter stays out of service."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "Both motor contacts are open. The case can go by hand; the sorter stays out of service.",
+            "pass": "Both motor contacts are open. The case can go by hand; the sorter stays out of service."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Clear or bypass the latched return contact.",
+        "pressure": "Motor power remains disconnected during every bench test.",
+        "objects": [
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "echoes": [
+        {
+          "id": "return-4-0",
+          "when": {
+            "all": [
+              "plate-removed"
+            ]
+          },
+          "scene": "The removed plate cannot trigger a fresh RETURN read."
+        },
+        {
+          "id": "return-4-1",
+          "when": {
+            "all": [
+              "both-marks-copied"
+            ]
+          },
+          "scene": "Both original destination marks survive in your copied record."
+        },
+        {
+          "id": "return-4-2",
+          "when": {
+            "all": [
+              "two-inputs-confirmed"
+            ]
+          },
+          "scene": "Your two-input trace agrees with Len’s physical contact readings."
+        }
+      ],
+      "specimen": {
+        "name": "RELAY / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Clear or bypass the latched return contact.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Release only the RETURN contact",
+            "text": "Use FOCUS on the isolated relay. Pass preserves automatic OUT; failure pits its return contact and requires lockout.",
+            "choice": "precise-release",
+            "implication": "RETURN releases cleanly. OUT remains available for a bounded test."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Find the held bit in the service receiver",
+            "text": "Use INSIGHT to locate the latch. Pass clears it; failure corrupts only the disposable test buffer.",
+            "choice": "trace-hold",
+            "implication": "The held bit drops. The saved original strip remains intact."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Keep the sorter locked out",
+            "text": "No roll. Len opens both motor contacts and commits to manual delivery for this case.",
+            "choice": "manual-lockout",
+            "implication": "Both motor contacts are open. The case can go by hand; the sorter stays out of service."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-05",
+      "act": 2,
+      "title": "THE CASE IS NOT A TEST WEIGHT",
+      "scene": "Len finds a steel calibration block beneath the counter. He puts it where the suitcase had been. Orra watches him move the case clear before she resumes sewing. The damaged sorter can be tested, replaced or left isolated. None of those plans needs her coat inside it.",
+      "ghost": "I suggested using the luggage because it already had a handle. Len has found a test block, which also has a handle and considerably less invested in this afternoon. We use that. What we learn about an unloaded mechanism will stay an unloaded-mechanism result.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.4,
+            0.16,
+            0.18
+          ]
+        },
+        "b": {
+          "op": "move",
+          "offset": [
+            0.23,
+            0.3,
+            0
+          ],
+          "child": {
+            "op": "box",
+            "size": [
+              0.06,
+              0.17,
+              0.06
+            ]
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "request-spare",
+          "label": "Request a replacement relay",
+          "detail": "Len lends his bench spare. Its return to his bench remains a real obligation.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "spare-borrowed"
+            ],
+            "threads": [
+              "return-bench-spare"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "spare-borrowed"
+            ],
+            "threads": [
+              "return-bench-spare"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The labelled spare is on the bench. It belongs to Len and is not a gift.",
+            "pass": "The labelled spare is on the bench. It belongs to Len and is not a gift."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "The labelled spare is on the bench. It belongs to Len and is not a gift.",
+            "pass": "The labelled spare is on the bench. It belongs to Len and is not a gift."
+          }
+        },
+        {
+          "id": "borrow-lead",
+          "label": "Borrow the isolated test lead",
+          "detail": "Keep the motor locked out and borrow Len’s lead to test receiver messages only.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "lead-borrowed"
+            ],
+            "threads": [
+              "return-test-lead"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "lead-borrowed"
+            ],
+            "threads": [
+              "return-test-lead"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The lead can test messages without moving metal. We owe Len that exact lead back.",
+            "pass": "The lead can test messages without moving metal. We owe Len that exact lead back."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "The lead can test messages without moving metal. We owe Len that exact lead back.",
+            "pass": "The lead can test messages without moving metal. We owe Len that exact lead back."
+          }
+        },
+        {
+          "id": "leave-disabled",
+          "label": "Leave the motor disabled",
+          "detail": "No loan. Check route messages on the existing receiver and carry the case by hand.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {
+              "compute": 1
+            },
+            "facts": [
+              "disabled-by-choice"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "compute": 1
+            },
+            "facts": [
+              "disabled-by-choice"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The motor stays disabled. Receiver messages and a hand delivery are enough for this job.",
+            "pass": "The motor stays disabled. Receiver messages and a hand delivery are enough for this job."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "The motor stays disabled. Receiver messages and a hand delivery are enough for this job.",
+            "pass": "The motor stays disabled. Receiver messages and a hand delivery are enough for this job."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Choose how much of the sorter to return to service.",
+        "pressure": "Any pitted contact stays locked out. No action silently repairs prior damage.",
+        "objects": [
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "echoes": [
+        {
+          "id": "return-5-0",
+          "when": {
+            "all": [
+              "return-contact-pitted"
+            ]
+          },
+          "scene": "The pitted return contact remains tagged: DO NOT ENERGIZE."
+        },
+        {
+          "id": "return-5-1",
+          "when": {
+            "all": [
+              "test-buffer-lost"
+            ]
+          },
+          "scene": "The lost test buffer is recorded as lost, not reconstructed from a convenient guess."
+        },
+        {
+          "id": "return-5-2",
+          "when": {
+            "all": [
+              "manual-lockout"
+            ]
+          },
+          "scene": "Your manual lockout is still physically open."
+        }
+      ],
+      "specimen": {
+        "name": "RELAY / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Choose how much of the sorter to return to service.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Request a replacement relay",
+            "text": "Len lends his bench spare. Its return to his bench remains a real obligation.",
+            "choice": "request-spare",
+            "implication": "The labelled spare is on the bench. It belongs to Len and is not a gift."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Borrow the isolated test lead",
+            "text": "Keep the motor locked out and borrow Len’s lead to test receiver messages only.",
+            "choice": "borrow-lead",
+            "implication": "The lead can test messages without moving metal. We owe Len that exact lead back."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Leave the motor disabled",
+            "text": "No loan. Check route messages on the existing receiver and carry the case by hand.",
+            "choice": "leave-disabled",
+            "implication": "The motor stays disabled. Receiver messages and a hand delivery are enough for this job."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-06",
+      "act": 2,
+      "title": "THE EMPTY JOURNEY",
+      "scene": "Len disconnects the receiver’s motor output and clips a little lamp across it. Orra’s destination is entered as the end of a single journey. The lamp can tell us whether a command would be sent twice. It cannot certify that a suitcase has arrived.",
+      "ghost": "Here’s a rule we can actually keep: ONE TRIP. On the isolated receiver, send one request to the agreed destination, then refuse automatic return. It costs one compute to exercise, recovers one signal and lowers noise by one. It never moves a motor or invents a delivery receipt. We will still need somebody at the far end.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.4,
+            0.16,
+            0.18
+          ]
+        },
+        "b": {
+          "op": "move",
+          "offset": [
+            0.23,
+            0.3,
+            0
+          ],
+          "child": {
+            "op": "box",
+            "size": [
+              0.06,
+              0.17,
+              0.06
+            ]
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "lamp-stop",
+          "label": "Use the lamp as the end marker",
+          "detail": "Install ONE TRIP; completion means one lamp pulse, then a closed receiver gate.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "lamp-end-marker"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": "one-trip"
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "lamp-end-marker"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": "one-trip"
+          },
+          "reaction": {
+            "fail": "One lamp pulse, then stop. ONE TRIP is installed; it has not been exercised yet.",
+            "pass": "One lamp pulse, then stop. ONE TRIP is installed; it has not been exercised yet."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "One lamp pulse, then stop. ONE TRIP is installed; it has not been exercised yet.",
+            "pass": "One lamp pulse, then stop. ONE TRIP is installed; it has not been exercised yet."
+          }
+        },
+        {
+          "id": "paper-stop",
+          "label": "Keep a numbered paper marker",
+          "detail": "Install ONE TRIP; Len marks request one on paper and refuses request two.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "paper-end-marker"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": "one-trip"
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "paper-end-marker"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": "one-trip"
+          },
+          "reaction": {
+            "fail": "Len writes ONE. The receiver has its bound; the paper keeps the human witness visible.",
+            "pass": "Len writes ONE. The receiver has its bound; the paper keeps the human witness visible."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "Len writes ONE. The receiver has its bound; the paper keeps the human witness visible.",
+            "pass": "Len writes ONE. The receiver has its bound; the paper keeps the human witness visible."
+          }
+        },
+        {
+          "id": "owner-stop",
+          "label": "Let Orra close the receiving gate",
+          "detail": "Install ONE TRIP; Orra has the local close switch after the one request.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "owner-end-marker"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": "one-trip"
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "owner-end-marker"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": "one-trip"
+          },
+          "reaction": {
+            "fail": "Orra takes the local stop. The receiver rule is installed; her switch remains hers.",
+            "pass": "Orra takes the local stop. The receiver rule is installed; her switch remains hers."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "Orra takes the local stop. The receiver rule is installed; her switch remains hers.",
+            "pass": "Orra takes the local stop. The receiver rule is installed; her switch remains hers."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Install ONE TRIP with a visible stopping condition.",
+        "pressure": "All three arrangements stop after one request; none grants continuing access.",
+        "objects": [
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "specimen": {
+        "name": "RELAY / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Install ONE TRIP with a visible stopping condition.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Use the lamp as the end marker",
+            "text": "Install ONE TRIP; completion means one lamp pulse, then a closed receiver gate.",
+            "choice": "lamp-stop",
+            "implication": "One lamp pulse, then stop. ONE TRIP is installed; it has not been exercised yet."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Keep a numbered paper marker",
+            "text": "Install ONE TRIP; Len marks request one on paper and refuses request two.",
+            "choice": "paper-stop",
+            "implication": "Len writes ONE. The receiver has its bound; the paper keeps the human witness visible."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Let Orra close the receiving gate",
+            "text": "Install ONE TRIP; Orra has the local close switch after the one request.",
+            "choice": "owner-stop",
+            "implication": "Orra takes the local stop. The receiver rule is installed; her switch remains hers."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-07",
+      "act": 2,
+      "title": "ONE PULSE IS ENOUGH",
+      "scene": "The motor output is still disconnected. Len holds the lamp where the camera can see it. A manual request is available alongside the installed rule, so lack of compute cannot trap the job. The calibration block stays on the bench.",
+      "ghost": "This is where a new rule earns its name. Exercise ONE TRIP and we retain a real use; choose a manual route and it remains installed but untested. I will not give either route the other’s receipt.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.4,
+            0.16,
+            0.18
+          ]
+        },
+        "b": {
+          "op": "move",
+          "offset": [
+            0.23,
+            0.3,
+            0
+          ],
+          "child": {
+            "op": "box",
+            "size": [
+              0.06,
+              0.17,
+              0.06
+            ]
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "exercise-one-trip",
+          "label": "Exercise ONE TRIP",
+          "detail": "Spend its actual one compute; send one request, close its gate and retain the use receipt.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {
+              "signal": 1,
+              "noise": -1
+            },
+            "facts": [
+              "one-trip-used"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "signal": 1,
+              "noise": -1
+            },
+            "facts": [
+              "one-trip-used"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "One pulse. Then the gate closes. ONE TRIP has done a real, bounded job.",
+            "pass": "One pulse. Then the gate closes. ONE TRIP has done a real, bounded job."
+          },
+          "use": "one-trip",
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "One pulse. Then the gate closes. ONE TRIP has done a real, bounded job.",
+            "pass": "One pulse. Then the gate closes. ONE TRIP has done a real, bounded job."
+          }
+        },
+        {
+          "id": "manual-pulse",
+          "label": "Send and close one manual request",
+          "detail": "No roll or compute price. Len sends the pulse and unplugs its signal lead. The installed law remains unexercised.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {
+              "signal": 1
+            },
+            "facts": [
+              "manual-pulse"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "signal": 1
+            },
+            "facts": [
+              "manual-pulse"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Len sends one pulse and pulls the lead. Human hands did the stopping.",
+            "pass": "Len sends one pulse and pulls the lead. Human hands did the stopping."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "Len sends one pulse and pulls the lead. Human hands did the stopping.",
+            "pass": "Len sends one pulse and pulls the lead. Human hands did the stopping."
+          }
+        },
+        {
+          "id": "trace-only",
+          "label": "Inspect without sending",
+          "detail": "No output command. Retain an untested receiver and deliver this case entirely by hand.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {
+              "compute": 1
+            },
+            "facts": [
+              "no-output-test"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "compute": 1
+            },
+            "facts": [
+              "no-output-test"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "We keep the trace and send nothing. Delivery stays manual; no successful pulse is claimed.",
+            "pass": "We keep the trace and send nothing. Delivery stays manual; no successful pulse is claimed."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "We keep the trace and send nothing. Delivery stays manual; no successful pulse is claimed.",
+            "pass": "We keep the trace and send nothing. Delivery stays manual; no successful pulse is claimed."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Test one receiver request without energizing a motor.",
+        "pressure": "A lamp pulse proves a command edge, not physical delivery.",
+        "objects": [
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "specimen": {
+        "name": "RELAY / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Test one receiver request without energizing a motor.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Exercise ONE TRIP",
+            "text": "Spend its actual one compute; send one request, close its gate and retain the use receipt.",
+            "choice": "exercise-one-trip",
+            "implication": "One pulse. Then the gate closes. ONE TRIP has done a real, bounded job."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Send and close one manual request",
+            "text": "No roll or compute price. Len sends the pulse and unplugs its signal lead. The installed law remains unexercised.",
+            "choice": "manual-pulse",
+            "implication": "Len sends one pulse and pulls the lead. Human hands did the stopping."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Inspect without sending",
+            "text": "No output command. Retain an untested receiver and deliver this case entirely by hand.",
+            "choice": "trace-only",
+            "implication": "We keep the trace and send nothing. Delivery stays manual; no successful pulse is claimed."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-08",
+      "act": 2,
+      "title": "THE HANDLE, AT LAST",
+      "scene": "Len sets the closed suitcase on a stationary trolley. The passenger tag is visible; the old station return plate is out of the reader’s path. A strip of red tape keeps the sorter out of service until its separate repair is signed. The job can now leave the counter.",
+      "ghost": "We have separated two things I tried to solve with one magnificent button: delivering the luggage and repairing the whole station. One person gets her case today. The station gets an honest repair note. No button gets promoted to management.",
+      "variants": [],
+      "artifact": {
+        "op": "subtract",
+        "a": {
+          "op": "box",
+          "size": [
+            0.5,
+            0.46,
+            0.18
+          ]
+        },
+        "b": {
+          "op": "box",
+          "size": [
+            0.31,
+            0.3,
+            0.28
+          ]
+        }
+      },
+      "choices": [
+        {
+          "id": "guide-trolley",
+          "label": "Guide Len around the tight turn",
+          "detail": "Use FOCUS to guide the trolley from the service camera. Pass avoids a bump; failure scuffs its borrowed wheel.",
+          "cost": {},
+          "check": {
+            "stat": "focus",
+            "dc": 13.8
+          },
+          "success": {
+            "delta": {},
+            "facts": [
+              "trolley-guided"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "wheel-scuffed"
+            ],
+            "threads": [
+              "repair-trolley-wheel"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The trolley wheel scrapes the corner. The case stays closed; the wheel repair is now owed.",
+            "pass": "The trolley clears the tight corner without touching the wall."
+          },
+          "use": null,
+          "focus": [
+            "hatch"
+          ],
+          "stakes": {
+            "fail": "The trolley wheel scrapes the corner. The case stays closed; the wheel repair is now owed.",
+            "pass": "The trolley clears the tight corner without touching the wall."
+          }
+        },
+        {
+          "id": "ask-room",
+          "label": "Ask the waiting porters for room",
+          "detail": "Use AWE to coordinate the crowded turn. Pass gets help; failure means waiting for the side route.",
+          "cost": {},
+          "check": {
+            "stat": "awe",
+            "dc": 14.7
+          },
+          "success": {
+            "delta": {
+              "signal": 1
+            },
+            "facts": [
+              "porters-helped"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {
+              "noise": 1
+            },
+            "facts": [
+              "side-route-wait"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The porters cannot clear the turn. Len waits, then takes the wider side route.",
+            "pass": "The porters clear the turn and steady the trolley. We owe thanks, not invented payment."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "The porters cannot clear the turn. Len waits, then takes the wider side route.",
+            "pass": "The porters clear the turn and steady the trolley. We owe thanks, not invented payment."
+          }
+        },
+        {
+          "id": "walk-wide",
+          "label": "Use the wide walking route",
+          "detail": "No roll. Len walks farther, keeping the case off the sorter and away from the tight corner.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "wide-route"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "wide-route"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Len takes the long way. The trolley and suitcase reach the collection area intact.",
+            "pass": "Len takes the long way. The trolley and suitcase reach the collection area intact."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "Len takes the long way. The trolley and suitcase reach the collection area intact.",
+            "pass": "Len takes the long way. The trolley and suitcase reach the collection area intact."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Choose a physical delivery method.",
+        "pressure": "The sorter stays isolated. The trolley has a stiff wheel but a clear walking route.",
+        "objects": [
+          {
+            "id": "hatch",
+            "kind": "gate",
+            "label": "PICKUP HATCH",
+            "description": "A person can collect luggage here with the sorter disabled. It is not an airlock.",
+            "state": "live"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "echoes": [
+        {
+          "id": "return-8-0",
+          "when": {
+            "all": [
+              "one-trip-used"
+            ]
+          },
+          "scene": "The saved ONE TRIP use remains a receiver test, not a physical delivery."
+        },
+        {
+          "id": "return-8-1",
+          "when": {
+            "all": [
+              "manual-pulse"
+            ]
+          },
+          "scene": "The manual pulse is recorded under Len’s work, not the unexercised rule."
+        },
+        {
+          "id": "return-8-2",
+          "when": {
+            "all": [
+              "no-output-test"
+            ]
+          },
+          "scene": "The receiver remains untested; the hand route needs none of its promises."
+        }
+      ],
+      "specimen": {
+        "name": "HATCH / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Choose a physical delivery method.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Guide Len around the tight turn",
+            "text": "Use FOCUS to guide the trolley from the service camera. Pass avoids a bump; failure scuffs its borrowed wheel.",
+            "choice": "guide-trolley",
+            "implication": "The trolley clears the tight corner without touching the wall."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Ask the waiting porters for room",
+            "text": "Use AWE to coordinate the crowded turn. Pass gets help; failure means waiting for the side route.",
+            "choice": "ask-room",
+            "implication": "The porters clear the turn and steady the trolley. We owe thanks, not invented payment."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Use the wide walking route",
+            "text": "No roll. Len walks farther, keeping the case off the sorter and away from the tight corner.",
+            "choice": "walk-wide",
+            "implication": "Len takes the long way. The trolley and suitcase reach the collection area intact."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-09",
+      "act": 3,
+      "title": "WHICH SIDE OF THE HATCH",
+      "scene": "At the supervised collection area, Len holds the case while Orra comes to the final meeting point. No motor is running. The tag has arrived before its owner’s hand; those are still different events.",
+      "ghost": "The original pickup agreement still counts. If you promised berth twelve, we walk to twelve. If you arranged a counter or service door, we honour that. Choose how Orra identifies this particular case; a recognition is useful, and a latch demonstration is better than opening her luggage for an audience.",
+      "variants": [],
+      "artifact": {
+        "op": "subtract",
+        "a": {
+          "op": "box",
+          "size": [
+            0.5,
+            0.46,
+            0.18
+          ]
+        },
+        "b": {
+          "op": "box",
+          "size": [
+            0.31,
+            0.3,
+            0.28
+          ]
+        }
+      },
+      "choices": [
+        {
+          "id": "describe-latch",
+          "label": "Ask Orra to describe the hidden latch mark",
+          "detail": "She describes the dent under the handle before Len turns it toward the camera.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "latch-recognised"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "latch-recognised"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The hidden dent matches Orra’s description. Len offers her the handle.",
+            "pass": "The hidden dent matches Orra’s description. Len offers her the handle."
+          },
+          "use": null,
+          "focus": [
+            "hatch"
+          ],
+          "stakes": {
+            "fail": "The hidden dent matches Orra’s description. Len offers her the handle.",
+            "pass": "The hidden dent matches Orra’s description. Len offers her the handle."
+          }
+        },
+        {
+          "id": "claim-stub",
+          "label": "Compare her pickup stub",
+          "detail": "Compare the passenger number with the kept tag, without exposing its contents.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "claim-matched"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "claim-matched"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The passenger numbers agree. The service plate is not mistaken for a new destination.",
+            "pass": "The passenger numbers agree. The service plate is not mistaken for a new destination."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "The passenger numbers agree. The service plate is not mistaken for a new destination.",
+            "pass": "The passenger numbers agree. The service plate is not mistaken for a new destination."
+          }
+        },
+        {
+          "id": "owner-latch",
+          "label": "Let Orra release the outer latch cover",
+          "detail": "Orra demonstrates the worn catch without opening the suitcase.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "catch-demonstrated"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "catch-demonstrated"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Orra finds the catch on her first try. The lid remains closed; Len can release the case.",
+            "pass": "Orra finds the catch on her first try. The lid remains closed; Len can release the case."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "Orra finds the catch on her first try. The lid remains closed; Len can release the case.",
+            "pass": "Orra finds the catch on her first try. The lid remains closed; Len can release the case."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Let the owner identify the closed case.",
+        "pressure": "Nothing is handed over to an unverified passer-by.",
+        "objects": [
+          {
+            "id": "hatch",
+            "kind": "gate",
+            "label": "PICKUP HATCH",
+            "description": "A person can collect luggage here with the sorter disabled. It is not an airlock.",
+            "state": "live"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "echoes": [
+        {
+          "id": "return-9-0",
+          "when": {
+            "all": [
+              "counter-pickup"
+            ]
+          },
+          "scene": "Orra meets Len at the original counter, as agreed."
+        },
+        {
+          "id": "return-9-1",
+          "when": {
+            "all": [
+              "berth-pickup"
+            ]
+          },
+          "scene": "Len walks the final corridor to berth twelve, fulfilling the delivery promise."
+        },
+        {
+          "id": "return-9-2",
+          "when": {
+            "all": [
+              "service-pickup"
+            ]
+          },
+          "scene": "Len releases the service door’s manual catch and Orra meets him there."
+        }
+      ],
+      "portrait": {
+        "race": "harkellinia",
+        "caption": "Orra / Harkellinia traveller / speaking through the pickup receiver"
+      },
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "Orra / traveller",
+        "accuracy": 83,
+        "lines": [
+          {
+            "text": "That is mine. Turn the handle over. The dent underneath looks like a mouth. It was my first attempt at repairing it.",
+            "confidence": 90
+          }
+        ]
+      },
+      "specimen": {
+        "name": "HATCH / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Let the owner identify the closed case.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Ask Orra to describe the hidden latch mark",
+            "text": "She describes the dent under the handle before Len turns it toward the camera.",
+            "choice": "describe-latch",
+            "implication": "The hidden dent matches Orra’s description. Len offers her the handle."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Compare her pickup stub",
+            "text": "Compare the passenger number with the kept tag, without exposing its contents.",
+            "choice": "claim-stub",
+            "implication": "The passenger numbers agree. The service plate is not mistaken for a new destination."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Let Orra release the outer latch cover",
+            "text": "Orra demonstrates the worn catch without opening the suitcase.",
+            "choice": "owner-latch",
+            "implication": "Orra finds the catch on her first try. The lid remains closed; Len can release the case."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-10",
+      "act": 3,
+      "title": "A JOURNEY THAT ENDS",
+      "scene": "Orra takes the suitcase from Len. It stays in her hand. For the first time since you connected, nothing carries it back. She hangs her unfinished coat over the handle and checks the loose sleeve against the light. “There. Now I can do something about that.”",
+      "ghost": "Delivered. A terrifyingly ambitious word, apparently. Len can now close the individual case without pretending the sorter is fixed. There’s still our borrowed equipment, any damaged wheel, and the business of keeping my first bad idea out of the next person’s instructions.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.38,
+            0.13,
+            0.27
+          ]
+        },
+        "b": {
+          "op": "move",
+          "offset": [
+            0.18,
+            0.25,
+            0
+          ],
+          "child": {
+            "op": "box",
+            "size": [
+              0.06,
+              0.17,
+              0.06
+            ]
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "owner-receipt",
+          "label": "Record Orra’s actual receipt",
+          "detail": "Save the witnessed handover and leave the station repair open.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "delivery-witnessed"
+            ],
+            "threads": [],
+            "resolve": [
+              "deliver-to-twelve"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "delivery-witnessed"
+            ],
+            "threads": [],
+            "resolve": [
+              "deliver-to-twelve"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The record says: Orra has the case; sorter isolated. A complete delivery, an incomplete repair.",
+            "pass": "The record says: Orra has the case; sorter isolated. A complete delivery, an incomplete repair."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "The record says: Orra has the case; sorter isolated. A complete delivery, an incomplete repair.",
+            "pass": "The record says: Orra has the case; sorter isolated. A complete delivery, an incomplete repair."
+          }
+        },
+        {
+          "id": "fault-note",
+          "label": "Attach the two-contact fault note",
+          "detail": "Record the physical handover and the held OUT/RETURN cause for the next technician.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "delivery-witnessed",
+              "fault-note-kept"
+            ],
+            "threads": [],
+            "resolve": [
+              "deliver-to-twelve"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "delivery-witnessed",
+              "fault-note-kept"
+            ],
+            "threads": [],
+            "resolve": [
+              "deliver-to-twelve"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Len attaches the cause, not just a green status light. The case is delivered and the fault stays named.",
+            "pass": "Len attaches the cause, not just a green status light. The case is delivered and the fault stays named."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "Len attaches the cause, not just a green status light. The case is delivered and the fault stays named.",
+            "pass": "Len attaches the cause, not just a green status light. The case is delivered and the fault stays named."
+          }
+        },
+        {
+          "id": "withdraw-reset",
+          "label": "Record Ghost’s rejected reset instruction",
+          "detail": "Keep the handover and mark my global-reset suggestion as withdrawn, with its actual reason.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "delivery-witnessed",
+              "reset-withdrawn"
+            ],
+            "threads": [],
+            "resolve": [
+              "deliver-to-twelve"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "delivery-witnessed",
+              "reset-withdrawn"
+            ],
+            "threads": [],
+            "resolve": [
+              "deliver-to-twelve"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "My reset suggestion is marked withdrawn: it would erase the useful route trace. The owner has her case.",
+            "pass": "My reset suggestion is marked withdrawn: it would erase the useful route trace. The owner has her case."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "My reset suggestion is marked withdrawn: it would erase the useful route trace. The owner has her case.",
+            "pass": "My reset suggestion is marked withdrawn: it would erase the useful route trace. The owner has her case."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Record the result without declaring the whole sorter repaired.",
+        "pressure": "The case is with its owner. The motor remains isolated pending separate repair.",
+        "objects": [
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "specimen": {
+        "name": "SWITCH / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Record the result without declaring the whole sorter repaired.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Record Orra’s actual receipt",
+            "text": "Save the witnessed handover and leave the station repair open.",
+            "choice": "owner-receipt",
+            "implication": "The record says: Orra has the case; sorter isolated. A complete delivery, an incomplete repair."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Attach the two-contact fault note",
+            "text": "Record the physical handover and the held OUT/RETURN cause for the next technician.",
+            "choice": "fault-note",
+            "implication": "Len attaches the cause, not just a green status light. The case is delivered and the fault stays named."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Record Ghost’s rejected reset instruction",
+            "text": "Keep the handover and mark my global-reset suggestion as withdrawn, with its actual reason.",
+            "choice": "withdraw-reset",
+            "implication": "My reset suggestion is marked withdrawn: it would erase the useful route trace. The owner has her case."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-11",
+      "act": 3,
+      "title": "PUT IT BACK WHERE IT LIVES",
+      "scene": "Len returns to the bench. The loan labels tell us exactly what belongs there. Orra waits long enough to keep the cable clear with her free hand. The trolley is parked beside its original chalk mark.",
+      "ghost": "This part is boring right up to the moment you need your own tool and some grateful bastard has wandered off with it. Return the actual loan. If you scuffed the wheel, this is also where we either fix it or name the remaining work.",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.24,
+            0.2,
+            0.35
+          ]
+        },
+        "b": {
+          "op": "union",
+          "a": {
+            "op": "move",
+            "offset": [
+              -0.12,
+              0.28,
+              0
+            ],
+            "child": {
+              "op": "box",
+              "size": [
+                0.035,
+                0.12,
+                0.04
+              ]
+            }
+          },
+          "b": {
+            "op": "move",
+            "offset": [
+              0.13,
+              0.24,
+              0
+            ],
+            "child": {
+              "op": "box",
+              "size": [
+                0.04,
+                0.08,
+                0.04
+              ]
+            }
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "return-and-wheel",
+          "label": "Return loans and help Len repair the wheel",
+          "detail": "No roll. Len spends bench time on any scuff; return the actual borrowed part or lead.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "equipment-returned",
+              "wheel-settled"
+            ],
+            "threads": [],
+            "resolve": [
+              "return-bench-spare",
+              "return-test-lead",
+              "repair-trolley-wheel"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "equipment-returned",
+              "wheel-settled"
+            ],
+            "threads": [],
+            "resolve": [
+              "return-bench-spare",
+              "return-test-lead",
+              "repair-trolley-wheel"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The labelled equipment is back. Len services the trolley wheel before putting it away.",
+            "pass": "The labelled equipment is back. Len services the trolley wheel before putting it away."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "The labelled equipment is back. Len services the trolley wheel before putting it away.",
+            "pass": "The labelled equipment is back. Len services the trolley wheel before putting it away."
+          }
+        },
+        {
+          "id": "return-and-note",
+          "label": "Return loans and leave the wheel repair note",
+          "detail": "Return actual loans. If the wheel was scuffed, its repair remains an explicit open obligation.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "equipment-returned",
+              "wheel-note"
+            ],
+            "threads": [],
+            "resolve": [
+              "return-bench-spare",
+              "return-test-lead"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "equipment-returned",
+              "wheel-note"
+            ],
+            "threads": [],
+            "resolve": [
+              "return-bench-spare",
+              "return-test-lead"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The loans are back. Any wheel scuff remains on the signed repair note; it has not been healed by paperwork.",
+            "pass": "The loans are back. Any wheel scuff remains on the signed repair note; it has not been healed by paperwork."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "The loans are back. Any wheel scuff remains on the signed repair note; it has not been healed by paperwork.",
+            "pass": "The loans are back. Any wheel scuff remains on the signed repair note; it has not been healed by paperwork."
+          }
+        },
+        {
+          "id": "return-and-call",
+          "label": "Return loans and ask the trolley keeper to inspect",
+          "detail": "The keeper checks the wheel; any scuff still needs repair, with responsibility recorded.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "equipment-returned",
+              "keeper-inspection"
+            ],
+            "threads": [],
+            "resolve": [
+              "return-bench-spare",
+              "return-test-lead"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "equipment-returned",
+              "keeper-inspection"
+            ],
+            "threads": [],
+            "resolve": [
+              "return-bench-spare",
+              "return-test-lead"
+            ],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The keeper inspects the trolley. We return the loans and retain any actual repair debt.",
+            "pass": "The keeper inspects the trolley. We return the loans and retain any actual repair debt."
+          },
+          "use": null,
+          "focus": [
+            "switch"
+          ],
+          "stakes": {
+            "fail": "The keeper inspects the trolley. We return the loans and retain any actual repair debt.",
+            "pass": "The keeper inspects the trolley. We return the loans and retain any actual repair debt."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Return equipment and settle the trolley’s condition.",
+        "pressure": "No loan existed unless your earlier choice created it.",
+        "objects": [
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "switch",
+            "kind": "switch",
+            "label": "MOTOR ISOLATOR",
+            "description": "Len can operate this physical isolator. Remote access is limited to its service receiver.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "echoes": [
+        {
+          "id": "return-11-0",
+          "when": {
+            "all": [
+              "spare-borrowed"
+            ]
+          },
+          "scene": "Len’s labelled bench spare is the item returned."
+        },
+        {
+          "id": "return-11-1",
+          "when": {
+            "all": [
+              "lead-borrowed"
+            ]
+          },
+          "scene": "The isolated test lead is the item returned."
+        },
+        {
+          "id": "return-11-2",
+          "when": {
+            "all": [
+              "disabled-by-choice"
+            ]
+          },
+          "scene": "No equipment was borrowed on your route; Len has no invented loan to collect."
+        },
+        {
+          "id": "return-11-3",
+          "when": {
+            "all": [
+              "wheel-scuffed"
+            ]
+          },
+          "scene": "The wheel scuff is still visible when inspection begins."
+        }
+      ],
+      "specimen": {
+        "name": "RECEIVER / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Return equipment and settle the trolley’s condition.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Return loans and help Len repair the wheel",
+            "text": "No roll. Len spends bench time on any scuff; return the actual borrowed part or lead.",
+            "choice": "return-and-wheel",
+            "implication": "The labelled equipment is back. Len services the trolley wheel before putting it away."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Return loans and leave the wheel repair note",
+            "text": "Return actual loans. If the wheel was scuffed, its repair remains an explicit open obligation.",
+            "choice": "return-and-note",
+            "implication": "The loans are back. Any wheel scuff remains on the signed repair note; it has not been healed by paperwork."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Return loans and ask the trolley keeper to inspect",
+            "text": "The keeper checks the wheel; any scuff still needs repair, with responsibility recorded.",
+            "choice": "return-and-call",
+            "implication": "The keeper inspects the trolley. We return the loans and retain any actual repair debt."
+          }
+        ]
+      }
+    },
+    {
+      "id": "case-12",
+      "act": 3,
+      "title": "THE OTHER HALF OF THE COAT",
+      "scene": "Orra leaves with the closed case and coat over one arm. At the bend she raises the loose sleeve in goodbye. Len peels TEMPORARY FIX off the relay and puts a truthful lockout tag in its place. The pickup hatch is quiet.",
+      "ghost": "One suitcase has reached a person. We have not found my missing maker, healed every machine or accidentally adopted a railway. Good afternoon’s work. Keep your SEED before you leave; this page saves locally when storage permits. A next chapter needs a new authored pack from these exact choices. What question do you want waiting in that packet?",
+      "variants": [],
+      "artifact": {
+        "op": "union",
+        "a": {
+          "op": "box",
+          "size": [
+            0.38,
+            0.13,
+            0.27
+          ]
+        },
+        "b": {
+          "op": "move",
+          "offset": [
+            0.18,
+            0.25,
+            0
+          ],
+          "child": {
+            "op": "box",
+            "size": [
+              0.06,
+              0.17,
+              0.06
+            ]
+          }
+        }
+      },
+      "choices": [
+        {
+          "id": "next-repair",
+          "label": "Return to finish this sorter",
+          "detail": "Carry the precise locked-out fault and remaining repair obligations into a proposed next job.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "next-sorter"
+            ],
+            "threads": [
+              "finish-sorter-repair"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "next-sorter"
+            ],
+            "threads": [
+              "finish-sorter-repair"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "The next request names this isolated sorter, its actual damage and what remains owed.",
+            "pass": "The next request names this isolated sorter, its actual damage and what remains owed."
+          },
+          "use": null,
+          "focus": [
+            "relay"
+          ],
+          "stakes": {
+            "fail": "The next request names this isolated sorter, its actual damage and what remains owed.",
+            "pass": "The next request names this isolated sorter, its actual damage and what remains owed."
+          }
+        },
+        {
+          "id": "next-journey",
+          "label": "Ask where Orra is going",
+          "detail": "She offers a future public-station meeting, with no promise to take you aboard.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "next-orra"
+            ],
+            "threads": [
+              "ask-orra-next-stop"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "next-orra"
+            ],
+            "threads": [
+              "ask-orra-next-stop"
+            ],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "Orra offers to tell us about her next stop later. No passage or friendship is silently granted.",
+            "pass": "Orra offers to tell us about her next stop later. No passage or friendship is silently granted."
+          },
+          "use": null,
+          "focus": [
+            "hatch"
+          ],
+          "stakes": {
+            "fail": "Orra offers to tell us about her next stop later. No passage or friendship is silently granted.",
+            "pass": "Orra offers to tell us about her next stop later. No passage or friendship is silently granted."
+          }
+        },
+        {
+          "id": "end-here",
+          "label": "Keep this small job complete",
+          "detail": "Finish here with the delivered case and exact record; no new job is promised.",
+          "cost": {},
+          "check": null,
+          "success": {
+            "delta": {},
+            "facts": [
+              "end-here"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "failure": {
+            "delta": {},
+            "facts": [
+              "end-here"
+            ],
+            "threads": [],
+            "resolve": [],
+            "relations": {},
+            "install": null
+          },
+          "reaction": {
+            "fail": "We leave a complete local job. Any actual repair obligation survives; no new appointment is invented.",
+            "pass": "We leave a complete local job. Any actual repair obligation survives; no new appointment is invented."
+          },
+          "use": null,
+          "focus": [
+            "record"
+          ],
+          "stakes": {
+            "fail": "We leave a complete local job. Any actual repair obligation survives; no new appointment is invented.",
+            "pass": "We leave a complete local job. Any actual repair obligation survives; no new appointment is invented."
+          }
+        }
+      ],
+      "staging": {
+        "place": "Quay Nine / luggage service counter",
+        "goal": "Choose the next question after this completed delivery.",
+        "pressure": "This choice prepares story continuity. It does not start a live service or grant background access.",
+        "objects": [
+          {
+            "id": "record",
+            "kind": "record",
+            "label": "ORIGINAL ROUTE STRIP",
+            "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+            "state": "live"
+          },
+          {
+            "id": "relay",
+            "kind": "relay",
+            "label": "RETURN RELAY",
+            "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+            "state": "warning"
+          },
+          {
+            "id": "hatch",
+            "kind": "gate",
+            "label": "PICKUP HATCH",
+            "description": "A person can collect luggage here with the sorter disabled. It is not an airlock.",
+            "state": "live"
+          }
+        ],
+        "ansi": {
+          "kind": "quay",
+          "seed": 596564,
+          "caption": "Quay Nine / supervised service counter. Porter, return hatch, green case and isolated bench."
+        }
+      },
+      "portrait": {
+        "race": "harkellinia",
+        "caption": "Orra / Harkellinia traveller / speaking through the pickup receiver"
+      },
+      "transmission": {
+        "race": "harkellinia",
+        "speaker": "Orra / traveller",
+        "accuracy": 83,
+        "lines": [
+          {
+            "text": "I was going to mend the sleeve on the trip. Then I spent the trip chasing the case. Next time I am carrying the coat.",
+            "confidence": 90
+          }
+        ]
+      },
+      "specimen": {
+        "name": "SWITCH / RETAINED SERVICE SCHEMATIC",
+        "purpose": "Existing carrier diagnostic geometry reused without alteration. This is a service-part diagram, not an image of the suitcase or room.",
+        "question": "Choose the next question after this completed delivery.",
+        "readings": [
+          {
+            "id": "evidence-0",
+            "label": "Return to finish this sorter",
+            "text": "Carry the precise locked-out fault and remaining repair obligations into a proposed next job.",
+            "choice": "next-repair",
+            "implication": "The next request names this isolated sorter, its actual damage and what remains owed."
+          },
+          {
+            "id": "evidence-1",
+            "label": "Ask where Orra is going",
+            "text": "She offers a future public-station meeting, with no promise to take you aboard.",
+            "choice": "next-journey",
+            "implication": "Orra offers to tell us about her next stop later. No passage or friendship is silently granted."
+          },
+          {
+            "id": "evidence-2",
+            "label": "Keep this small job complete",
+            "text": "Finish here with the delivered case and exact record; no new job is promised.",
+            "choice": "end-here",
+            "implication": "We leave a complete local job. Any actual repair obligation survives; no new appointment is invented."
+          }
+        ]
+      }
+    }
+  ],
+  "ending": {
+    "title": "THE CASE STAYED WITH HER",
+    "scene": "Orra carries her green suitcase past the end of the camera’s view. Len closes its individual delivery record. The luggage sorter stays isolated under a named repair tag. The station is not fixed, but this case has reached its owner.",
+    "ghost": "I kept the route trace, retired my bad reset idea, and watched a handle finally stay in somebody’s hand. Keep the actual record; the next Ghost can work from it. This chapter is complete.",
+    "echoes": [
+      {
+        "id": "law-working",
+        "when": {
+          "all": [
+            "one-trip-used"
+          ]
+        },
+        "scene": "ONE TRIP was installed and actually exercised on the isolated receiver."
+      },
+      {
+        "id": "law-unused",
+        "when": {
+          "none": [
+            "one-trip-used"
+          ]
+        },
+        "scene": "ONE TRIP remains installed but unexercised; no use is invented."
+      },
+      {
+        "id": "wheel-open",
+        "when": {
+          "all": [
+            "wheel-scuffed"
+          ],
+          "none": [
+            "wheel-settled"
+          ]
+        },
+        "scene": "The trolley wheel repair remains owed."
+      },
+      {
+        "id": "wheel-paid",
+        "when": {
+          "all": [
+            "wheel-scuffed",
+            "wheel-settled"
+          ]
+        },
+        "scene": "Len repaired the scuffed trolley wheel before putting it away."
+      },
+      {
+        "id": "next-repair",
+        "when": {
+          "all": [
+            "next-sorter"
+          ]
+        },
+        "ghost": "Your selected next question is finishing this exact sorter repair."
+      },
+      {
+        "id": "next-orra",
+        "when": {
+          "all": [
+            "next-orra"
+          ]
+        },
+        "ghost": "Your selected next question is Orra’s next stop; no invitation aboard is presumed."
+      },
+      {
+        "id": "no-next",
+        "when": {
+          "all": [
+            "end-here"
+          ]
+        },
+        "ghost": "You chose no new appointment. We can let a small job be complete."
+      }
+    ],
+    "staging": {
+      "place": "Quay Nine / after handover",
+      "goal": "Keep the completed delivery and exact unfinished work.",
+      "pressure": "The sorter remains isolated. Export your private SEED for portability.",
+      "objects": [
+        {
+          "id": "record",
+          "kind": "record",
+          "label": "ORIGINAL ROUTE STRIP",
+          "description": "A copyable service record. Keep its original marks; reading it does not prove what is inside the suitcase.",
+          "state": "live"
+        },
+        {
+          "id": "relay",
+          "kind": "relay",
+          "label": "RETURN RELAY",
+          "description": "The sorter’s isolated service relay. It can hold both OUT and RETURN contacts; its motor feed can be disconnected.",
+          "state": "offline"
+        },
+        {
+          "id": "hatch",
+          "kind": "gate",
+          "label": "PICKUP HATCH",
+          "description": "A person can collect luggage here with the sorter disabled. It is not an airlock.",
+          "state": "closed"
+        }
+      ],
+      "ansi": {
+        "kind": "quay",
+        "seed": 596564,
+        "caption": "Quay Nine / the service job is complete. Your exact outcome remains in the ledger."
+      }
+    }
+  }
+}

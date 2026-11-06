@@ -436,7 +436,12 @@
             "state": "live"
           }
         ],
-        "illustration": "lot47"
+        "illustration": "lot47",
+        "ansi": {
+          "kind": "auction",
+          "seed": 47,
+          "caption": "Auction cradle / Ghost terminal, inhabited sphere and shared reset supply."
+        }
       }
     },
     {

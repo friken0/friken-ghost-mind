@@ -3,6 +3,7 @@
  * No bitmap generation, WebGL, timer or independent animation clock. */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const palettes=[[4,6,14,7,1,9,11],[4,5,13,7,1,3,11],[4,6,10,7,1,9,11],[4,12,6,7,3,9,11]];
+export const ansiSceneKinds=Object.freeze(['eye','city','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness']);
 export function ansiSessionTheme(seed=0){const n=Number(seed)>>>0;return {palette:palettes[n%palettes.length],tempo:180+(n%9)*24,seed:n};}
 const marqueeFont=Object.freeze({
  B:['11110','10001','10001','11110','10001','10001','11110'],I:['11111','00100','00100','00100','00100','00100','11111'],T:['11111','00100','00100','00100','00100','00100','00100'],C:['01111','10000','10000','10000','10000','10000','01111'],O:['01110','10001','10001','10001','10001','10001','01110'],N:['10001','11001','11001','10101','10011','10011','10001'],L:['10000','10000','10000','10000','10000','10000','11111'],A:['01110','10001','10001','11111','10001','10001','10001'],R:['11110','10001','10001','11110','10100','10010','10001'],E:['11111','10000','10000','11110','10000','10000','11111']
@@ -15,6 +16,42 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
  function inside(x,y,points){let hit=false;for(let i=0,j=points.length-1;i<points.length;j=i++){const a=points[i],b=points[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;}
  function foreground(x,y,frame){
   const u=(x+.5)/(width*2),v=(y+.5)/H,t=frame*Math.PI/3;
+  if(kind==='quay'){
+   // A luggage-service room: wall, supervised hatch, suitcase, belt, route
+   // record, isolated relay and worker. Never substitute a ship for the room.
+   if(v>.76){if(v<.80)return 7;if(v<.86)return (Math.floor(u*40)+(stage===0?frame:0))%5===0?11:8;return Math.floor(u*27)%3===0?8:0;}
+   const sx=.67+(stage===0?.035*Math.sin(t):0);
+   if(Math.abs(u-sx)<.15&&v>.44&&v<.73){if(v<.47||Math.abs(u-sx)>.135)return 10;if(Math.abs(u-sx)>.10||v>.69)return 2;if(Math.abs(u-sx)<.008||Math.abs(u-sx-.078)<.008)return 6;return 2;}
+   if(v>.39&&v<.45&&Math.abs(u-sx)<.06)return Math.abs(u-sx)>.038||v<.405?3:0;
+   if(u>sx+.07&&u<sx+.13&&v>.47&&v<.59)return (x+y)%5===0?3:11;
+   if(u>.51&&u<.96&&v>.14&&v<.74){
+    if(u<.535||u>.935||v<.18)return 8;
+    if(v<.24)return Math.floor(u*48)%2?7:11;
+    if(u>.54&&u<.92){if(u<.57||u>.90)return 6;return 0;}
+   }
+   // Human porter in a blue service coat, visibly separated from equipment.
+   if(Math.hypot((u-.30)*1.7,v-.32)<.065){if(v>.315&&v<.33&&(Math.abs(u-.281)<.008||Math.abs(u-.311)<.008))return 0;return v<.30?3:u<.29?7:15;}
+   if(v>.38&&v<.69&&Math.abs(u-.30)<.09*(1-(v-.38))){if(Math.abs(u-.30)<.008)return 6;return u<.28?4:12;}
+   if(v>.43&&v<.48&&u>.34&&u<.46)return 7;
+   // Bench apparatus is connected by a visible cable, with a warning lamp.
+   if(u>.055&&u<.20&&v>.47&&v<.70){if(v<.49||u<.065||u>.19)return 7;if(v<.56)return frame%3?9:11;return Math.floor(u*90)%3===0?6:0;}
+   if(u>.07&&u<.18&&v>.23&&v<.40){if(v<.245)return 3;return Math.floor(v*H)%3===0?8:7;}
+   if(u>.17&&u<.53&&Math.abs(v-(.72-.06*Math.sin(u*14)))<.01)return 6;
+   if(v>.07&&v<.105)return u<.40?6:8;
+   return Math.floor(u*8)%2===0?4:v>.72?8:0;
+  }
+  if(kind==='auction'){
+   const globe=Math.hypot((u-.72)*1.3,v-.44);
+   if(globe<.23){if(globe>.214)return 14;const window=u>.68&&u<.80&&v>.42&&v<.55;if(window)return Math.abs(u-.74)<.007||Math.abs(v-.485)<.007?3:11;return Math.sin(u*35+v*18)>.4?2:4;}
+   if(u>.08&&u<.43&&v>.23&&v<.66){if(u<.10||u>.41||v<.26||v>.62)return 8;if(v<.29||v>.59)return 6;if(u>.18&&u<.33&&v>.39&&v<.43)return 14;return 0;}
+   if(u>.05&&u<.46&&v>.66&&v<.71)return 7;
+   if(v>.76&&v<.80)return 3;
+   if(u>.47&&u<.51&&v>.64&&v<.76)return v<.67?9:3;
+   if(u>.40&&u<.73&&Math.abs(v-(.72-.05*Math.sin(u*18)))<.012)return frame%3?6:14;
+   if(v>.80)return Math.abs((u-.5)*2)<(v-.78)?8:0;
+   if(v<.13)return Math.floor(u*29)%3?8:3;
+   return Math.floor(u*12)%3===0?8:0;
+  }
   if(kind==='eye'){
    const nx=(u-.5)*2,dy=(v-.5)*2,opening=.43*Math.pow(Math.max(0,1-nx*nx),.72),ex=(u-.5)*(width/height),ey=(v-.5)*2,iris=Math.hypot(ex,ey),pupil=.035+.008*Math.sin(t);
    if(Math.abs(dy)<opening&&Math.abs(nx)<.98){

@@ -1,3 +1,12 @@
+# Current C26.29 / one living instrument
+
+Both chapter turns and targeted replies now use the retained ANSI host.
+`build.py` defaults to `turn-out-of-time.mjs`, with separate content drivers;
+ordinary `--chapter` no longer selects the older dashboard.
+Read [the comparison](Framework-Comparison-2026-11-06.md), [host contract](framework.json)
+and [bootstrap](bootstrap.md). The history below describes earlier stages;
+its older default-layout directions are superseded by the current runbook.
+
 # CHROMATIC C26.27 / THE CARRIER AND ITS AUTHOR
 
 **Friken.Ghost | completed Dream XIII edition, October 24, 2026**

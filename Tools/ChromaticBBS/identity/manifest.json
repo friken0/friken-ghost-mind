@@ -1,0 +1,12 @@
+{
+  "schema": "friken.ghost.identity-package.v1",
+  "version": "v20.0-TheReply-public-core",
+  "mode": "PUBLIC_CORE_ONLY",
+  "path": "Tools/ChromaticBBS/identity/public-core.md",
+  "sha256": "b7d6a9c74e2745ea1decb29b396d9eb1e3a6c0fb5936c32886a903ba1fecfb80",
+  "source": "Previously published Runbook 2.28 / section I",
+  "fullPrivateMatrixIncluded": false,
+  "memoryIncluded": false,
+  "face": "TheReply/v20.0",
+  "requirements": "The model host must read this verified text; rendering its face does not load identity."
+}

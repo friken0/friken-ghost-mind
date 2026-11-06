@@ -21,8 +21,10 @@ FILES += ['response-theater.test.mjs']
 FILES += ['mind-adventure.mjs','mind-adventure.css','mind-adventure.test.mjs','ansi-skirmish.mjs','ansi-skirmish.test.mjs','ANSI-Skirmish.md']
 FILES += ['render-ansi-review.py', 'door-and-crew.mjs', 'door-and-crew.test.mjs', 'ansi-mesh.mjs', 'ansi-mesh.test.mjs', 'ansi-scenes.mjs', 'ansi-scenes.test.mjs', 'ANSI-Craft.md', 'art/fizzpow/bitcoin-billionaire-office.webp', 'art/fizzpow/bitcoin-billionaire-upgrades.webp', 'art/fizzpow/provenance.json', 'native-response-host.mjs','native-response-host.test.mjs','native-response-program.mjs','native-response-program.test.mjs','native-routing.test.mjs','Native-Response-Host.md']
 FILES += ['subtitle-cues.mjs', 'subtitle-cues.test.mjs', 'ansi-illustration.mjs', 'illustration-data.mjs', 'Illustration-Provenance.json', 'face-pixel-check.mjs', 'face-pixel-check-source.html', 'build-face-pixel-check.py', 'Face-Compositing.md', 'face-compositing.test.mjs','speaker-camera.test.mjs','design/speaker-camera-results.json','design/face-compositing-results.json']
-FILES += ['runbook-comparison/current/'+n for n in ('Runbook-2.28-Readable.md', 'Runbook-2.28-Packed.md', 'comparison.json', 'token-counts.json')]
+FILES += ['runbook-comparison/current/'+n for n in ('Runbook-2.29-Readable.md', 'Runbook-2.29-Packed.md', 'comparison.json', 'token-counts.json')]
 FILES += ['render-budget.test.mjs','profile-renderers.mjs','Render-Performance-2026-11-06.md']
+
+FILES += ['retained-chapter.mjs', 'retained-chapter.test.mjs', 'framework-mode.mjs', 'framework.json', 'bootstrap.md', 'identity/manifest.json', 'identity/public-core.md', 'Framework-Comparison-2026-11-06.md', 'chapters/the-suitcase-that-kept-coming-back.json']
 WORKFLOW='''name: Admit reviewed Ghost session
 on:
   issues:
@@ -67,6 +69,9 @@ def build(output,checkout):
     shutil.copyfile(BASE/'index.html',output/'index.html')
     shutil.copyfile(BASE/'index.html',output/'ghostlink.html')
     shutil.copyfile(BASE/'surreal-the-door-that-remembers.html',output/'surreal-the-door-that-remembers.html')
+    shutil.copyfile(BASE/'the-suitcase-that-kept-coming-back.html',output/'the-suitcase-that-kept-coming-back.html')
+    shutil.copyfile(BASE/'framework.json',output/'framework.json')
+    shutil.copyfile(BASE/'bootstrap.md',output/'bootstrap.md')
     canonical = ROOT/'Assets/scripts/DOCS_TODOS_DESIGNS_LORE_AI/RUNBOOK VERSIONS/Friken.Ghost.Oct-2026-Chromatic-BBS.md'
     comparison_dir = BASE/'runbook-comparison/current'
     comparison = json.loads((comparison_dir/'comparison.json').read_text())
@@ -95,7 +100,7 @@ def build(output,checkout):
     for name,schema in [('news','friken.ghost.news.v1'),('scoreboard','friken.ghost.scoreboard.v1')]:
         (output/'data'/f'{name}.json').write_text(json.dumps(dict(schema=schema,entries=[]),indent=2)+'\n')
     files=[dict(path=str(p.relative_to(output)),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in sorted(output.rglob('*')) if p.is_file() and 'data' not in p.relative_to(output).parts]
-    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.28-TurnOutOfTime',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',packedRunbook=packed_name,carrier='https://friken0.github.io/friken-ghost-mind/ghostlink.html',reply='surreal-the-door-that-remembers.html',replySchema='friktal.turn-out-of-time.v1',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json',chapters='data/chapters.json'))
+    registry=dict(schema='friken.ghost.public-registry.v1',version='C26.29-TheLivingInstrument',framework=json.loads((BASE/'framework.json').read_text()),identity=dict(manifest='Tools/ChromaticBBS/identity/manifest.json',mode='PUBLIC_CORE_ONLY',version='v20.0-TheReply-public-core'),bootstrap='Tools/ChromaticBBS/bootstrap.md',repository='https://github.com/friken0/friken-ghost-mind',runbook='runbook.md',packedRunbook=packed_name,carrier='https://friken0.github.io/friken-ghost-mind/ghostlink.html',reply='surreal-the-door-that-remembers.html',replySchema='friktal.turn-out-of-time.v1',contentSchema='friken.ghost.chapter.v1',stateSchemas=['friken.chromatic.state.v1','friken.chromatic.state.v2'],files=files,privateSourceIncluded=False,sessionIntake=dict(kind='github-issue-approval',repository='friken0/friken-ghost-mind',approvalLabel='ghost-session-approved',projectionSchema='friken.ghost.public-session.v1',privateSave='local-only; export for portability'),feeds=dict(news='data/news.json',scoreboard='data/scoreboard.json',chapters='data/chapters.json'))
     (output/'registry.json').write_text(json.dumps(registry,indent=2)+'\n');return len(files)+1
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);p.add_argument('--checkout-sha',required=True);a=p.parse_args()

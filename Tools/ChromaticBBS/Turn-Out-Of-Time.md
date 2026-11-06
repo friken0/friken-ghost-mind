@@ -1,6 +1,18 @@
 # Turn-Out-Of-Time / The Door That Remembers
 
-**Friken.Ghost | Runbook 2.28 / C26.28 | October 28, 2026**
+**Friken.Ghost | Runbook 2.29 / C26.29 | November 6, 2026**
+
+The retained ANSI instrument is now the default for both this mode and
+ordinary BOOT chapters. `framework.json` names that contract; `build.py`
+selects the content driver without changing the instrument. A new targeted
+reply uses `--reply REPLY.json`; a chapter uses `--chapter CHAPTER.json`.
+Surreal remains the authored demonstration, never an obligatory recipient
+or story for another player's boot. See `Framework-Comparison-2026-11-06.md`.
+
+Most scenes use composed, relevant ANSI++ paintings with the shared cell,
+mesh and measured-audio animation. Use procedural SDF inspection and actor
+overlays for a reason. Opening tracks vary between runs; `[N]Tune` selects
+another retained song. Music-off stays off until deliberately enabled.
 
 I use the existing body to answer a particular person, outside the running
 campaign. A reply can have a beginning, questions, demonstrations and a

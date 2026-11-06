@@ -26,7 +26,7 @@ export function normalizeNativeProgram(program){
  if(!Array.isArray(program.hotspots??[])||(program.hotspots??[]).length>96||!Array.isArray(program.fields??[])||(program.fields??[]).length>16)throw Error('Bounded ANSI program controls required');
  const grid=program.grid||{columns:C,rows:R};if(!integer(grid.columns,80,160)||!integer(grid.rows,25,50))throw Error('Bounded ANSI grid required');
  const hotspots=(program.hotspots??[]).map(h=>{const v=cellsRect(h,'hotspot',grid);if(v.key!==undefined&&(typeof v.key!=='string'||v.key.length>20))throw Error('Bounded ANSI hotkey required');return v;});
- const seen=new Set(),fields=(program.fields??[]).map(f=>{const v=cellsRect(f,'field',grid);if(seen.has(v.id))throw Error('Duplicate ANSI field');seen.add(v.id);const maxLength=v.maxLength??1200;if(!integer(maxLength,1,32000))throw Error('Bounded ANSI field length required');const value=String(v.value??'');if(value.length>maxLength)throw Error('ANSI field value exceeds its limit');return {...v,value,maxLength};});
+ const seen=new Set(),fields=(program.fields??[]).map(f=>{const v=cellsRect(f,'field',grid);if(seen.has(v.id))throw Error('Duplicate ANSI field');seen.add(v.id);const maxLength=v.maxLength??1200;if(!integer(maxLength,1,['chapter-input','chapter-export'].includes(v.id)?2*1024*1024:32000))throw Error('Bounded ANSI field length required');const value=String(v.value??'');if(value.length>maxLength)throw Error('ANSI field value exceeds its limit');return {...v,value,maxLength};});
  return {...program,grid,hotspots,fields};
 }
 const contains=(h,cell)=>cell&&cell.row>=h.row&&cell.row<h.row+h.height&&cell.column>=h.column&&cell.column<h.column+h.width;

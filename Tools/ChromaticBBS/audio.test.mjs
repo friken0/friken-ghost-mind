@@ -53,3 +53,6 @@ test('tactile UI cues are distinct, quiet finite PCM with no unstable sample-rat
 });
 
 test('score and secret rewards have bounded bell tails on the existing SFX path',()=>{for(const rate of [8000,24000,48000]){const score=renderInterfaceCue('score',rate),secret=renderInterfaceCue('secret',rate);assert.ok(secret.length>score.length*2);for(const pcm of [score,secret]){assert.equal(pcm[0],0);assert.ok(pcm.every(Number.isFinite));assert.ok(Math.max(...pcm)<.2);assert.ok(Math.abs(pcm.at(-1))<.00001);assert.ok(pcm.some(x=>Math.abs(x)>.03));}}});
+
+// Session music selection is independent of the chapter RNG.
+test('opening track changes from the previous run without changing gameplay',async()=>{const {openingTrackIndex}=await import('./audio.mjs');for(let prior=0;prior<4;prior++)for(let seed=0;seed<16;seed++){const n=openingTrackIndex(seed,prior,4);assert(n>=0&&n<4);assert.notEqual(n,prior);}assert.equal(openingTrackIndex(42,0,1),0);});

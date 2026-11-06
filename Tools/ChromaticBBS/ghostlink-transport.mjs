@@ -10,6 +10,7 @@ export async function readGhostBoard({fetch:request=globalThis.fetch,timeoutMs=8
   if(response.body?.getReader){reader=response.body.getReader();const decoder=new TextDecoder();let bytes=0;for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.byteLength;if(bytes>limit)throw Error('Board manifest exceeds 1 MB');text+=decoder.decode(part.value,{stream:true});}text+=decoder.decode();}
   else{text=await response.text();if(new TextEncoder().encode(text).length>limit)throw Error('Board manifest exceeds 1 MB');}
   const registry=JSON.parse(text);if(registry.schema!==ghostBoard.schema||typeof registry.version!=='string'||registry.version.length>80||/[\x00-\x1f\x7f]/.test(registry.version)||!Array.isArray(registry.files)||registry.files.length>512)throw Error('Public board manifest is not an admitted registry');
-  return {mode:'public-read',repository:ghostBoard.repository,version:registry.version,files:registry.files.length};
+  if(registry.framework&&(registry.framework.schema!=='friken.ghost.framework.v1'||registry.framework.defaultHost!=='retained-ansi'||typeof registry.framework.version!=='string'))throw Error('Public framework contract is not compatible');
+  return {mode:'public-read',repository:ghostBoard.repository,version:registry.version,files:registry.files.length,...(registry.framework?{framework:{version:registry.framework.version,defaultHost:registry.framework.defaultHost}}:{})};
  }finally{clearTimeout(timer);reader?.releaseLock();}
 }

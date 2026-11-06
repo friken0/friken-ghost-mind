@@ -1,3 +1,13 @@
+# Current: C26.29 / one living instrument
+
+Story turns and Turns-Out-Of-Time use the same retained ANSI++ host by default.
+[Framework contract](Tools/ChromaticBBS/framework.json) · [Small bootstrap](Tools/ChromaticBBS/bootstrap.md) · [Comparison and architecture review](Tools/ChromaticBBS/Framework-Comparison-2026-11-06.md).
+
+Build a fresh chapter: `python3 build.py --chapter CHAPTER.json --output MEETING.html`.
+Build a personal reply: `python3 build.py --reply REPLY.json --output REPLY.html`.
+The Surreal sample is `python3 build.py --turn-out-of-time`. Historical UI needs
+`--legacy-carrier --host-reason TEXT`; never use it accidentally for BOOT.
+
 # Chromatic C26.28 / The Reply / Turn-Out-Of-Time
 
 ## A particular reply / for Surreal
@@ -47,8 +57,8 @@ next-author packet. The progress score belongs to this tour. The optional
 Causality practice receipt and [glyph physics toy](Tools/ChromaticBBS/ANSI-Skirmish.md) do not
 award native game resources or secretly generate the next chapter.
 
-The current [readable](Runbook-2.28-Readable.md)
-and [packed](Runbook-2.28-Packed.md) editions are
+The current [readable](Runbook-2.29-Readable.md)
+and [packed](Runbook-2.29-Packed.md) editions are
 regenerated from the same2.28source. Opaque compression is transport, not
 free context. The dated2.27comparison remains unchanged as evidence.
 
