@@ -4,7 +4,7 @@ import {nativeReplyProgram,causalApproaches,nativeRoomIds,nativeMemoryLayers,nat
 import {TURN_OUT_OF_TIME as packet} from './turn-out-of-time-data.mjs';
 import {createAnsiBuffer} from './ansi-terminal.mjs';
 import {replyIllustrations,bitcoinIllustrations} from './illustration-data.mjs';
-import {readFileSync} from 'node:fs';
+import {existsSync,readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const base={packet,current:'hello',screen:'map',progress:{rooms:[],score:0,percent:0},answers:{},bbIllustrations:bitcoinIllustrations};
 function decode(p){const b=createAnsiBuffer(p.grid);b.feed(p.text);return b;}
@@ -26,11 +26,32 @@ test('every authored choice is reachable and its entire label is drawn without e
 test('hover details extend the selected hit region and keys animate together without moving text',()=>{
  const p=nativeReplyProgram({...base,screen:'topic',current:'demo',focus:'choice:keep-original'});const hits=p.hotspots.filter(h=>h.id==='choice:keep-original');assert.equal(hits.length,2);assert.equal(hits[1].height,3);const keys=p.animation.tracks.filter(t=>t.effect==='pulse');assert.ok(keys.length>=6);assert.ok(keys.every(t=>!t.at&&t.interval===1200));assert.ok(p.animation.tracks.some(t=>t.effect==='flip'&&t.row===hits[0].row&&t.column===hits[0].column+1));
 });
-test('spoken dialogue is absent from interactive pages; source values and original capture provenance survive',()=>{
+test('spoken dialogue is absent from interactive pages and source values survive',()=>{
  const authored=structuredClone(packet);for(const n of authored.nodes){n.paragraphs=['PRIVATE_GHOST_TEXT'];n.companion='PRIVATE_ELSE_TEXT';}
  for(const current of authored.nodes.map(n=>n.id))for(const screen of ['map','topic'])assert.doesNotMatch(decode(nativeReplyProgram({...base,packet:authored,screen,current})).text,/PRIVATE_GHOST_TEXT|PRIVATE_ELSE_TEXT/);
  const p=nativeReplyProgram({...base,screen:'answers',answers:{question:'First\nExact line.',principle:'Second.'}});assert.equal(p.fields[0].value,'First\nExact line.');assert.equal(p.fields[0].maxLength,1200);
- for(const [screen,list]of [['illustrations',replyIllustrations],['bb-images',bitcoinIllustrations]])for(let i=0;i<list.length;i++){const p=nativeReplyProgram({...base,screen,illustrationIndex:i}),image=p.illustration;assert.equal(image.source,list[i].source);assert.equal(createHash('sha256').update(readFileSync(new URL('../../'+image.source,import.meta.url))).digest('hex'),image.sha256);for(const h of p.hotspots)assert.equal(overlap(h,image),false);}
+});
+test('illustrations retain packaged image data and capture provenance',()=>{
+ const registryPath=new URL('../../registry.json',import.meta.url);
+ const registry=existsSync(registryPath)?JSON.parse(readFileSync(registryPath,'utf8')):null;
+ const publicFiles=registry?.privateSourceIncluded===false?new Set(registry.files.map(file=>file.path)):null;
+ const provenance=JSON.parse(readFileSync(new URL('./Illustration-Provenance.json',import.meta.url),'utf8'));
+ assert.equal(provenance.length,replyIllustrations.length);
+ for(const [screen,list] of [['illustrations',replyIllustrations],['bb-images',bitcoinIllustrations]]){
+  for(const [i,entry] of list.entries()){
+   const p=nativeReplyProgram({...base,screen,illustrationIndex:i}),image=p.illustration;
+   const source=screen==='illustrations'?provenance[i]:entry;
+   assert.equal(image.source,source.source);
+   assert.equal(image.sha256,source.sha256);
+   assert.equal(image.url,entry.url);
+   assert.match(image.url,/^data:image\/webp;base64,UklGR/);
+   const original=new URL('../../'+image.source,import.meta.url);
+   if(!publicFiles||publicFiles.has(image.source)||existsSync(original)){
+    assert.equal(createHash('sha256').update(readFileSync(original)).digest('hex'),image.sha256);
+   }
+   for(const h of p.hotspots)assert.equal(overlap(h,image),false);
+  }
+ }
 });
 test('optional fight is a bounded inset on the current page and never a competing destination',()=>{
  for(const screen of ['map','topic','tools','illustrations','ending']){const p=nativeReplyProgram({...base,screen,skirmishOn:true}),b=decode(p);assert.ok(p.arena);assert.match(b.text,/GLYPH FIGHT/);for(const h of p.hotspots)assert.equal(overlap(h,p.arena),false);assert.ok(!p.hotspots.some(h=>h.id==='game-start'));}

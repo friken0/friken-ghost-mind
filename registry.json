@@ -932,8 +932,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.test.mjs",
-      "bytes": 21031,
-      "sha256": "b5313311958c08e9b98c619a5c3f0facd78050e1bca8ab43f41ae38cde3adec4"
+      "bytes": 21883,
+      "sha256": "3591703cad51ba5c1055041c1522573ee84b4f54a58524cca84469a394f481ab"
     },
     {
       "path": "Tools/ChromaticBBS/native-routing.test.mjs",
