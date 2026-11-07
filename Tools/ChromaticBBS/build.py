@@ -26,8 +26,9 @@ parser.add_argument('--turn-out-of-time', action='store_true', help='Build the s
 parser.add_argument('--bundle-track', metavar='ID', help='Embed one existing GhostTrack for portable playback')
 parser.add_argument('--reply-illustration', action='append', default=[], metavar='NODE=DIRECTORY',
                     help='Package a prepared 2.5D illustration for a reply node')
-parser.add_argument('--reply-voice', type=Path, help='Embed a complete, locally rendered voice pack for the authored letter')
+parser.add_argument('--reply-voice', type=Path, help='Embed a complete, locally rendered voice pack for the authored reply')
 parser.add_argument('--reply', type=Path, help='Targeted reply JSON in the shared retained ANSI host')
+parser.add_argument('--reply-draft', action='store_true', help='Build a guided reply for local review without its recorded cast')
 parser.add_argument('--legacy-carrier', action='store_true', help='Historical diagnostic only; requires --host-reason')
 parser.add_argument('--host-reason', help='Explicit reason for choosing the historical host')
 parser.add_argument('--serve', action='store_true', help='Serve this carrier on loopback with threaded neural-audio headers')
@@ -41,6 +42,23 @@ if args.reply_illustration and not args.reply:
     parser.error('--reply-illustration requires --reply')
 if args.reply_voice and not (args.reply or args.turn_out_of_time):
     parser.error('--reply-voice requires --reply or --turn-out-of-time')
+reply = None
+if args.reply:
+    reply = json.loads(args.reply.read_text())
+    validation = subprocess.run(['node', '--input-type=module', '-e', '''
+import {validateTurnOutOfTime} from './response-theater.mjs';
+let input=''; for await(const chunk of process.stdin) input+=chunk;
+try {validateTurnOutOfTime(JSON.parse(input));}
+catch(error){process.stderr.write(error.message);process.exitCode=1;}
+'''], cwd=base, input=json.dumps(reply), text=True, capture_output=True)
+    if validation.returncode:
+        parser.error(validation.stderr.strip())
+    if not reply.get('journey') and reply.get('layout') != 'letter' and reply['id'] != 'surreal-the-living-workshop':
+        parser.error('New replies need a journey with a goal, main route and payoff. See Turn-Out-Of-Time.md.')
+if args.reply_draft and (not reply or not reply.get('journey') or args.reply_voice or not args.output):
+    parser.error('--reply-draft requires a guided --reply and explicit --output without --reply-voice')
+if reply and reply.get('journey') and not (args.reply_voice or args.reply_draft):
+    parser.error('Guided replies require --reply-voice. For local review use --reply-draft with --output.')
 default_voice = base/'media/surreal-voice.json'
 if args.turn_out_of_time and args.reply_voice is None and default_voice.is_file():
     args.reply_voice = default_voice
@@ -50,7 +68,7 @@ if args.reply_voice:
         parser.error('Reply voice pack exceeds 8 MiB')
     voice_pack = json.loads(args.reply_voice.read_text())
     if args.reply:
-        voice_packet = json.loads(args.reply.read_text())
+        voice_packet = reply
     else:
         exported = subprocess.check_output(['node', '--input-type=module', '-e',
             "import {TURN_OUT_OF_TIME} from './turn-out-of-time-data.mjs'; process.stdout.write(JSON.stringify(TURN_OUT_OF_TIME));"], cwd=base)
@@ -102,8 +120,6 @@ for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','v
     if name == 'framework-mode.mjs':
         source = 'export const responseMode='+json.dumps(mode)+';'
     if name == 'turn-out-of-time-data.mjs' and args.reply:
-        reply = json.loads(args.reply.read_text())
-        validation = subprocess.run(['node', '--input-type=module', '-e', "import {validateTurnOutOfTime} from './response-theater.mjs';let s='';for await(const p of process.stdin)s+=p;validateTurnOutOfTime(JSON.parse(s));"], cwd=base, input=json.dumps(reply), text=True, capture_output=True, check=True)
         source = 'export const TURN_OUT_OF_TIME='+json.dumps(reply,ensure_ascii=False).replace('</','<\\/')+';'
     if name == 'reply-media.mjs' and args.reply_illustration:
         media = {}
@@ -180,6 +196,7 @@ title = (f"Friken.Ghost · {reply['title']} · For {reply['recipient']}" if args
 document = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="ghost-framework" content="'+framework['version']+' / '+('retained-ansi' if retained else 'historical: '+html.escape(args.host_reason,quote=True) )+'">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            + ('<meta name="ghost-reply-draft" content="text-only">' if args.reply_draft else '') +
             '<title>'+html.escape(title)+'</title>'
             '<style>html,body{margin:0;height:100%;overflow:hidden;background:#090b17}</style></head><body>' +
             fragment + '</body></html>\n')

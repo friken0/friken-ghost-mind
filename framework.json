@@ -21,7 +21,10 @@
     },
     "reply": {
       "command": "TURN-OUT-OF-TIME",
-      "driver": "authored reply graph"
+      "driver": "authored reply graph",
+      "contentSchema": "friktal.turn-out-of-time.v1",
+      "authoring": "Turn-Out-Of-Time.md",
+      "build": "python3 build.py --reply REPLY.json --reply-voice VOICE.json --output REPLY.html"
     }
   },
   "capabilities": [
@@ -41,6 +44,8 @@
     "ghost-else-speaker-shots",
     "radial-face-emergence",
     "stable-rolling-subtitles",
+    "guided-reply-journeys",
+    "recorded-reply-voice-prefetch",
     "persistent-neural-pcm-cache",
     "shared-audio-cymatics",
     "opening-track-rotation",

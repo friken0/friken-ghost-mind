@@ -77,8 +77,8 @@ test('status patches and focus cannot finish a partial transfer; explicit reveal
 test('the actual generated reply atlas is admitted and drawn by the retained real ANSI terminal',()=>{
  const f=fakeHost(),old=globalThis.ResizeObserver;globalThis.ResizeObserver=f.ResizeObserver;let host;
  try{
-  const program=nativeReplyProgram({packet,current:'hello',screen:'map',progress:{rooms:[],score:0,ready:false,percent:0},selectedTelling:null,answers:{},voiceOn:true,musicOn:false});
-  assert.ok(program.hotspots.length>16,'regression requires the full atlas, not a small mocked command bar');
+  const program=nativeReplyProgram({packet,current:'hello',screen:'map',settingsPinned:true,progress:{rooms:[],score:0,ready:false,percent:0},selectedTelling:null,answers:{},voiceOn:true,musicOn:false});
+  assert.ok(program.hotspots.length>=13,'regression requires the full atlas, not a small mocked command bar');
   host=mountNativeResponseHost(f.root,{terminal:f.terminal});host.show(program,{immediate:true});
   assert.equal(host.canvas,f.canvas);assert.equal(host.terminal.complete,true);assert.equal(host.terminal.hotspots.length,program.hotspots.length);
   assert.match(host.terminal.buffer.text,/SCORE 0000/);assert.match(host.terminal.buffer.text,/DOORS 0\/13/);

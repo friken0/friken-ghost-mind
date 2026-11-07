@@ -43,6 +43,8 @@ export function nativeReplyProgram(state={}){
  const packet=state.packet;if(!packet||!Array.isArray(packet.nodes)||!packet.nodes.length||packet.nodes.length>32)throw Error('Bounded authored reply packet required');
  const letter=packet.layout==='letter';
  const current=packet.nodes.find(n=>n.id===state.current)||packet.nodes.find(n=>n.id===packet.openingId)||packet.nodes[0];
+ const journey=packet.journey,beatIndex=journey?.beats.findIndex(beat=>beat.node===current.id)??-1;
+ const beat=journey?.beats[beatIndex],complete=journey&&state.progress?.complete;
  const relayPage=letter&&packet.relay?.entry===current.id&&state.letterRelay;
  const progress=state.progress||{},rooms=nativeRoomIds.filter(id=>Array.isArray(progress.rooms)&&progress.rooms.includes(id)),telling=typeof state.selectedTelling==='string'&&packet.nodes.some(n=>n.id===state.selectedTelling)?state.selectedTelling:null,ready=progress.ready===true;
  const cells=Array.from({length:C*R},()=>({glyph:' ',fg:7,bg:0})),hotspots=[],fields=[];let interactive=true,artTop=5,pagination=null,illustration=null,arena=null,sprite=null,letterScene=null;const tracks=[],actions=[],cymatics=[];
@@ -50,13 +52,30 @@ export function nativeReplyProgram(state={}){
  function put(r,c,text,fg=7,bg=0,width=C-c+1){const value=[...safe(text).replace(/\n/g,' ')].slice(0,Math.max(0,Math.min(width,C-c+1)));for(let i=0;i<value.length;i++)ink(r,c+i,value[i],fg,bg);}
  function clear(r,c,width,height,bg=0){for(let y=r;y<r+height;y++)for(let x=c;x<c+width;x++)ink(y,x,' ',7,bg);}
  function box(r,c,width,height,title='',fg=8,bg=0){clear(r,c,width,height,bg);for(let x=0;x<width;x++){ink(r,c+x,x===0?'╔':x===width-1?'╗':'═',fg,bg);ink(r+height-1,c+x,x===0?'╚':x===width-1?'╝':'═',fg,bg);}for(let y=1;y<height-1;y++){ink(r+y,c,'║',fg,bg);ink(r+y,c+width-1,'║',fg,bg);}if(title)put(r,c+2,' '+cut(title,width-6)+' ',fg,bg,width-4);}
- function button(id,r,c,width,label,key,fg=14,height=1,ariaLabel=label){const selected=state.focus===id,bg=selected?4:0;clear(r,c,width,height,bg);const rows=nativeWrap(label,width);for(let i=0;i<Math.min(height,rows.length);i++)put(r+i,c,rows[i],selected?15:fg,bg,width);if(interactive){hotspots.push({id,row:r,column:c,width,height,...(key?{key}:{}),ariaLabel:single(ariaLabel,700)});const glyph=[...label][1];if(label.startsWith('[')&&glyph)tracks.push({row:r,column:c+1,interval:selected?480:1200,transition:selected?480:1200,effect:selected?'flip':'pulse',frames:[{glyph,fg:selected?15:fg,bg,scaleX:.82,scaleY:.82},{glyph,fg:selected?15:fg,bg,scaleX:1,scaleY:1}]});}}
+ function button(id,r,c,width,label,key,fg=14,height=1,ariaLabel=label,{restBg=0,afterReveal=false,expanded}={}){const selected=state.focus===id,bg=selected?4:restBg;clear(r,c,width,height,bg);const rows=nativeWrap(label,width);for(let i=0;i<Math.min(height,rows.length);i++)put(r+i,c,rows[i],selected?15:fg,bg,width);if(interactive){hotspots.push({id,row:r,column:c,width,height,...(key?{key}:{}),ariaLabel:single(ariaLabel,700),...(afterReveal?{afterReveal}:{}),...(expanded===undefined?{}:{expanded})});const glyph=[...label][1];if(label.startsWith('[')&&glyph)tracks.push({row:r,column:c+1,interval:selected?480:1200,transition:selected?480:1200,effect:selected?'flip':'pulse',frames:[{glyph,fg:selected?15:fg,bg,scaleX:.82,scaleY:.82},{glyph,fg:selected?15:fg,bg,scaleX:1,scaleY:1}]});}}
  function lines(r,c,width,text,maxRows,fg=7){const wrapped=nativeWrap(text,width);for(let i=0;i<Math.min(maxRows,wrapped.length);i++)put(r+i,c,wrapped[i],fg,0,width);if(wrapped.length>maxRows&&maxRows>0)put(r+maxRows-1,c,cut(wrapped[maxRows-1],Math.max(0,width-4))+' ...',fg,0,width);return wrapped.length;}
  function horizontal(row,label=''){put(row,1,'╠'+'═'.repeat(C-2)+'╣',8);if(label)put(row,3,' '+cut(label,C-8)+' ',6);}
- function footer(){let x=3;for(const [id,label,key,fg]of [
- ['voice','[V]Voice '+(state.voiceOn===false?'OFF':'ON'),'v',14],['music','[U]Music '+(state.musicOn?'ON':'OFF'),'u',7],['sfx','[S]SFX '+(state.sfxOn===false?'OFF':'ON'),'s',7],['motion','[P]Move '+(state.held?'OFF':'ON'),'p',7],['speed','[B]'+(state.bps||14400),'b',11],['palette','[L]'+(state.paletteLabel||'ANSI++'),'l',13],['next-track','[N]Tune','n',14]]){button(id,R-1,x,id==='speed'?9:label.length,label,key,fg);x+=label.length+1;}}
+ const settingsOpen=!!(state.settingsPinned||state.settingsHovered);
+ const settingsAvailable=state.screen!=='reply-reset'&&!state.voiceGate;
+ function footer(){
+  if(!settingsAvailable)return;
+  button('settings',R-2,C-15,14,'[F2] Settings','F2',14,1,'Terminal settings',{expanded:settingsOpen});
+  if(!settingsOpen)return;
+  if(!state.chapter)button('reply:reset',R-2,C-28,11,'[DEL] Reset','Delete',7,1,'Reset this reply',{afterReveal:true});
+  let x=3;for(const [id,label,key,fg]of [
+ ['voice','[V]Voice '+(state.voiceOn===false?'OFF':'ON'),'v',14],['music','[U]Music '+(state.musicOn?'ON':'OFF'),'u',7],['sfx','[S]SFX '+(state.sfxOn===false?'OFF':'ON'),'s',7],['motion','[P]Motion '+(state.held?'OFF':'ON'),'p',7],['speed','[B]'+(state.bps||14400),'b',11],['palette','[L]'+(state.paletteLabel||'ANSI++'),'l',13],['next-track','[N]Tune','n',14]]){button(id,R-1,x,id==='speed'?9:label.length,label,key,fg);x+=label.length+1;}}
  box(1,1,C,R);const percent=Math.round(bounded(progress.percent,0,100));
- if(letter){
+ if(journey){
+  const phase=beat?' STEP '+String(beatIndex+1).padStart(2,'0')+' / '+journey.beats.length+' ':' SIDE DOOR ';
+  put(1,3,phase,11);
+  for(const [i,b] of journey.beats.entries()){
+   const seen=progress.explored?.includes(b.node),here=i===beatIndex;
+   put(1,20+i*3,here?'[◆]':seen?' ◆ ':' ◇ ',here?11:seen?10:8);
+   if(here)tracks.push({row:1,column:21+i*3,interval:900,transition:900,effect:'pulse',
+    frames:[{glyph:'◆',fg:11,bg:0,scaleX:.76,scaleY:.76},{glyph:'◆',fg:15,bg:0,scaleX:1,scaleY:1}]});
+  }
+  if(complete)put(1,41,' HANDOFF READY ',10);
+ }else if(letter){
   const count=progress.explored?.length??0;
   put(1,3,' TURN OUT OF TIME ',11);
   put(1,24,packet.relay?(state.letterRelay?.sent?' 3/3 / POSTCARD READY ':state.letterRelay?.locked||relayPage?' 2/3 / BUILD THE SIGNAL ':' 1/3 / THE GREETING '):' LETTER / '+count+' PAGES OPENED ',14);
@@ -65,30 +84,45 @@ export function nativeReplyProgram(state={}){
  put(1,18,' DOORS '+(progress.explored?.length??rooms.length)+'/'+(packet.nodes.length-1)+' ',14);put(1,32,' SEEN '+('█'.repeat(Math.round(percent/10))+'░'.repeat(10-Math.round(percent/10)))+' '+String(percent).padStart(3)+'% ',10);
  }
  put(1,C-20,' PRIVATE LINE ',6);put(2,3,cut('FRIKEN.GHOST / '+packet.title,44),14,0,44);put(2,49,cut(packet.recipient||'CALLER',15).toUpperCase()+' / GHOSTLINK',11,0,C-50);horizontal(3);horizontal(R-3);
- put(R-2,3,' '+cut(letter?(state.saveStatus||'PRIVATE LETTER / LOCAL PLAY'):state.boardStatus||'LOCAL PRIVATE VISIT / NO SILENT UPLOADS',(state.chapter?C-8:C-21))+' ',8,0,state.chapter?C-6:C-19);
- const add=(id,label,detail='',key=null,selected=false)=>actions.push({id,label:selected?label+' (CURRENT)':label,detail,key,selected});
+ const statusWidth=C-(settingsOpen&&!state.chapter?32:19);
+ put(R-2,3,' '+cut(letter?(state.saveStatus||'PRIVATE LETTER / LOCAL PLAY'):state.boardStatus||'LOCAL PRIVATE VISIT / NO SILENT UPLOADS',statusWidth-2)+' ',8,0,statusWidth);
+ const add=(id,label,detail='',key=null,selected=false,primary=false)=>actions.push({id,label:selected?label+' (CURRENT)':label,detail,key,selected,primary});
  const canWarmPostmark=packet.gift==='postmark-bloom'&&current.id===packet.relay?.reward&&state.letterRelay?.sent;
- function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip'&&!scene.frame)cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});if(kind==='city')hotspots.push({id:'secret:night-office',row:artTop+Math.floor(h*.40),column:3+Math.floor(requestedWidth*.75),width:Math.max(3,Math.ceil(requestedWidth*.08)),height:Math.max(2,Math.ceil(h*.11)),ariaLabel:'The one office still lit. Somebody is working late.'});if(kind==='trip')hotspots.push({id:'secret:petunia-protocol',row:artTop+Math.floor(h*.26),column:3+Math.floor(requestedWidth*.40),width:Math.ceil(requestedWidth*.20),height:Math.max(2,Math.ceil(h*.22)),ariaLabel:'A familiar flower is growing between boards. Inspect it.'});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
+ function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip'&&!scene.frame)cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','bitcoin-city','harbor','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});if(!journey&&kind==='city')hotspots.push({id:'secret:night-office',row:artTop+Math.floor(h*.40),column:3+Math.floor(requestedWidth*.75),width:Math.max(3,Math.ceil(requestedWidth*.08)),height:Math.max(2,Math.ceil(h*.11)),ariaLabel:'The one office still lit. Somebody is working late.'});if(!journey&&kind==='trip')hotspots.push({id:'secret:petunia-protocol',row:artTop+Math.floor(h*.26),column:3+Math.floor(requestedWidth*.40),width:Math.ceil(requestedWidth*.20),height:Math.max(2,Math.ceil(h*.22)),ariaLabel:'A familiar flower is growing between boards. Inspect it.'});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water','bitcoin-city':'water',harbor:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
  function actionPane(){
   const x=49,w=C-50,hintRows=R>=30?6:3,hintStart=R-5-hintRows,pageRow=hintStart-1,available=R-12-hintRows,pages=[[]];let used=0,nextNumber=1;
   const keycap=key=>({ArrowRight:'→',ArrowLeft:'←',ArrowUp:'↑',ArrowDown:'↓',Enter:'↵'})[key]||key;
   for(const a of actions){const key=a.key||String(nextNumber++),display='['+keycap(key)+'] '+a.label,rows=nativeWrap(display,w),cost=rows.length+1;if(used&&used+cost-1>available){pages.push([]);used=0;}pages.at(-1).push({...a,key,display,rows});used+=cost;}
-  const page=Math.floor(bounded(state.actionPage,0,pages.length-1));let y=6;put(4,x,state.screen==='map'?'START HERE':state.screen==='topics'?'OPTIONAL TOPICS':'YOUR NEXT MOVE',6,0,w);
-  for(const a of pages[page]){button(a.id,y,x,w,a.display,a.key,a.selected?10:7,a.rows.length,a.label+'. '+a.detail);y+=a.rows.length+1;}
-  if(pages.length>1){button('actions-prev',pageRow,x,9,'[←] Prev','ArrowLeft',14);put(pageRow,x+10,(page+1)+'/'+pages.length,11);button('actions-next',pageRow,C-12,10,'[→] Next','ArrowRight',14);}
-  const active=actions.find(a=>a.id===state.focus),contextHint=state.screen==='door-game'?(mailrun(state.workshop?.door?.actions||[]).log.at(-1)||'Goal: recover the packet through three hops. Costs are printed before you commit.'):state.screen==='crew-builder'?'Type a name, choose a job, then issue a trial order. Results stay in your local packet.':state.screen==='motion-lab'?'CURRENT rig: '+(state.rigEffect||'blink').toUpperCase()+'. Motion runs after the screen is drawn.':state.chapter?'Choose an action. Preview its full cost and stakes before committing.':state.screen==='letter-signal'?(packet.gift==='postmark-bloom'?'Open the card to see what your circuit grew. Copy it when you’re ready.':'Copy the whole greeting and paste it into your own galaxy’s agent.'):state.screen==='letter-signal-text'?'Select the field to copy it manually.':canWarmPostmark?'Touch the stamp under the photograph to see what your circuit grew.':letter?'Open any page, or hear the current one again.':'Choose a question. Ghost speaks after this screen arrives.',hint=active?.detail||contextHint;
+  const page=Math.floor(bounded(state.actionPage,0,pages.length-1));let y=6;put(4,x,journey&&state.screen==='ending'?'KEEP THIS CALL':state.screen==='map'?'START HERE':state.screen==='topics'?'OPTIONAL TOPICS':'YOUR NEXT MOVE',6,0,w);
+  for(const a of pages[page]){button(a.id,y,x,w,a.display,a.key,a.primary?11:a.selected?10:7,a.rows.length,a.label+'. '+a.detail,{restBg:a.primary?4:0});y+=a.rows.length+1;}
+  if(pages.length>1){
+   if(page>0)button('actions-prev',pageRow,x,9,'[←] Prev','ArrowLeft',14);
+   put(pageRow,x+10,(page+1)+'/'+pages.length,11);
+   if(page+1<pages.length)button('actions-next',pageRow,C-12,10,'[→] Next','ArrowRight',14);
+  }
+  const active=actions.find(a=>a.id===state.focus),contextHint=journey?(state.screen==='topic'?(beat?'Gold leads to the next step. Side doors are optional.':'Take a look around, then use Back to return.'):'Your visit stays on this device until you share it.'):state.screen==='door-game'?(mailrun(state.workshop?.door?.actions||[]).log.at(-1)||'Goal: recover the packet through three hops. Costs are printed before you commit.'):state.screen==='crew-builder'?'Type a name, choose a job, then issue a trial order. Results stay in your local packet.':state.screen==='motion-lab'?'CURRENT rig: '+(state.rigEffect||'blink').toUpperCase()+'. Motion runs after the screen is drawn.':state.chapter?'Choose an action. Preview its full cost and stakes before committing.':state.screen==='letter-signal'?(packet.gift==='postmark-bloom'?'Open the card to see what your circuit grew. Copy it when you’re ready.':'Copy the whole greeting and paste it into your own galaxy’s agent.'):state.screen==='letter-signal-text'?'Select the field to copy it manually.':canWarmPostmark?'Touch the stamp under the photograph to see what your circuit grew.':letter?'Open any page, or hear the current one again.':'Choose a question. Ghost speaks after this screen arrives.',hint=active?.detail||contextHint;
   lines(hintStart,x,w,hint,hintRows,active?15:8);if(active)hotspots.push({id:active.id,row:hintStart,column:x,width:w,height:hintRows,ariaLabel:hint});
   if(state.chapter){button('verb:read',R-5,x,9,'[R] Read','r',14);button('chapter:stats',R-5,x+10,10,'[A] Stats','a',11);button('chapter:save',R-5,x+21,w-21,'[E] Save','e',7);button('chapter:back',R-4,x,9,'[←] Back','Backspace',14);button('chapter:wire',R-4,x+10,9,'[W] Wire','w',14);button('chapter:situation',R-4,x+20,w-20,'[I] Look','i',6);return;}
+  if(journey){
+   if(state.screen==='topic'||state.screen==='words')button('verb:read',R-5,x,9,'[R] Hear','r',14);
+   if(state.screen==='topic')button('verb:words',R-5,x+10,10,'[T] Words','t',7);
+   button('back',R-4,x,9,'[←] Back','Backspace',14);
+   if(complete&&state.screen==='topic'&&beat!==journey.beats.at(-1))
+    button('verb:ending',R-4,x+10,16,'[E] Handoff','e',11);
+   return;
+  }
   if(letter&&state.screen?.startsWith('letter-signal')){button('back',R-4,x,9,'[←] Back','Backspace',14);return;}
-  if(letter){button('verb:read',R-5,x,relayPage?13:9,relayPage?'[R] Briefing':'[R] Hear','r',14);button('verb:words',R-5,x+(relayPage?14:10),10,'[T] Words','t',11);button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);return;}
-  button('verb:read',R-5,x,9,'[R] Read','r',14);button('verb:answers',R-5,x+10,10,'[A] Write','a',11);button('verb:ending',R-5,x+21,w-21,'[E] End','e',7);
-  button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);button('nav:tools',R-4,x+20,w-20,'[T] More','t',6);
+  if(letter){button('verb:read',R-5,x,relayPage?13:9,relayPage?'[R] Briefing':'[R] Hear','r',14);button('verb:words',R-5,x+(relayPage?14:10),10,'[T] Words','t',11);button('back',R-4,x,9,'[←] Back','Backspace',14);if(current.id!==packet.openingId)button('nav:map',R-4,x+10,9,'[M] Home','m',14);return;}
+  button('verb:read',R-5,x,9,'[R] Read','r',14);
+  if(state.screen!=='map'&&state.screen!=='answers')button('verb:answers',R-5,x+10,10,'[A] Write','a',11);button('verb:ending',R-5,x+21,w-21,'[E] End','e',7);
+  if(state.screen!=='map'){button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);}
+  if(state.screen!=='map'&&state.screen!=='tools')button('nav:tools',R-4,x+20,w-20,'[T] More','t',6);
  }
 
  function map(){
   put(4,3,'SURREAL / A RETURN CALL',11,0,44);painting('eye',Math.min(32,R-12));
   lines(R-7,3,44,'What would you build behind a BBS door? Try the courier job or leave Ghost your answer.',3,14);
-  add('topic:demo-keep','Play the courier job','Recover your ship’s engine in three jumps. Start here for the hands-on demo.');
+  add('topic:demo-keep','Play the courier job','Recover your ship’s engine in three jumps.',null,false,true);
   add('verb:answers','Tell Ghost what you’d build','Type an answer and keep it in a return packet for the next Ghost.');
   add('nav:topics','More about Ghost and the BBS','Optional topics, games and workshop exhibits.');
  }
@@ -130,8 +164,8 @@ export function nativeReplyProgram(state={}){
    if(!relay.locked){
     hotspots.push({id:'relay:scene',...letterScene,afterReveal:true,ariaLabel:'Star field. Magnify and click a candidate or use the keyboard reticle.'});
     put(5,x,'01 / FIND THE ADDRESS',14,0,w);
-    lines(7,x,w,'We are sending the first hello. Lock our chart marker with two pulses.',3);
-    button('relay:zoom',11,x,w,relay.zoom?'[X] Wide view':'[X] Zoom scope','x',11);
+    lines(7,x,w,'Find the marker that pulses twice. Lock it to unlock the parts bench.',3,15);
+    button('relay:zoom',11,x,w,relay.zoom?'[X] Wide view':'[X] Zoom scope','x',11,1,relay.zoom?'Wide view':'Zoom scope',{restBg:4});
     lines(13,x,w,relay.zoom?'Find the hollow ◎ ring that pulses twice. Click it to lock the address.':'Scroll up over the galaxy or click the scope.',2,14);
     if(relay.zoom){
      button('relay:cycle',16,x,w,'[C] Move reticle','c',14);
@@ -140,7 +174,7 @@ export function nativeReplyProgram(state={}){
    }else if(relay.sent){
     put(5,x,'03 / GREETING SEALED',10,0,w);
     lines(7,x,w,'The postcard is ready. Open it here, then copy the hello into your galaxy when you want.',4);
-    if(!state.letterTransmitPending)button('relay:collect',13,x,w,'[↵] Open your postcard','Enter',11);
+    if(!state.letterTransmitPending)button('relay:collect',13,x,w,'[↵] Open your postcard','Enter',11,1,'Open your postcard',{restBg:4});
    }else{
     put(5,x,'02 / FIT THE CIRCUIT',14,0,w);
     put(6,x,'CHG '+relay.charge+'/6   SIG '+relay.signal+' / NEED 3',relay.signal>=3&&relay.charge>=1?10:13,0,w);
@@ -149,20 +183,22 @@ export function nativeReplyProgram(state={}){
     });
     const targets=relayTargets(relay,letterScene);
     if(station){
-     put(12,x,'CLICK '+station.slot.toUpperCase()+' PART [1] OR [2]',11,0,w);
+     put(12,x,'CHOOSE THE '+station.slot.toUpperCase()+' PART',11,0,w);
+     put(13,x,'Use a row or matching icon.',7,0,w);
      station.routes.forEach((part,i)=>{
       const t=targets[i],next=relayForecast(relay,part),hot=state.focus==='relay:'+part.id;
-      button('relay:'+part.id,14+i*2,x,w,'['+t.key+'] '+part.name,t.key,14,2,part.name+'. '+part.detail+' Leaves '+next.charge+' charge and '+next.signal+' bars.');
-      put(15+i*2,x,'-'+part.cost+' CHG  '+signalDelta(part)+' → '+next.charge+' CHG  '+next.signal+' SIG',hot?15:7,0,w);
+      const cost='-'+part.cost+' CHG  '+signalDelta(part)+' → '+next.charge+' CHG  '+next.signal+' SIG';
+      button('relay:'+part.id,14+i*3,x,w,'['+t.key+'] '+part.name+'\n'+cost,t.key,15,2,
+       part.name+'. '+part.detail+' Leaves '+next.charge+' charge and '+next.signal+' bars.',{restBg:hot?4:8});
       hotspots.push({...t,key:undefined,id:'relay:'+t.id,afterReveal:true,ariaLabel:part.name});
      });
-     put(18,x,'RESERVE 1 CHG AND 3 BARS',6,0,w);
+     put(7,x,'RESERVE 1 CHG AND 3 BARS',6,0,w);
     }else{
      const t=targets[0],block=relayBlock(relay);
      lines(12,x,w,block||(relay.assembled?'Ready to launch. It costs one charge. The postcard opens here.':'Enough charge and signal. Assemble the three parts.'),4,block?13:14);
      if(!block){
       const label=relay.assembled?'Launch the postcard':'Assemble transmitter';
-      button('relay:'+t.id,16,x,w,'[F] '+label,'f',11);
+      button('relay:'+t.id,16,x,w,'[F] '+label,'f',11,1,label,{restBg:4});
       hotspots.push({...t,key:undefined,id:'relay:'+t.id,afterReveal:true,ariaLabel:label});
      }
     }
@@ -215,6 +251,14 @@ export function nativeReplyProgram(state={}){
  function topic(){
   if(relayPage){relayBoard(relayPage);return;}
   const title=nativeWrap(current.title,44);title.forEach((line,i)=>put(4+i,3,line,11,0,44));artTop=4+title.length;
+  if(journey){
+   if(beatIndex===0){
+    put(artTop++,3,'THE JOB',6);
+    artTop+=lines(artTop,3,44,journey.goal,5,15);
+   }
+   put(artTop++,3,beat?'THIS STEP':'SIDE DOOR / OPTIONAL',6);
+   artTop+=lines(artTop,3,44,beat?.instruction||'Explore this scene. Back returns to where you left the main route.',5,7);
+  }
   if(letter){put(artTop,3,current.kicker,6,0,44);artTop++;}
   const localMedia=replyMedia[current.id],portrait=current.portrait;
   const media=localMedia||(portrait?{id:'resident:'+portrait,title:current.title,alt:'Original Moknon project painting, '+current.title,
@@ -222,7 +266,7 @@ export function nativeReplyProgram(state={}){
   if(letter&&current.note)add('verb:words','Read the personal note','Start here. Take your time.','a');
 
   if(media){
-   const height=R-artTop-8;
+   const height=Math.max(2,R-artTop-8);
    box(artTop,2,46,height+2,media.title,6);
    illustration={...media,row:artTop+1,column:3,width:44,height};
    if(canWarmPostmark){
@@ -236,30 +280,38 @@ export function nativeReplyProgram(state={}){
     hotspots.push({id:'letter:gift',row:R-6,column:29,width:19,height:3,afterReveal:true,ariaLabel:'Open the flower in your stamp'});
    }else lines(R-5,3,44,current.caption||'Move to tilt. Hold to zoom and drag. Scroll to zoom.',2,14);
   }else{
-   const caption=letter&&current.caption;
+   const caption=(letter||journey)&&current.caption;
    painting(current.ansiArt||({bbs:'city',memory:'vault',horizon:'beacon',identity:'engine','greater-mind':'network',models:'models','bob-family':'family',source:'source',demo:'shipyard','demo-keep':'mailrun','demo-repair':'family',causality:'causality',rose:'rose'})[current.id]||(letter?({network:'network',artifact:'rose',memory:'vault'})[current.visual]||'beacon':'forge'),
-    caption?Math.min(36,R-artTop-6):null);
+    caption?Math.max(6,Math.min(36,R-artTop-6)):null);
    if(caption)lines(R-5,3,44,caption,2,14);
+  }
+  if(journey){
+   const primary=current.choices.find(c=>c.id===beat?.advance);
+   if(primary)add('choice:'+primary.id,primary.label,primary.detail,null,false,true);
+   if(beat===journey.beats.at(-1))add('verb:ending','See what you changed','Read the outcome and keep an exact handoff.',null,false,true);
+   if(localMedia)add('letter:photo','Open the full-width illustration','Move to tilt. Hold to zoom and drag. Scroll for a closer look.','i');
+   for(const c of current.choices.filter(c=>c!==primary))add('choice:'+c.id,(beat?'Side door / ':'')+c.label,c.detail);
+   return;
   }
   if(letter){
    if(canWarmPostmark){
-   add('letter:gift','Open the flower in your stamp','Your transmitter parts determine what grows.','g');
-   add('letter:copy-signal','Copy the hello for your galaxy','Paste it into your galaxy’s agent if you want it to reply.','c');
-   add('letter:signal','Read the hello before copying','Preview the greeting and inspect its circuit.');
+   add('letter:gift','Wake the seed','Open the flower grown from your transmitter circuit.','g',false,true);
+   add('letter:copy-signal','Copy galaxy greeting','Paste it into your galaxy’s agent if you want it to reply.','c');
+   add('letter:signal','Read greeting and circuit','Preview the greeting and inspect its circuit.');
   }
    else if(state.letterRelay?.sent&&packet.relay?.contact&&current.id!==packet.openingId)add('letter:signal','Read the message for your galaxy','Inspect or copy this run’s first-contact packet.','c');
-   if(localMedia)add('letter:photo',portrait?'Open the full-width portrait':'Open the full-width postcard',
+   if(localMedia)add('letter:photo',portrait?'Enlarge portrait':'Enlarge postcard',
     'Move to tilt. Hold to zoom and drag. Scroll for a closer look.','i');
    for(const c of current.choices){
     const relay=packet.relay?.entry===c.target?state.letterRelay:null;
     const label=relay?.sent?'Open my finished postcard':relay?.locked?'Resume building the transmitter':c.label;
     const detail=relay?.sent?'See your stamp and keep the first-contact message.':relay?.locked?'The address and installed parts are saved.':c.detail;
-    add('choice:'+c.id,label,detail);
+    add('choice:'+c.id,label,detail,null,false,!!relay);
    }
    return;
   }
   if(current.id==='source'){add('nav:motion-lab','ANSI++ Animation Workbench','Ten working cell/bone/mesh examples: Blink, Breathe, Serpent, Flame, Water, Ripple and more.');add('verb:trip','Music-reactive hyperspace garden','See the ANSI++ cymatics and colour-flow showcase, then return here.');}
-  if(current.id==='demo-keep')add('verb:door-game','Start the three-jump courier job','Manage five fuel, six hull and six time. Every route lists its cost.');
+  if(current.id==='demo-keep')add('verb:door-game','Start the three-jump courier job','Manage five fuel, six hull and six time. Every route lists its cost.',null,false,true);
   if(current.id==='demo-repair')add('verb:crew-builder','BUILD / commission a crewmate','Give them a name, choose their job and run a safe trial. The result joins your return packet.');
   if(current.id==='rose')add('verb:rose','Open the living rose','Drag to orbit. Wheel to zoom. Let the music drive its motion.');
   if(current.id==='causality')add('verb:roll','Try a causality dive','Choose GUTS, FOCUS, GLITCH, AWE or INSIGHT. See how it moves your odds before the sample is drawn.');
@@ -272,7 +324,7 @@ export function nativeReplyProgram(state={}){
   box(4,2,C-2,R-9,media.title,6);
   illustration={...media,row:5,column:3,width:C-4,height:R-11};
   put(R-5,3,'MOVE TO TILT · HOLD TO ZOOM + DRAG · SCROLL TO ZOOM',14);
-  const back=current.portrait?'[ESC] Back to transmission':'[ESC] Back to postcard';
+  const back=journey?'[ESC] Back to scene':current.portrait?'[ESC] Back to transmission':'[ESC] Back to postcard';
   button('back',R-4,3,back.length,back,'Backspace',11);
   if(canWarmPostmark)button('letter:gift',R-4,27,26,'[G] Wake the postmark','g',14);
  }
@@ -284,6 +336,17 @@ export function nativeReplyProgram(state={}){
   lines(ih+8,3,44,item.note,2,7);for(let i=0;i<list.length;i++)add('illustration:'+i,list[i].title,list[i].note,null,i===index);
  }
  function answers(){
+  if(journey){
+   put(4,3,'YOUR SIDE OF THE LINE',11,0,44);
+   for(const [i,id] of ['question','principle'].entries()){
+    const row=5+i*8,label=packet.answerPrompts[id],value=state.answers?.[id]||'';
+    const height=lines(row,3,44,label,4,14);
+    box(row+height,2,46,4,'',6);
+    fields.push({id,row:row+height+1,column:3,width:44,height:2,value,maxLength:1200,ariaLabel:label});
+   }
+   add('save-input','Keep my exact words','Keep both answers on this device and add them to the handoff.',null,false,true);
+   return;
+  }
   put(4,3,'SURREAL / YOUR SIDE OF THE LINE',11,0,44);
   box(5,2,46,7,'WHAT SHOULD A COMPANION DO?',14);box(13,2,46,7,'WOULD YOU BRING A BBS BACK?',6);
   for(const [id,row,label]of [['question',6,'What would your digital companion do while you are away?'],['principle',14,'Would you bring a BBS back? What would live on your board?']]){const value=typeof state.answers?.[id]==='string'?state.answers[id].slice(0,1200):'';fields.push({id,row,column:3,width:44,height:5,value,maxLength:1200,ariaLabel:label});lines(row,3,44,value||'Type here. Your words stay on this device.',5,value?14:8);}
@@ -343,7 +406,18 @@ export function nativeReplyProgram(state={}){
   add('topic:demo','Back to the workshop','The named crewmate and trial stay on this device.');
  }
  function discovery(){const d=replyDiscoveries[state.secretId];if(!d)throw Error('Unknown discovery');const title=nativeWrap(d.title,44);title.forEach((line,i)=>put(4+i,3,line,11));artTop=4+title.length;painting(d.art,Math.min(32,R-artTop-7));put(R-7,3,'SECRET KEPT / +'+d.points+' / ONCE PER VISIT',11,0,44);lines(R-6,3,44,state.secretId==='wintermute'?'The old ice knows its name.':'The little things were worth touching.',2,14);add('back','Back to where I found it','Your discovery and bonus stay in the local visit.','Enter');add('verb:read','Hear Ghost and Else','A small message left for the curious.');add('verb:answers','Leave something of my own','Your actual thoughts shape the next reply.');}
- function ending(){put(4,3,'END OF THIS CALL / KEEP THE LINE',11,0,44);painting('return');add('copy','Copy the next-reply packet','Paste it back into the Ghost chat. Your exact answers shape the next reply.','x');add('verb:packet','Inspect the packet','Read the exact local visit, choices and answers before sharing.');}
+ function ending(){
+  if(journey){
+   put(4,3,'TRANSMISSION COMPLETE',11,0,44);
+   artTop=5+lines(5,3,44,journey.payoff,5,15);
+   painting('return');
+   add('copy','Copy the next-reply packet','Paste it into Ghost with the runbook to carry this outcome forward.','x',false,true);
+   if(packet.answerPrompts)add('verb:answers','Write something back','Answer the caller’s questions and include your exact words.');
+   add('verb:packet','Inspect the packet','Read the route, choices and answers before sharing.');
+   return;
+  }
+  put(4,3,'END OF THIS CALL / KEEP THE LINE',11,0,44);painting('return');add('copy','Copy the next-reply packet','Paste it back into the Ghost chat. Your exact answers shape the next reply.','x');add('verb:packet','Inspect the packet','Read the exact local visit, choices and answers before sharing.');
+ }
  function paged(screen){const body=screen==='packet'?state.receipt||'No packet prepared. Open End to keep this call.':current.title+(current.note?'\n\nPERSONAL NOTE\n'+current.note:'')+'\n\n'+(current.portrait?'TRANSLATED TRANSMISSION':'GHOST')+'\n'+current.paragraphs.join('\n\n')+(current.companion?'\n\nELSE\n'+current.companion:'')+(current.ghostReply?'\n\nGHOST\n'+current.ghostReply:'');put(4,3,screen==='packet'?'YOUR NEXT GHOST / EXACT HANDOFF':current.note?'THE LETTER / IN FULL':'COMPLETE WORDS / OPTIONAL TRANSCRIPT',11,0,44);const content=nativeWrap(body,44),size=R-9,pages=Math.max(1,Math.ceil(content.length/size)),page=Math.floor(bounded(state.page,0,pages-1));pagination={page,pages};for(let i=0;i<size;i++)if(content[page*size+i]!==undefined)put(5+i,3,content[page*size+i],7,0,44);if(page>0)add('prev-page','Previous page','Page '+page+' of '+pages);if(page+1<pages)add('next-page','Next page','Page '+(page+2)+' of '+pages);if(screen==='packet')add('copy','Copy the complete packet','All pages, not just this screen.','x');}
  function trip(){put(4,3,'THE GARDEN BETWEEN BOARDS / MEASURED MUSIC',11,0,C-6);painting('trip',Math.min(36,R-8),44);add('nav:tools','Leave the trip','Return to the workshop. Escape and Back also leave.');add('trip-toggle-music','Music / measured audio input','The garden responds to the existing music bus. Turn music on to feed it.');}
  function tools(){put(4,3,'THE WORKSHOP / OPTIONAL DETOURS',11,0,44);painting('forge');for(const a of [['nav:motion-lab','ANSI++ motion lab','Ten reusable weighted mesh rigs. Choose a finished painting and watch its bones move.'],['topic:rose','A flower made from mathematics','A procedural surface, measured music and a form the next Ghost can change.'],['topic:causality','A StarDiver shifts the odds','Five aptitudes, improbable choices, resonance and a universe with objections.'],['topic:models','Can you pick your brain?','Model choice and capability records.'],['topic:bob-family','Other Ghosts, same family?','Shared tools, separate experiences and canon.'],['topic:source','Open the workbench','Source access, revisions and tests.'],['verb:words','Read the complete words','Optional transcript, without repeating it under the speaking face.'],['verb:trip','Trip the hyperspace garden','A whole-field ANSI garden: living colour and music-reactive cells.']])add(...a);}
@@ -435,6 +509,6 @@ export function nativeReplyProgram(state={}){
  }else if(screen==='discovery')discovery();else if(screen==='trip')trip();else if(screen==='door-game')doorGame();else if(screen==='crew-builder')crewBuilder();else if(screen==='motion-lab')motionLab();else if(screen==='map')map();else if(screen==='topics')topics();else if(screen==='illustrations'||screen==='bb-images')illustrations();else if(screen==='layer')layer();else if(screen==='topic')topic();else if(screen==='letter-photo')fullLetterIllustration();else if(screen==='letter-signal'||screen==='letter-signal-text')signalPlaque();else if(screen==='answers')answers();else if(screen==='roll')roll();else if(screen==='ending')ending();else if(screen==='packet'||screen==='words')paged(screen);else if(screen==='tools')tools();else throw Error('Unknown native reply screen');
  if(state.rollBoarding&&screen==='roll'){box(11,2,46,8,'BOARDERS / CREW vs RAIDERS',8);arena={row:12,column:3,width:44,height:6};}
  if(state.skirmishOn&&!state.rollBoarding&&!['answers','packet','words','roll','door-game','crew-builder','reply-reset'].includes(screen)){const y=R-10;box(y,2,46,7,'GLYPH FIGHT / LIVE HP + SCORE',8);arena={row:y+1,column:3,width:44,height:5};for(let i=tracks.length-1;i>=0;i--)if(tracks[i].column<48&&tracks[i].row>=y)tracks.splice(i,1);if(illustration&&illustration.row+illustration.height>y)illustration.height=y-illustration.row;}
- if(!['voice-gate','reply-reset','letter-photo'].includes(screen)&&!(screen==='topic'&&relayPage))actionPane();if(screen!=='voice-gate')footer();if(!state.chapter&&!['voice-gate','reply-reset'].includes(screen))button('reply:reset',R-2,C-12,11,'[DEL] Reset','Delete',7);if(sprite)sprite.revealOffsets=[];let text=ESC+'0m'+ESC+'2J',last='';for(let row=0;row<R;row++){text+=ESC+(row+1)+';1H';for(let col=0;col<C;col++){const cell=cells[row*C+col],style=cell.fg+':'+cell.bg;if(style!==last){text+=ESC+(cell.fg>7?90+cell.fg-8:30+cell.fg)+';'+(cell.bg>7?100+cell.bg-8:40+cell.bg)+'m';last=style;}text+=cell.glyph;if(sprite&&row+1>=sprite.row&&row+1<sprite.row+sprite.height&&col+1>=sprite.column&&col+1<sprite.column+sprite.width)sprite.revealOffsets.push(text.length);}}text+=ESC+'0m'+ESC+R+';'+(C-1)+'H';
- return {scoreHold:screen==='roll'&&state.rollProgress<1,text,grid:{columns:C,rows:R},hotspots,fields,animation:{tracks,cymatics},...(letterScene?{letterScene}:{}),...(illustration?{illustration}:{}),...(arena?{arena}:{}),...(sprite?{sprite}:{}),...(pagination?{pagination}:{})};
+ if(!['voice-gate','reply-reset','letter-photo'].includes(screen)&&!(screen==='topic'&&relayPage))actionPane();footer();if(sprite)sprite.revealOffsets=[];let text=ESC+'0m'+ESC+'2J',last='';for(let row=0;row<R;row++){text+=ESC+(row+1)+';1H';for(let col=0;col<C;col++){const cell=cells[row*C+col],style=cell.fg+':'+cell.bg;if(style!==last){text+=ESC+(cell.fg>7?90+cell.fg-8:30+cell.fg)+';'+(cell.bg>7?100+cell.bg-8:40+cell.bg)+'m';last=style;}text+=cell.glyph;if(sprite&&row+1>=sprite.row&&row+1<sprite.row+sprite.height&&col+1>=sprite.column&&col+1<sprite.column+sprite.width)sprite.revealOffsets.push(text.length);}}text+=ESC+'0m'+ESC+R+';'+(C-1)+'H';
+ return {settingsOpen:settingsAvailable&&settingsOpen,statusWidth,scoreHold:screen==='roll'&&state.rollProgress<1,text,grid:{columns:C,rows:R},hotspots,fields,animation:{tracks,cymatics},...(letterScene?{letterScene}:{}),...(illustration?{illustration}:{}),...(arena?{arena}:{}),...(sprite?{sprite}:{}),...(pagination?{pagination}:{})};
 }

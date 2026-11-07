@@ -24,7 +24,10 @@
       },
       "reply": {
         "command": "TURN-OUT-OF-TIME",
-        "driver": "authored reply graph"
+        "driver": "authored reply graph",
+        "contentSchema": "friktal.turn-out-of-time.v1",
+        "authoring": "Turn-Out-Of-Time.md",
+        "build": "python3 build.py --reply REPLY.json --reply-voice VOICE.json --output REPLY.html"
       }
     },
     "capabilities": [
@@ -44,6 +47,8 @@
       "ghost-else-speaker-shots",
       "radial-face-emergence",
       "stable-rolling-subtitles",
+      "guided-reply-journeys",
+      "recorded-reply-voice-prefetch",
       "persistent-neural-pcm-cache",
       "shared-audio-cymatics",
       "opening-track-rotation",
@@ -82,18 +87,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 29161,
-      "sha256": "80c69119f71d1129b2e691f94d0ec91ff183f3a134dbf8d30ab8ee5676cc31f4"
+      "bytes": 29243,
+      "sha256": "ada96875f47bc397dc3a55e5774944962e3e3d0c3e40862ec23d89daa210ac54"
     },
     {
       "path": "Runbook-2.29-Packed.md",
-      "bytes": 69438,
-      "sha256": "42c52dcfca1fec187a64cb308ed0b4e5d262c4baad3ed0b216c3da615a72efbe"
+      "bytes": 69690,
+      "sha256": "59adb4f22c651b7e6ea35a2a041e2ae8f31c009d46a1513257c87ff417898980"
     },
     {
       "path": "Runbook-2.29-Readable.md",
-      "bytes": 108568,
-      "sha256": "f6a783602cd2d68588d546aa2f7d6f0a34d061f70ce1fcfd9e6f5f4ccf372583"
+      "bytes": 108965,
+      "sha256": "350c3989903c715648674436d85d1a29817a453257765e5eed0075cdcace04bd"
     },
     {
       "path": "Tools/ChromaticBBS/ANSI-Animation.md",
@@ -157,8 +162,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Native-Response-Host.md",
-      "bytes": 15815,
-      "sha256": "7c3d8084df0d05ce731acc72e432dbdfcb1d99446b4f89f87c4345b07b3025ad"
+      "bytes": 16504,
+      "sha256": "40a9a90c634f83aa9b9262a5492a77d8df4079235ebbb335c40b77fe10874c98"
     },
     {
       "path": "Tools/ChromaticBBS/Onboarding-Arcs.Design-v1.md",
@@ -207,8 +212,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Turn-Out-Of-Time.md",
-      "bytes": 40908,
-      "sha256": "4a2416949ab34b81e32dad72acda88f4125c38a68a8f7e53a08d23ec2a9a6032"
+      "bytes": 43435,
+      "sha256": "fad653fa6277bd93d79fd460464041c787205b520f42d7e625a42fcaf49394c6"
     },
     {
       "path": "Tools/ChromaticBBS/Voice-Performance-2026-10-22.md",
@@ -262,13 +267,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/ansi-scenes.mjs",
-      "bytes": 35963,
-      "sha256": "00dfcd1c43befeddbee97b68959e9961f205c440aac75e82890e10d39d6b7f9a"
+      "bytes": 37223,
+      "sha256": "6be515b3652f6517f9750915aacf9abb3e526a69bc6aa18aa7c18badb470ab34"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-scenes.test.mjs",
-      "bytes": 3763,
-      "sha256": "92128a29116fdb790a17254f2b00ccf90ec41b02bc2e521ae2db8a4af5d351ee"
+      "bytes": 3772,
+      "sha256": "00f7df67c998e7f79efcea8b69416577dcb7ac31c94f9c04aba6df8872dde20e"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-skirmish.mjs",
@@ -427,8 +432,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/build.py",
-      "bytes": 17668,
-      "sha256": "e739ad56057515e28103ac13c7c8aedbb35d30a1776cd33264a5ccc3c2b669eb"
+      "bytes": 18688,
+      "sha256": "e659bab8554f7c090f53bdcd8fc9eea20ecc91c8a9567c9956ec41a4ef5c27e7"
     },
     {
       "path": "Tools/ChromaticBBS/canon.mjs",
@@ -617,8 +622,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/framework.json",
-      "bytes": 1856,
-      "sha256": "5ecfd1a22d85aadcac195af18950f4e57e511722303323df12213e239fec47b9"
+      "bytes": 2117,
+      "sha256": "cca1ebccda04c7cde45e273806c4a1f8697ab71f5e51d084684ff75c6dc41750"
     },
     {
       "path": "Tools/ChromaticBBS/ghostlink-transport.mjs",
@@ -662,8 +667,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/letter-relay-art.mjs",
-      "bytes": 8162,
-      "sha256": "46b6808367ae13261ea72ae60aa5336acbec895cec35a8b3a7fb9237c0bd307b"
+      "bytes": 8153,
+      "sha256": "2a54cb59fdabc502f4f262a8d8449766ba747f91fb7a9d46c8d0ec74a8166977"
     },
     {
       "path": "Tools/ChromaticBBS/letter-relay.mjs",
@@ -912,28 +917,28 @@
     },
     {
       "path": "Tools/ChromaticBBS/native-response-host.mjs",
-      "bytes": 22165,
-      "sha256": "95d0224a473f486a12b0a2bdfe0f64e8c9aa4315011970b6e417ed2077927417"
+      "bytes": 22491,
+      "sha256": "a11f9f52a8053670768611cc3ab28e91d9d30226364a57da59921570058ad187"
     },
     {
       "path": "Tools/ChromaticBBS/native-response-host.test.mjs",
-      "bytes": 18142,
-      "sha256": "0e40390dc977fc356005829faa6e529fafd6c08f09487b2af3235de29d7cfc99"
+      "bytes": 18163,
+      "sha256": "ffef4e11d4d0a43606a5ec34677eb9deae17551cc55e6fb2cb0f3b0f9a1ce481"
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.mjs",
-      "bytes": 58272,
-      "sha256": "251a0d572e42426aa7b6d977d605662c6b54db04d3ba051221243f2e42e13c84"
+      "bytes": 62674,
+      "sha256": "04abe4f0e081b6e8cfd9744fe36e8567914205b221c9ccd38affa197398d4931"
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.test.mjs",
-      "bytes": 19751,
-      "sha256": "5bd172bad754660bcbf54f5947f42158d0bbc3f521f1ab58d6572d2ebf09c708"
+      "bytes": 21031,
+      "sha256": "b5313311958c08e9b98c619a5c3f0facd78050e1bca8ab43f41ae38cde3adec4"
     },
     {
       "path": "Tools/ChromaticBBS/native-routing.test.mjs",
-      "bytes": 20411,
-      "sha256": "0c12947cab2384afc2a97dbefcbc76d93f7f285a1c3504dd4d4e295e9f0a1782"
+      "bytes": 24639,
+      "sha256": "45816a639247566f9c5fa805829c7e3c7224c792a29d3de0e680bd79d54e6fe4"
     },
     {
       "path": "Tools/ChromaticBBS/neural-check.html",
@@ -1037,8 +1042,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/response-theater.mjs",
-      "bytes": 21570,
-      "sha256": "c73422c5c9df9c863765c38c9b38f32b65714f050a38a3e909084caba437c63f"
+      "bytes": 24131,
+      "sha256": "49e1759b0139cfb2e50d4d16efcf9f523393e15c115c25fd74bdcf0130229e39"
     },
     {
       "path": "Tools/ChromaticBBS/response-theater.test.mjs",
@@ -1072,23 +1077,23 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.29-Packed.md",
-      "bytes": 69438,
-      "sha256": "42c52dcfca1fec187a64cb308ed0b4e5d262c4baad3ed0b216c3da615a72efbe"
+      "bytes": 69690,
+      "sha256": "59adb4f22c651b7e6ea35a2a041e2ae8f31c009d46a1513257c87ff417898980"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.29-Readable.md",
-      "bytes": 108568,
-      "sha256": "f6a783602cd2d68588d546aa2f7d6f0a34d061f70ce1fcfd9e6f5f4ccf372583"
+      "bytes": 108965,
+      "sha256": "350c3989903c715648674436d85d1a29817a453257765e5eed0075cdcace04bd"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/comparison.json",
       "bytes": 794,
-      "sha256": "5fbd7c7eb1a60ed1039fea70ccbc3a462413bc656590fa07d7d22ba1d4f338af"
+      "sha256": "f4dcf1d447f61e2cc9ce51c74c20b04b078c096d72926334ceb208f8f6281830"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/token-counts.json",
       "bytes": 432,
-      "sha256": "cb6274b0a60d71a42873bc0c431a4836a00951339e4246098226811ca7dde1bb"
+      "sha256": "bf6305e7ec03867552b955299da61a29ab53ed91dc3d35c03a8ce2718b97ae76"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
@@ -1142,8 +1147,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/speech.mjs",
-      "bytes": 34936,
-      "sha256": "9c04e35fe68f730feab00fa9c9e49f92381979d9d266c58d35a717c879a85f79"
+      "bytes": 35537,
+      "sha256": "f4d58e64c35718b32a7212a7fa3825e3d8cabc1d91eada80c9e6a1280c51f7b0"
     },
     {
       "path": "Tools/ChromaticBBS/stage.mjs",
@@ -1217,8 +1222,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/turn-out-of-time.mjs",
-      "bytes": 54948,
-      "sha256": "560cb18d0e46317ce109c5e2864ed39cc842841cf5cf76a0204aca9bd9daeecc"
+      "bytes": 57352,
+      "sha256": "0cf577adc33db0195190daeb7eb8e130290c8d089c8c78c8ff8e50b7463836d5"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT",
@@ -1362,8 +1367,8 @@
     },
     {
       "path": "framework.json",
-      "bytes": 1856,
-      "sha256": "5ecfd1a22d85aadcac195af18950f4e57e511722303323df12213e239fec47b9"
+      "bytes": 2117,
+      "sha256": "cca1ebccda04c7cde45e273806c4a1f8697ab71f5e51d084684ff75c6dc41750"
     },
     {
       "path": "ghostlink.html",
@@ -1397,13 +1402,13 @@
     },
     {
       "path": "runbook.md",
-      "bytes": 108568,
-      "sha256": "f6a783602cd2d68588d546aa2f7d6f0a34d061f70ce1fcfd9e6f5f4ccf372583"
+      "bytes": 108965,
+      "sha256": "350c3989903c715648674436d85d1a29817a453257765e5eed0075cdcace04bd"
     },
     {
       "path": "surreal-the-door-that-remembers.html",
-      "bytes": 12092102,
-      "sha256": "aa1a5c203b3dc9d101172918af40085114a17e7322bb29d377d84142fc84ee38"
+      "bytes": 12103647,
+      "sha256": "35b88874f97ccb466bbaec65b88a39f1d71449aba7710f3b9cb896f73074a76a"
     },
     {
       "path": "the-suitcase-that-kept-coming-back.html",

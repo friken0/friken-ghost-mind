@@ -128,7 +128,8 @@ export function paintLetterRelay(relay,region,grid,time,{seed=0,held=false,sendA
    label(x,y,'╔'+'═'.repeat(17)+'╗',edge,bg);
    for(let line=1;line<6;line++)label(x,y+line,'║'+' '.repeat(17)+'║',edge,bg);
    parts[part.id].forEach((line,k)=>label(x+1,y+1+k,line,k===2?edge:metal,bg));
-   label(x+1,y+5,'['+area.key+'] '+['FIT INPUT','FIT GAIN','FIT OUTPUT'][hop],edge,bg);
+   label(x+2,y,'['+area.key+']',edge,bg);
+   label(x+1,y+5,part.name,edge,bg);
    label(x,y+6,'╚'+'═'.repeat(17)+'╝',edge,bg);
   }
  }else if(!relay.sent){

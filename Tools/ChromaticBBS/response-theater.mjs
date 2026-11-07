@@ -19,6 +19,42 @@ export function validateTurnOutOfTime(packet){
     ids.add(n.id);const choices=new Set();for(const c of n.choices){if(!text(c.id,80)||choices.has(c.id)||!text(c.label,120)||!text(c.detail,700)||!text(c.target,80))throw Error('Invalid reply choice');choices.add(c.id);}
   }
   if(!ids.has(packet.openingId)||packet.nodes.some(n=>n.choices.some(c=>!ids.has(c.target))))throw Error('Missing reply target');
+  if(packet.journey!==undefined){
+    const {goal,beats,payoff}=packet.journey??{};
+    const line=(value,limit)=>text(value,limit)&&value.trim()===value&&!/[\r\n\t]/.test(value);
+    if(packet.layout||!line(goal,100)||!line(payoff,120)||!Array.isArray(beats)||beats.length<2||beats.length>6||
+       beats[0]?.node!==packet.openingId)throw Error('Journey needs an opening, a goal, 2–6 beats and a payoff');
+    if(packet.nodes.some(n=>!n.ansiArt))throw Error('Every guided scene needs an explicit ANSI painting');
+    if(packet.replyCover?.art==='city'||packet.nodes.some(n=>n.ansiArt==='city'))
+      throw Error('The legacy city painting is branded. Use bitcoin-city explicitly, or choose a scene such as harbor.');
+    const byId=new Map(packet.nodes.map(n=>[n.id,n]));
+    if(new Set(beats.map(b=>b?.node)).size!==beats.length)throw Error('Journey beats must be distinct');
+    for(const [i,beat] of beats.entries()){
+      const n=byId.get(beat?.node),next=beats[i+1];
+      if(!n||!line(beat.instruction,100)||n.title.length>88)throw Error('Journey beat needs a node, short title and instruction');
+      if(next?!n.choices.some(c=>c.id===beat.advance&&c.target===next.node):beat.advance!==undefined)
+        throw Error('Journey advance must be a choice leading to the next beat');
+    }
+    function reachable(without){
+      const seen=new Set(),pending=[packet.openingId];
+      while(pending.length){
+        const id=pending.pop();if(seen.has(id))continue;seen.add(id);
+        for(const c of byId.get(id).choices)if(id!==without?.node||c.id!==without.advance)pending.push(c.target);
+      }
+      return seen;
+    }
+    if(reachable().size!==ids.size)throw Error('Journey contains an unreachable scene');
+    for(const [i,beat] of beats.slice(0,-1).entries()){
+      const reachableWithoutAdvance=reachable(beat);
+      if(beats.slice(i+1).some(b=>reachableWithoutAdvance.has(b.node)))throw Error('Side doors must not skip a journey beat');
+    }
+    if(packet.answerPrompts!==undefined){
+      const prompts=packet.answerPrompts;
+      if(!prompts||!['question','principle'].every(k=>line(prompts[k],80)))throw Error('Journey answer prompts need question and principle');
+    }
+    if(packet.author!==undefined&&(!packet.author||!['surface','modelFamily','exactRuntimeModel'].every(k=>line(packet.author[k],80))))
+      throw Error('Reply author metadata needs surface, model family and exact runtime model (or unknown)');
+  }
   if(packet.relay!==undefined){
     const {entry,reward,contact}=packet.relay??{};
     if(packet.layout!=='letter'||!ids.has(entry)||!ids.has(reward)||entry===reward||entry===packet.openingId||reward===packet.openingId||
@@ -48,7 +84,7 @@ export function recordReplyVisit(value,entry,packet){
     const c=packet.nodes.find(n=>n.id===out.current)?.choices.find(c=>c.id===entry.id&&c.target===entry.to);
     if(!c||entry.from!==out.current)throw Error('Choice is not pending');
     out.current=c.target;
-    if(c.id==='keep-original'||c.id==='label-repair')out.selectedTelling=c.target;
+    if(!packet.journey&&(c.id==='keep-original'||c.id==='label-repair'))out.selectedTelling=c.target;
   }else if(entry.kind==='answer'){if(!['question','principle'].includes(entry.id)||typeof entry.text!=='string'||entry.text.length>1200)throw Error('Invalid player answer');out.answers={...(out.answers||{}),[entry.id]:entry.text};
   }else if(entry.kind==='roll'){const r=entry.result;if(!r||!Number.isInteger(r.value)||r.value<0||r.value>8||r.dc!==14.1)throw Error('Invalid demo target');const exact=causalResult(r.die,r.value,14.1,{precision:2,below:.2,above:.3,bonus:{signal:1}});if(r.total!==exact.total||r.grade!==exact.grade||r.success!==exact.success)throw Error('Invalid demo arithmetic');if(r.statId!==undefined&&!['guts','focus','glitch','awe','insight'].includes(r.statId))throw Error('Invalid roll aptitude');out.roll={...exact,...(r.statId?{statId:r.statId}:{})};
   }else if(entry.kind==='discovery'){if(!canDiscover(entry.id,out,entry.source))throw Error('Discovery is not available');out.discoveries=[...discoveryIds(out),entry.id];
@@ -118,10 +154,13 @@ export function mountResponseTheater(root,packet,actions={}){
     const read=prose.firstElementChild;if(!read)return;
     const rects=read.getClientRects(),last=rects[rects.length-1],viewport=prose.getBoundingClientRect();
     if(last&&last.bottom>viewport.bottom-18)prose.scrollTop+=last.bottom-viewport.bottom+22;
-  });readingObserver.observe(prose,{childList:true,subtree:true,characterData:true});
+  });
+  if(!actions.native)readingObserver.observe(prose,{childList:true,subtree:true,characterData:true});
   function show(id){
     current=data.nodes.find(n=>n.id===id);if(!current)throw Error('Unknown reply node');
-    disclosure.hidden=true;handoff.hidden=true;transcript.setAttribute('aria-expanded','false');cover(false);root.dataset.topic=id;terminalArt.textContent=[
+    disclosure.hidden=true;handoff.hidden=true;transcript.setAttribute('aria-expanded','false');cover(false);root.dataset.topic=id;
+    if(actions.native){boot.hidden=true;status.textContent='';return;}
+    terminalArt.textContent=[
 '                 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄',
 '               ▄▀  F R I K E N . G H O S T       ▀▄',
 '              ▐  ╔═══════════════════════════════╗  ▌',

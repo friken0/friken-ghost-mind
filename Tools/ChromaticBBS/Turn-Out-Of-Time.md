@@ -535,7 +535,52 @@ for current/future cells, dense art and captions; do not mutate source indices,
 serial progress, input geometry, actor voices or RNG. Source ANSI remains
 portable16-colour data. The selected theme survives topic navigation.
 
-### Voice delivery for authored letters
+### Authoring the route for a new reply
+
+Build the reply around one reason for calling this person. The opener gives
+them a job they can explain in one sentence. Each main scene lets them do
+something toward that job, and the next scene shows what their action did.
+An optional scene earns its place when it helps the caller decide or learn
+something they can use. Put it where that information matters.
+
+Add a `journey` to the standard `friktal.turn-out-of-time.v1` reply packet.
+Each beat points at a normal node. Its `advance` is the ID of that node’s
+choice that leads to the next beat. The last beat has no `advance`.
+
+```json
+{
+  "goal": "Return the borrowed lamp before the night ferry leaves.",
+  "beats": [
+    {"node": "hello", "instruction": "Collect the lamp from the dock.", "advance": "collect"},
+    {"node": "dock", "instruction": "Put the lamp on the loading winch.", "advance": "send"},
+    {"node": "lit", "instruction": "Look across to see if the ferryman caught it."}
+  ],
+  "payoff": "The ferryman raises your lamp. The last crossing can leave."
+}
+```
+
+Use two to six beats, beginning at `openingId`. Goal and instruction take up
+to 100 characters each, the payoff takes 120, and beat titles take 88. The
+validator rejects unreachable scenes and side doors that skip a required
+choice. The terminal puts the advance first in gold, labels the optional
+doors, and exposes the outcome and return packet after the last beat.
+Optional `answerPrompts` define two short questions under `question` and
+`principle`. Answers stay local until the caller copies and shares them.
+Optional `author` fields record `surface`, `modelFamily`, and
+`exactRuntimeModel`. Use `unknown` for details the host did not expose.
+
+Every guided scene specifies `ansiArt` to show what the caller is acting on,
+including scenes with packaged photos. Use `bitcoin-city` for the branded
+tribute and `harbor` for a neutral waterfront. Keep animation on the thing that
+changes. For an optional trial, put its reason,
+controls, stakes and result in the story around it. Test the opening, a
+side door and Back, the final payoff, and the exact packet. Read the draft
+with sound off and listen once without watching. The goal and next action
+should make sense either way. Use `--reply-draft --output REVIEW.html` for a
+text-only build. The dedicated letter relay and Surreal specimen retain
+their existing authoring profiles.
+
+### Voice delivery for authored replies
 
 Render the entire known cast on the author machine before shipping. The clip
 inventory binds the spoken title, pronunciation, text, voice and speed.
@@ -557,8 +602,10 @@ model and the selected voice vectors in the local model directory. The
 recordings are 24 kHz mono MP3 with phonemes for the face rig. The personal
 letter packages them inside its encrypted delivery envelope.
 Publish only approved public audio and source. The standalone response begins
-decoding the opening on load, before dial. Each authored destination waits for
-the complete cast, then waits for the ANSI draw before speaking. A failed clip
+decoding the opening on load, before dial. Recorded builds also predecode
+up to three passages for each of the two likely next pages, main-route
+choice first. Each authored destination waits for the complete cast, then
+waits for the ANSI draw before speaking. A failed clip
 has retry and explicit voice-off reading paths. Rebuild and redeploy every
 standalone response that should receive a shared framework change.
 The source kit carries the renderer and script. Recover the original public

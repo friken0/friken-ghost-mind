@@ -5,7 +5,8 @@ Story turns and Turns-Out-Of-Time use the same retained ANSI++ host by default.
 
 Build a fresh chapter: `python3 build.py --chapter CHAPTER.json --output MEETING.html`.
 Build a personal reply: `python3 build.py --reply REPLY.json --reply-voice voice.json --output REPLY.html`.
-See [voice authoring](Tools/ChromaticBBS/Turn-Out-Of-Time.md).
+New replies define a guided route and ship with recorded Ghost and Else
+passages. See [reply authoring](Tools/ChromaticBBS/Turn-Out-Of-Time.md).
 The Surreal sample is `python3 build.py --turn-out-of-time`. Historical UI needs
 `--legacy-carrier --host-reason TEXT`; never use it accidentally for BOOT.
 

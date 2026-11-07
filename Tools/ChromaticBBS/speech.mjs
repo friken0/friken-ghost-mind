@@ -213,14 +213,30 @@ export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,comp
     get('voice-note').textContent=preferred.engine==='neural'?'Kokoro 82M / local neural speech. Default audition candidate: low-register Michael at natural pitch and 0.94 speed. Else uses Heart, a separate female cast. Choose the cast by ear. CPU q8 starts with the smaller ~92 MB download; CPU q4 (~305 MB) is an explicit option. Performance is measured on real dialogue, with no startup benchmark. Pinned runtime, model and voice assets persist in this browser for offline reuse when storage permits. Your selected cast stays fixed through loading, pauses and replay. A slow preparation never switches to a device voice; choose Device explicitly if wanted. WebGPU speech remains quarantined for audio corruption. Story text stays on this device. Ghost speaks directly; alien calls use source vocals. Scene descriptions stay silent. Read-along follows actual playback; phoneme positions within PCM are approximate.':supported?(voices.length?'Ghost dialogue and alien source vocals; scene descriptions are silent. David recording generator is on the Windows checkout; the explicit Device cast is separate. Select by listening. Service voices may send text through their provider.':'Waiting for the browser’s voice inventory. Captions are ready.'):'This host has no speech API. Ghost and alien captions remain readable.';
   }
   async function pumpWarm(){
-    if(!warmQueue.length||warmBusy||(active&&!backgroundSafe)||!enabled||silent||document.hidden||preferred.engine!=='neural'||neural.pending)return;
+    if(!warmQueue.length||warmBusy||!enabled||silent||document.hidden||
+       (!packaged&&((active&&!backgroundSafe)||preferred.engine!=='neural'||neural.pending)))return;
     warmBusy=true;const job=warmQueue.shift();
-    try{await neural.prepare(job.text,{voice:job.voice,speed:job.speed});warmDone++;onState?.({phase:'caching',text:'CACHING LIKELY REPLIES '+warmDone+'/'+warmTotal+' / YOUR MOVE'});}
-    catch(error){if(error.message==='cancelled')warmQueue.unshift(job);else{report('Voice cache paused: '+error.message);warmQueue=[];}}
-    finally{warmBusy=false;if(warmQueue.length&&(!active||backgroundSafe)&&!document.hidden&&enabled)queueMicrotask(pumpWarm);}
+    try{
+      if(packaged)await prepareRecorded(job);
+      else{await neural.prepare(job.text,{voice:job.voice,speed:job.speed});warmDone++;onState?.({phase:'caching',text:'CACHING LIKELY REPLIES '+warmDone+'/'+warmTotal+' / YOUR MOVE'});}
+    }
+    catch(error){if(!packaged){if(error.message==='cancelled')warmQueue.unshift(job);else{report('Voice cache paused: '+error.message);warmQueue=[];}}}
+    finally{warmBusy=false;if(warmQueue.length&&(packaged||!active||backgroundSafe)&&!document.hidden&&enabled)queueMicrotask(pumpWarm);}
   }
   function primeFrames(frames){
     if(!Array.isArray(frames)||frames.length>32)throw Error('At most32 likely reply frames');
+    if(packaged){
+      const next=new Map();
+      for(const frame of frames.slice(1,3)){
+        for(const job of authoredVoiceClips([frame]).slice(0,3)){
+          const key=voiceClipKey(job.text,job.voice,job.speed);
+          if(Object.hasOwn(recordings,key)&&!recorded.has(key))next.set(key,job);
+        }
+      }
+      warmQueue=[...next.values()];
+      queueMicrotask(pumpWarm);
+      return;
+    }
     const plan=speechCastSnapshot(preferred,casting),seen=new Set(),queue=[],lanes=frames.map(frame=>speechSegments(frame,casting).filter(s=>s.role!=='alien').flatMap(segment=>neuralPassages(segment.text).map(unit=>({text:speechText(unit.text),voice:plan[segment.role].neural,speed:plan[segment.role].rate}))));
     // Complete the current destination first, then give each probable next
     // destination three opening passages before filling deeper paragraphs.
@@ -233,13 +249,10 @@ export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,comp
       segment.role==='alien'?[{segment,isAlien:true}]:(plan.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
   }
   const packaged=Object.keys(recordings).length>0,recorded=new Map();
-  async function prepareTask(task,plan){
-    const text=speechText(task.unit.text),{neural:voice,rate:speed}=plan[task.segment.role],key=voiceClipKey(text,voice,speed);
+  async function prepareRecorded({text,voice,speed}){
+    const key=voiceClipKey(text,voice,speed);
     const clip=Object.hasOwn(recordings,key)?recordings[key]:null;
-    if(!clip){
-      if(packaged)throw Error('This passage is missing from the authored voice pack');
-      return neural.prepare(text,{voice,speed});
-    }
+    if(!clip)throw Error('This passage is missing from the authored voice pack');
     if(!recorded.has(key)){
       const load=(async()=>{
         const bytes=Uint8Array.from(atob(clip.audio),char=>char.charCodeAt(0));
@@ -255,6 +268,10 @@ export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,comp
       if(recorded.size>48)recorded.delete(recorded.keys().next().value);
     }
     return recorded.get(key);
+  }
+  function prepareTask(task,plan){
+    const text=speechText(task.unit.text),{neural:voice,rate:speed}=plan[task.segment.role];
+    return packaged?prepareRecorded({text,voice,speed}):neural.prepare(text,{voice,speed});
   }
   const canPrepare=frame=>!packaged||authoredVoiceClips([frame]).every(({text,voice,speed})=>Object.hasOwn(recordings,voiceClipKey(text,voice,speed)));
   async function prepareFrame(frame,{signal,progress}={}){

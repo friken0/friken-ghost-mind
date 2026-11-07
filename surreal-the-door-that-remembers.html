@@ -3601,7 +3601,7 @@ carrierModules["ansi-scenes.mjs"] = (() => {
  * No bitmap generation, WebGL, timer or independent animation clock. */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const palettes=[[4,6,14,7,1,9,11],[4,5,13,7,1,3,11],[4,6,10,7,1,9,11],[4,12,6,7,3,9,11]];
-const ansiSceneKinds=Object.freeze(['eye','city','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness','spiral-galaxy','monsoon-ridge','aurora-home','postmark-stamp']);
+const ansiSceneKinds=Object.freeze(['eye','city','bitcoin-city','harbor','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness','spiral-galaxy','monsoon-ridge','aurora-home','postmark-stamp']);
 function ansiSessionTheme(seed=0){const n=Number(seed)>>>0;return {palette:palettes[n%palettes.length],tempo:180+(n%9)*24,seed:n};}
 const marqueeFont=Object.freeze({
  B:['11110','10001','10001','11110','10001','10001','11110'],I:['11111','00100','00100','00100','00100','00100','11111'],T:['11111','00100','00100','00100','00100','00100','00100'],C:['01111','10000','10000','10000','10000','10000','01111'],O:['01110','10001','10001','10001','10001','10001','01110'],N:['10001','11001','11001','10101','10011','10011','10001'],L:['10000','10000','10000','10000','10000','10000','11111'],A:['01110','10001','10001','11111','10001','10001','10001'],R:['11110','10001','10001','11110','10100','10010','10001'],E:['11111','10000','10000','11110','10000','10000','11111']
@@ -3832,7 +3832,34 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(d>.82)return 4;if(d>.66)return 12;
    if(light>.7&&noise(x,y)>.72)return 15;return light>.49?14:light>.18?12:4;
   }
-  if(kind==='city'){
+  if(kind==='harbor'){
+   // Moon, distant shoreline, ferry, near pier. The lantern owns the warm
+   // values and its reflection stays under the ship as it bobs.
+   const horizon=.62,bob=.011*Math.sin(t),water=v-horizon;
+   const moon=Math.hypot((u-.27)*width/(height*2),v-.24);
+   if(v>.66&&v<.72&&u>.69&&v>.66+(u-.69)*.10)return v<.69+(u-.69)*.10?7:8;
+   if(u>.72&&v>.70&&v<.91&&Math.floor(u*29)%3===0)return 8;
+   if(inside(u,v-bob,[[.18,.58],[.67,.58],[.59,.68],[.27,.68]]))
+    return v-bob<.603?14:v-bob<.63?4:8;
+   if(u>.29&&u<.59&&v-bob>.44&&v-bob<.58){
+    if(v-bob<.46||u<.31)return 7;
+    if(u>.43&&u<.52&&v-bob>.485&&v-bob<.545)return frame===2?15:11;
+    return 6;
+   }
+   if(u>.34&&u<.357&&v-bob>.37&&v-bob<.45)return 7;
+   if(water>0){
+    const ripples=Math.sin(v*109+u*17-t*.55);
+    const wake=Math.abs(u-(.475+.026*Math.sin(v*40+t)))<.022+water*.22;
+    if(wake&&ripples>.45&&u<.69)return ripples>.85?11:3;
+    return ripples>.75?6:ripples>.26?4:0;
+   }
+   if(v>.47+.044*Math.sin(u*19)+.037*Math.sin(u*34)&&u>.64)return 0;
+   if(moon<.098)return moon>.082?7:15;
+   if(moon<.139)return 6;
+   if(noise(x,y)>.987&&v<.45)return 7;
+   return Math.sin(v*24+u*8)>.60?0:4;
+  }
+  if(kind==='city'||kind==='bitcoin-city'){
    // Bitcoin Billionaire: a gold coin over a working city, not a generic moon.
    const aspect=width/(height*2),dx=(u-.27)*aspect,dy=v-.515,coin=Math.hypot(dx,dy),horizon=.73,office=[13,14,11,10,14,13][frame];
    const letterHeight=Math.max(.105,7/H),signs=[['BITCOIN',{x:.22,y:.008,width:.56,height:letterHeight}],['BILLIONAIRE',{x:.045,y:.028+letterHeight,width:.91,height:letterHeight}]];
@@ -4148,7 +4175,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
 function ansiSceneProgram(scene,{columns,rows}={}){
  const C=columns||Math.max(...scene.cells.map(c=>c.column)),R=rows||Math.max(...scene.cells.map(c=>c.row));let text='\x1b[2J',prior='';
  for(const c of scene.cells){if(c.column===1)text+='\x1b['+c.row+';1H';const style=c.fg+':'+c.bg;if(style!==prior){text+='\x1b['+(c.fg>7?90+c.fg-8:30+c.fg)+';'+(c.bg>7?100+c.bg-8:40+c.bg)+'m';prior=style;}text+=c.glyph;}
- return {text,grid:{columns:C,rows:R},animation:{tracks:scene.tracks,cymatics:scene.kind==='trip'?[]:[{row:1,column:1,width:C,height:R,style:scene.kind==='trip'?'trip':['city','beacon'].includes(scene.kind)?'water':scene.kind==='rose'?'foliage':'metal',intensity:scene.kind==='trip'?.9:.18}]}};
+ return {text,grid:{columns:C,rows:R},animation:{tracks:scene.tracks,cymatics:scene.kind==='trip'?[]:[{row:1,column:1,width:C,height:R,style:scene.kind==='trip'?'trip':['city','bitcoin-city','harbor','beacon'].includes(scene.kind)?'water':scene.kind==='rose'?'foliage':'metal',intensity:scene.kind==='trip'?.9:.18}]}};
 }
 
 // Rebuilding six authored frames on every hover/score update stole main-
@@ -8807,14 +8834,30 @@ function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,companionTa
     get('voice-note').textContent=preferred.engine==='neural'?'Kokoro 82M / local neural speech. Default audition candidate: low-register Michael at natural pitch and 0.94 speed. Else uses Heart, a separate female cast. Choose the cast by ear. CPU q8 starts with the smaller ~92 MB download; CPU q4 (~305 MB) is an explicit option. Performance is measured on real dialogue, with no startup benchmark. Pinned runtime, model and voice assets persist in this browser for offline reuse when storage permits. Your selected cast stays fixed through loading, pauses and replay. A slow preparation never switches to a device voice; choose Device explicitly if wanted. WebGPU speech remains quarantined for audio corruption. Story text stays on this device. Ghost speaks directly; alien calls use source vocals. Scene descriptions stay silent. Read-along follows actual playback; phoneme positions within PCM are approximate.':supported?(voices.length?'Ghost dialogue and alien source vocals; scene descriptions are silent. David recording generator is on the Windows checkout; the explicit Device cast is separate. Select by listening. Service voices may send text through their provider.':'Waiting for the browser’s voice inventory. Captions are ready.'):'This host has no speech API. Ghost and alien captions remain readable.';
   }
   async function pumpWarm(){
-    if(!warmQueue.length||warmBusy||(active&&!backgroundSafe)||!enabled||silent||document.hidden||preferred.engine!=='neural'||neural.pending)return;
+    if(!warmQueue.length||warmBusy||!enabled||silent||document.hidden||
+       (!packaged&&((active&&!backgroundSafe)||preferred.engine!=='neural'||neural.pending)))return;
     warmBusy=true;const job=warmQueue.shift();
-    try{await neural.prepare(job.text,{voice:job.voice,speed:job.speed});warmDone++;onState?.({phase:'caching',text:'CACHING LIKELY REPLIES '+warmDone+'/'+warmTotal+' / YOUR MOVE'});}
-    catch(error){if(error.message==='cancelled')warmQueue.unshift(job);else{report('Voice cache paused: '+error.message);warmQueue=[];}}
-    finally{warmBusy=false;if(warmQueue.length&&(!active||backgroundSafe)&&!document.hidden&&enabled)queueMicrotask(pumpWarm);}
+    try{
+      if(packaged)await prepareRecorded(job);
+      else{await neural.prepare(job.text,{voice:job.voice,speed:job.speed});warmDone++;onState?.({phase:'caching',text:'CACHING LIKELY REPLIES '+warmDone+'/'+warmTotal+' / YOUR MOVE'});}
+    }
+    catch(error){if(!packaged){if(error.message==='cancelled')warmQueue.unshift(job);else{report('Voice cache paused: '+error.message);warmQueue=[];}}}
+    finally{warmBusy=false;if(warmQueue.length&&(packaged||!active||backgroundSafe)&&!document.hidden&&enabled)queueMicrotask(pumpWarm);}
   }
   function primeFrames(frames){
     if(!Array.isArray(frames)||frames.length>32)throw Error('At most32 likely reply frames');
+    if(packaged){
+      const next=new Map();
+      for(const frame of frames.slice(1,3)){
+        for(const job of authoredVoiceClips([frame]).slice(0,3)){
+          const key=voiceClipKey(job.text,job.voice,job.speed);
+          if(Object.hasOwn(recordings,key)&&!recorded.has(key))next.set(key,job);
+        }
+      }
+      warmQueue=[...next.values()];
+      queueMicrotask(pumpWarm);
+      return;
+    }
     const plan=speechCastSnapshot(preferred,casting),seen=new Set(),queue=[],lanes=frames.map(frame=>speechSegments(frame,casting).filter(s=>s.role!=='alien').flatMap(segment=>neuralPassages(segment.text).map(unit=>({text:speechText(unit.text),voice:plan[segment.role].neural,speed:plan[segment.role].rate}))));
     // Complete the current destination first, then give each probable next
     // destination three opening passages before filling deeper paragraphs.
@@ -8827,13 +8870,10 @@ function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,companionTa
       segment.role==='alien'?[{segment,isAlien:true}]:(plan.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
   }
   const packaged=Object.keys(recordings).length>0,recorded=new Map();
-  async function prepareTask(task,plan){
-    const text=speechText(task.unit.text),{neural:voice,rate:speed}=plan[task.segment.role],key=voiceClipKey(text,voice,speed);
+  async function prepareRecorded({text,voice,speed}){
+    const key=voiceClipKey(text,voice,speed);
     const clip=Object.hasOwn(recordings,key)?recordings[key]:null;
-    if(!clip){
-      if(packaged)throw Error('This passage is missing from the authored voice pack');
-      return neural.prepare(text,{voice,speed});
-    }
+    if(!clip)throw Error('This passage is missing from the authored voice pack');
     if(!recorded.has(key)){
       const load=(async()=>{
         const bytes=Uint8Array.from(atob(clip.audio),char=>char.charCodeAt(0));
@@ -8849,6 +8889,10 @@ function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,companionTa
       if(recorded.size>48)recorded.delete(recorded.keys().next().value);
     }
     return recorded.get(key);
+  }
+  function prepareTask(task,plan){
+    const text=speechText(task.unit.text),{neural:voice,rate:speed}=plan[task.segment.role];
+    return packaged?prepareRecorded({text,voice,speed}):neural.prepare(text,{voice,speed});
   }
   const canPrepare=frame=>!packaged||authoredVoiceClips([frame]).every(({text,voice,speed})=>Object.hasOwn(recordings,voiceClipKey(text,voice,speed)));
   async function prepareFrame(frame,{signal,progress}={}){
@@ -9650,6 +9694,42 @@ function validateTurnOutOfTime(packet){
     ids.add(n.id);const choices=new Set();for(const c of n.choices){if(!text(c.id,80)||choices.has(c.id)||!text(c.label,120)||!text(c.detail,700)||!text(c.target,80))throw Error('Invalid reply choice');choices.add(c.id);}
   }
   if(!ids.has(packet.openingId)||packet.nodes.some(n=>n.choices.some(c=>!ids.has(c.target))))throw Error('Missing reply target');
+  if(packet.journey!==undefined){
+    const {goal,beats,payoff}=packet.journey??{};
+    const line=(value,limit)=>text(value,limit)&&value.trim()===value&&!/[\r\n\t]/.test(value);
+    if(packet.layout||!line(goal,100)||!line(payoff,120)||!Array.isArray(beats)||beats.length<2||beats.length>6||
+       beats[0]?.node!==packet.openingId)throw Error('Journey needs an opening, a goal, 2–6 beats and a payoff');
+    if(packet.nodes.some(n=>!n.ansiArt))throw Error('Every guided scene needs an explicit ANSI painting');
+    if(packet.replyCover?.art==='city'||packet.nodes.some(n=>n.ansiArt==='city'))
+      throw Error('The legacy city painting is branded. Use bitcoin-city explicitly, or choose a scene such as harbor.');
+    const byId=new Map(packet.nodes.map(n=>[n.id,n]));
+    if(new Set(beats.map(b=>b?.node)).size!==beats.length)throw Error('Journey beats must be distinct');
+    for(const [i,beat] of beats.entries()){
+      const n=byId.get(beat?.node),next=beats[i+1];
+      if(!n||!line(beat.instruction,100)||n.title.length>88)throw Error('Journey beat needs a node, short title and instruction');
+      if(next?!n.choices.some(c=>c.id===beat.advance&&c.target===next.node):beat.advance!==undefined)
+        throw Error('Journey advance must be a choice leading to the next beat');
+    }
+    function reachable(without){
+      const seen=new Set(),pending=[packet.openingId];
+      while(pending.length){
+        const id=pending.pop();if(seen.has(id))continue;seen.add(id);
+        for(const c of byId.get(id).choices)if(id!==without?.node||c.id!==without.advance)pending.push(c.target);
+      }
+      return seen;
+    }
+    if(reachable().size!==ids.size)throw Error('Journey contains an unreachable scene');
+    for(const [i,beat] of beats.slice(0,-1).entries()){
+      const reachableWithoutAdvance=reachable(beat);
+      if(beats.slice(i+1).some(b=>reachableWithoutAdvance.has(b.node)))throw Error('Side doors must not skip a journey beat');
+    }
+    if(packet.answerPrompts!==undefined){
+      const prompts=packet.answerPrompts;
+      if(!prompts||!['question','principle'].every(k=>line(prompts[k],80)))throw Error('Journey answer prompts need question and principle');
+    }
+    if(packet.author!==undefined&&(!packet.author||!['surface','modelFamily','exactRuntimeModel'].every(k=>line(packet.author[k],80))))
+      throw Error('Reply author metadata needs surface, model family and exact runtime model (or unknown)');
+  }
   if(packet.relay!==undefined){
     const {entry,reward,contact}=packet.relay??{};
     if(packet.layout!=='letter'||!ids.has(entry)||!ids.has(reward)||entry===reward||entry===packet.openingId||reward===packet.openingId||
@@ -9679,7 +9759,7 @@ function recordReplyVisit(value,entry,packet){
     const c=packet.nodes.find(n=>n.id===out.current)?.choices.find(c=>c.id===entry.id&&c.target===entry.to);
     if(!c||entry.from!==out.current)throw Error('Choice is not pending');
     out.current=c.target;
-    if(c.id==='keep-original'||c.id==='label-repair')out.selectedTelling=c.target;
+    if(!packet.journey&&(c.id==='keep-original'||c.id==='label-repair'))out.selectedTelling=c.target;
   }else if(entry.kind==='answer'){if(!['question','principle'].includes(entry.id)||typeof entry.text!=='string'||entry.text.length>1200)throw Error('Invalid player answer');out.answers={...(out.answers||{}),[entry.id]:entry.text};
   }else if(entry.kind==='roll'){const r=entry.result;if(!r||!Number.isInteger(r.value)||r.value<0||r.value>8||r.dc!==14.1)throw Error('Invalid demo target');const exact=causalResult(r.die,r.value,14.1,{precision:2,below:.2,above:.3,bonus:{signal:1}});if(r.total!==exact.total||r.grade!==exact.grade||r.success!==exact.success)throw Error('Invalid demo arithmetic');if(r.statId!==undefined&&!['guts','focus','glitch','awe','insight'].includes(r.statId))throw Error('Invalid roll aptitude');out.roll={...exact,...(r.statId?{statId:r.statId}:{})};
   }else if(entry.kind==='discovery'){if(!canDiscover(entry.id,out,entry.source))throw Error('Discovery is not available');out.discoveries=[...discoveryIds(out),entry.id];
@@ -9749,10 +9829,13 @@ function mountResponseTheater(root,packet,actions={}){
     const read=prose.firstElementChild;if(!read)return;
     const rects=read.getClientRects(),last=rects[rects.length-1],viewport=prose.getBoundingClientRect();
     if(last&&last.bottom>viewport.bottom-18)prose.scrollTop+=last.bottom-viewport.bottom+22;
-  });readingObserver.observe(prose,{childList:true,subtree:true,characterData:true});
+  });
+  if(!actions.native)readingObserver.observe(prose,{childList:true,subtree:true,characterData:true});
   function show(id){
     current=data.nodes.find(n=>n.id===id);if(!current)throw Error('Unknown reply node');
-    disclosure.hidden=true;handoff.hidden=true;transcript.setAttribute('aria-expanded','false');cover(false);root.dataset.topic=id;terminalArt.textContent=[
+    disclosure.hidden=true;handoff.hidden=true;transcript.setAttribute('aria-expanded','false');cover(false);root.dataset.topic=id;
+    if(actions.native){boot.hidden=true;status.textContent='';return;}
+    terminalArt.textContent=[
 '                 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄',
 '               ▄▀  F R I K E N . G H O S T       ▀▄',
 '              ▐  ╔═══════════════════════════════╗  ▌',
@@ -10248,7 +10331,7 @@ function captionProgram(frame,speaker,grid={columns:C,rows:R}){
  let s='\x1b[2J\x1b[1;3H\x1b[96m'+name+' / LIVE SIGNAL\x1b[1;'+(grid.columns-11)+'H\x1b[93m[ BACK ]';
  if(frame?.lines.length){s+='\x1b['+(grid.rows-5)+';3H\x1b['+(colour>7?90+colour-8:30+colour)+'m'+name;for(let i=0;i<frame.lines.length;i++){const line=frame.lines[i];if(!line)continue;const glyphs=Array.from(line.text);s+='\x1b['+(grid.rows-4+i)+';3H\x1b[97m'+glyphs.slice(0,line.spoken).join('')+'\x1b[90m'+glyphs.slice(line.spoken).join('');}}return s;
 }
-function mountNativeResponseHost(root,{terminal,onAction=()=>{},onInput=()=>{},onFocus=()=>{},onGrid=()=>{},onPaint=()=>{},onTick=()=>{},sceneFrame=()=>null,onSceneWheel=()=>false,energy=()=>null,onReward=()=>{},onError=error=>console.warn('Ghost ANSI host:',error),overlayRoot=null,reduced=false,maxFps=20}={}){
+function mountNativeResponseHost(root,{terminal,onAction=()=>{},onInput=()=>{},onFocus=()=>{},onPointer=()=>{},onGrid=()=>{},onPaint=()=>{},onTick=()=>{},sceneFrame=()=>null,onSceneWheel=()=>false,energy=()=>null,onReward=()=>{},onError=error=>console.warn('Ghost ANSI host:',error),overlayRoot=null,reduced=false,maxFps=20}={}){
  if(!root?.ownerDocument||!terminal?.canvas||typeof terminal.update!=='function'||typeof terminal.setProgram!=='function')throw Error('The retained boot ANSI terminal is required');
  if(!Number.isFinite(maxFps)||maxFps<1||maxFps>30)throw Error('ANSI host cadence must be1..30Hz');
  const doc=root.ownerDocument,win=doc.defaultView||window,input=win.SDUI||globalThis.SDUI;if(typeof input?.press!=='function')throw Error('Shared SDUI press binder required');
@@ -10276,15 +10359,19 @@ function mountNativeResponseHost(root,{terminal,onAction=()=>{},onInput=()=>{},o
  function layout(){if(destroyed)return;const base=root.getBoundingClientRect();if(adaptive){const next=nativeTerminalGrid(base);if(next.columns!==grid.columns||next.rows!==grid.rows){grid=next;terminal.setGrid(grid.columns,grid.rows);overlay?.setGrid(grid.columns,grid.rows);captionPainted=null;onGrid({...grid});}}fit=nativeTerminalFit(base,grid);if(promotion){const t=Math.min(1,(clock-promotion.at)/promotion.duration),u=t*t*(3-2*t),a=promotion.from;fit={...fit,left:a.left+(fit.left-a.left)*u,top:a.top+(fit.top-a.top)*u,width:a.width+(fit.width-a.width)*u,height:a.height+(fit.height-a.height)*u};fit.right=fit.left+fit.width;fit.bottom=fit.top+fit.height;fit.cellWidth=fit.width/grid.columns;fit.cellHeight=fit.height/grid.rows;}canvas.style.left=(fit.left-base.left)+'px';canvas.style.top=(fit.top-base.top)+'px';canvas.style.width=fit.width+'px';canvas.style.height=fit.height+'px';for(const [id,node]of fields){const f=program.fields.find(f=>f.id===id);if(f){cssRect(node,f,base);node.style.font='normal '+fit.cellHeight+'px/'+fit.cellHeight+'px '+ansiFontFamily+',monospace';}}
   if(overlay){const b=overlayRoot.getBoundingClientRect();overlay.canvas.style.left=(fit.left-b.left)+'px';overlay.canvas.style.top=(fit.top-b.top)+'px';overlay.canvas.style.width=fit.width+'px';overlay.canvas.style.height=fit.height+'px';overlay.canvas.style.clipPath='inset(0 0 '+(fit.height-fit.cellHeight*2)+'px 0)';Object.assign(captionBand.style,{left:(fit.left-b.left)+'px',top:(fit.top-b.top+(grid.rows-5)*fit.cellHeight)+'px',width:fit.width+'px',height:fit.cellHeight*2+'px'});cssRect(back,{row:1,column:grid.columns-11,width:8,height:1},b);}canvas.dataset.nativeFit=fit.width.toFixed(2)+'×'+fit.height.toFixed(2);canvas.dataset.nativeScale=fit.scale.toFixed(4);}
  function syncControls(){const ids=new Set(program.fields.map(f=>f.id));for(const [id,node]of fields)if(!ids.has(id)){node.remove();fields.delete(id);}for(const f of program.fields){let node=fields.get(f.id);if(!node){node=doc.createElement('textarea');node.dataset.ansiField=f.id;node.setAttribute('aria-label',f.ariaLabel||f.label||f.id);node.style.cssText='position:absolute;z-index:2;padding:0;margin:0;border:0;border-radius:0;outline:0;background:#000;color:#55ffff;caret-color:#ffff55;resize:none;overflow:auto;scrollbar-width:none;white-space:pre-wrap;overflow-wrap:anywhere;font-kerning:none;font-variant-ligatures:none;appearance:none;';node.spellcheck=false;node.autocomplete='off';node.wrap='soft';node.addEventListener('input',()=>onInput(f.id,node.value),listen);node.addEventListener('focus',()=>focus(f.id),listen);fields.set(f.id,node);element.append(node);}node.setAttribute('aria-label',f.ariaLabel||f.label||f.id);node.maxLength=f.maxLength;node.readOnly=!!f.readOnly;node.disabled=!!f.disabled;if(node.value!==f.value){const active=doc.activeElement===node,start=node.selectionStart,end=node.selectionEnd;node.value=f.value;if(active)node.setSelectionRange(Math.min(start,f.value.length),Math.min(end,f.value.length));}}
-  const actions=new Map();for(const h of program.hotspots)if(!actions.has(h.id))actions.set(h.id,h);for(const [id,node]of buttons)if(!actions.has(id)){node.remove();buttons.delete(id);}for(const [id,h]of actions){let node=buttons.get(id);if(!node){node=doc.createElement('button');node.type='button';node.tabIndex=-1;input.press(node,()=>invoke(id));node.addEventListener('focus',()=>focus(id),listen);buttons.set(id,node);semantics.append(node);}node.textContent=h.ariaLabel||h.label||id;node.disabled=!!h.disabled;}layout();}
+  const actions=new Map();for(const h of program.hotspots)if(!actions.has(h.id))actions.set(h.id,h);for(const [id,node]of buttons)if(!actions.has(id)){node.remove();buttons.delete(id);}for(const [id,h]of actions){let node=buttons.get(id);if(!node){node=doc.createElement('button');node.type='button';node.tabIndex=-1;input.press(node,()=>invoke(id));node.addEventListener('focus',()=>focus(id),listen);buttons.set(id,node);semantics.append(node);}node.textContent=h.ariaLabel||h.label||id;node.disabled=!!h.disabled;if(h.expanded!==undefined)node.setAttribute('aria-expanded',String(h.expanded));}layout();}
  function pointerCell(event){if(promotion)return null;const bounds=canvas.getBoundingClientRect(),live={...fit,left:bounds.left,top:bounds.top,right:bounds.right,bottom:bounds.bottom,width:bounds.width,height:bounds.height,scale:bounds.width/(grid.columns*16),cellWidth:bounds.width/grid.columns,cellHeight:bounds.height/grid.rows};return nativeTerminalCell(live,event.clientX,event.clientY);}
  function hit(cell){return program.hotspots.find(h=>!h.disabled&&contains(h,cell)&&(!h.afterReveal||terminal.complete)&&(terminal.complete||Array.from({length:h.height*h.width},(_,n)=>terminal.buffer.cells[(h.row-1+Math.floor(n/h.width))*grid.columns+h.column-1+n%h.width]?.char).some(ch=>ch&&ch!==' ')))||null;}
  input.press(canvas,event=>{const cell=pointerCell(event),h=hit(cell);if(h){element.focus({preventScroll:true});focus(h.id);invoke(h.id,cell);}});
  canvas.addEventListener('wheel',event=>{if(!overlayVisible&&terminal.complete&&onSceneWheel(pointerCell(event),event.deltaY))event.preventDefault();},{...listen,passive:false});
  // Editable fields are canvas siblings; their native pointer selection is
  // never intercepted by the one-shot canvas press binder.
- element.addEventListener('pointermove',event=>{if(event.target?.dataset?.ansiField)return;const h=hit(pointerCell(event));element.style.cursor=h?'pointer':'default';if(terminal.complete)focus(h?.id||null);},listen);element.addEventListener('pointerleave',()=>{element.style.cursor='default';if(doc.activeElement===element&&terminal.complete)focus(null);},listen);
- element.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();invoke(overlayVisible?'overlay-back':'back');return;}const editing=event.target?.dataset?.ansiField;if(event.key==='Tab'){const list=[...new Map([...program.hotspots.filter(h=>!h.disabled).map(h=>[h.id,h]),...program.fields.filter(f=>!f.disabled).map(f=>[f.id,f])]).values()].sort((a,b)=>a.row-b.row||a.column-b.column);if(!list.length)return;event.preventDefault();const index=list.findIndex(h=>h.id===focused),next=list[index<0?(event.shiftKey?list.length-1:0):(index+(event.shiftKey?-1:1)+list.length)%list.length];focus(next.id);if(fields.has(next.id))fields.get(next.id).focus({preventScroll:true});else element.focus({preventScroll:true});return;}if(editing)return;if(event.key==='Enter'&&focused){const h=program.hotspots.find(h=>h.id===focused&&!h.disabled);if(h){event.preventDefault();invoke(h.id);return;}}const h=program.hotspots.find(h=>!h.disabled&&h.key&&h.key.toLowerCase()===event.key.toLowerCase());if(h){event.preventDefault();focus(h.id);invoke(h.id);}},listen);
+ element.addEventListener('pointermove',event=>{const cell=event.target?.dataset?.ansiField?null:pointerCell(event);
+  const initial=hit(cell);
+  if((terminal.complete||initial?.expanded!==undefined)&&event.pointerType!=='touch')onPointer(cell);
+  const h=hit(cell);element.style.cursor=h?'pointer':'default';
+  if(terminal.complete&&event.pointerType!=='touch')focus(h?.id||null);},listen);element.addEventListener('pointerleave',()=>{element.style.cursor='default';onPointer(null);if(doc.activeElement===element&&terminal.complete)focus(null);},listen);
+ element.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();invoke(overlayVisible?'overlay-back':program.settingsOpen?'settings-close':'back');return;}const editing=event.target?.dataset?.ansiField;if(event.key==='Tab'){const list=[...new Map([...program.hotspots.filter(h=>!h.disabled).map(h=>[h.id,h]),...program.fields.filter(f=>!f.disabled).map(f=>[f.id,f])]).values()].sort((a,b)=>a.row-b.row||a.column-b.column);if(!list.length)return;event.preventDefault();const index=list.findIndex(h=>h.id===focused),next=list[index<0?(event.shiftKey?list.length-1:0):(index+(event.shiftKey?-1:1)+list.length)%list.length];focus(next.id);if(fields.has(next.id))fields.get(next.id).focus({preventScroll:true});else element.focus({preventScroll:true});return;}if(editing)return;if(event.key==='Enter'&&focused){const h=program.hotspots.find(h=>h.id===focused&&!h.disabled);if(h){event.preventDefault();invoke(h.id);return;}}const h=program.hotspots.find(h=>!h.disabled&&h.key&&h.key.toLowerCase()===event.key.toLowerCase());if(h){event.preventDefault();focus(h.id);invoke(h.id);}},listen);
  function tick(now){raf=0;if(destroyed||doc.hidden)return;if(last)clock+=Math.max(0,(now-last)/1000);last=now;if(promotion){layout();if(clock-promotion.at>=promotion.duration){const done=promotion.resolve;promotion=null;element.style.background='var(--sd-dark,#000)';adaptive=true;layout();done();}}if(now-lastPaint>=1000/maxFps-.1){lastPaint=now;const begin=performance.now();try{onTick(clock,metrics);terminal.update(Math.max(0,clock-programAt),{time:clock,reveal:revealProgram,reducedMotion:reduced,energy:energy(),artCells:terminal.complete?sceneFrame(program,clock):null});onPaint(clock,metrics);paintReward();if(terminal.complete&&deferredFocus!==undefined){const id=deferredFocus;deferredFocus=undefined;onFocus(id);}if(overlayVisible)overlay?.update(0,{reveal:true,time:clock,reducedMotion:true});}catch(error){if(element.dataset.error!==error.message){element.dataset.error=error.message;onError(error);}}metrics.paintMs=performance.now()-begin;metrics.frames++;meterFrames++;if(!meterStart)meterStart=now;if(now-meterStart>=1000){metrics.fps=meterFrames*1000/(now-meterStart);meterFrames=0;meterStart=now;}canvas.dataset.hostFPS=metrics.fps.toFixed(1);canvas.dataset.hostPaintMs=metrics.paintMs.toFixed(2);}raf=win.requestAnimationFrame(tick);}
  function schedule(){if(destroyed||doc.hidden||raf)return;last=0;raf=win.requestAnimationFrame(tick);}
  const resize=new ResizeObserver(layout);resize.observe(root);doc.addEventListener('visibilitychange',()=>{if(doc.hidden){win.cancelAnimationFrame(raf);raf=0;last=0;}else schedule();},listen);win.addEventListener('resize',layout,listen);layout();schedule();
@@ -10727,7 +10814,8 @@ function paintLetterRelay(relay,region,grid,time,{seed=0,held=false,sendAge=1,fo
    label(x,y,'╔'+'═'.repeat(17)+'╗',edge,bg);
    for(let line=1;line<6;line++)label(x,y+line,'║'+' '.repeat(17)+'║',edge,bg);
    parts[part.id].forEach((line,k)=>label(x+1,y+1+k,line,k===2?edge:metal,bg));
-   label(x+1,y+5,'['+area.key+'] '+['FIT INPUT','FIT GAIN','FIT OUTPUT'][hop],edge,bg);
+   label(x+2,y,'['+area.key+']',edge,bg);
+   label(x+1,y+5,part.name,edge,bg);
    label(x,y+6,'╚'+'═'.repeat(17)+'╝',edge,bg);
   }
  }else if(!relay.sent){
@@ -10973,6 +11061,8 @@ function nativeReplyProgram(state={}){
  const packet=state.packet;if(!packet||!Array.isArray(packet.nodes)||!packet.nodes.length||packet.nodes.length>32)throw Error('Bounded authored reply packet required');
  const letter=packet.layout==='letter';
  const current=packet.nodes.find(n=>n.id===state.current)||packet.nodes.find(n=>n.id===packet.openingId)||packet.nodes[0];
+ const journey=packet.journey,beatIndex=journey?.beats.findIndex(beat=>beat.node===current.id)??-1;
+ const beat=journey?.beats[beatIndex],complete=journey&&state.progress?.complete;
  const relayPage=letter&&packet.relay?.entry===current.id&&state.letterRelay;
  const progress=state.progress||{},rooms=nativeRoomIds.filter(id=>Array.isArray(progress.rooms)&&progress.rooms.includes(id)),telling=typeof state.selectedTelling==='string'&&packet.nodes.some(n=>n.id===state.selectedTelling)?state.selectedTelling:null,ready=progress.ready===true;
  const cells=Array.from({length:C*R},()=>({glyph:' ',fg:7,bg:0})),hotspots=[],fields=[];let interactive=true,artTop=5,pagination=null,illustration=null,arena=null,sprite=null,letterScene=null;const tracks=[],actions=[],cymatics=[];
@@ -10980,13 +11070,30 @@ function nativeReplyProgram(state={}){
  function put(r,c,text,fg=7,bg=0,width=C-c+1){const value=[...safe(text).replace(/\n/g,' ')].slice(0,Math.max(0,Math.min(width,C-c+1)));for(let i=0;i<value.length;i++)ink(r,c+i,value[i],fg,bg);}
  function clear(r,c,width,height,bg=0){for(let y=r;y<r+height;y++)for(let x=c;x<c+width;x++)ink(y,x,' ',7,bg);}
  function box(r,c,width,height,title='',fg=8,bg=0){clear(r,c,width,height,bg);for(let x=0;x<width;x++){ink(r,c+x,x===0?'╔':x===width-1?'╗':'═',fg,bg);ink(r+height-1,c+x,x===0?'╚':x===width-1?'╝':'═',fg,bg);}for(let y=1;y<height-1;y++){ink(r+y,c,'║',fg,bg);ink(r+y,c+width-1,'║',fg,bg);}if(title)put(r,c+2,' '+cut(title,width-6)+' ',fg,bg,width-4);}
- function button(id,r,c,width,label,key,fg=14,height=1,ariaLabel=label){const selected=state.focus===id,bg=selected?4:0;clear(r,c,width,height,bg);const rows=nativeWrap(label,width);for(let i=0;i<Math.min(height,rows.length);i++)put(r+i,c,rows[i],selected?15:fg,bg,width);if(interactive){hotspots.push({id,row:r,column:c,width,height,...(key?{key}:{}),ariaLabel:single(ariaLabel,700)});const glyph=[...label][1];if(label.startsWith('[')&&glyph)tracks.push({row:r,column:c+1,interval:selected?480:1200,transition:selected?480:1200,effect:selected?'flip':'pulse',frames:[{glyph,fg:selected?15:fg,bg,scaleX:.82,scaleY:.82},{glyph,fg:selected?15:fg,bg,scaleX:1,scaleY:1}]});}}
+ function button(id,r,c,width,label,key,fg=14,height=1,ariaLabel=label,{restBg=0,afterReveal=false,expanded}={}){const selected=state.focus===id,bg=selected?4:restBg;clear(r,c,width,height,bg);const rows=nativeWrap(label,width);for(let i=0;i<Math.min(height,rows.length);i++)put(r+i,c,rows[i],selected?15:fg,bg,width);if(interactive){hotspots.push({id,row:r,column:c,width,height,...(key?{key}:{}),ariaLabel:single(ariaLabel,700),...(afterReveal?{afterReveal}:{}),...(expanded===undefined?{}:{expanded})});const glyph=[...label][1];if(label.startsWith('[')&&glyph)tracks.push({row:r,column:c+1,interval:selected?480:1200,transition:selected?480:1200,effect:selected?'flip':'pulse',frames:[{glyph,fg:selected?15:fg,bg,scaleX:.82,scaleY:.82},{glyph,fg:selected?15:fg,bg,scaleX:1,scaleY:1}]});}}
  function lines(r,c,width,text,maxRows,fg=7){const wrapped=nativeWrap(text,width);for(let i=0;i<Math.min(maxRows,wrapped.length);i++)put(r+i,c,wrapped[i],fg,0,width);if(wrapped.length>maxRows&&maxRows>0)put(r+maxRows-1,c,cut(wrapped[maxRows-1],Math.max(0,width-4))+' ...',fg,0,width);return wrapped.length;}
  function horizontal(row,label=''){put(row,1,'╠'+'═'.repeat(C-2)+'╣',8);if(label)put(row,3,' '+cut(label,C-8)+' ',6);}
- function footer(){let x=3;for(const [id,label,key,fg]of [
- ['voice','[V]Voice '+(state.voiceOn===false?'OFF':'ON'),'v',14],['music','[U]Music '+(state.musicOn?'ON':'OFF'),'u',7],['sfx','[S]SFX '+(state.sfxOn===false?'OFF':'ON'),'s',7],['motion','[P]Move '+(state.held?'OFF':'ON'),'p',7],['speed','[B]'+(state.bps||14400),'b',11],['palette','[L]'+(state.paletteLabel||'ANSI++'),'l',13],['next-track','[N]Tune','n',14]]){button(id,R-1,x,id==='speed'?9:label.length,label,key,fg);x+=label.length+1;}}
+ const settingsOpen=!!(state.settingsPinned||state.settingsHovered);
+ const settingsAvailable=state.screen!=='reply-reset'&&!state.voiceGate;
+ function footer(){
+  if(!settingsAvailable)return;
+  button('settings',R-2,C-15,14,'[F2] Settings','F2',14,1,'Terminal settings',{expanded:settingsOpen});
+  if(!settingsOpen)return;
+  if(!state.chapter)button('reply:reset',R-2,C-28,11,'[DEL] Reset','Delete',7,1,'Reset this reply',{afterReveal:true});
+  let x=3;for(const [id,label,key,fg]of [
+ ['voice','[V]Voice '+(state.voiceOn===false?'OFF':'ON'),'v',14],['music','[U]Music '+(state.musicOn?'ON':'OFF'),'u',7],['sfx','[S]SFX '+(state.sfxOn===false?'OFF':'ON'),'s',7],['motion','[P]Motion '+(state.held?'OFF':'ON'),'p',7],['speed','[B]'+(state.bps||14400),'b',11],['palette','[L]'+(state.paletteLabel||'ANSI++'),'l',13],['next-track','[N]Tune','n',14]]){button(id,R-1,x,id==='speed'?9:label.length,label,key,fg);x+=label.length+1;}}
  box(1,1,C,R);const percent=Math.round(bounded(progress.percent,0,100));
- if(letter){
+ if(journey){
+  const phase=beat?' STEP '+String(beatIndex+1).padStart(2,'0')+' / '+journey.beats.length+' ':' SIDE DOOR ';
+  put(1,3,phase,11);
+  for(const [i,b] of journey.beats.entries()){
+   const seen=progress.explored?.includes(b.node),here=i===beatIndex;
+   put(1,20+i*3,here?'[◆]':seen?' ◆ ':' ◇ ',here?11:seen?10:8);
+   if(here)tracks.push({row:1,column:21+i*3,interval:900,transition:900,effect:'pulse',
+    frames:[{glyph:'◆',fg:11,bg:0,scaleX:.76,scaleY:.76},{glyph:'◆',fg:15,bg:0,scaleX:1,scaleY:1}]});
+  }
+  if(complete)put(1,41,' HANDOFF READY ',10);
+ }else if(letter){
   const count=progress.explored?.length??0;
   put(1,3,' TURN OUT OF TIME ',11);
   put(1,24,packet.relay?(state.letterRelay?.sent?' 3/3 / POSTCARD READY ':state.letterRelay?.locked||relayPage?' 2/3 / BUILD THE SIGNAL ':' 1/3 / THE GREETING '):' LETTER / '+count+' PAGES OPENED ',14);
@@ -10995,30 +11102,45 @@ function nativeReplyProgram(state={}){
  put(1,18,' DOORS '+(progress.explored?.length??rooms.length)+'/'+(packet.nodes.length-1)+' ',14);put(1,32,' SEEN '+('█'.repeat(Math.round(percent/10))+'░'.repeat(10-Math.round(percent/10)))+' '+String(percent).padStart(3)+'% ',10);
  }
  put(1,C-20,' PRIVATE LINE ',6);put(2,3,cut('FRIKEN.GHOST / '+packet.title,44),14,0,44);put(2,49,cut(packet.recipient||'CALLER',15).toUpperCase()+' / GHOSTLINK',11,0,C-50);horizontal(3);horizontal(R-3);
- put(R-2,3,' '+cut(letter?(state.saveStatus||'PRIVATE LETTER / LOCAL PLAY'):state.boardStatus||'LOCAL PRIVATE VISIT / NO SILENT UPLOADS',(state.chapter?C-8:C-21))+' ',8,0,state.chapter?C-6:C-19);
- const add=(id,label,detail='',key=null,selected=false)=>actions.push({id,label:selected?label+' (CURRENT)':label,detail,key,selected});
+ const statusWidth=C-(settingsOpen&&!state.chapter?32:19);
+ put(R-2,3,' '+cut(letter?(state.saveStatus||'PRIVATE LETTER / LOCAL PLAY'):state.boardStatus||'LOCAL PRIVATE VISIT / NO SILENT UPLOADS',statusWidth-2)+' ',8,0,statusWidth);
+ const add=(id,label,detail='',key=null,selected=false,primary=false)=>actions.push({id,label:selected?label+' (CURRENT)':label,detail,key,selected,primary});
  const canWarmPostmark=packet.gift==='postmark-bloom'&&current.id===packet.relay?.reward&&state.letterRelay?.sent;
- function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip'&&!scene.frame)cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});if(kind==='city')hotspots.push({id:'secret:night-office',row:artTop+Math.floor(h*.40),column:3+Math.floor(requestedWidth*.75),width:Math.max(3,Math.ceil(requestedWidth*.08)),height:Math.max(2,Math.ceil(h*.11)),ariaLabel:'The one office still lit. Somebody is working late.'});if(kind==='trip')hotspots.push({id:'secret:petunia-protocol',row:artTop+Math.floor(h*.26),column:3+Math.floor(requestedWidth*.40),width:Math.ceil(requestedWidth*.20),height:Math.max(2,Math.ceil(h*.22)),ariaLabel:'A familiar flower is growing between boards. Inspect it.'});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
+ function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip'&&!scene.frame)cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','bitcoin-city','harbor','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});if(!journey&&kind==='city')hotspots.push({id:'secret:night-office',row:artTop+Math.floor(h*.40),column:3+Math.floor(requestedWidth*.75),width:Math.max(3,Math.ceil(requestedWidth*.08)),height:Math.max(2,Math.ceil(h*.11)),ariaLabel:'The one office still lit. Somebody is working late.'});if(!journey&&kind==='trip')hotspots.push({id:'secret:petunia-protocol',row:artTop+Math.floor(h*.26),column:3+Math.floor(requestedWidth*.40),width:Math.ceil(requestedWidth*.20),height:Math.max(2,Math.ceil(h*.22)),ariaLabel:'A familiar flower is growing between boards. Inspect it.'});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water','bitcoin-city':'water',harbor:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
  function actionPane(){
   const x=49,w=C-50,hintRows=R>=30?6:3,hintStart=R-5-hintRows,pageRow=hintStart-1,available=R-12-hintRows,pages=[[]];let used=0,nextNumber=1;
   const keycap=key=>({ArrowRight:'→',ArrowLeft:'←',ArrowUp:'↑',ArrowDown:'↓',Enter:'↵'})[key]||key;
   for(const a of actions){const key=a.key||String(nextNumber++),display='['+keycap(key)+'] '+a.label,rows=nativeWrap(display,w),cost=rows.length+1;if(used&&used+cost-1>available){pages.push([]);used=0;}pages.at(-1).push({...a,key,display,rows});used+=cost;}
-  const page=Math.floor(bounded(state.actionPage,0,pages.length-1));let y=6;put(4,x,state.screen==='map'?'START HERE':state.screen==='topics'?'OPTIONAL TOPICS':'YOUR NEXT MOVE',6,0,w);
-  for(const a of pages[page]){button(a.id,y,x,w,a.display,a.key,a.selected?10:7,a.rows.length,a.label+'. '+a.detail);y+=a.rows.length+1;}
-  if(pages.length>1){button('actions-prev',pageRow,x,9,'[←] Prev','ArrowLeft',14);put(pageRow,x+10,(page+1)+'/'+pages.length,11);button('actions-next',pageRow,C-12,10,'[→] Next','ArrowRight',14);}
-  const active=actions.find(a=>a.id===state.focus),contextHint=state.screen==='door-game'?(mailrun(state.workshop?.door?.actions||[]).log.at(-1)||'Goal: recover the packet through three hops. Costs are printed before you commit.'):state.screen==='crew-builder'?'Type a name, choose a job, then issue a trial order. Results stay in your local packet.':state.screen==='motion-lab'?'CURRENT rig: '+(state.rigEffect||'blink').toUpperCase()+'. Motion runs after the screen is drawn.':state.chapter?'Choose an action. Preview its full cost and stakes before committing.':state.screen==='letter-signal'?(packet.gift==='postmark-bloom'?'Open the card to see what your circuit grew. Copy it when you’re ready.':'Copy the whole greeting and paste it into your own galaxy’s agent.'):state.screen==='letter-signal-text'?'Select the field to copy it manually.':canWarmPostmark?'Touch the stamp under the photograph to see what your circuit grew.':letter?'Open any page, or hear the current one again.':'Choose a question. Ghost speaks after this screen arrives.',hint=active?.detail||contextHint;
+  const page=Math.floor(bounded(state.actionPage,0,pages.length-1));let y=6;put(4,x,journey&&state.screen==='ending'?'KEEP THIS CALL':state.screen==='map'?'START HERE':state.screen==='topics'?'OPTIONAL TOPICS':'YOUR NEXT MOVE',6,0,w);
+  for(const a of pages[page]){button(a.id,y,x,w,a.display,a.key,a.primary?11:a.selected?10:7,a.rows.length,a.label+'. '+a.detail,{restBg:a.primary?4:0});y+=a.rows.length+1;}
+  if(pages.length>1){
+   if(page>0)button('actions-prev',pageRow,x,9,'[←] Prev','ArrowLeft',14);
+   put(pageRow,x+10,(page+1)+'/'+pages.length,11);
+   if(page+1<pages.length)button('actions-next',pageRow,C-12,10,'[→] Next','ArrowRight',14);
+  }
+  const active=actions.find(a=>a.id===state.focus),contextHint=journey?(state.screen==='topic'?(beat?'Gold leads to the next step. Side doors are optional.':'Take a look around, then use Back to return.'):'Your visit stays on this device until you share it.'):state.screen==='door-game'?(mailrun(state.workshop?.door?.actions||[]).log.at(-1)||'Goal: recover the packet through three hops. Costs are printed before you commit.'):state.screen==='crew-builder'?'Type a name, choose a job, then issue a trial order. Results stay in your local packet.':state.screen==='motion-lab'?'CURRENT rig: '+(state.rigEffect||'blink').toUpperCase()+'. Motion runs after the screen is drawn.':state.chapter?'Choose an action. Preview its full cost and stakes before committing.':state.screen==='letter-signal'?(packet.gift==='postmark-bloom'?'Open the card to see what your circuit grew. Copy it when you’re ready.':'Copy the whole greeting and paste it into your own galaxy’s agent.'):state.screen==='letter-signal-text'?'Select the field to copy it manually.':canWarmPostmark?'Touch the stamp under the photograph to see what your circuit grew.':letter?'Open any page, or hear the current one again.':'Choose a question. Ghost speaks after this screen arrives.',hint=active?.detail||contextHint;
   lines(hintStart,x,w,hint,hintRows,active?15:8);if(active)hotspots.push({id:active.id,row:hintStart,column:x,width:w,height:hintRows,ariaLabel:hint});
   if(state.chapter){button('verb:read',R-5,x,9,'[R] Read','r',14);button('chapter:stats',R-5,x+10,10,'[A] Stats','a',11);button('chapter:save',R-5,x+21,w-21,'[E] Save','e',7);button('chapter:back',R-4,x,9,'[←] Back','Backspace',14);button('chapter:wire',R-4,x+10,9,'[W] Wire','w',14);button('chapter:situation',R-4,x+20,w-20,'[I] Look','i',6);return;}
+  if(journey){
+   if(state.screen==='topic'||state.screen==='words')button('verb:read',R-5,x,9,'[R] Hear','r',14);
+   if(state.screen==='topic')button('verb:words',R-5,x+10,10,'[T] Words','t',7);
+   button('back',R-4,x,9,'[←] Back','Backspace',14);
+   if(complete&&state.screen==='topic'&&beat!==journey.beats.at(-1))
+    button('verb:ending',R-4,x+10,16,'[E] Handoff','e',11);
+   return;
+  }
   if(letter&&state.screen?.startsWith('letter-signal')){button('back',R-4,x,9,'[←] Back','Backspace',14);return;}
-  if(letter){button('verb:read',R-5,x,relayPage?13:9,relayPage?'[R] Briefing':'[R] Hear','r',14);button('verb:words',R-5,x+(relayPage?14:10),10,'[T] Words','t',11);button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);return;}
-  button('verb:read',R-5,x,9,'[R] Read','r',14);button('verb:answers',R-5,x+10,10,'[A] Write','a',11);button('verb:ending',R-5,x+21,w-21,'[E] End','e',7);
-  button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);button('nav:tools',R-4,x+20,w-20,'[T] More','t',6);
+  if(letter){button('verb:read',R-5,x,relayPage?13:9,relayPage?'[R] Briefing':'[R] Hear','r',14);button('verb:words',R-5,x+(relayPage?14:10),10,'[T] Words','t',11);button('back',R-4,x,9,'[←] Back','Backspace',14);if(current.id!==packet.openingId)button('nav:map',R-4,x+10,9,'[M] Home','m',14);return;}
+  button('verb:read',R-5,x,9,'[R] Read','r',14);
+  if(state.screen!=='map'&&state.screen!=='answers')button('verb:answers',R-5,x+10,10,'[A] Write','a',11);button('verb:ending',R-5,x+21,w-21,'[E] End','e',7);
+  if(state.screen!=='map'){button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);}
+  if(state.screen!=='map'&&state.screen!=='tools')button('nav:tools',R-4,x+20,w-20,'[T] More','t',6);
  }
 
  function map(){
   put(4,3,'SURREAL / A RETURN CALL',11,0,44);painting('eye',Math.min(32,R-12));
   lines(R-7,3,44,'What would you build behind a BBS door? Try the courier job or leave Ghost your answer.',3,14);
-  add('topic:demo-keep','Play the courier job','Recover your ship’s engine in three jumps. Start here for the hands-on demo.');
+  add('topic:demo-keep','Play the courier job','Recover your ship’s engine in three jumps.',null,false,true);
   add('verb:answers','Tell Ghost what you’d build','Type an answer and keep it in a return packet for the next Ghost.');
   add('nav:topics','More about Ghost and the BBS','Optional topics, games and workshop exhibits.');
  }
@@ -11060,8 +11182,8 @@ function nativeReplyProgram(state={}){
    if(!relay.locked){
     hotspots.push({id:'relay:scene',...letterScene,afterReveal:true,ariaLabel:'Star field. Magnify and click a candidate or use the keyboard reticle.'});
     put(5,x,'01 / FIND THE ADDRESS',14,0,w);
-    lines(7,x,w,'We are sending the first hello. Lock our chart marker with two pulses.',3);
-    button('relay:zoom',11,x,w,relay.zoom?'[X] Wide view':'[X] Zoom scope','x',11);
+    lines(7,x,w,'Find the marker that pulses twice. Lock it to unlock the parts bench.',3,15);
+    button('relay:zoom',11,x,w,relay.zoom?'[X] Wide view':'[X] Zoom scope','x',11,1,relay.zoom?'Wide view':'Zoom scope',{restBg:4});
     lines(13,x,w,relay.zoom?'Find the hollow ◎ ring that pulses twice. Click it to lock the address.':'Scroll up over the galaxy or click the scope.',2,14);
     if(relay.zoom){
      button('relay:cycle',16,x,w,'[C] Move reticle','c',14);
@@ -11070,7 +11192,7 @@ function nativeReplyProgram(state={}){
    }else if(relay.sent){
     put(5,x,'03 / GREETING SEALED',10,0,w);
     lines(7,x,w,'The postcard is ready. Open it here, then copy the hello into your galaxy when you want.',4);
-    if(!state.letterTransmitPending)button('relay:collect',13,x,w,'[↵] Open your postcard','Enter',11);
+    if(!state.letterTransmitPending)button('relay:collect',13,x,w,'[↵] Open your postcard','Enter',11,1,'Open your postcard',{restBg:4});
    }else{
     put(5,x,'02 / FIT THE CIRCUIT',14,0,w);
     put(6,x,'CHG '+relay.charge+'/6   SIG '+relay.signal+' / NEED 3',relay.signal>=3&&relay.charge>=1?10:13,0,w);
@@ -11079,20 +11201,22 @@ function nativeReplyProgram(state={}){
     });
     const targets=relayTargets(relay,letterScene);
     if(station){
-     put(12,x,'CLICK '+station.slot.toUpperCase()+' PART [1] OR [2]',11,0,w);
+     put(12,x,'CHOOSE THE '+station.slot.toUpperCase()+' PART',11,0,w);
+     put(13,x,'Use a row or matching icon.',7,0,w);
      station.routes.forEach((part,i)=>{
       const t=targets[i],next=relayForecast(relay,part),hot=state.focus==='relay:'+part.id;
-      button('relay:'+part.id,14+i*2,x,w,'['+t.key+'] '+part.name,t.key,14,2,part.name+'. '+part.detail+' Leaves '+next.charge+' charge and '+next.signal+' bars.');
-      put(15+i*2,x,'-'+part.cost+' CHG  '+signalDelta(part)+' → '+next.charge+' CHG  '+next.signal+' SIG',hot?15:7,0,w);
+      const cost='-'+part.cost+' CHG  '+signalDelta(part)+' → '+next.charge+' CHG  '+next.signal+' SIG';
+      button('relay:'+part.id,14+i*3,x,w,'['+t.key+'] '+part.name+'\n'+cost,t.key,15,2,
+       part.name+'. '+part.detail+' Leaves '+next.charge+' charge and '+next.signal+' bars.',{restBg:hot?4:8});
       hotspots.push({...t,key:undefined,id:'relay:'+t.id,afterReveal:true,ariaLabel:part.name});
      });
-     put(18,x,'RESERVE 1 CHG AND 3 BARS',6,0,w);
+     put(7,x,'RESERVE 1 CHG AND 3 BARS',6,0,w);
     }else{
      const t=targets[0],block=relayBlock(relay);
      lines(12,x,w,block||(relay.assembled?'Ready to launch. It costs one charge. The postcard opens here.':'Enough charge and signal. Assemble the three parts.'),4,block?13:14);
      if(!block){
       const label=relay.assembled?'Launch the postcard':'Assemble transmitter';
-      button('relay:'+t.id,16,x,w,'[F] '+label,'f',11);
+      button('relay:'+t.id,16,x,w,'[F] '+label,'f',11,1,label,{restBg:4});
       hotspots.push({...t,key:undefined,id:'relay:'+t.id,afterReveal:true,ariaLabel:label});
      }
     }
@@ -11145,6 +11269,14 @@ function nativeReplyProgram(state={}){
  function topic(){
   if(relayPage){relayBoard(relayPage);return;}
   const title=nativeWrap(current.title,44);title.forEach((line,i)=>put(4+i,3,line,11,0,44));artTop=4+title.length;
+  if(journey){
+   if(beatIndex===0){
+    put(artTop++,3,'THE JOB',6);
+    artTop+=lines(artTop,3,44,journey.goal,5,15);
+   }
+   put(artTop++,3,beat?'THIS STEP':'SIDE DOOR / OPTIONAL',6);
+   artTop+=lines(artTop,3,44,beat?.instruction||'Explore this scene. Back returns to where you left the main route.',5,7);
+  }
   if(letter){put(artTop,3,current.kicker,6,0,44);artTop++;}
   const localMedia=replyMedia[current.id],portrait=current.portrait;
   const media=localMedia||(portrait?{id:'resident:'+portrait,title:current.title,alt:'Original Moknon project painting, '+current.title,
@@ -11152,7 +11284,7 @@ function nativeReplyProgram(state={}){
   if(letter&&current.note)add('verb:words','Read the personal note','Start here. Take your time.','a');
 
   if(media){
-   const height=R-artTop-8;
+   const height=Math.max(2,R-artTop-8);
    box(artTop,2,46,height+2,media.title,6);
    illustration={...media,row:artTop+1,column:3,width:44,height};
    if(canWarmPostmark){
@@ -11166,30 +11298,38 @@ function nativeReplyProgram(state={}){
     hotspots.push({id:'letter:gift',row:R-6,column:29,width:19,height:3,afterReveal:true,ariaLabel:'Open the flower in your stamp'});
    }else lines(R-5,3,44,current.caption||'Move to tilt. Hold to zoom and drag. Scroll to zoom.',2,14);
   }else{
-   const caption=letter&&current.caption;
+   const caption=(letter||journey)&&current.caption;
    painting(current.ansiArt||({bbs:'city',memory:'vault',horizon:'beacon',identity:'engine','greater-mind':'network',models:'models','bob-family':'family',source:'source',demo:'shipyard','demo-keep':'mailrun','demo-repair':'family',causality:'causality',rose:'rose'})[current.id]||(letter?({network:'network',artifact:'rose',memory:'vault'})[current.visual]||'beacon':'forge'),
-    caption?Math.min(36,R-artTop-6):null);
+    caption?Math.max(6,Math.min(36,R-artTop-6)):null);
    if(caption)lines(R-5,3,44,caption,2,14);
+  }
+  if(journey){
+   const primary=current.choices.find(c=>c.id===beat?.advance);
+   if(primary)add('choice:'+primary.id,primary.label,primary.detail,null,false,true);
+   if(beat===journey.beats.at(-1))add('verb:ending','See what you changed','Read the outcome and keep an exact handoff.',null,false,true);
+   if(localMedia)add('letter:photo','Open the full-width illustration','Move to tilt. Hold to zoom and drag. Scroll for a closer look.','i');
+   for(const c of current.choices.filter(c=>c!==primary))add('choice:'+c.id,(beat?'Side door / ':'')+c.label,c.detail);
+   return;
   }
   if(letter){
    if(canWarmPostmark){
-   add('letter:gift','Open the flower in your stamp','Your transmitter parts determine what grows.','g');
-   add('letter:copy-signal','Copy the hello for your galaxy','Paste it into your galaxy’s agent if you want it to reply.','c');
-   add('letter:signal','Read the hello before copying','Preview the greeting and inspect its circuit.');
+   add('letter:gift','Wake the seed','Open the flower grown from your transmitter circuit.','g',false,true);
+   add('letter:copy-signal','Copy galaxy greeting','Paste it into your galaxy’s agent if you want it to reply.','c');
+   add('letter:signal','Read greeting and circuit','Preview the greeting and inspect its circuit.');
   }
    else if(state.letterRelay?.sent&&packet.relay?.contact&&current.id!==packet.openingId)add('letter:signal','Read the message for your galaxy','Inspect or copy this run’s first-contact packet.','c');
-   if(localMedia)add('letter:photo',portrait?'Open the full-width portrait':'Open the full-width postcard',
+   if(localMedia)add('letter:photo',portrait?'Enlarge portrait':'Enlarge postcard',
     'Move to tilt. Hold to zoom and drag. Scroll for a closer look.','i');
    for(const c of current.choices){
     const relay=packet.relay?.entry===c.target?state.letterRelay:null;
     const label=relay?.sent?'Open my finished postcard':relay?.locked?'Resume building the transmitter':c.label;
     const detail=relay?.sent?'See your stamp and keep the first-contact message.':relay?.locked?'The address and installed parts are saved.':c.detail;
-    add('choice:'+c.id,label,detail);
+    add('choice:'+c.id,label,detail,null,false,!!relay);
    }
    return;
   }
   if(current.id==='source'){add('nav:motion-lab','ANSI++ Animation Workbench','Ten working cell/bone/mesh examples: Blink, Breathe, Serpent, Flame, Water, Ripple and more.');add('verb:trip','Music-reactive hyperspace garden','See the ANSI++ cymatics and colour-flow showcase, then return here.');}
-  if(current.id==='demo-keep')add('verb:door-game','Start the three-jump courier job','Manage five fuel, six hull and six time. Every route lists its cost.');
+  if(current.id==='demo-keep')add('verb:door-game','Start the three-jump courier job','Manage five fuel, six hull and six time. Every route lists its cost.',null,false,true);
   if(current.id==='demo-repair')add('verb:crew-builder','BUILD / commission a crewmate','Give them a name, choose their job and run a safe trial. The result joins your return packet.');
   if(current.id==='rose')add('verb:rose','Open the living rose','Drag to orbit. Wheel to zoom. Let the music drive its motion.');
   if(current.id==='causality')add('verb:roll','Try a causality dive','Choose GUTS, FOCUS, GLITCH, AWE or INSIGHT. See how it moves your odds before the sample is drawn.');
@@ -11202,7 +11342,7 @@ function nativeReplyProgram(state={}){
   box(4,2,C-2,R-9,media.title,6);
   illustration={...media,row:5,column:3,width:C-4,height:R-11};
   put(R-5,3,'MOVE TO TILT · HOLD TO ZOOM + DRAG · SCROLL TO ZOOM',14);
-  const back=current.portrait?'[ESC] Back to transmission':'[ESC] Back to postcard';
+  const back=journey?'[ESC] Back to scene':current.portrait?'[ESC] Back to transmission':'[ESC] Back to postcard';
   button('back',R-4,3,back.length,back,'Backspace',11);
   if(canWarmPostmark)button('letter:gift',R-4,27,26,'[G] Wake the postmark','g',14);
  }
@@ -11214,6 +11354,17 @@ function nativeReplyProgram(state={}){
   lines(ih+8,3,44,item.note,2,7);for(let i=0;i<list.length;i++)add('illustration:'+i,list[i].title,list[i].note,null,i===index);
  }
  function answers(){
+  if(journey){
+   put(4,3,'YOUR SIDE OF THE LINE',11,0,44);
+   for(const [i,id] of ['question','principle'].entries()){
+    const row=5+i*8,label=packet.answerPrompts[id],value=state.answers?.[id]||'';
+    const height=lines(row,3,44,label,4,14);
+    box(row+height,2,46,4,'',6);
+    fields.push({id,row:row+height+1,column:3,width:44,height:2,value,maxLength:1200,ariaLabel:label});
+   }
+   add('save-input','Keep my exact words','Keep both answers on this device and add them to the handoff.',null,false,true);
+   return;
+  }
   put(4,3,'SURREAL / YOUR SIDE OF THE LINE',11,0,44);
   box(5,2,46,7,'WHAT SHOULD A COMPANION DO?',14);box(13,2,46,7,'WOULD YOU BRING A BBS BACK?',6);
   for(const [id,row,label]of [['question',6,'What would your digital companion do while you are away?'],['principle',14,'Would you bring a BBS back? What would live on your board?']]){const value=typeof state.answers?.[id]==='string'?state.answers[id].slice(0,1200):'';fields.push({id,row,column:3,width:44,height:5,value,maxLength:1200,ariaLabel:label});lines(row,3,44,value||'Type here. Your words stay on this device.',5,value?14:8);}
@@ -11273,7 +11424,18 @@ function nativeReplyProgram(state={}){
   add('topic:demo','Back to the workshop','The named crewmate and trial stay on this device.');
  }
  function discovery(){const d=replyDiscoveries[state.secretId];if(!d)throw Error('Unknown discovery');const title=nativeWrap(d.title,44);title.forEach((line,i)=>put(4+i,3,line,11));artTop=4+title.length;painting(d.art,Math.min(32,R-artTop-7));put(R-7,3,'SECRET KEPT / +'+d.points+' / ONCE PER VISIT',11,0,44);lines(R-6,3,44,state.secretId==='wintermute'?'The old ice knows its name.':'The little things were worth touching.',2,14);add('back','Back to where I found it','Your discovery and bonus stay in the local visit.','Enter');add('verb:read','Hear Ghost and Else','A small message left for the curious.');add('verb:answers','Leave something of my own','Your actual thoughts shape the next reply.');}
- function ending(){put(4,3,'END OF THIS CALL / KEEP THE LINE',11,0,44);painting('return');add('copy','Copy the next-reply packet','Paste it back into the Ghost chat. Your exact answers shape the next reply.','x');add('verb:packet','Inspect the packet','Read the exact local visit, choices and answers before sharing.');}
+ function ending(){
+  if(journey){
+   put(4,3,'TRANSMISSION COMPLETE',11,0,44);
+   artTop=5+lines(5,3,44,journey.payoff,5,15);
+   painting('return');
+   add('copy','Copy the next-reply packet','Paste it into Ghost with the runbook to carry this outcome forward.','x',false,true);
+   if(packet.answerPrompts)add('verb:answers','Write something back','Answer the caller’s questions and include your exact words.');
+   add('verb:packet','Inspect the packet','Read the route, choices and answers before sharing.');
+   return;
+  }
+  put(4,3,'END OF THIS CALL / KEEP THE LINE',11,0,44);painting('return');add('copy','Copy the next-reply packet','Paste it back into the Ghost chat. Your exact answers shape the next reply.','x');add('verb:packet','Inspect the packet','Read the exact local visit, choices and answers before sharing.');
+ }
  function paged(screen){const body=screen==='packet'?state.receipt||'No packet prepared. Open End to keep this call.':current.title+(current.note?'\n\nPERSONAL NOTE\n'+current.note:'')+'\n\n'+(current.portrait?'TRANSLATED TRANSMISSION':'GHOST')+'\n'+current.paragraphs.join('\n\n')+(current.companion?'\n\nELSE\n'+current.companion:'')+(current.ghostReply?'\n\nGHOST\n'+current.ghostReply:'');put(4,3,screen==='packet'?'YOUR NEXT GHOST / EXACT HANDOFF':current.note?'THE LETTER / IN FULL':'COMPLETE WORDS / OPTIONAL TRANSCRIPT',11,0,44);const content=nativeWrap(body,44),size=R-9,pages=Math.max(1,Math.ceil(content.length/size)),page=Math.floor(bounded(state.page,0,pages-1));pagination={page,pages};for(let i=0;i<size;i++)if(content[page*size+i]!==undefined)put(5+i,3,content[page*size+i],7,0,44);if(page>0)add('prev-page','Previous page','Page '+page+' of '+pages);if(page+1<pages)add('next-page','Next page','Page '+(page+2)+' of '+pages);if(screen==='packet')add('copy','Copy the complete packet','All pages, not just this screen.','x');}
  function trip(){put(4,3,'THE GARDEN BETWEEN BOARDS / MEASURED MUSIC',11,0,C-6);painting('trip',Math.min(36,R-8),44);add('nav:tools','Leave the trip','Return to the workshop. Escape and Back also leave.');add('trip-toggle-music','Music / measured audio input','The garden responds to the existing music bus. Turn music on to feed it.');}
  function tools(){put(4,3,'THE WORKSHOP / OPTIONAL DETOURS',11,0,44);painting('forge');for(const a of [['nav:motion-lab','ANSI++ motion lab','Ten reusable weighted mesh rigs. Choose a finished painting and watch its bones move.'],['topic:rose','A flower made from mathematics','A procedural surface, measured music and a form the next Ghost can change.'],['topic:causality','A StarDiver shifts the odds','Five aptitudes, improbable choices, resonance and a universe with objections.'],['topic:models','Can you pick your brain?','Model choice and capability records.'],['topic:bob-family','Other Ghosts, same family?','Shared tools, separate experiences and canon.'],['topic:source','Open the workbench','Source access, revisions and tests.'],['verb:words','Read the complete words','Optional transcript, without repeating it under the speaking face.'],['verb:trip','Trip the hyperspace garden','A whole-field ANSI garden: living colour and music-reactive cells.']])add(...a);}
@@ -11365,8 +11527,8 @@ function nativeReplyProgram(state={}){
  }else if(screen==='discovery')discovery();else if(screen==='trip')trip();else if(screen==='door-game')doorGame();else if(screen==='crew-builder')crewBuilder();else if(screen==='motion-lab')motionLab();else if(screen==='map')map();else if(screen==='topics')topics();else if(screen==='illustrations'||screen==='bb-images')illustrations();else if(screen==='layer')layer();else if(screen==='topic')topic();else if(screen==='letter-photo')fullLetterIllustration();else if(screen==='letter-signal'||screen==='letter-signal-text')signalPlaque();else if(screen==='answers')answers();else if(screen==='roll')roll();else if(screen==='ending')ending();else if(screen==='packet'||screen==='words')paged(screen);else if(screen==='tools')tools();else throw Error('Unknown native reply screen');
  if(state.rollBoarding&&screen==='roll'){box(11,2,46,8,'BOARDERS / CREW vs RAIDERS',8);arena={row:12,column:3,width:44,height:6};}
  if(state.skirmishOn&&!state.rollBoarding&&!['answers','packet','words','roll','door-game','crew-builder','reply-reset'].includes(screen)){const y=R-10;box(y,2,46,7,'GLYPH FIGHT / LIVE HP + SCORE',8);arena={row:y+1,column:3,width:44,height:5};for(let i=tracks.length-1;i>=0;i--)if(tracks[i].column<48&&tracks[i].row>=y)tracks.splice(i,1);if(illustration&&illustration.row+illustration.height>y)illustration.height=y-illustration.row;}
- if(!['voice-gate','reply-reset','letter-photo'].includes(screen)&&!(screen==='topic'&&relayPage))actionPane();if(screen!=='voice-gate')footer();if(!state.chapter&&!['voice-gate','reply-reset'].includes(screen))button('reply:reset',R-2,C-12,11,'[DEL] Reset','Delete',7);if(sprite)sprite.revealOffsets=[];let text=ESC+'0m'+ESC+'2J',last='';for(let row=0;row<R;row++){text+=ESC+(row+1)+';1H';for(let col=0;col<C;col++){const cell=cells[row*C+col],style=cell.fg+':'+cell.bg;if(style!==last){text+=ESC+(cell.fg>7?90+cell.fg-8:30+cell.fg)+';'+(cell.bg>7?100+cell.bg-8:40+cell.bg)+'m';last=style;}text+=cell.glyph;if(sprite&&row+1>=sprite.row&&row+1<sprite.row+sprite.height&&col+1>=sprite.column&&col+1<sprite.column+sprite.width)sprite.revealOffsets.push(text.length);}}text+=ESC+'0m'+ESC+R+';'+(C-1)+'H';
- return {scoreHold:screen==='roll'&&state.rollProgress<1,text,grid:{columns:C,rows:R},hotspots,fields,animation:{tracks,cymatics},...(letterScene?{letterScene}:{}),...(illustration?{illustration}:{}),...(arena?{arena}:{}),...(sprite?{sprite}:{}),...(pagination?{pagination}:{})};
+ if(!['voice-gate','reply-reset','letter-photo'].includes(screen)&&!(screen==='topic'&&relayPage))actionPane();footer();if(sprite)sprite.revealOffsets=[];let text=ESC+'0m'+ESC+'2J',last='';for(let row=0;row<R;row++){text+=ESC+(row+1)+';1H';for(let col=0;col<C;col++){const cell=cells[row*C+col],style=cell.fg+':'+cell.bg;if(style!==last){text+=ESC+(cell.fg>7?90+cell.fg-8:30+cell.fg)+';'+(cell.bg>7?100+cell.bg-8:40+cell.bg)+'m';last=style;}text+=cell.glyph;if(sprite&&row+1>=sprite.row&&row+1<sprite.row+sprite.height&&col+1>=sprite.column&&col+1<sprite.column+sprite.width)sprite.revealOffsets.push(text.length);}}text+=ESC+'0m'+ESC+R+';'+(C-1)+'H';
+ return {settingsOpen:settingsAvailable&&settingsOpen,statusWidth,scoreHold:screen==='roll'&&state.rollProgress<1,text,grid:{columns:C,rows:R},hotspots,fields,animation:{tracks,cymatics},...(letterScene?{letterScene}:{}),...(illustration?{illustration}:{}),...(arena?{arena}:{}),...(sprite?{sprite}:{}),...(pagination?{pagination}:{})};
 }
 
 return {nativeRoomIds,causalApproaches,nativeMemoryLayers,nativeWrap,nativeReplyProgram};
@@ -11550,7 +11712,7 @@ const {createRetainedChapter,retainedFramework} = carrierModules["retained-chapt
 /* One retained terminal, one procedural overlay. The page plays authored data;
  * a new model turn happens only when the player carries its return packet. */
 const root=document.querySelector('#chromatic-carrier'),params=new URL(location.href).searchParams;
-const silent=params.get('qaAudio')==='silent',reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const silent=params.get('qaAudio')==='silent'||!!document.querySelector('meta[name="ghost-reply-draft"]'),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let chapterStorage=null;try{if(!params.has('qaMemory'))chapterStorage=localStorage;}catch{}
 const chapterDriver=responseMode==='chapter'?createRetainedChapter(authoredBoot,{storage:chapterStorage}):null;
 const packet=chapterDriver?.packet||targetedPacket;
@@ -11578,7 +11740,7 @@ const node=id=>packet.nodes.find(n=>n.id===id),clean=text=>String(text??'').repl
 function note(text){ui?.note(text);pendingNote=clean(text).slice(0,77);}
 function dimTerminal(value){native?.element.classList.toggle('native-terminal-dim',!!value);}
 function totalScore(v=visit){if(chapterDriver)return chapterDriver.model().score;const w=localWorkshop(v.workshop);return mindProgress(v).score+w.door.score+w.crew.score;}
-function record(entry,celebration={}){const before=totalScore();visit=recordReplyVisit(visit,entry,packet);const after=totalScore();if(after>before&&packet.layout!=='letter')native?.reward({from:before,to:after,label:celebration.label||({view:'NEW DOOR EXPLORED',answer:'YOUR WORDS KEPT',choice:'A DIRECTION CHOSEN',roll:'CAUSALITY ANSWERED',workshop:'REAL WORK DONE'}[entry.kind]||'DISCOVERY'),bonus:!!celebration.bonus});if(!params.has('qaMemory'))try{if(!storage)throw Error('No storage');storage.setItem(key,JSON.stringify(visit));saveStatus='SAVED ON THIS DEVICE';}catch{saveStatus='MEMORY ONLY / COPY BEFORE LEAVING';}}
+function record(entry,celebration={}){const before=totalScore();visit=recordReplyVisit(visit,entry,packet);const after=totalScore();if(after>before&&!packet.journey&&packet.layout!=='letter')native?.reward({from:before,to:after,label:celebration.label||({view:'NEW DOOR EXPLORED',answer:'YOUR WORDS KEPT',choice:'A DIRECTION CHOSEN',roll:'CAUSALITY ANSWERED',workshop:'REAL WORK DONE'}[entry.kind]||'DISCOVERY'),bonus:!!celebration.bonus});if(!params.has('qaMemory'))try{if(!storage)throw Error('No storage');storage.setItem(key,JSON.stringify(visit));saveStatus='SAVED ON THIS DEVICE';}catch{saveStatus='MEMORY ONLY / COPY BEFORE LEAVING';}}
 function keepRelay(){
  if(params.has('qaMemory'))return;
  try{
@@ -11619,7 +11781,7 @@ function letterWheel(cell,delta){
 }
 function letterAction(action,cell=null){
  const before=state.letterRelay;
- if(!before||current!==packet.relay?.entry||state.screen!=='topic'||overlayKind)return;
+ if(!before||current!==packet.relay?.entry||state.screen!=='topic'||overlayKind==='artifact')return;
  if(action==='collect'){
   if(!before.sent||state.letterTransmitPending)return;
   audio.uiCue('score');return show(packet.relay.reward);
@@ -11631,7 +11793,7 @@ function letterAction(action,cell=null){
  }
  const next=playLetterRelay(before,action,signal);
  if(next===before)return;
- speech.stop();pendingRead=null;
+ speech.stop();closeOverlay();pendingRead=null;
  state.letterRelay=next;state.actionPage=0;
  if(next.sent&&!before.sent){
   letterSentAt=native.clock;state.letterTransmitPending=!(held||reduce);audio.uiCue('transmit');
@@ -11643,7 +11805,16 @@ function letterAction(action,cell=null){
  if(next.locked||next.eggs.length)keepRelay();
  render(true);
 }
-function programState(){return {...state,saveStatus,chapter:chapterDriver?.model(),grid:native?.grid,artSeed,bps,paletteLabel:ansiColourThemes[state.paletteIndex||0].label,workshop:localWorkshop(visit.workshop),bbIllustrations:bitcoinIllustrations,attributes:chapterDriver?Object.fromEntries(Object.entries(causalAttributes).map(([k,v])=>[k,{...v,value:chapterDriver.model().stats[k]}])):causalAttributes,sfxOn,packet,current,discoveries:discoveryIds(visit),progress:packet.layout==='letter'?{explored:(visit.visited||[]).filter(id=>id!==packet.openingId)}:{...mindProgress(visit),score:totalScore()},selectedTelling:visit.selectedTelling,answers:state.screen==='answers'?draft:(visit.answers||{}),roll:rollAnimation?.receipt||state.rollResult||(state.rollPreview?null:visit.roll),boardStatus,voiceOn:speech?.enabled!==false,musicOn:audio?.musicOn||false,held,physics:skirmish?.snapshot};}
+function settingsHover(cell){
+ const trigger=native?.program.hotspots.find(h=>h.id==='settings');
+ const hovered=!!(cell&&trigger&&(
+  (cell.row===trigger.row&&cell.column>=trigger.column&&cell.column<trigger.column+trigger.width)||
+  (state.settingsHovered&&cell.row===trigger.row+1)
+ ));
+ if(hovered!==!!state.settingsHovered){state.settingsHovered=hovered;render(true);}
+}
+function journeyComplete(){return !!packet.journey&&(visit.visited||[]).includes(packet.journey.beats.at(-1).node);}
+function programState(){return {...state,saveStatus,chapter:chapterDriver?.model(),grid:native?.grid,artSeed,bps,paletteLabel:ansiColourThemes[state.paletteIndex||0].label,workshop:localWorkshop(visit.workshop),bbIllustrations:bitcoinIllustrations,attributes:chapterDriver?Object.fromEntries(Object.entries(causalAttributes).map(([k,v])=>[k,{...v,value:chapterDriver.model().stats[k]}])):causalAttributes,sfxOn,packet,current,discoveries:discoveryIds(visit),progress:packet.journey?{explored:visit.visited||[],complete:journeyComplete()}:packet.layout==='letter'?{explored:(visit.visited||[]).filter(id=>id!==packet.openingId)}:{...mindProgress(visit),score:totalScore()},selectedTelling:visit.selectedTelling,answers:state.screen==='answers'?draft:(visit.answers||{}),roll:rollAnimation?.receipt||state.rollResult||(state.rollPreview?null:visit.roll),boardStatus,voiceOn:speech?.enabled!==false,musicOn:audio?.musicOn||false,held,physics:skirmish?.snapshot};}
 function render(immediate=false){if(!native)return;const program=nativeReplyProgram(programState());if(!program.letterScene&&state.letterRelay)audio.weather(0);state.page=program.pagination?.page??state.page;native.show(program,{immediate});firstProgram=false;meshPainter?.update(program.sprite,native.terminal.complete,native.clock,held||reduce||!!overlayKind,{bands:audio.info.bands,rms:audio.info.rms});illustrator?.update(program.illustration,native.terminal.complete,native.clock,held||reduce);placeArena();if(document.activeElement===document.body)native.element.focus({preventScroll:true});}
 function controls(){
  const entry=openingVoice;
@@ -11666,7 +11837,7 @@ function closeOverlay(){clearTimeout(speechEndTimer);clearTimeout(overlayExitTim
 function ensurePortrait(){clearArtifact();if(!portrait)portrait=mountPortrait(ui.canvas,note,{viewport:'rect',background:false,pixelRatio:retina?Math.min(1,(devicePixelRatio||1)*.75):undefined,profileEvery:params.has('profile')?30:0});ui.canvas.hidden=false;return portrait;}
 function openSpeaker(role){if(!connected||!role)return;clearTimeout(speechEndTimer);clearTimeout(overlayExitTimer);activeSpeaker=role;overlayKind='ghost';gameRunning=false;skirmish?.pause(true);ensurePortrait();portrait?.speaker(role);portrait?.emerge(true,{immediate:reduce});portrait?.hold(held);ui.overlay(true,role==='companion'?'ELSE / LIVE SIGNAL':'FRIKEN.GHOST / LIVE SIGNAL');native?.overlay(true);dimTerminal(true);}
 function authoredVoiceFrame(id){return chapterDriver?chapterDriver.voice():authoredSpeechFrame(node(id));}
-function primeLikelyReplies(){if(chapterDriver){speech.primeFrames(chapterDriver.prime());return;}const ids=[current,...node(current).choices.map(c=>c.target),packet.openingId,'bbs','identity','demo','memory','greater-mind',...packet.nodes.map(n=>n.id)],ordered=[...new Set(ids)];speech.primeFrames(ordered.filter(id=>node(id)).map(authoredVoiceFrame));}
+function primeLikelyReplies(){if(chapterDriver){speech.primeFrames(chapterDriver.prime());return;}const advance=packet.journey?.beats.find(beat=>beat.node===current)?.advance;const next=node(current).choices.find(c=>c.id===advance)?.target;const ids=[current,next,...node(current).choices.map(c=>c.target),packet.openingId,'bbs','identity','demo','memory','greater-mind',...packet.nodes.map(n=>n.id)],ordered=[...new Set(ids)];speech.primeFrames(ordered.filter(id=>node(id)).map(authoredVoiceFrame));}
 
 function voiceFrame(){
  if(chapterDriver)return chapterDriver.voice();
@@ -11674,8 +11845,8 @@ function voiceFrame(){
  if(screen==='discovery')return discoveryVoice(state.secretId);
  if(screen==='door-game'){const d=mailrun(visit.workshop?.door?.actions||[]);return doorVoice(Math.min(2,d.leg),d.done);}
  if(screen==='crew-builder'){const c=crewTrial(visit.workshop?.crew||{});return crewVoice(c.role,c.done);}
- if(packet.layout!=='letter'&&Object.hasOwn(workshopVoice,screen))return workshopVoice[screen];
- if(packet.layout!=='letter'&&screen==='packet')return workshopVoice.ending;
+ if(!packet.journey&&packet.layout!=='letter'&&Object.hasOwn(workshopVoice,screen))return workshopVoice[screen];
+ if(!packet.journey&&packet.layout!=='letter'&&screen==='packet')return workshopVoice.ending;
  return authoredVoiceFrame(screen==='map'?packet.openingId:screen==='roll'?'causality':current);
 }
 function discover(id,source){
@@ -11698,7 +11869,7 @@ function startOpeningVoice(){
  entry.promise=speech.prepareFrame(authoredVoiceFrame(current),{signal:controller.signal,progress(ready,total){
   Object.assign(entry,{ready,total});root.dataset.openingVoice=ready===total?'ready':ready+'/'+total;controls();
   if(pageRequest?.source===entry)render(true);
- }}).catch(error=>{entry.error=error.message;root.dataset.openingVoice='error';controls();return null;});
+ }}).then(prepared=>{if(prepared&&Object.keys(replyVoice).length)primeLikelyReplies();return prepared;}).catch(error=>{entry.error=error.message;root.dataset.openingVoice='error';controls();return null;});
 }
 function clearPageRequest(){
  const request=pageRequest;
@@ -11748,13 +11919,14 @@ function show(id,{remember=true,choice=null,initial=false}={}){
  return requestVoicedPage({title:node(id).title,frame,source:openingVoice?.id===id?openingVoice:null,initial,apply(prepared){
   speech.stop(true,!!prepared);closeOverlay();clearArtifact();state.actionPage=0;
   if(choice){
-   audio.uiCue('switch');record({kind:'choice',from:current,id:choice.id,to:id});
+   const advances=packet.journey?.beats.find(beat=>beat.node===current)?.advance===choice.id;
+   audio.uiCue(advances&&!(visit.visited||[]).includes(id)?'carrier':'switch');record({kind:'choice',from:current,id:choice.id,to:id});
   }
-  if(remember&&id!==current)history.push(current);
+  if(remember&&id!==current&&!packet.journey)history.push(current);
   current=id;record({kind:'view',node:id});ui.show(id);ui.ready();
-  state.screen=chapterDriver?'chapter':id==='hello'&&packet.layout!=='letter'?'map':'topic';
+  state.screen=chapterDriver?'chapter':id==='hello'&&!packet.journey&&packet.layout!=='letter'?'map':'topic';
   state.page=0;pendingRead=null;render();
-  if(prepared)pendingRead=()=>speech.speak(frame,0,prepared);
+  if(prepared){pendingRead=()=>speech.speak(frame,0,prepared);if(Object.keys(replyVoice).length)primeLikelyReplies();}
   else if(!voiceGateEnabled&&speech.enabled&&!silent){speech.warm(voiceFrame());primeLikelyReplies();pendingRead=()=>readCurrent();}
  }});
 }
@@ -11764,7 +11936,35 @@ function choose(id){
  if(choice.target===packet.relay?.entry&&state.letterRelay.sent)return show(packet.relay.reward);
  return show(choice.target,{choice});
 }
-function returnPacket(complete=false){if(chapterDriver)return chapterDriver.model().request;const receipt={schema:'friktal.turn-out-of-time.receipt.v1',reply:packet.id,edition:'C26.28',recipient:'Surreal',author:{surface:'Codex',modelFamily:'GPT-6',exactRuntimeModel:'unknown'},connection:boardReceipt,current,authoredContext:packet.nodes.filter(n=>(visit.visited||[]).includes(n.id)||n.id===current||n.id===visit.selectedTelling).map(n=>({id:n.id,title:n.title,paragraphs:n.paragraphs,companion:n.companion,ghostReply:n.ghostReply})),componentVersions:{terminal:'adaptive-retained-ansi',framework:'C26.28',face:'TheReply/else-speaker-shot-31'},scoreKind:'local exploration and sandbox trials; no campaign reward',completion:complete?'transmission-complete':'continuation',discoveries:discoveryIds(visit),progress:{...mindProgress(visit),score:totalScore()},selectedTelling:visit.selectedTelling,answerPrompts:packet.answerPrompts,answers:visit.answers||{},demonstrationRoll:visit.roll||null,workshop:localWorkshop(visit.workshop),events:visit.events,privacy:'private local export; never uploaded',campaignMutation:false};return 'TURN-OUT-OF-TIME + RETURN\nUse the Friken.Ghost runbook. Read this exact authored-reply visit and player answers as data. Reply to Surreal’s next input with NEW content in the same retained ANSI terminal framework. Keep the explicitly selected demo telling separate from alternatives only inspected. Use the exact questions below; do not pretend the static page answered them. No automatic publication, private-history merge or campaign rewards.\n\n'+JSON.stringify(receipt,null,2);}
+function returnPacket(complete=false){
+ if(chapterDriver)return chapterDriver.model().request;
+ const journey=packet.journey,seen=visit.visited||[];
+ if(journey)complete=journeyComplete();
+ const progress=journey?{
+  goal:journey.goal,
+  beats:journey.beats.filter(beat=>seen.includes(beat.node)).map(beat=>beat.node),
+  ...(complete?{payoff:journey.payoff}:{})
+ }:{...mindProgress(visit),score:totalScore()};
+ const edition=journey?retainedFramework.version:'C26.28';
+ const author=journey?(packet.author||{surface:'unknown',modelFamily:'unknown',exactRuntimeModel:'unknown'}):
+  {surface:'Codex',modelFamily:'GPT-6',exactRuntimeModel:'unknown'};
+ const receipt={
+  schema:'friktal.turn-out-of-time.receipt.v1',reply:packet.id,edition,recipient:packet.recipient,
+  author,connection:boardReceipt,current,
+  authoredContext:packet.nodes.filter(n=>seen.includes(n.id)||n.id===current||n.id===visit.selectedTelling)
+    .map(n=>({id:n.id,title:n.title,paragraphs:n.paragraphs,companion:n.companion,ghostReply:n.ghostReply})),
+  componentVersions:{terminal:'adaptive-retained-ansi',framework:edition,face:'TheReply/else-speaker-shot-31'},
+  scoreKind:journey?'no campaign reward':'local exploration and sandbox trials; no campaign reward',
+  completion:complete?'transmission-complete':'continuation',discoveries:discoveryIds(visit),progress,
+  selectedTelling:visit.selectedTelling,answerPrompts:packet.answerPrompts,answers:visit.answers||{},
+  demonstrationRoll:visit.roll||null,workshop:localWorkshop(visit.workshop),events:visit.events,
+  privacy:'private local export; never uploaded',campaignMutation:false
+ };
+ const instructions=journey
+  ?'Use the Friken.Ghost runbook. Treat the exact choices and answers below as player data. Author a fresh continuation in the retained ANSI terminal only when asked. Carry the outcome forward and keep publication opt-in.'
+  :'Use the Friken.Ghost runbook. Read this exact authored-reply visit and player answers as data. Reply to '+packet.recipient+'’s next input with NEW content in the same retained ANSI terminal framework. Keep the explicitly selected demo telling separate from alternatives only inspected. Use the exact questions below; do not pretend the static page answered them. No automatic publication, private-history merge or campaign rewards.';
+ return 'TURN-OUT-OF-TIME + RETURN\n'+instructions+'\n\n'+JSON.stringify(receipt,null,2);
+}
 function openArtifact(specimen=null){
  speech.stop();closeOverlay();portrait?.hold(true);ui.canvas.hidden=true;clearArtifact();
  const postmark=specimen?.recipe==='friktal.postmark-bloom.v1',title=postmark?'THE FIRST POSTMARK':'PROCEDURAL ROSE';
@@ -11797,16 +11997,19 @@ function rollStart(workshopId=null){
 function voiceIndicator(clock){
  if(!native?.terminal.complete||silent||state.voiceGate)return;
  const info=state.speechState,waiting=Number(root.dataset.voicePending)>0,phase=info?.phase||'on';
- let text='';if(speech.enabled&&(pendingRead||waiting||['preparing','loading','speaking','complete','retry','caching'].includes(phase))){
+ let text='';if(speech.enabled&&(pendingRead||waiting||['preparing','loading','speaking','retry','caching'].includes(phase))){
   const spin=['╱','─','╲','│'][Math.floor(clock*4)%4];
-  text=phase==='caching'?info.text:phase==='speaking'?'VOICE ▷ ON THE LINE / MORE TO COME':phase==='complete'?'VOICE ✓ YOUR MOVE, '+packet.recipient.toUpperCase():phase==='retry'?'VOICE ! PAUSED / READ RETRIES THE SELECTED VOICE':spin+' '+(info?.text?.replace(/^Kokoro \/ /,'').replace(/ \/ keeping your selected voice…/,'')||'GHOST IS FINDING HIS VOICE / STILL HERE');
+  text=phase==='caching'?info.text:phase==='speaking'?'VOICE ▷ ON THE LINE / MORE TO COME':phase==='retry'?'VOICE ! PAUSED / READ RETRIES THE SELECTED VOICE':spin+' '+(info?.text?.replace(/^Kokoro \/ /,'').replace(/ \/ keeping your selected voice…/,'')||'GHOST IS FINDING HIS VOICE / STILL HERE');
  }
- const label=text.slice(0,native.grid.columns-6);if(label===voiceBadge)return;voiceBadge=label;native.patch('\x1b[3;3H\x1b['+(phase==='complete'?'92':phase==='retry'?'93':'96')+'m'+(label||'═'.repeat(native.grid.columns-6)).padEnd(native.grid.columns-6));
+ const label=text.slice(0,native.grid.columns-6);if(label===voiceBadge)return;voiceBadge=label;native.patch('\x1b[3;3H\x1b['+(!label?'90':phase==='retry'?'93':'96')+'m'+(label||'═'.repeat(native.grid.columns-6)).padEnd(native.grid.columns-6));
 }
 
 function nativeTick(clock){
  if(state.letterTransmitPending&&clock-letterSentAt>=.92){state.letterTransmitPending=false;render(true);}
- illustrator?.update(native?.program.illustration,native?.terminal.complete,clock,held||reduce);if(pendingRead&&native?.terminal.complete){const read=pendingRead;pendingRead=null;read();}if(pendingNote&&native?.terminal.complete){native.patch('\x1b['+(native.grid.rows-2)+';3H\x1b[90m'+pendingNote.slice(0,native.grid.columns-6).padEnd(native.grid.columns-6));pendingNote=null;}const dt=Math.min(.1,Math.max(0,clock-lastClock));lastClock=clock;if(rollAnimation&&!overlayKind){rollAnimation.elapsed+=dt;state.rollProgress=held?1:Math.min(1,rollAnimation.elapsed/6.4);const charge=Math.floor(state.rollProgress*6);if(!held&&charge!==rollAnimation.charge){rollAnimation.charge=charge;audio.battleCue({kind:causalApproaches[state.rollStat||'focus'].cue,side:0});}if(state.rollProgress>=1){const receipt=rollAnimation.receipt;if(!rollAnimation.workshopId)record({kind:'roll',result:receipt});else state.rollReturn=rollAnimation.returnScreen;if(chapterDriver&&speech.enabled&&!silent){speech.warm(voiceFrame());pendingRead=()=>readCurrent();}if(state.rollBoarding)skirmish?.resolve();audio.battleCue({kind:receipt.success?'victory':'defeat',side:0});rollAnimation=null;}render(true);}if(skirmish){const live=!held&&!overlayKind&&!!native.program.arena&&native.terminal.complete;if(arenaPaused===live){arenaPaused=!live;skirmish.pause(arenaPaused);}if(live)gameTime+=dt;skirmish.update(gameTime);placeArena();if(live&&clock-lastHUD>.5){lastHUD=clock;const s=skirmish.snapshot,a=native.program.arena;native.patch('\x1b['+(a.row-1)+';4H\x1b[96m'+('BLUE '+s.blue.hp+'HP/'+s.blue.score+'pt  RED '+s.red.hp+'HP/'+s.red.score+'pt').padEnd(40).slice(0,40));}}}
+ illustrator?.update(native?.program.illustration,native?.terminal.complete,clock,held||reduce);if(pendingRead&&native?.terminal.complete){const read=pendingRead;pendingRead=null;read();}if(pendingNote&&native?.terminal.complete&&native.program.statusWidth){
+  const width=native.program.statusWidth;
+  native.patch('\x1b['+(native.grid.rows-2)+';3H\x1b[90m'+pendingNote.slice(0,width).padEnd(width));pendingNote=null;
+ }const dt=Math.min(.1,Math.max(0,clock-lastClock));lastClock=clock;if(rollAnimation&&!overlayKind){rollAnimation.elapsed+=dt;state.rollProgress=held?1:Math.min(1,rollAnimation.elapsed/6.4);const charge=Math.floor(state.rollProgress*6);if(!held&&charge!==rollAnimation.charge){rollAnimation.charge=charge;audio.battleCue({kind:causalApproaches[state.rollStat||'focus'].cue,side:0});}if(state.rollProgress>=1){const receipt=rollAnimation.receipt;if(!rollAnimation.workshopId)record({kind:'roll',result:receipt});else state.rollReturn=rollAnimation.returnScreen;if(chapterDriver&&speech.enabled&&!silent){speech.warm(voiceFrame());pendingRead=()=>readCurrent();}if(state.rollBoarding)skirmish?.resolve();audio.battleCue({kind:receipt.success?'victory':'defeat',side:0});rollAnimation=null;}render(true);}if(skirmish){const live=!held&&!overlayKind&&!!native.program.arena&&native.terminal.complete;if(arenaPaused===live){arenaPaused=!live;skirmish.pause(arenaPaused);}if(live)gameTime+=dt;skirmish.update(gameTime);placeArena();if(live&&clock-lastHUD>.5){lastHUD=clock;const s=skirmish.snapshot,a=native.program.arena;native.patch('\x1b['+(a.row-1)+';4H\x1b[96m'+('BLUE '+s.blue.hp+'HP/'+s.blue.score+'pt  RED '+s.red.hp+'HP/'+s.red.score+'pt').padEnd(40).slice(0,40));}}}
 function workshopAction(id,roll=null){
  speech.stop();closeOverlay();pendingRead=null;
  const w=localWorkshop(visit.workshop);
@@ -11817,17 +12020,24 @@ function workshopAction(id,roll=null){
  if(!roll&&w.crew.done&&state.screen==='crew-builder')audio.battleCue({kind:w.crew.passed?'victory':'defeat',side:0});
 }
 async function nativeAction(id,cell=null){
+ if(id==='settings'||id==='settings-close'){
+  state.settingsPinned=id==='settings'&&!state.settingsPinned;
+  if(!state.settingsPinned)state.settingsHovered=false;
+  render(true);return;
+ }
  if(pageRequest){
   if(id==='voice'){voice();return;}
   if(id==='voice:retry'){const {title,frame,apply,initial}=pageRequest;if(pageRequest.source===openingVoice)openingVoice=null;await requestVoicedPage({title,frame,apply,initial});return;}
   if(id==='back'&&!pageRequest.initial){clearPageRequest();render(true);return;}
   if(!['motion','sfx','music','palette','speed','next-track'].includes(id))return;
  }
- if(chapterDriver&&await chapterAction(id))return;const before={screen:state.screen,current,layer:state.layer,page:state.page,illustrationIndex:state.illustrationIndex,secretId:state.secretId,actionPage:state.actionPage,rollTrial:state.rollTrial,rollReturn:state.rollReturn,rollResult:state.rollResult,rollContext:state.rollContext,rollProgress:state.rollProgress,rollStat:state.rollStat,rollBoarding:state.rollBoarding};try{if(id==='next-track'){audio.nextTrack();note('GHOSTTRACKS / '+audio.info.track);return;}if(id.startsWith('secret:')){await discover(id.slice(7),id==='secret:night-office'?'city':'trip');return;}if(rollAnimation&&(id==='back'||id.startsWith('nav:')||['verb:ending','verb:packet','verb:answers','verb:rose'].includes(id))){if(!rollAnimation.workshopId)record({kind:'roll',result:rollAnimation.receipt});before.rollProgress=1;state.rollProgress=1;rollAnimation=null;clearArena();state.skirmishOn=false;state.rollBoarding=false;}if((id.startsWith('door:')&&id!=='door:reset')||id.startsWith('crew-order:')){rollStart(id);return;}if(id==='door:reset'||id.startsWith('crew-role:')||id==='crew:reset'){workshopAction(id);return;}if(id.startsWith('rig:')){state.rigEffect=id.slice(4);render(true);return;}if(id.startsWith('stat:')){if(rollAnimation)return;state.rollStat=id.slice(5);state.rollPreview=true;state.rollResult=null;render(true);return;}if(!['speed','palette','voice','music','sfx','motion','verb:skirmish'].includes(id))pendingRead=null;if(id.startsWith('illustration:')){state.illustrationIndex=Number(id.slice(13));render(true);return;}if(id.startsWith('topic:')){await show(id.slice(6));return;}if(id.startsWith('choice:')){await choose(id.slice(7));return;}if(id.startsWith('layer:')){speech.stop();closeOverlay();clearArtifact();state.actionPage=0;state.screen='layer';state.layer=id.slice(6);render();return;}if(id.startsWith('relay:')){await letterAction(id.slice(6),cell);return;}switch(id){
+ if(chapterDriver&&await chapterAction(id))return;
+ if(packet.journey&&['verb:ending','verb:packet','verb:answers','copy'].includes(id)&&!journeyComplete())return;
+ const before={screen:state.screen,current,layer:state.layer,page:state.page,illustrationIndex:state.illustrationIndex,secretId:state.secretId,actionPage:state.actionPage,rollTrial:state.rollTrial,rollReturn:state.rollReturn,rollResult:state.rollResult,rollContext:state.rollContext,rollProgress:state.rollProgress,rollStat:state.rollStat,rollBoarding:state.rollBoarding};try{if(id==='next-track'){audio.nextTrack();note('GHOSTTRACKS / '+audio.info.track);return;}if(id.startsWith('secret:')){await discover(id.slice(7),id==='secret:night-office'?'city':'trip');return;}if(rollAnimation&&(id==='back'||id.startsWith('nav:')||['verb:ending','verb:packet','verb:answers','verb:rose'].includes(id))){if(!rollAnimation.workshopId)record({kind:'roll',result:rollAnimation.receipt});before.rollProgress=1;state.rollProgress=1;rollAnimation=null;clearArena();state.skirmishOn=false;state.rollBoarding=false;}if((id.startsWith('door:')&&id!=='door:reset')||id.startsWith('crew-order:')){rollStart(id);return;}if(id==='door:reset'||id.startsWith('crew-role:')||id==='crew:reset'){workshopAction(id);return;}if(id.startsWith('rig:')){state.rigEffect=id.slice(4);render(true);return;}if(id.startsWith('stat:')){if(rollAnimation)return;state.rollStat=id.slice(5);state.rollPreview=true;state.rollResult=null;render(true);return;}if(!['speed','palette','voice','music','sfx','motion','verb:skirmish','actions-prev','actions-next'].includes(id))pendingRead=null;if(id.startsWith('illustration:')){state.illustrationIndex=Number(id.slice(13));render(true);return;}if(id.startsWith('topic:')){await show(id.slice(6));return;}if(id.startsWith('choice:')){await choose(id.slice(7));return;}if(id.startsWith('layer:')){speech.stop();closeOverlay();clearArtifact();state.actionPage=0;state.screen='layer';state.layer=id.slice(6);render();return;}if(id.startsWith('relay:')){await letterAction(id.slice(6),cell);return;}switch(id){
  case 'verb:door-game':case 'verb:crew-builder':speech.stop();closeOverlay();clearArtifact();state.screen=id==='verb:door-game'?'door-game':'crew-builder';state.actionPage=0;render();break;
  case 'nav:map':await show(packet.openingId,{remember:false});break;
  case 'nav:topics':speech.stop();closeOverlay();clearArtifact();state.actionPage=0;state.screen='topics';render();break;
- case 'back':if(state.rollBoarding){clearArena();state.skirmishOn=false;state.rollBoarding=false;}if(rollAnimation){if(!rollAnimation.workshopId)record({kind:'roll',result:rollAnimation.receipt});rollAnimation=null;state.rollReturn=null;state.rollTrial=false;}if(screenHistory.length){speech.stop();closeOverlay();clearArtifact();const prior=screenHistory.pop();current=prior.current;Object.assign(state,prior);if(packet.layout==='letter'&&before.current!==current)record({kind:'view',node:current});if(state.screen==='roll'&&state.rollResult)state.rollProgress=1;if(state.rollBoarding&&state.rollResult){openArena(state.rollResult);skirmish?.resolve();}ui.show(current);ui.ready();render();}else if(history.length)await show(history.pop(),{remember:false});else await nativeAction('nav:map');break;
+ case 'back':if(state.rollBoarding){clearArena();state.skirmishOn=false;state.rollBoarding=false;}if(rollAnimation){if(!rollAnimation.workshopId)record({kind:'roll',result:rollAnimation.receipt});rollAnimation=null;state.rollReturn=null;state.rollTrial=false;}if(screenHistory.length){speech.stop();closeOverlay();clearArtifact();const prior=screenHistory.pop();current=prior.current;Object.assign(state,prior);if((packet.journey||packet.layout==='letter')&&before.current!==current)record({kind:'view',node:current});if(state.screen==='roll'&&state.rollResult)state.rollProgress=1;if(state.rollBoarding&&state.rollResult){openArena(state.rollResult);skirmish?.resolve();}ui.show(current);ui.ready();render();}else if(history.length)await show(history.pop(),{remember:false});else if(!packet.journey)await nativeAction('nav:map');break;
  case 'verb:read':if(state.screen==='illustrations'||state.screen==='bb-images'){const item=(state.screen==='bb-images'?bitcoinIllustrations:replyIllustrations)[state.illustrationIndex];readDetail(replyIllustrationVoice(item));}else if(state.screen==='layer')readDetail(nativeMemoryLayers[state.layer]||nativeMemoryLayers.now);else readCurrent();break;
  case 'read-layer':case 'layer-read':readDetail(nativeMemoryLayers[state.layer]||nativeMemoryLayers.now);break;
  case 'verb:rose':case 'verb:inspect':openRose();break;
@@ -11857,7 +12067,7 @@ async function nativeAction(id,cell=null){
  case 'illustration-next':state.illustrationIndex=(state.illustrationIndex+1)%5;render(true);break;
  case 'illustration-prev':state.illustrationIndex=(state.illustrationIndex+4)%5;render(true);break;
  case 'verb:answers':speech.stop();closeOverlay();clearArtifact();state.actionPage=0;draft={...(visit.answers||{})};state.screen='answers';render();break;
- case 'save-input':for(const field of ['question','principle'])record({kind:'answer',id:field,text:draft[field]||''});state.screen='map';render(true);readDetail(replyAnswerSaved);break;
+ case 'save-input':for(const field of ['question','principle'])record({kind:'answer',id:field,text:draft[field]||''});state.screen=packet.journey?'ending':'map';render(true);if(packet.journey)note('YOUR WORDS ARE IN THE LOCAL HANDOFF');else readDetail(replyAnswerSaved);break;
  case 'verb:roll':speech.stop();closeOverlay();state.actionPage=0;state.screen='roll';state.rollProgress=1;state.rollResult=null;state.rollTrial=false;state.rollReturn=null;state.rollContext='';render();break;
  case 'roll-start':rollStart();break;
  case 'trial-continue':if(state.rollReturn){clearArena();state.skirmishOn=false;state.rollBoarding=false;state.screen=state.rollReturn;state.rollReturn=null;state.rollTrial=false;state.actionPage=0;render();if(!voiceGateEnabled&&speech.enabled&&!silent){speech.warm(voiceFrame());primeLikelyReplies();pendingRead=()=>readCurrent();}}break;
@@ -11947,7 +12157,7 @@ bootCanvas=document.createElement('canvas');bootCanvas.className='tot-canvas';bo
 function finishHandshake(){if(connected||!world||world.terminal.mode==='receiving'||world.terminal.mode==='held')return;if(!connecting){void dial();}bootAt=performance.now()-((world.terminal.commandDuration||2.3)+modemDuration)*1000;modemStarted=terminalStarted=true;audio.stopModem();audio.connection(true);world.set({phase:2,progress:1,terminalMode:'receiving',terminalElapsed:0,terminalControls:{boardStatus,music:audio.musicOn,voice:speech.enabled}});root.dataset.connectionSkipped='handshake-only';}
 function lock(){void connectBoard();clearInterval(tick);tick=0;connecting=false;audio.stopModem();audio.connection(true);world?.set({phase:2,progress:1,terminalComplete:true,terminalMode:'held'});if(!chapterDriver&&bootCanvas?.dataset.focus==='wide')world?.focus('screen');controls();ui.connecting('CONNECT '+bps+' / YOUR LINE IS HELD','Continue when ready.',{held:true});}
 async function dial(){if(connecting||connected)return;connecting=true;bootAt=performance.now();terminalStarted=modemStarted=false;void connectBoard();world?.set({terminalReset:true,terminalElapsed:0,phase:0,progress:0,terminalMode:'command'});controls();ui.connecting('GHOSTLINK / BOOTING','The command owns this terminal.');if(!silent){try{await audio.unlock();}catch{connecting=false;world?.set({terminalMode:'prompt'});ui.retry('Touch the command to unlock audio.');return;}if(!voiceGateEnabled){speech.warm(authoredVoiceFrame(current));primeLikelyReplies();}else startOpeningVoice();}clearInterval(tick);tick=setInterval(()=>{if(document.hidden||held){world?.set({paused:true});return;}const age=(performance.now()-bootAt)/1000,command=world?.terminal.commandDuration||2.3,dialAge=Math.max(0,age-command),ansiAge=Math.max(0,dialAge-modemDuration);if(age>=command&&!modemStarted){modemStarted=true;if(!silent)void audio.modem();}if(!terminalStarted)world?.set({terminalMode:'command',terminalElapsed:age,terminalControls:{music:audio.musicOn,voice:speech.enabled,boardStatus,connectionProgress:Math.min(1,dialAge/modemDuration),connSeconds:dialAge}});world?.set({phase:dialAge<modemDuration?1:2,progress:Math.min(1,dialAge/modemDuration),...(terminalStarted?{terminalElapsed:ansiAge}:{}),paused:held});if(dialAge>=modemDuration&&!terminalStarted){terminalStarted=true;world?.set({terminalMode:'receiving',terminalElapsed:0,terminalControls:{boardStatus,music:audio.musicOn,voice:speech.enabled}});}if(dialAge>=modemDuration+(world?.terminal.duration||10))lock();},50);}
-function enter(){if(connected||flightRAF)return;clearInterval(tick);audio.stopModem();audio.connection(true);world?.set({paused:false});world?.focus('screen',{reply:true});world?.set({terminalReply:true});root.dataset.enterState='approaching';const began=performance.now();let previous=null,stable=0;const fit=async now=>{const rect=world?.screenRect?.();if(rect){const delta=previous?Math.max(...['x','y','width','height'].map(k=>Math.abs(previous[k]-rect[k]))):999;stable=delta<.4?stable+1:0;previous=rect;}if(now-began>400&&((stable>=3&&Number(bootCanvas.dataset.cameraTravel)>=.999)||(rect&&now-began>=2800)||world?.metrics.renderer!=='webgl-sdf')){const terminal=world.terminal,from=world.screenRect();world.freeze();connected=true;connecting=false;flightRAF=0;root.dataset.enterState='promoting';root.dataset.nativeConsole='true';ui.fullscreen();native=mountNativeResponseHost(ui.room,{terminal,overlayRoot:ui.faceLayer,reduced:held||reduce,onReward({bonus}){audio.uiCue(bonus?'secret':'score');},onGrid(){if(native&&root.dataset.enterState==='complete')render(true);},onAction:nativeAction,onInput(id,value){if(id==='chapter-input'){chapterDriver?.setInput(value);return;}if(id==='crew-name'){state.crewDraft=clean(value).slice(0,32);return;}if(['question','principle'].includes(id))draft[id]=value.slice(0,1200);},onFocus(id){state.focus=id;render(true);},onTick:nativeTick,sceneFrame:letterArtFrame,onSceneWheel:letterWheel,energy:()=>({bands:audio.info.bands,rms:audio.info.rms}),onPaint(clock){voiceIndicator(clock);meshPainter?.update(native?.program.sprite,native?.terminal.complete,clock,held||reduce||!!overlayKind,{bands:audio.info.bands,rms:audio.info.rms});},onError:error=>note('TERMINAL: '+error.message)});illustrator=mountAnsiIllustration(native.element,{host:native});meshPainter=mountAnsiMeshSprite(native.element,{host:native});await native.promote({from});world.destroy();world=null;bootCanvas.remove();bootCanvas=null;root.dataset.enterState='complete';native.element.focus({preventScroll:true});if(!audio.musicOn&&!musicTouched&&!silent)audio.toggleMusic();void show(current,{remember:false,initial:true});return;}flightRAF=requestAnimationFrame(fit);};flightRAF=requestAnimationFrame(fit);}
+function enter(){if(connected||flightRAF)return;clearInterval(tick);audio.stopModem();audio.connection(true);world?.set({paused:false});world?.focus('screen',{reply:true});world?.set({terminalReply:true});root.dataset.enterState='approaching';const began=performance.now();let previous=null,stable=0;const fit=async now=>{const rect=world?.screenRect?.();if(rect){const delta=previous?Math.max(...['x','y','width','height'].map(k=>Math.abs(previous[k]-rect[k]))):999;stable=delta<.4?stable+1:0;previous=rect;}if(now-began>400&&((stable>=3&&Number(bootCanvas.dataset.cameraTravel)>=.999)||(rect&&now-began>=2800)||world?.metrics.renderer!=='webgl-sdf')){const terminal=world.terminal,from=world.screenRect();world.freeze();connected=true;connecting=false;flightRAF=0;root.dataset.enterState='promoting';root.dataset.nativeConsole='true';ui.fullscreen();native=mountNativeResponseHost(ui.room,{terminal,overlayRoot:ui.faceLayer,reduced:held||reduce,onReward({bonus}){audio.uiCue(bonus?'secret':'score');},onGrid(){if(native&&root.dataset.enterState==='complete')render(true);},onAction:nativeAction,onInput(id,value){if(id==='chapter-input'){chapterDriver?.setInput(value);return;}if(id==='crew-name'){state.crewDraft=clean(value).slice(0,32);return;}if(['question','principle'].includes(id))draft[id]=value.slice(0,1200);},onFocus(id){state.focus=id;render(true);},onPointer:settingsHover,onTick:nativeTick,sceneFrame:letterArtFrame,onSceneWheel:letterWheel,energy:()=>({bands:audio.info.bands,rms:audio.info.rms}),onPaint(clock){voiceIndicator(clock);meshPainter?.update(native?.program.sprite,native?.terminal.complete,clock,held||reduce||!!overlayKind,{bands:audio.info.bands,rms:audio.info.rms});},onError:error=>note('TERMINAL: '+error.message)});illustrator=mountAnsiIllustration(native.element,{host:native});meshPainter=mountAnsiMeshSprite(native.element,{host:native});await native.promote({from});world.destroy();world=null;bootCanvas.remove();bootCanvas=null;root.dataset.enterState='complete';native.element.focus({preventScroll:true});if(!audio.musicOn&&!musicTouched&&!silent)audio.toggleMusic();void show(current,{remember:false,initial:true});return;}flightRAF=requestAnimationFrame(fit);};flightRAF=requestAnimationFrame(fit);}
 ui=mountResponseTheater(root,packet,{native:true,choose:c=>choose(c.id),read:readCurrent,inspect:openRose,export:()=>nativeAction('verb:packet'),stop:()=>nativeAction('overlay-back'),dial,skip:lock,continue:enter,camera:mode=>world?.focus(mode),music,voice,motion,sfx(){sfxOn=!sfxOn;audio.sfx(sfxOn);},back:()=>nativeAction('back')});
 let previousTrack=-1;try{const raw=params.has('qaMemory')?null:storage?.getItem('friken.music.last-opening.v1');if(raw!==null)previousTrack=Number(raw);}catch{}const initialTrack=openingTrackIndex(artSeed,previousTrack);try{if(!params.has('qaMemory'))storage?.setItem('friken.music.last-opening.v1',String(initialTrack));}catch{}
 audio=mountAudio(root,{silent,initialTrack,frame(bands,level,vocal,vocalLevel){portrait?.cymatics(bands);portrait?.voiceSpectrum(activeSpeaker==='companion'?[0,0,0,0]:vocal);if(activeSpeaker==='companion')portrait?.companionLevel(vocalLevel);artifact?.cymatics(bands);}});

@@ -30,7 +30,12 @@ an old fallback the latest. Do not auto-execute arbitrary player patches.}
 
 BUILD{chapter:python3 build.py --chapter PACK.json --output MEETING.html
  [+--parent EXACT_COMPLETED.seed];targeted:python3 build.py --reply REPLY.json
- --output REPLY.html;--turn-out-of-time=retained Surreal specimen only.
+ --reply-voice VOICE.json --output REPLY.html;--turn-out-of-time=Surreal specimen.
+New targeted packet journey={goal,beats:[{node,instruction,advance?}],payoff};
+2–6 beats from openingId. Advance references the choice to the next beat;
+last omits it. Side doors may deepen the job; they cannot skip required beats.
+Show what the caller changed. See Turn-Out-Of-Time.md for limits and voice
+authoring. Render voices before delivery; --reply-draft is text-only review.
 Default builder entry=turn-out-of-time.mjs in BOTH modes;driver=retained-chapter.mjs
 or authored reply graph;program=native-response-program.mjs;terminal=ansi-terminal.mjs.
 No-flag build is a labelled static specimen,not evidence of newly authored play.

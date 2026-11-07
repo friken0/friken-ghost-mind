@@ -139,6 +139,18 @@ ten authored presets; ANSI-Craft.md describes bones, bounds and limitations.
 
 ## Refined interaction contract
 
+The retained terminal keeps device controls in one bottom settings rail.
+Hover over Settings for a preview, or click, tap, or press F2 to keep
+the rail open. Escape closes the rail before navigating the story.
+Voice, music, effects, motion, line speed, palette, and track stay in
+that rail. Reset remains a separate confirmation inside Settings.
+Opening the rail keeps the story and its hit regions in the same cells.
+
+When art and a text row represent the same action, register both hit
+regions with one action ID and one keyboard shortcut. The relay uses
+numbered art cards and two-line buttons that include the cost forecast.
+The art and both lines of the button make the same choice.
+
 The Surreal carrier defaults to14400bps from connection through reply. Slower rates remain explicit choices. Full topic titles wrap above their picture; art bounds move with their height. Back restores a UI snapshot (topic, picture, layer and page); Read derives its source from that restored screen. Hit-testing uses the live canvas rectangle in viewport coordinates. Caption BACK text and button both use `columns-11`; Escape closes every procedural overlay.
 
 Speech uses one rolling current line below its completed predecessor. Original UTF16 offsets still own reveal progress; waiting cannot advance it. A170ms clipped-band slide occurs only when the current line changes. Face completion fades back automatically; a preparation gap returns to the terminal after1.8s and the next actual actor playback can emerge again. Starting playback stops the previous audio source without cancelling matching in-flight synthesis. Topic navigation cancels old work, then warms the next three bounded passages while ANSI arrives. Voice cast, text and speed remain exact cache keys. This removes wasted synthesis; it does not guarantee real-time inference on every CPU.

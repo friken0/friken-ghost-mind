@@ -8,7 +8,7 @@ import {authoredSpeechFrame} from './speech.mjs';
 import {crewVoice,discoveryVoice,doorVoice,replyAnswerSaved,replyDetailVoice,replyIllustrationVoice,workshopVoice} from './reply-voice-scenes.mjs';
 import {TURN_OUT_OF_TIME as packet} from './turn-out-of-time-data.mjs';
 import {nativeReplyProgram,nativeMemoryLayers,nativeRoomIds,causalApproaches} from './native-response-program.mjs';
-import {newReplyVisit,recordReplyVisit} from './response-theater.mjs';
+import {newReplyVisit,recordReplyVisit,validateTurnOutOfTime} from './response-theater.mjs';
 import {mindProgress,causalDemo,causalAttributes} from './mind-adventure.mjs';
 import {normalizeNativeProgram} from './native-response-host.mjs';
 import {ansiColourThemes,createAnsiBuffer} from './ansi-terminal.mjs';
@@ -19,9 +19,9 @@ import {bitcoinIllustrations,replyIllustrations} from './illustration-data.mjs';
 // are the actual production modules. Source extraction is deliberately narrow.
 const source=fs.readFileSync(new URL('./turn-out-of-time.mjs',import.meta.url),'utf8');
 function declaration(name){const match=new RegExp('(?:^|\\n)(?:async )?function '+name+'\\(').exec(source);assert.ok(match,'Missing controller helper '+name);const start=match.index+(source[match.index]==='\n'?1:0),tail=source.slice(start),next=/\n(?:async )?function \w+\(/.exec(tail);return tail.slice(0,next?next.index:tail.length);}
-function harness(){
- const context=vm.createContext({chapterDriver:null,voiceGateEnabled:false,authoredSpeechFrame,crewVoice,discoveryVoice,doorVoice,replyAnswerSaved,replyDetailVoice,replyIllustrationVoice,workshopVoice,packet:structuredClone(packet),replyDiscoveries,canDiscover,discoveryIds,ansiColourThemes,causalApproaches,newReplyVisit,recordReplyVisit,mindProgress,causalDemo,causalAttributes,nativeReplyProgram,nativeMemoryLayers,normalizeNativeProgram,bitcoinIllustrations,replyIllustrations,localWorkshop,mailrun,mailrunLegs,crewTrial,crewRoles,workshopCheck,workshopRoll,structuredClone,console,document:{activeElement:null,body:{}}});
- const helpers=['totalScore','discover','record','programState','render','voice','authoredVoiceFrame','primeLikelyReplies','voiceFrame','startOpeningVoice','clearPageRequest','requestVoicedPage','finishPageWithoutVoice','readCurrent','readDetail','show','choose','returnPacket','rollStart','nativeTick','workshopAction','nativeAction'].map(declaration).join('\n');
+function harness(authored=packet){
+ const context=vm.createContext({chapterDriver:null,retainedFramework:{version:"test-framework"},voiceGateEnabled:false,authoredSpeechFrame,crewVoice,discoveryVoice,doorVoice,replyAnswerSaved,replyDetailVoice,replyIllustrationVoice,workshopVoice,replyVoice:{},packet:structuredClone(authored),replyDiscoveries,canDiscover,discoveryIds,ansiColourThemes,causalApproaches,newReplyVisit,recordReplyVisit,mindProgress,causalDemo,causalAttributes,nativeReplyProgram,nativeMemoryLayers,normalizeNativeProgram,bitcoinIllustrations,replyIllustrations,localWorkshop,mailrun,mailrunLegs,crewTrial,crewRoles,workshopCheck,workshopRoll,structuredClone,console,document:{activeElement:null,body:{}}});
+ const helpers=['totalScore','discover','record','journeyComplete','programState','render','voice','authoredVoiceFrame','primeLikelyReplies','voiceFrame','startOpeningVoice','clearPageRequest','requestVoicedPage','finishPageWithoutVoice','readCurrent','readDetail','show','choose','returnPacket','rollStart','nativeTick','workshopAction','nativeAction'].map(declaration).join('\n');
  vm.runInContext(`
   let screenHistory=[],visit=newReplyVisit(packet),current=visit.current,history=[],state={screen:'map',layer:'now',page:0,focus:null,receipt:'',rollProgress:1,illustrationIndex:0},draft={},boardStatus='LOCAL TEST',boardReceipt={mode:'offline-local'},held=false,overlayKind=null,overlayExitTimer=0,illustrator=null,meshPainter=null,rollAnimation=null,gameRunning=false,skirmish=null,arenaOpen=false,connected=true,silent=true,saveStatus='',retina=true,portrait=null;
   let lastClock=0,lastHUD=0,pendingNote=null;let artSeed=42,bps=14400,pendingRead=null,firstProgram=true,sfxOn=true;const speeds=[300,1200,2400,9600,14400,21100,56000];function placeArena(){};
@@ -117,4 +117,66 @@ test('chapter battle Continue and Escape return to its exact receipt without nav
   vm.runInContext(declaration('chapterAction')+'\nglobalThis.run=chapterAction;',context);
   assert.equal(await context.run(id),true);assert.equal(context.state.screen,'chapter');assert.equal(context.state.rollReturn,null);assert.equal(context.rollAnimation,null);
  }
+});
+
+const guided={
+ schema:'friktal.turn-out-of-time.v1',id:'relay-fixture',title:'The last lamp',recipient:'Operator Seven',openingId:'hello',
+ journey:{goal:'Return a borrowed lamp to the night ferry.',beats:[
+  {node:'hello',instruction:'Collect the lamp from the dock.',advance:'collect'},
+  {node:'dock',instruction:'Send it over on the last crossing.',advance:'send'},
+  {node:'lit',instruction:'Check what the ferryman can see now.'}
+ ],payoff:'The ferryman sees the pier. Your borrowed lamp is home.'},
+ answerPrompts:{question:'What would you send next?',principle:'What should the ferryman keep?'},
+ nodes:[
+  {id:'hello',title:'A ferry without a light',ansiArt:'harbor',choices:[
+   {id:'weather',target:'weather',label:'Check the wind',detail:'See why the crossing closed yesterday.'},
+   {id:'collect',target:'dock',label:'Pick up the borrowed lamp',detail:'Carry it to the loading winch.'}
+  ]},
+  {id:'weather',title:'The west wind',ansiArt:'monsoon-ridge',choices:[]},
+  {id:'dock',title:'The last crossing',ansiArt:'network',choices:[{id:'send',target:'lit',label:'Send the lamp across',detail:'The ferryman is watching for a signal.'}]},
+  {id:'lit',title:'Two lights on the pier',ansiArt:'beacon',choices:[]}
+ ].map(n=>({...n,visual:'ghost',kicker:'Night ferry',paragraphs:['An authored voice line for '+n.id+'.']}))
+};
+
+test('guided replies reject a disconnected scene or a shortcut past a required choice',()=>{
+ validateTurnOutOfTime(guided);
+ const orphan=structuredClone(guided);orphan.nodes[0].choices.shift();
+ assert.throws(()=>validateTurnOutOfTime(orphan),/unreachable scene/);
+ const shortcut=structuredClone(guided);shortcut.nodes[1].choices.push({id:'skip',target:'lit',label:'Skip',detail:'Skip the dock'});
+ assert.throws(()=>validateTurnOutOfTime(shortcut),/must not skip/);
+ const broken=structuredClone(guided);broken.journey.beats[0].advance='weather';
+ assert.throws(()=>validateTurnOutOfTime(broken),/next beat/);
+ const unillustrated=structuredClone(guided);delete unillustrated.nodes[1].ansiArt;
+ assert.throws(()=>validateTurnOutOfTime(unillustrated),/explicit ANSI painting/);
+ const branded=structuredClone(guided);branded.nodes[0].ansiArt='city';
+ assert.throws(()=>validateTurnOutOfTime(branded),/legacy city painting/);
+ branded.nodes[0].ansiArt='bitcoin-city';validateTurnOutOfTime(branded);
+});
+
+test('guided call exposes one clear next move, restores a detour and exports the actual recipient and payoff',async()=>{
+ const h=harness(guided);
+ await h.show('hello');
+ const screenText=()=>{const p=h.snapshot().program,b=createAnsiBuffer(p.grid);b.feed(p.text);return b.cells.map(c=>c.char).join('');};
+ assert.match(screenText(),/STEP 01 \/ 3/);
+ assert.match(screenText(),/Return a borrowed lamp/);
+ assert.deepEqual(h.snapshot().program.hotspots.filter(a=>a.id.startsWith('choice:')).map(a=>[a.id,a.key]),[['choice:collect','1'],['choice:weather','2']]);
+ await h.action('verb:ending');assert.equal(h.snapshot().state.screen,'topic');
+ await h.action('choice:weather');assert.match(screenText(),/SIDE DOOR/);
+ await h.action('back');assert.equal(h.snapshot().visit.current,'hello');
+ await h.action('choice:collect');await h.action('choice:send');
+ assert.match(screenText(),/HANDOFF READY/);
+ await h.action('verb:ending');assert.match(screenText(),/The ferryman sees the pier/);
+ await h.action('verb:answers');assert.match(screenText(),/What would you send next/);
+ h.draft({question:'A spare wick.',principle:'Let him keep the lamp.'});
+ await h.action('save-input');assert.equal(h.snapshot().state.screen,'ending');
+ await h.action('copy');
+ const text=h.snapshot().copies.at(-1),receipt=unpack(text);
+ assert.doesNotMatch(text,/Surreal/);
+ assert.equal(receipt.recipient,'Operator Seven');
+ assert.equal(receipt.author.surface,'unknown');
+ assert.equal(receipt.componentVersions.framework,'test-framework');
+ assert.equal(receipt.completion,'transmission-complete');
+ assert.deepEqual(receipt.progress.beats,['hello','dock','lit']);
+ assert.equal(receipt.answers.question,'A spare wick.');
+ assert.equal(receipt.progress.payoff,guided.journey.payoff);
 });

@@ -85,7 +85,8 @@ test('point-and-click relay fits actual parts, gates launch, and exports the sam
  const ground=playLetterRelay(bonus,'sample','nav-pair');
  assert.deepEqual(ground.eggs,['dog-star']);
  const workshop=nativeReplyProgram({...letter,letterRelay:ground});
- assert.match(decode(workshop).text,/CLICK INPUT PART/);
+ assert.match(decode(workshop).text,/CHOOSE THE INPUT PART/);
+ assert.match(decode(workshop).text,/Use a row or matching icon/);
  assert.match(decode(workshop).text,/-1 CHG  -1 SIG → 5 CHG  2 SIG/);
  assert.match(workshop.hotspots.find(h=>h.id==='relay:storm').ariaLabel,/5 charge and 2 bars/);
  for(const t of relayTargets(ground,workshop.letterScene)){
@@ -93,6 +94,9 @@ test('point-and-click relay fits actual parts, gates launch, and exports the sam
   assert.equal(matches.length,2);
   assert.equal(matches[0].key,t.key);
   assert.ok(matches[0].column>=49);
+  assert.equal(matches[0].height,2);
+  assert.equal(matches[0].afterReveal,undefined);
+  assert.equal(matches[1].afterReveal,true);
   const {id,row,column,width,height}=matches[1];
   assert.deepEqual({id:id.slice(6),row,column,width,height,key:t.key},t);
  }
@@ -151,7 +155,7 @@ test('the postmark unlocks on the reward postcard and travels with its exact cir
  assert.ok(!nativeReplyProgram({...state,current:reward,letterRelay:fresh}).hotspots.some(h=>h.id==='letter:gift'));
  const action=nativeReplyProgram({...state,current:reward}).hotspots.find(h=>h.id==='letter:gift');
  assert.equal(action.key,'g');
- assert.match(action.ariaLabel,/transmitter parts determine what grows/);
+ assert.match(action.ariaLabel,/flower grown from your transmitter circuit/);
  const text=firstContactText(first,contact,letter.gift);
  const packed=JSON.parse(Buffer.from(text.match(/FGHELLO1\.([A-Za-z0-9_-]+)/)[1],'base64url').toString('utf8'));
  assert.deepEqual(packed.specimen,{recipe:'friktal.postmark-bloom.v1',circuit:[0,0,1]});
@@ -188,4 +192,21 @@ test('a pending voiced page offers wait, retry and a reading route with no story
  assert.deepEqual(first.hotspots.map(h=>h.id),['voice']);
  const failed=nativeReplyProgram({...state,voiceGate:{...state.voiceGate,initial:false,source:{...source,error:'test'}}});
  assert.deepEqual(failed.hotspots.map(h=>h.id),['voice:retry','voice','back']);
+});
+
+test('shared footer discloses controls without moving story actions',()=>{
+ for(const grid of [{columns:80,rows:25},{columns:80,rows:50},{columns:160,rows:25}]){
+  const state={...base,grid};
+  const closed=nativeReplyProgram(state),open=nativeReplyProgram({...state,settingsPinned:true});
+  const utility=new Set(['settings','voice','music','sfx','motion','speed','palette','next-track','reply:reset']);
+  const anchor=p=>p.hotspots.find(h=>h.id==='settings');
+  assert.equal(anchor(closed).expanded,false);
+  assert.equal(anchor(open).expanded,true);
+  assert.equal(closed.hotspots.filter(h=>utility.has(h.id)).length,1);
+  assert.equal(open.hotspots.filter(h=>utility.has(h.id)).length,9);
+  assert.deepEqual(closed.hotspots.filter(h=>!utility.has(h.id)),open.hotspots.filter(h=>!utility.has(h.id)));
+  assert.ok(3+open.statusWidth<=open.hotspots.find(h=>h.id==='reply:reset').column);
+  for(const h of open.hotspots.filter(h=>utility.has(h.id)))for(const other of open.hotspots)
+   if(h!==other)assert.equal(overlap(h,other),false,h.id+' overlaps '+other.id);
+ }
 });

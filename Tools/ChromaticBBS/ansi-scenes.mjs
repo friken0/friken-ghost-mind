@@ -3,7 +3,7 @@
  * No bitmap generation, WebGL, timer or independent animation clock. */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const palettes=[[4,6,14,7,1,9,11],[4,5,13,7,1,3,11],[4,6,10,7,1,9,11],[4,12,6,7,3,9,11]];
-export const ansiSceneKinds=Object.freeze(['eye','city','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness','spiral-galaxy','monsoon-ridge','aurora-home','postmark-stamp']);
+export const ansiSceneKinds=Object.freeze(['eye','city','bitcoin-city','harbor','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness','spiral-galaxy','monsoon-ridge','aurora-home','postmark-stamp']);
 export function ansiSessionTheme(seed=0){const n=Number(seed)>>>0;return {palette:palettes[n%palettes.length],tempo:180+(n%9)*24,seed:n};}
 const marqueeFont=Object.freeze({
  B:['11110','10001','10001','11110','10001','10001','11110'],I:['11111','00100','00100','00100','00100','00100','11111'],T:['11111','00100','00100','00100','00100','00100','00100'],C:['01111','10000','10000','10000','10000','10000','01111'],O:['01110','10001','10001','10001','10001','10001','01110'],N:['10001','11001','11001','10101','10011','10011','10001'],L:['10000','10000','10000','10000','10000','10000','11111'],A:['01110','10001','10001','11111','10001','10001','10001'],R:['11110','10001','10001','11110','10100','10010','10001'],E:['11111','10000','10000','11110','10000','10000','11111']
@@ -234,7 +234,34 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(d>.82)return 4;if(d>.66)return 12;
    if(light>.7&&noise(x,y)>.72)return 15;return light>.49?14:light>.18?12:4;
   }
-  if(kind==='city'){
+  if(kind==='harbor'){
+   // Moon, distant shoreline, ferry, near pier. The lantern owns the warm
+   // values and its reflection stays under the ship as it bobs.
+   const horizon=.62,bob=.011*Math.sin(t),water=v-horizon;
+   const moon=Math.hypot((u-.27)*width/(height*2),v-.24);
+   if(v>.66&&v<.72&&u>.69&&v>.66+(u-.69)*.10)return v<.69+(u-.69)*.10?7:8;
+   if(u>.72&&v>.70&&v<.91&&Math.floor(u*29)%3===0)return 8;
+   if(inside(u,v-bob,[[.18,.58],[.67,.58],[.59,.68],[.27,.68]]))
+    return v-bob<.603?14:v-bob<.63?4:8;
+   if(u>.29&&u<.59&&v-bob>.44&&v-bob<.58){
+    if(v-bob<.46||u<.31)return 7;
+    if(u>.43&&u<.52&&v-bob>.485&&v-bob<.545)return frame===2?15:11;
+    return 6;
+   }
+   if(u>.34&&u<.357&&v-bob>.37&&v-bob<.45)return 7;
+   if(water>0){
+    const ripples=Math.sin(v*109+u*17-t*.55);
+    const wake=Math.abs(u-(.475+.026*Math.sin(v*40+t)))<.022+water*.22;
+    if(wake&&ripples>.45&&u<.69)return ripples>.85?11:3;
+    return ripples>.75?6:ripples>.26?4:0;
+   }
+   if(v>.47+.044*Math.sin(u*19)+.037*Math.sin(u*34)&&u>.64)return 0;
+   if(moon<.098)return moon>.082?7:15;
+   if(moon<.139)return 6;
+   if(noise(x,y)>.987&&v<.45)return 7;
+   return Math.sin(v*24+u*8)>.60?0:4;
+  }
+  if(kind==='city'||kind==='bitcoin-city'){
    // Bitcoin Billionaire: a gold coin over a working city, not a generic moon.
    const aspect=width/(height*2),dx=(u-.27)*aspect,dy=v-.515,coin=Math.hypot(dx,dy),horizon=.73,office=[13,14,11,10,14,13][frame];
    const letterHeight=Math.max(.105,7/H),signs=[['BITCOIN',{x:.22,y:.008,width:.56,height:letterHeight}],['BILLIONAIRE',{x:.045,y:.028+letterHeight,width:.91,height:letterHeight}]];
@@ -550,7 +577,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
 export function ansiSceneProgram(scene,{columns,rows}={}){
  const C=columns||Math.max(...scene.cells.map(c=>c.column)),R=rows||Math.max(...scene.cells.map(c=>c.row));let text='\x1b[2J',prior='';
  for(const c of scene.cells){if(c.column===1)text+='\x1b['+c.row+';1H';const style=c.fg+':'+c.bg;if(style!==prior){text+='\x1b['+(c.fg>7?90+c.fg-8:30+c.fg)+';'+(c.bg>7?100+c.bg-8:40+c.bg)+'m';prior=style;}text+=c.glyph;}
- return {text,grid:{columns:C,rows:R},animation:{tracks:scene.tracks,cymatics:scene.kind==='trip'?[]:[{row:1,column:1,width:C,height:R,style:scene.kind==='trip'?'trip':['city','beacon'].includes(scene.kind)?'water':scene.kind==='rose'?'foliage':'metal',intensity:scene.kind==='trip'?.9:.18}]}};
+ return {text,grid:{columns:C,rows:R},animation:{tracks:scene.tracks,cymatics:scene.kind==='trip'?[]:[{row:1,column:1,width:C,height:R,style:scene.kind==='trip'?'trip':['city','bitcoin-city','harbor','beacon'].includes(scene.kind)?'water':scene.kind==='rose'?'foliage':'metal',intensity:scene.kind==='trip'?.9:.18}]}};
 }
 
 // Rebuilding six authored frames on every hover/score update stole main-
