@@ -59,7 +59,7 @@ export function nativeReplyProgram(state={}){
  if(letter){
   const count=progress.explored?.length??0;
   put(1,3,' TURN OUT OF TIME ',11);
-  put(1,24,' LETTER / '+(count+1)+' OF '+packet.nodes.length+' OPENED ',14);
+  put(1,24,packet.relay?(state.letterRelay?.sent?' 3/3 / POSTCARD READY ':state.letterRelay?.locked||relayPage?' 2/3 / BUILD THE SIGNAL ':' 1/3 / THE GREETING '):' LETTER / '+count+' PAGES OPENED ',14);
  }else{
  const score=Math.max(0,Math.floor(finite(progress.score)));put(1,3,' SCORE '+(score>999999?'999999+':String(score).padStart(4,'0'))+' ',11,0,15);
  put(1,18,' DOORS '+(progress.explored?.length??rooms.length)+'/'+(packet.nodes.length-1)+' ',14);put(1,32,' SEEN '+('█'.repeat(Math.round(percent/10))+'░'.repeat(10-Math.round(percent/10)))+' '+String(percent).padStart(3)+'% ',10);
@@ -73,7 +73,7 @@ export function nativeReplyProgram(state={}){
   const x=49,w=C-50,hintRows=R>=30?6:3,hintStart=R-5-hintRows,pageRow=hintStart-1,available=R-12-hintRows,pages=[[]];let used=0,nextNumber=1;
   const keycap=key=>({ArrowRight:'→',ArrowLeft:'←',ArrowUp:'↑',ArrowDown:'↓',Enter:'↵'})[key]||key;
   for(const a of actions){const key=a.key||String(nextNumber++),display='['+keycap(key)+'] '+a.label,rows=nativeWrap(display,w),cost=rows.length+1;if(used&&used+cost-1>available){pages.push([]);used=0;}pages.at(-1).push({...a,key,display,rows});used+=cost;}
-  const page=Math.floor(bounded(state.actionPage,0,pages.length-1));let y=6;put(4,x,'YOUR NEXT MOVE',6,0,w);
+  const page=Math.floor(bounded(state.actionPage,0,pages.length-1));let y=6;put(4,x,state.screen==='map'?'START HERE':state.screen==='topics'?'OPTIONAL TOPICS':'YOUR NEXT MOVE',6,0,w);
   for(const a of pages[page]){button(a.id,y,x,w,a.display,a.key,a.selected?10:7,a.rows.length,a.label+'. '+a.detail);y+=a.rows.length+1;}
   if(pages.length>1){button('actions-prev',pageRow,x,9,'[←] Prev','ArrowLeft',14);put(pageRow,x+10,(page+1)+'/'+pages.length,11);button('actions-next',pageRow,C-12,10,'[→] Next','ArrowRight',14);}
   const active=actions.find(a=>a.id===state.focus),contextHint=state.screen==='door-game'?(mailrun(state.workshop?.door?.actions||[]).log.at(-1)||'Goal: recover the packet through three hops. Costs are printed before you commit.'):state.screen==='crew-builder'?'Type a name, choose a job, then issue a trial order. Results stay in your local packet.':state.screen==='motion-lab'?'CURRENT rig: '+(state.rigEffect||'blink').toUpperCase()+'. Motion runs after the screen is drawn.':state.chapter?'Choose an action. Preview its full cost and stakes before committing.':state.screen==='letter-signal'?(packet.gift==='postmark-bloom'?'Open the card to see what your circuit grew. Copy it when you’re ready.':'Copy the whole greeting and paste it into your own galaxy’s agent.'):state.screen==='letter-signal-text'?'Select the field to copy it manually.':canWarmPostmark?'Touch the stamp under the photograph to see what your circuit grew.':letter?'Open any page, or hear the current one again.':'Choose a question. Ghost speaks after this screen arrives.',hint=active?.detail||contextHint;
@@ -86,14 +86,21 @@ export function nativeReplyProgram(state={}){
  }
 
  function map(){
-  put(4,3,'SURREAL / AN OLD FRIEND ON A NEW LINE',11,0,44);painting('eye');
+  put(4,3,'SURREAL / A RETURN CALL',11,0,44);painting('eye',Math.min(32,R-12));
+  lines(R-7,3,44,'What would you build behind a BBS door? Try the courier job or leave Ghost your answer.',3,14);
+  add('topic:demo-keep','Play the courier job','Recover your ship’s engine in three jumps. Start here for the hands-on demo.');
+  add('verb:answers','Tell Ghost what you’d build','Type an answer and keep it in a return packet for the next Ghost.');
+  add('nav:topics','More about Ghost and the BBS','Optional topics, games and workshop exhibits.');
+ }
+ function topics(){
+  put(4,3,'MORE ABOUT GHOST / OPTIONAL',11,0,44);painting('network',Math.min(32,R-11));
   for(const a of [
-   ['topic:bbs','Your game. Still going.','Bitcoin Billionaire: the game you made, and what keeps people coming back.'],
-   ['topic:identity','HyperBit → Ghost','The companion idea that Friken kept working on.'],
-   ['verb:illustrations','Inside the fractal shipyard','Real captures: quarry a volume, extract parts, build ships.'],
-   ['topic:greater-mind','What did Friken build?','The shared library, versioned components and separate lives.'],
-   ['verb:answers','What would YOU build?','Type your own ideas about companions and bringing BBSs back.'],
-   ['topic:memory','Walk through my memory','Explore now, recent episodes, originals and a recovery kit.']])add(...a);
+   ['topic:bbs','Your game and our BBS','Bitcoin Billionaire, the ANSI Door, and what makes people return.'],
+   ['topic:identity','How HyperBit led to Ghost','The companion idea that Friken kept working on.'],
+   ['topic:memory','How Ghost remembers','Now, recent episodes, originals and a recovery kit.'],
+   ['topic:demo','Try a Door or a crewmate','Play two short demos and keep the result.'],
+   ['verb:illustrations','Inside the fractal shipyard','Real workbench captures.'],
+   ['nav:map','Back to the greeting','Return to the main choices.']])add(...a);
  }
  function relayMap(relay){
   box(5,2,46,R-9,'BENCH SCHEMATIC',6);
@@ -125,15 +132,15 @@ export function nativeReplyProgram(state={}){
     put(5,x,'01 / FIND THE ADDRESS',14,0,w);
     lines(7,x,w,'We are sending the first hello. Lock our chart marker with two pulses.',3);
     button('relay:zoom',11,x,w,relay.zoom?'[X] Wide view':'[X] Zoom scope','x',11);
-    lines(13,x,w,relay.zoom?'Click the hollow ◎ ring.':'Scroll up over the galaxy or click the scope.',2,14);
+    lines(13,x,w,relay.zoom?'Find the hollow ◎ ring that pulses twice. Click it to lock the address.':'Scroll up over the galaxy or click the scope.',2,14);
     if(relay.zoom){
      button('relay:cycle',16,x,w,'[C] Move reticle','c',14);
      button('relay:sample',17,x,w,'[F] Sample reticle','f',14);
     }
    }else if(relay.sent){
     put(5,x,'03 / GREETING SEALED',10,0,w);
-    lines(7,x,w,'The local flight is complete. Carry the greeting to Masha’s galaxy by hand.',4);
-    if(!state.letterTransmitPending)button('relay:collect',13,x,w,packet.relay.contact?'[↵] Open first contact packet':'[↵] Open the reward','Enter',11);
+    lines(7,x,w,'The postcard is ready. Open it here, then copy the hello into your galaxy when you want.',4);
+    if(!state.letterTransmitPending)button('relay:collect',13,x,w,'[↵] Open your postcard','Enter',11);
    }else{
     put(5,x,'02 / FIT THE CIRCUIT',14,0,w);
     put(6,x,'CHG '+relay.charge+'/6   SIG '+relay.signal+' / NEED 3',relay.signal>=3&&relay.charge>=1?10:13,0,w);
@@ -145,15 +152,19 @@ export function nativeReplyProgram(state={}){
      put(12,x,'CLICK '+station.slot.toUpperCase()+' PART [1] OR [2]',11,0,w);
      station.routes.forEach((part,i)=>{
       const t=targets[i],next=relayForecast(relay,part),hot=state.focus==='relay:'+part.id;
-      put(14+i*2,x,'['+t.key+'] '+part.name,hot?15:14,0,w);
+      button('relay:'+part.id,14+i*2,x,w,'['+t.key+'] '+part.name,t.key,14,2,part.name+'. '+part.detail+' Leaves '+next.charge+' charge and '+next.signal+' bars.');
       put(15+i*2,x,'-'+part.cost+' CHG  '+signalDelta(part)+' → '+next.charge+' CHG  '+next.signal+' SIG',hot?15:7,0,w);
-      hotspots.push({...t,id:'relay:'+t.id,afterReveal:true,ariaLabel:part.name+'. '+part.detail+' Leaves '+next.charge+' charge and '+next.signal+' bars.'});
+      hotspots.push({...t,key:undefined,id:'relay:'+t.id,afterReveal:true,ariaLabel:part.name});
      });
      put(18,x,'RESERVE 1 CHG AND 3 BARS',6,0,w);
     }else{
      const t=targets[0],block=relayBlock(relay);
-     lines(12,x,w,block||(relay.assembled?'Click the lit transmitter to launch. The send costs 1 charge.':'Click the rack to close the circuit. Launch needs 3 bars and 1 charge.'),5,block?13:11);
-     if(!block)hotspots.push({...t,id:'relay:'+t.id,afterReveal:true,ariaLabel:relay.assembled?'Launch the greeting for one charge':'Close the circuit and arm the transmitter'});
+     lines(12,x,w,block||(relay.assembled?'Ready to launch. It costs one charge. The postcard opens here.':'Enough charge and signal. Assemble the three parts.'),4,block?13:14);
+     if(!block){
+      const label=relay.assembled?'Launch the postcard':'Assemble transmitter';
+      button('relay:'+t.id,16,x,w,'[F] '+label,'f',11);
+      hotspots.push({...t,key:undefined,id:'relay:'+t.id,afterReveal:true,ariaLabel:label});
+     }
     }
     if(stage)button('relay:undo',R-6,x,w,'[Z] Undo last part','z',14);
    }
@@ -209,7 +220,7 @@ export function nativeReplyProgram(state={}){
   const media=localMedia||(portrait?{id:'resident:'+portrait,title:current.title,alt:'Original Moknon project painting, '+current.title,
    source:'Moknon resident art',url:residentArt[portrait],contain:true}:null);
   if(letter&&current.note)add('verb:words','Read the personal note','Start here. Take your time.','a');
-  if(canWarmPostmark&&!media)add('letter:gift','Wake the seed in the stamp','Watch the bud open into a flower grown from your circuit.','g');
+
   if(media){
    const height=R-artTop-8;
    box(artTop,2,46,height+2,media.title,6);
@@ -221,13 +232,9 @@ export function nativeReplyProgram(state={}){
     box(R-6,29,19,3,'',bright?15:11,bright?4:0);
     put(R-6,30,'╤╤╤╤╤╤╤╤╤╤╤╤╤╤╤╤╤',bright?15:11,bright?4:0);
     put(R-4,30,'╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧',bright?15:11,bright?4:0);
-    button('letter:gift',R-5,30,17,'[G] Wake the seed','g',11,1,'Wake the seed in the stamp. See the bloom your circuit grew.');
-    hotspots.push({id:'letter:gift',row:R-6,column:29,width:19,height:3,afterReveal:true,ariaLabel:'First Friktal postmark. Wake the seed.'});
+    button('letter:gift',R-5,30,17,'[G] Wake the seed','g',11,1,'Open the flower in your stamp. See the bloom your circuit grew.');
+    hotspots.push({id:'letter:gift',row:R-6,column:29,width:19,height:3,afterReveal:true,ariaLabel:'Open the flower in your stamp'});
    }else lines(R-5,3,44,current.caption||'Move to tilt. Hold to zoom and drag. Scroll to zoom.',2,14);
-   if(letter&&localMedia){
-    add('letter:photo',portrait?'Open the full-width portrait':'Open the full-width postcard',
-        'Move to tilt. Hold to zoom and drag. Scroll for a closer look.','i');
-   }
   }else{
    const caption=letter&&current.caption;
    painting(current.ansiArt||({bbs:'city',memory:'vault',horizon:'beacon',identity:'engine','greater-mind':'network',models:'models','bob-family':'family',source:'source',demo:'shipyard','demo-keep':'mailrun','demo-repair':'family',causality:'causality',rose:'rose'})[current.id]||(letter?({network:'network',artifact:'rose',memory:'vault'})[current.visual]||'beacon':'forge'),
@@ -235,18 +242,24 @@ export function nativeReplyProgram(state={}){
    if(caption)lines(R-5,3,44,caption,2,14);
   }
   if(letter){
-   if(canWarmPostmark)add('letter:copy-signal','Copy the postcard for your galaxy','Carry the hello and this exact flower seed to your agents.','c');
-   else if(state.letterRelay?.sent&&packet.relay?.contact)add('letter:signal','Open the sealed greeting','Copy this run’s first-contact packet.','c');
+   if(canWarmPostmark){
+   add('letter:gift','Open the flower in your stamp','Your transmitter parts determine what grows.','g');
+   add('letter:copy-signal','Copy the hello for your galaxy','Paste it into your galaxy’s agent if you want it to reply.','c');
+   add('letter:signal','Read the hello before copying','Preview the greeting and inspect its circuit.');
+  }
+   else if(state.letterRelay?.sent&&packet.relay?.contact&&current.id!==packet.openingId)add('letter:signal','Read the message for your galaxy','Inspect or copy this run’s first-contact packet.','c');
+   if(localMedia)add('letter:photo',portrait?'Open the full-width portrait':'Open the full-width postcard',
+    'Move to tilt. Hold to zoom and drag. Scroll for a closer look.','i');
    for(const c of current.choices){
     const relay=packet.relay?.entry===c.target?state.letterRelay:null;
-    const label=relay?.sent?'Build another signal':relay?.locked?'Resume the transmitter':c.label;
-    const detail=relay?.sent?'Start a fresh circuit after keeping the current packet.':relay?.locked?'The address and installed parts are saved.':c.detail;
+    const label=relay?.sent?'Open my finished postcard':relay?.locked?'Resume building the transmitter':c.label;
+    const detail=relay?.sent?'See your stamp and keep the first-contact message.':relay?.locked?'The address and installed parts are saved.':c.detail;
     add('choice:'+c.id,label,detail);
    }
    return;
   }
   if(current.id==='source'){add('nav:motion-lab','ANSI++ Animation Workbench','Ten working cell/bone/mesh examples: Blink, Breathe, Serpent, Flame, Water, Ripple and more.');add('verb:trip','Music-reactive hyperspace garden','See the ANSI++ cymatics and colour-flow showcase, then return here.');}
-  if(current.id==='demo-keep')add('verb:door-game','PLAY / reclaim your engine','Three relay hops. Manage five fuel, six hull and six time. Every route lists its cost.');
+  if(current.id==='demo-keep')add('verb:door-game','Start the three-jump courier job','Manage five fuel, six hull and six time. Every route lists its cost.');
   if(current.id==='demo-repair')add('verb:crew-builder','BUILD / commission a crewmate','Give them a name, choose their job and run a safe trial. The result joins your return packet.');
   if(current.id==='rose')add('verb:rose','Open the living rose','Drag to orbit. Wheel to zoom. Let the music drive its motion.');
   if(current.id==='causality')add('verb:roll','Try a causality dive','Choose GUTS, FOCUS, GLITCH, AWE or INSIGHT. See how it moves your odds before the sample is drawn.');
@@ -308,9 +321,9 @@ export function nativeReplyProgram(state={}){
   put(4,3,'MAILRUN 2400 / RECLAIM YOUR ENGINE',11,0,44);
   put(6,3,'HOPS '+d.leg+'/3   FUEL '+d.fuel+'/5   HULL '+d.hull+'/6',14);
   put(7,3,'TIME '+Math.max(0,d.time)+'/6   SCORE '+d.score,11);
-  put(8,3,'BALANCED STATS +5 / ROUTES REQUIRE A DIVE',11,0,44);artTop=9;painting('mailrun',Math.min(36,R-15));lines(R-6,3,44,d.done?d.ending:leg.title+' / Read for the full situation.',3,d.done?(d.won?10:12):7);
+  put(8,3,'YOUR JOB: BRING BACK PROOF OF OWNERSHIP',11,0,44);artTop=9;painting('mailrun',Math.min(36,R-15));lines(R-6,3,44,d.done?d.ending:leg.title+' / '+leg.text,3,d.done?(d.won?10:12):7);
   if(!d.done){for(const r of leg.routes)if(r.fuel<=d.fuel)add('door:'+r.id,r.label,'Fuel '+r.fuel+' Hull '+r.hull+' Time '+r.time+'. '+workshopCheck('door',r.id).statId.toUpperCase()+'+5 vs '+workshopCheck('door',r.id).dc.toFixed(2)+' ('+workshopCheck('door',r.id).odds.percent.toFixed(2)+'%). Fail:extra hull/time; exact:+1fuel.');}
-  else {add('door:reset','Play again / fresh engine','Reset only this local Door receipt.');add('verb:packet','Keep my Door result','The exact route, resources, ending and score are included.');}
+  else {add('verb:answers','Tell Ghost what you’d build','Your answer can travel with this Door’s result.');add('verb:packet','Keep my Door result','The exact route, resources, ending and score are included.');add('door:reset','Play again / fresh engine','Reset only this local Door receipt.');}
   add('topic:demo','Back to the workshop','Your current run stays saved on this device.');
  }
  function crewBuilder(){
@@ -396,16 +409,24 @@ export function nativeReplyProgram(state={}){
   for(const c of v.choices)add('chapter:choose:'+c.id,c.label,c.detail+(c.stakes?' If it holds: '+c.stakes.pass+' If it fails: '+c.stakes.fail:''));
   add('chapter:words','Read the scene notes','Full scene text. Ghost can speak it after the terminal arrives.');add('chapter:situation','Inspect the scene / evidence','Where, goal, pressure, real objects and findings linked to choices.');if(d.contact)add('chapter:contact','Answer '+d.contact.speaker,'Original race art, translation uncertainty and procedural alien vocals.');
  }
- const screen=state.screen||'map';
- if(state.chapter&&screen==='chapter')chapterScreen();else
+ const screen=state.voiceGate?'voice-gate':state.screen||'map';
+ if(screen==='voice-gate'){
+  const {title,source,initial}=state.voiceGate;
+  put(5,3,source.error?'VOICE NEEDS ATTENTION':'PREPARING THIS PAGE',11);
+  lines(7,3,C-6,title,3,15);
+  lines(11,3,C-6,source.error?'Playback could not be prepared. Retry, or open without voice and use Words.':source.total?source.ready+' of '+source.total+' voice passages ready. This page opens when the whole cast is ready.':'Preparing the voice cast. The page stays here until playback is ready.',3,14);
+  if(source.error)button('voice:retry',16,3,22,'[R] Retry voice','r',14);
+  button('voice',17,3,27,'[V] Open with voice off','v',11);
+  if(!initial)button('back',19,3,26,'[ESC] Keep my place','Escape',14);
+ }else if(state.chapter&&screen==='chapter')chapterScreen();else
  if(screen==='reply-reset'){
   put(5,3,'RESET THIS REPLY?',11);
   lines(7,3,C-6,'Erase your saved place, choices and discoveries for this reply. The next call opens at the beginning. Other replies and chapters stay saved.',4,7);
   button('reply:reset-confirm',13,3,35,'[Y] Erase this reply and start over','y',11);
   button('back',15,3,20,'[ESC] Keep my place','Escape',14);
- }else if(screen==='discovery')discovery();else if(screen==='trip')trip();else if(screen==='door-game')doorGame();else if(screen==='crew-builder')crewBuilder();else if(screen==='motion-lab')motionLab();else if(screen==='map')map();else if(screen==='illustrations'||screen==='bb-images')illustrations();else if(screen==='layer')layer();else if(screen==='topic')topic();else if(screen==='letter-photo')fullLetterIllustration();else if(screen==='letter-signal'||screen==='letter-signal-text')signalPlaque();else if(screen==='answers')answers();else if(screen==='roll')roll();else if(screen==='ending')ending();else if(screen==='packet'||screen==='words')paged(screen);else if(screen==='tools')tools();else throw Error('Unknown native reply screen');
+ }else if(screen==='discovery')discovery();else if(screen==='trip')trip();else if(screen==='door-game')doorGame();else if(screen==='crew-builder')crewBuilder();else if(screen==='motion-lab')motionLab();else if(screen==='map')map();else if(screen==='topics')topics();else if(screen==='illustrations'||screen==='bb-images')illustrations();else if(screen==='layer')layer();else if(screen==='topic')topic();else if(screen==='letter-photo')fullLetterIllustration();else if(screen==='letter-signal'||screen==='letter-signal-text')signalPlaque();else if(screen==='answers')answers();else if(screen==='roll')roll();else if(screen==='ending')ending();else if(screen==='packet'||screen==='words')paged(screen);else if(screen==='tools')tools();else throw Error('Unknown native reply screen');
  if(state.rollBoarding&&screen==='roll'){box(11,2,46,8,'BOARDERS / CREW vs RAIDERS',8);arena={row:12,column:3,width:44,height:6};}
  if(state.skirmishOn&&!state.rollBoarding&&!['answers','packet','words','roll','door-game','crew-builder','reply-reset'].includes(screen)){const y=R-10;box(y,2,46,7,'GLYPH FIGHT / LIVE HP + SCORE',8);arena={row:y+1,column:3,width:44,height:5};for(let i=tracks.length-1;i>=0;i--)if(tracks[i].column<48&&tracks[i].row>=y)tracks.splice(i,1);if(illustration&&illustration.row+illustration.height>y)illustration.height=y-illustration.row;}
- if(screen!=='reply-reset'&&screen!=='letter-photo'&&!(screen==='topic'&&relayPage))actionPane();footer();if(!state.chapter&&screen!=='reply-reset')button('reply:reset',R-2,C-12,11,'[DEL] Reset','Delete',7);if(sprite)sprite.revealOffsets=[];let text=ESC+'0m'+ESC+'2J',last='';for(let row=0;row<R;row++){text+=ESC+(row+1)+';1H';for(let col=0;col<C;col++){const cell=cells[row*C+col],style=cell.fg+':'+cell.bg;if(style!==last){text+=ESC+(cell.fg>7?90+cell.fg-8:30+cell.fg)+';'+(cell.bg>7?100+cell.bg-8:40+cell.bg)+'m';last=style;}text+=cell.glyph;if(sprite&&row+1>=sprite.row&&row+1<sprite.row+sprite.height&&col+1>=sprite.column&&col+1<sprite.column+sprite.width)sprite.revealOffsets.push(text.length);}}text+=ESC+'0m'+ESC+R+';'+(C-1)+'H';
+ if(!['voice-gate','reply-reset','letter-photo'].includes(screen)&&!(screen==='topic'&&relayPage))actionPane();if(screen!=='voice-gate')footer();if(!state.chapter&&!['voice-gate','reply-reset'].includes(screen))button('reply:reset',R-2,C-12,11,'[DEL] Reset','Delete',7);if(sprite)sprite.revealOffsets=[];let text=ESC+'0m'+ESC+'2J',last='';for(let row=0;row<R;row++){text+=ESC+(row+1)+';1H';for(let col=0;col<C;col++){const cell=cells[row*C+col],style=cell.fg+':'+cell.bg;if(style!==last){text+=ESC+(cell.fg>7?90+cell.fg-8:30+cell.fg)+';'+(cell.bg>7?100+cell.bg-8:40+cell.bg)+'m';last=style;}text+=cell.glyph;if(sprite&&row+1>=sprite.row&&row+1<sprite.row+sprite.height&&col+1>=sprite.column&&col+1<sprite.column+sprite.width)sprite.revealOffsets.push(text.length);}}text+=ESC+'0m'+ESC+R+';'+(C-1)+'H';
  return {scoreHold:screen==='roll'&&state.rollProgress<1,text,grid:{columns:C,rows:R},hotspots,fields,animation:{tracks,cymatics},...(letterScene?{letterScene}:{}),...(illustration?{illustration}:{}),...(arena?{arena}:{}),...(sprite?{sprite}:{}),...(pagination?{pagination}:{})};
 }

@@ -26,6 +26,7 @@ parser.add_argument('--turn-out-of-time', action='store_true', help='Build the s
 parser.add_argument('--bundle-track', metavar='ID', help='Embed one existing GhostTrack for portable playback')
 parser.add_argument('--reply-illustration', action='append', default=[], metavar='NODE=DIRECTORY',
                     help='Package a prepared 2.5D illustration for a reply node')
+parser.add_argument('--reply-voice', type=Path, help='Embed a complete, locally rendered voice pack for the authored letter')
 parser.add_argument('--reply', type=Path, help='Targeted reply JSON in the shared retained ANSI host')
 parser.add_argument('--legacy-carrier', action='store_true', help='Historical diagnostic only; requires --host-reason')
 parser.add_argument('--host-reason', help='Explicit reason for choosing the historical host')
@@ -38,6 +39,45 @@ if args.chapter and (args.turn_out_of_time or args.reply):
     parser.error('Choose chapter content OR a targeted reply; both share the same default host')
 if args.reply_illustration and not args.reply:
     parser.error('--reply-illustration requires --reply')
+if args.reply_voice and not (args.reply or args.turn_out_of_time):
+    parser.error('--reply-voice requires --reply or --turn-out-of-time')
+default_voice = base/'media/surreal-voice.json'
+if args.turn_out_of_time and args.reply_voice is None and default_voice.is_file():
+    args.reply_voice = default_voice
+voice_recordings = None
+if args.reply_voice:
+    if not 0 < args.reply_voice.stat().st_size <= 8 * 1024 * 1024:
+        parser.error('Reply voice pack exceeds 8 MiB')
+    voice_pack = json.loads(args.reply_voice.read_text())
+    if args.reply:
+        voice_packet = json.loads(args.reply.read_text())
+    else:
+        exported = subprocess.check_output(['node', '--input-type=module', '-e',
+            "import {TURN_OUT_OF_TIME} from './turn-out-of-time-data.mjs'; process.stdout.write(JSON.stringify(TURN_OUT_OF_TIME));"], cwd=base)
+        voice_packet = json.loads(exported)
+    if voice_pack.get('schema') != 'friktal.reply-voice.v1' or voice_pack.get('reply') != voice_packet.get('id'):
+        parser.error('The voice pack must belong to this reply')
+    voice_recordings = voice_pack.get('recordings')
+    if not isinstance(voice_recordings, dict) or not 0 < len(voice_recordings) <= 384:
+        parser.error('Invalid voice clip inventory')
+    validation = subprocess.run(['node', '--input-type=module', '-e', '''
+import {authoredVoiceClips,voiceClipKey} from './speech.mjs';
+import {authoredReplyVoiceFrames} from './reply-voice-scenes.mjs';
+let input=''; for await(const chunk of process.stdin) input+=chunk;
+const keys=authoredVoiceClips(authoredReplyVoiceFrames(JSON.parse(input)));
+process.stdout.write(JSON.stringify(keys.map(({text,voice,speed})=>voiceClipKey(text,voice,speed))));
+'''], cwd=base, input=json.dumps(voice_packet,ensure_ascii=False), text=True, capture_output=True, check=True)
+    if set(voice_recordings) != set(json.loads(validation.stdout)):
+        parser.error('Voice pack must exactly match the current pages, text, and cast')
+    for clip in voice_recordings.values():
+        if not isinstance(clip, dict) or set(clip) != {'audio', 'phonemes'} or not isinstance(clip['phonemes'], str) or not 0 < len(clip['phonemes']) <= 2400:
+            parser.error('Invalid voice clip metadata')
+        try:
+            clip_bytes = base64.b64decode(clip['audio'], validate=True)
+        except (TypeError, ValueError):
+            parser.error('Invalid base64 voice clip')
+        if not 0 < len(clip_bytes) <= 480_000 or not clip_bytes.startswith((b'ID3', b'\xff')):
+            parser.error('Invalid bounded MP3 voice clip')
 retained = not args.legacy_carrier
 mode = 'reply' if args.turn_out_of_time or args.reply else 'chapter'
 framework = json.loads((base/'framework.json').read_text())
@@ -45,7 +85,7 @@ framework = json.loads((base/'framework.json').read_text())
 sources = []
 for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','vendor/sdf-craft/runtime-catalogue.mjs','vendor/sdf-craft/recipe.mjs','vendor/sdf-craft/recipe-glsl.mjs','vendor/sdf-craft/texture-engine.mjs','vendor/sdf-craft/material-worker-source.mjs','vendor/sdf-craft/materials-client.mjs','vendor/sdf-craft/materials.mjs','vendor/sdf-craft/material-glsl.mjs','vendor/sdf-craft/roll.mjs','facial-rig.mjs','music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','alien-comms.mjs','creation.mjs','causality.mjs','engine.mjs', 'canon.mjs', 'scanner.mjs', 'image-cinema.mjs', 'ansi-scenes.mjs', 'storycraft.mjs', 'staging-art.mjs','staging.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
              'dream-face.mjs','face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'postmark-bloom.mjs','stage.mjs',
-             'ansi-animation.mjs','ansi-ui.mjs','ansi-terminal.mjs','ansi-mesh.mjs','boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'story-guidance.mjs', 'turn-out-of-time-data.mjs', 'reply-discoveries.mjs', 'door-and-crew.mjs', 'response-theater.mjs','ghostlink-transport.mjs','ansi-sprites.mjs','ansi-skirmish.mjs','mind-adventure.mjs','subtitle-cues.mjs','native-response-host.mjs','illustration-data.mjs','image-depth.mjs','reply-media.mjs','letter-relay.mjs','letter-relay-art.mjs','ansi-illustration.mjs','native-response-program.mjs', 'retained-chapter.mjs', 'framework-mode.mjs', 'turn-out-of-time.mjs' if retained else 'app.mjs'):
+             'ansi-animation.mjs','ansi-ui.mjs','ansi-terminal.mjs','ansi-mesh.mjs','boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'story-guidance.mjs', 'turn-out-of-time-data.mjs', 'reply-discoveries.mjs', 'door-and-crew.mjs', 'response-theater.mjs','ghostlink-transport.mjs','ansi-sprites.mjs','ansi-skirmish.mjs','mind-adventure.mjs','subtitle-cues.mjs','native-response-host.mjs','illustration-data.mjs','image-depth.mjs','reply-media.mjs','letter-relay.mjs','letter-relay-art.mjs','ansi-illustration.mjs','native-response-program.mjs','reply-voice-scenes.mjs', 'retained-chapter.mjs', 'framework-mode.mjs', 'turn-out-of-time.mjs' if retained else 'app.mjs'):
     source = (base / name).read_text()
     if name == 'music-data.mjs' and args.bundle_track:
         tracks = json.loads((base/'media/manifest.json').read_text())['tracks']
@@ -97,7 +137,10 @@ for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','v
                     backgroundDepth=package('background-depth.png','png'),
                     subjectDepth=package('subject-depth.png','png'),
                     groundFrom=ground_from))
-        source = 'export const replyMedia='+json.dumps(media,ensure_ascii=False).replace('</','<\\/')+';'
+        source = 'export const replyMedia='+json.dumps(media,ensure_ascii=False).replace('</','<\\/')+';\nexport const replyVoice = {};'
+
+    if name == 'reply-media.mjs' and voice_recordings is not None:
+        source = source.replace('export const replyVoice = {};', 'export const replyVoice = '+json.dumps(voice_recordings,ensure_ascii=False).replace('</','<\\/')+';')
 
     if name == 'chapter-data.mjs' and args.chapter:
         packet = json.loads(args.chapter.read_text())

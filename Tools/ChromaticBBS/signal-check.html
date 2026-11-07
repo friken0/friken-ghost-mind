@@ -148,11 +148,31 @@ function renderBattleCue(kind,side=0,sampleRate=24000){
 }
 /** Short tactile interface cues; bounded PCM on the existing SFX bus. */
 function renderInterfaceCue(kind,sampleRate=24000){
- const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480],score:[.26,880,1320],secret:[.7,440,1760]};
+ if(['rain','thunder-near','thunder-far','step-wet','step-metal'].includes(kind))return renderWeatherCue(kind,sampleRate);
+ const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480],score:[.26,880,1320],secret:[.7,440,1760],carrier:[.42,320,1500],transmit:[.73,155,1720],reject:[.24,540,80]};
  if(!Object.hasOwn(profiles,kind)||!Number.isInteger(sampleRate)||sampleRate<8000||sampleRate>96000)throw Error('Invalid interface cue');
  const [duration,from,to]=profiles[kind],samples=new Float32Array(Math.ceil(duration*sampleRate));let phase=0;
  if(kind==='score'||kind==='secret'){const notes=kind==='secret'?[659.25,830.61,987.77,1318.51]:[1046.5];for(let i=0;i<samples.length;i++){const t=i/sampleRate;let sum=0;for(let n=0;n<notes.length;n++){const age=t-n*.10;if(age<0)continue;const attack=Math.min(1,age/.003),tail=Math.exp(-age*14),w=2*Math.PI*notes[n]*age;sum+=(Math.sin(w)*.065+Math.sin(w*2.756)*.018+Math.sin(w*5.404)*.007)*attack*tail;}samples[i]=sum*Math.min(1,(duration-t)/.025);}return samples;}
  for(let i=0;i<samples.length;i++){const t=i/sampleRate,u=t/duration;phase+=Math.PI*2*(from+(to-from)*u)/sampleRate;const envelope=Math.min(1,t/.004)*Math.pow(Math.max(0,1-u),2.5);const reward=kind==='score'||kind==='secret';samples[i]=(Math.sin(phase)*(reward?.06:.016)+Math.sin(phase*1.503)*(reward?.018:.005))*envelope*(kind==='deal'?.45+.55*Math.pow(Math.cos(t*100),8):1);}
+ return samples;
+}
+function renderWeatherCue(kind,sampleRate){
+ if(!Number.isInteger(sampleRate)||sampleRate<8000||sampleRate>96000)throw Error('Invalid weather sample rate');
+ const rain=kind==='rain',wet=kind==='step-wet',thunder=kind.startsWith('thunder'),near=kind==='thunder-near';
+ const duration=rain?5:thunder?(near?1.8:2.4):.15;
+ const samples=new Float32Array(Math.ceil(duration*sampleRate));
+ let seed=31283,low=0,mid=0;
+ for(let i=0;i<samples.length;i++){
+  const t=i/sampleRate;
+  seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+  const noise=seed/2147483648-1;
+  low+=(noise-low)*(thunder?.014:.07);
+  mid+=(noise-mid)*.22;
+  if(rain)samples[i]=(.045*(noise-mid)+.07*mid)*(.84+.16*Math.sin(t*Math.PI*2/duration));
+  else if(thunder)samples[i]=(low*.72+mid*(near?.42:.12)*Math.exp(-8*t))*
+   Math.min(1,t/.016)*Math.pow(1-t/duration,near?2.9:1.4);
+  else samples[i]=(low*.30+mid*(wet?.40:.16)+Math.sin(t*(wet?380:1160))*.028)*Math.min(1,t/.006)*Math.exp(-24*t);
+ }
  return samples;
 }
 function openingTrackIndex(seed,previous=-1,count=musicTracks.length){
@@ -165,6 +185,7 @@ function mountAudio(root,{frame=()=>{},silent=false,initialTrack=0}={}){
   let frequency=null,wave=null,voiceFrequency=null,voiceWave=null,voicePrevious=0,raf=0,last=0,previous=0,musicSource=null,musicTrim=null,musicBuffer=null,track=0,musicEpoch=0,musicOffset=0,musicAt=0,musicOn=false,musicArmed=false,soundOn=true,speaking=false,modemSource=null,modemBuffer=null,modemStart=0,modemOffset=0,modemEnd=null,connecting=false;
   if(!Number.isInteger(initialTrack)||initialTrack<0||initialTrack>=musicTracks.length)throw Error('Unknown opening track');track=initialTrack;
   const battleBuffers=new Map(),battleSources=new Set(),uiBuffers=new Map(),uiSources=new Set();
+  let weatherSource=null,weatherGain=null,weatherLevel=0;
   const info={ui:{cues:0,voices:0,last:'none'},battle:{cues:0,voices:0,peakVoices:0,last:'none'},context:'locked',music:'paused',track:musicTracks[0]?.title,frames:0,rms:0,bands:[0,0,0,0],voiceRelativeMusicGain:.55,musicTargetGain:.55,musicDucked:false,voice:{},sampleMs:0};
   function label(){info.track=musicTracks[track]?.title;root?.setAttribute?.('data-music-state',info.music);root?.setAttribute?.('data-carrier-connected',String(musicArmed));const b=get('music');const bootMusic=get('boot-music');if(bootMusic){bootMusic.textContent='MUSIC: '+(musicOn?'ON':'OFF');bootMusic.setAttribute('aria-pressed',String(musicOn));}if(b){b.textContent='Music: '+(musicOn?'on':'off');b.setAttribute('aria-pressed',String(musicOn));}const t=get('track-name');if(t)t.textContent=musicTracks[track]?.title||'NO TRACK';const s=get('music-state');if(s)s.textContent=info.music==='playing'?'PLAYING / VOICE × 0.55':musicOn?'ON / '+info.music.toUpperCase().replaceAll('-',' '):'PAUSED BY YOU';}
   function graph(){
@@ -194,6 +215,19 @@ function mountAudio(root,{frame=()=>{},silent=false,initialTrack=0}={}){
   }
   function cue(positive=true){if(!soundOn||silent||!context||context.state!=='running')return;const at=context.currentTime,osc=context.createOscillator(),g=context.createGain();osc.type=positive?'sine':'triangle';osc.frequency.setValueAtTime(positive?260:130,at);osc.frequency.exponentialRampToValueAtTime(positive?780:50,at+.16);g.gain.setValueAtTime(.035,at);g.gain.exponentialRampToValueAtTime(.001,at+.22);osc.connect(g);g.connect(sfxGain);osc.onended=()=>{osc.disconnect();g.disconnect();};osc.start();osc.stop(at+.24);}
   function stopInterface(){for(const source of uiSources){source.onended=null;try{source.stop();}catch{}source.disconnect();}uiSources.clear();info.ui.voices=0;}
+  function weather(level){
+   level=soundOn&&!silent&&context?.state==='running'?level:0;
+   if(level===weatherLevel)return;
+   weatherLevel=level;
+   root?.setAttribute?.('data-weather-level',String(level));
+   if(!level){weatherSource?.stop();weatherSource?.disconnect();weatherGain?.disconnect();weatherSource=weatherGain=null;return;}
+   if(!weatherSource){
+    if(!uiBuffers.has('rain')){const samples=renderInterfaceCue('rain'),buffer=context.createBuffer(1,samples.length,24000);buffer.copyToChannel(samples,0);uiBuffers.set('rain',buffer);}
+    weatherSource=context.createBufferSource();weatherGain=context.createGain();
+    weatherSource.buffer=uiBuffers.get('rain');weatherSource.loop=true;
+    weatherGain.gain.value=level;weatherSource.connect(weatherGain);weatherGain.connect(sfxGain);weatherSource.start();
+   }else weatherGain.gain.setTargetAtTime(level,context.currentTime,.08);
+  }
   function uiCue(kind){
     if(!soundOn||silent||document.hidden||!context||context.state!=='running')return false;
     if(!uiBuffers.has(kind)){const samples=renderInterfaceCue(kind,context.sampleRate),buffer=context.createBuffer(1,samples.length,context.sampleRate);buffer.copyToChannel(samples,0);uiBuffers.set(kind,buffer);}
@@ -215,7 +249,7 @@ function mountAudio(root,{frame=()=>{},silent=false,initialTrack=0}={}){
   const touch=()=>{if(silent)return;void unlock().then(()=>{if(musicOn&&musicArmed)void startMusic();}).catch(()=>{});};root?.addEventListener?.('pointerdown',touch,{capture:true});root?.addEventListener?.('keydown',touch,{capture:true});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){stopInterface();stopBattle();cancelAnimationFrame(raf);raf=0;frame([0,0,0,0],0,[0,0,0,0]);}else if(context?.state==='running'&&!raf)raf=requestAnimationFrame(sample);});
   window.addEventListener?.('pagehide',()=>{pauseMusic();stopModem();stopInterface();stopBattle();cancelAnimationFrame(raf);void context?.close();});label();
-  return {graph,unlock,startMusic,pauseMusic,toggleMusic,nextTrack,connection(ready){musicArmed=!!ready;info.carrierConnected=musicArmed;if(musicArmed){if(musicOn)void startMusic();}else pauseMusic();label();},modem,stopModem,cue,uiCue,battleCue,stopBattle,info,speaking(value){if(speaking===!!value)return;speaking=!!value;info.speaking=speaking;gain();},sfx(value){soundOn=!!value;if(!soundOn){stopInterface();stopBattle();}if(sfxGain)sfxGain.gain.value=soundOn?.8:0;},modemPause(){if(modemSource)modemOffset+=context.currentTime-modemStart;const offset=modemOffset;stopModem();return offset;},modemResume(offset){void modem(offset,modemEnd);},voiceReceipt(role,receipt){info.voice[role]=receipt;root?.setAttribute('data-'+role+'-rms',receipt.outputRms.toFixed(4));},get musicOn(){return musicOn;}};
+  return {graph,unlock,startMusic,pauseMusic,toggleMusic,nextTrack,connection(ready){musicArmed=!!ready;info.carrierConnected=musicArmed;if(musicArmed){if(musicOn)void startMusic();}else pauseMusic();label();},modem,stopModem,cue,uiCue,battleCue,stopBattle,weather,info,speaking(value){if(speaking===!!value)return;speaking=!!value;info.speaking=speaking;gain();},sfx(value){soundOn=!!value;if(!soundOn){stopInterface();stopBattle();weather(0);}if(sfxGain)sfxGain.gain.value=soundOn?.8:0;},modemPause(){if(modemSource)modemOffset+=context.currentTime-modemStart;const offset=modemOffset;stopModem();return offset;},modemResume(offset){void modem(offset,modemEnd);},voiceReceipt(role,receipt){info.voice[role]=receipt;root?.setAttribute('data-'+role+'-rms',receipt.outputRms.toFixed(4));},get musicOn(){return musicOn;}};
 }
 
 return {normalizeVoice,spectrumBands,renderBattleCue,renderInterfaceCue,openingTrackIndex,mountAudio};

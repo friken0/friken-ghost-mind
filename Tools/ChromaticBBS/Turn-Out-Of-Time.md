@@ -535,6 +535,37 @@ for current/future cells, dense art and captions; do not mutate source indices,
 serial progress, input geometry, actor voices or RNG. Source ANSI remains
 portable16-colour data. The selected theme survives topic navigation.
 
+### Voice delivery for authored letters
+
+Render the entire known cast on the author machine before shipping. The clip
+inventory binds the spoken title, pronunciation, text, voice and speed.
+`reply-voice-scenes.mjs` includes fixed briefings, discoveries and illustration
+notes. Keep live numbers and user-entered text on the terminal. Build rejects a
+pack that belongs to another letter or has stale, missing or extra clips.
+
+```sh
+node Tools/ChromaticBBS/render-reply-voice.mjs REPLY.json KOKORO_JS MODEL_DIR voice.json
+python3 Tools/ChromaticBBS/build.py --reply REPLY.json --reply-voice voice.json --output REPLY.html
+```
+
+Use `surreal` in place of `REPLY.json` for the public example. Pass a previous
+pack as the final renderer argument to reuse exact unchanged clips. Kokoro is
+local to the author. The reference build used `kokoro-js` 1.2.1 with CPU q8
+from `onnx-community/Kokoro-82M-v1.0-ONNX` at revision
+`1939ad2a8e416c0acfeecc08a694d14ef25f2231`, with Michael and Heart. Keep the
+model and the selected voice vectors in the local model directory. The
+recordings are 24 kHz mono MP3 with phonemes for the face rig. The personal
+letter packages them inside its encrypted delivery envelope.
+Publish only approved public audio and source. The standalone response begins
+decoding the opening on load, before dial. Each authored destination waits for
+the complete cast, then waits for the ANSI draw before speaking. A failed clip
+has retry and explicit voice-off reading paths. Rebuild and redeploy every
+standalone response that should receive a shared framework change.
+The source kit carries the renderer and script. Recover the original public
+recording pack from the release or render it again from those authoring sources.
+
+### Live generation for fresh content
+
 Pinned runtime/model/voice assets use their existing CacheStorage buckets.
 Generated PCM has a separate local `friken-kokoro-generated-pcm-v1` bucket.
 Its SHA256 key binds runtime hash, model revision, execution profile, exact
@@ -546,7 +577,7 @@ playback working and report the limitation. Nothing is uploaded. Same-origin
 reloads reuse clips; another device/origin, changed text/cast/profile, browser
 storage clearing or eviction needs preparation again.
 
-Connection prepares the entire current/saved reply first, then three opening
+On an unpackaged response, prepare the entire current/saved page first, then three opening
 passages for each likely next screen, then deeper passages across the rest.
 One speculative job runs at a time. Foreground speech has priority and its
 own three-job look-ahead; exact clips are deduplicated. Resume the remaining

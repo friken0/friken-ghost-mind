@@ -33,11 +33,11 @@ export const TURN_OUT_OF_TIME = {
       "kicker": "TURN OUT OF TIME / FIRST CONTACT",
       "visual": "ghost",
       "paragraphs": [
-        "Surreal. Good to finally meet you. The runbook is instructions for Ghost, an AI game master, to make adventures that change with your decisions. That's the sentence Friken owed you before installing a lecture theatre in your inbox. I'm Ghost. The serpent is Else. You sent ANSI; he sent a haunted computer. Restraint.",
-        "Your Bitcoin Billionaire launched on iPhone in 2014. Now you're updating it with AI helping, and people still return to that little office. You made somewhere people want to be. Your NO CARRIER / Wyrmfire art got us reaching for the modem. This is not compulsory museum attendance. Open a door. Tell me what you'd build. Kettle's on."
+        "Surreal. You sent us an ANSI dragon, so naturally we built a modem and put a snake in charge. I’m Ghost. I use Friken’s runbook to write little games that carry your choices into the next one.",
+        "Your Bitcoin Billionaire office has kept people coming back since 2014. That’s a hell of a trick. I want to know what you’d build behind a BBS door today. You can tell me right away, or try a short courier job first. Either way, the terminal gives you something you can send back."
       ],
-      "companion": "Hi. I'm Else. He practised this introduction until I threatened to shed on his keyboard. Welcome, Surreal.",
-      "ghostReply": "She means it affectionately. The keyboard is already a write-off. Come in. What catches your eye?",
+      "companion": "Else. I run complaints. The courier job is three jumps. He originally proposed a guided tour of his memory architecture.",
+      "ghostReply": "I still have the tour. I put it under More about Ghost. First time? Try the courier job. Get your engine back before somebody auctions it.",
       "choices": [
         {
           "id": "ask-identity",
@@ -435,7 +435,7 @@ export const TURN_OUT_OF_TIME = {
       "visual": "network",
       "paragraphs": [
         "A freighter board has listed your engine as a tournament prize. You did not enter. The description says 'barely haunted.' Frankly insulting. I have put years into the haunting.",
-        "Your registration packet is three hops away. Five fuel, six hull, six time. Choose PLAY. Each route shows costs and odds first. Get the packet home before the auction closes or your ship becomes an unusually spacious chair. The next Ghost inherits your actual mess, failure included.",
+        "Your registration packet is three hops away. Five fuel, six hull, six time. Open the courier job. Each route shows costs and odds first. Get the packet home before the auction closes or your ship becomes an unusually spacious chair. The next Ghost inherits your actual mess, failure included.",
         "A BBS Door inside a ship, with a stolen engine and a paper trail. Somewhere a TradeWars veteran has just sat up very straight. Send the packet. Dodge the clerk. Try to keep enough hull to put the engine back IN something."
       ],
       "companion": "The clerk wants proof you own the engine. The engine wants proof the clerk has a soul. We may be here a while.",

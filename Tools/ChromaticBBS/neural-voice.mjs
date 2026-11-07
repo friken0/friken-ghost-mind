@@ -208,7 +208,7 @@ export function mountNeuralVoice({status,level,talking,audio,metrics=()=>{},work
   }
   async function play(message,{role,voice,onStart,onProgress}){
     if(voice!==undefined&&message.voice!==voice)throw Error('Prepared PCM does not match the selected voice');
-    const own=epoch;if(message.epoch!==own)throw Error('cancelled');await unlock();if(epoch!==own)throw Error('cancelled');
+    const own=epoch;if(!message.recorded&&message.epoch!==own)throw Error('cancelled');await unlock();if(epoch!==own)throw Error('cancelled');
     const samples=message.samples;if(!(samples instanceof Float32Array)||!samples.length||samples.length>24000*90||message.sampleRate!==24000)throw Error('Invalid neural audio buffer');
     const normal=normalizeVoice(samples);audio.voiceReceipt(role,{voice:message.voice,inputRms:normal.inputRms,outputRms:normal.outputRms,gain:normal.gain});
     if(normal.peak<.00001)throw Error('Neural voice returned silent PCM; captions remain unread');

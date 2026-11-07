@@ -1481,6 +1481,13 @@ bps[300,1200,2400,9600,14400,21100,56000]. Dial shows local progress;
 doubleclick skips handshake only→GhostLink streams. No actor popup until
 current program complete; silent PCM prefetch allowed. Speaker cast/camera
 and exclusive mouths retain prior laws.
+TOT.VOICE=known script→author Kokoro→validated exact text/cast/rate MP3+
+phonemes;bundle with delivery;seal private speech with letter. Decode the
+whole opening at load before dial, then gate voiced destinations until all
+their clips are ready. Wait for ANSI completion before first playback.
+Show preparation, retry and explicit read-with-voice-off. Dynamic content
+may use live synthesis; keep generated user input local. Regenerate and
+redeploy standalone letters after shared fixes.
 ART=semantic quadrant/halfblock painting per topic;silhouette→value→material
 contours→dither→causal motion→interaction→multi-aspect witness. 44-column
 painting beside choices;▀=2vertical pixels,quadrants=4samples/two palette

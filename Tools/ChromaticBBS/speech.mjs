@@ -77,6 +77,20 @@ export function neuralPassages(text){
   const sentence=speechUnits(first.text,{maxLength:120})[0],end=first.start+sentence.end;
   return [{text:text.slice(first.start,end).trim(),start:first.start,end,pause:40},...speechUnits(text.slice(end),{coalesce:true,maxLength:120}).map(unit=>({...unit,start:unit.start+end,end:unit.end+end}))];
 }
+export function authoredSpeechFrame(node){
+  const title=node.title.trim();
+  return {ghost:title+(/[.!?…]$/.test(title)?'':'.')+'\n\n'+node.paragraphs.join('\n\n')+(node.note?'\n\n'+node.note:''),
+    companion:node.companion,ghostReply:node.ghostReply};
+}
+export const voiceClipKey=(text,voice,speed)=>JSON.stringify([text,voice,speed]);
+export function authoredVoiceClips(frames){
+  const plan=speechCastSnapshot();
+  return [...new Map(frames.flatMap(frame=>speechSegments(frame).flatMap(segment=>
+    neuralPassages(segment.text).map(unit=>{
+      const {neural:voice,rate:speed}=plan[segment.role],text=speechText(unit.text);
+      return [voiceClipKey(text,voice,speed),{text,voice,speed}];
+    })))).values()];
+}
 // Source paragraph identity survives sentence and inference-buffer splits.
 export function speechParagraph(text,offset){
   return (text.slice(0,offset).match(/\r?\n[ \t]*\r?\n(?:[ \t]*\r?\n)*/g)||[]).length;
@@ -136,7 +150,7 @@ export function mountReadAlong(root){
   }
   return {prepare,progress,finish,begin(segment,index=0){if(queued&&!revealed){const segments=queued;prepare(segments);}const e=entries.find(x=>x.segment===segment);if(e)emit(e,'speaking',Math.max(e.index||0,Math.min(segment.text.length,index)));}};
 }
-export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,companionTalking,companionPulse,beforeSpeaker,ended,onState,storage,silent=false,audio,alien}){
+export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,companionTalking,companionPulse,beforeSpeaker,ended,onState,storage,silent=false,audio,alien,recordings={}}){
   const get=id=>root.querySelector('#cg-'+id),supported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
   let enabled=true,generation=0,settle=null,timer=0,preferred={},casting={ghost:null},deviceCasting={ghost:null,companion:null};
   let backgroundSafe=false;let persistentHits=0,persistentWrites=0;let warmQueue=[],warmBusy=false,warmDone=0,warmTotal=0;let currentFrame=null,active=false,cursor=0,suspended=null,isPlaying=false,currentSpeaker=null;
@@ -214,21 +228,68 @@ export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,comp
     const first=lanes.shift()||[];lanes.unshift([]);const depth=Math.max(0,...lanes.map(a=>a.length));for(const job of first){const key=JSON.stringify(job);if(!seen.has(key)){seen.add(key);queue.push(job);}}for(let at=0;at<depth;at+=3)for(const lane of lanes)for(const job of lane.slice(at,at+3)){const key=JSON.stringify(job);if(!seen.has(key)){seen.add(key);queue.push(job);}}
     warmQueue=queue.slice(0,192);warmDone=0;warmTotal=warmQueue.length;queueMicrotask(pumpWarm);
   }
+  function tasksFor(frame,plan){
+    return speechSegments(frame,{ghost:plan.ghost.voice,companion:plan.companion.voice}).flatMap(segment=>
+      segment.role==='alien'?[{segment,isAlien:true}]:(plan.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
+  }
+  const packaged=Object.keys(recordings).length>0,recorded=new Map();
+  async function prepareTask(task,plan){
+    const text=speechText(task.unit.text),{neural:voice,rate:speed}=plan[task.segment.role],key=voiceClipKey(text,voice,speed);
+    const clip=Object.hasOwn(recordings,key)?recordings[key]:null;
+    if(!clip){
+      if(packaged)throw Error('This passage is missing from the authored voice pack');
+      return neural.prepare(text,{voice,speed});
+    }
+    if(!recorded.has(key)){
+      const load=(async()=>{
+        const bytes=Uint8Array.from(atob(clip.audio),char=>char.charCodeAt(0));
+        const decoder=new OfflineAudioContext(1,1,24000);
+        const decoded=await decoder.decodeAudioData(bytes.buffer);
+        const samples=decoded.getChannelData(0);
+        if(decoded.sampleRate!==24000||!samples.length||samples.length>24000*90||!samples.some(v=>Math.abs(v)>.00001))
+          throw Error('The packaged voice clip is empty or damaged');
+        return {samples,sampleRate:24000,voice,speed,phonemes:clip.phonemes,recorded:true};
+      })();
+      recorded.set(key,load);
+      load.catch(()=>recorded.delete(key));
+      if(recorded.size>48)recorded.delete(recorded.keys().next().value);
+    }
+    return recorded.get(key);
+  }
+  const canPrepare=frame=>!packaged||authoredVoiceClips([frame]).every(({text,voice,speed})=>Object.hasOwn(recordings,voiceClipKey(text,voice,speed)));
+  async function prepareFrame(frame,{signal,progress}={}){
+    if(!enabled||silent)return null;
+    const plan=packaged?speechCastSnapshot():speechCastSnapshot(preferred,casting),tasks=tasksFor(frame,plan),messages=new Map();
+    if(plan.engine==='device'){
+      if(tasks.some(task=>!task.isAlien&&!task.segment.voice))throw Error('The selected device cast is unavailable');
+      return {frame,plan,tasks,messages};
+    }
+    const count=tasks.filter(task=>!task.isAlien).length;
+    let ready=0;
+    progress?.(ready,count);
+    for(const [index,task] of tasks.entries()){
+      signal?.throwIfAborted();
+      if(task.isAlien)continue;
+      messages.set(index,await prepareTask(task,plan));
+      signal?.throwIfAborted();
+      progress?.(++ready,count);
+    }
+    return {frame,plan,tasks,messages};
+  }
   function pause(ms,token){return new Promise(resolve=>{if(token!==generation){resolve();return;}settle=resolve;timer=setTimeout(()=>{timer=0;settle=null;resolve();},ms);});}
-  function speak(frame,from=0){
+  function speak(frame,from=0,preparedScene=null){
     stop(true,true);if(!enabled||silent)return;
     if(document.hidden){suspended={frame,from};report('Voice paused while this tab is hidden. Return to resume.');return;}
     currentFrame=frame;cursor=from;active=true;
     framingAbort=new AbortController();const framingSignal=framingAbort.signal;
-    const token=generation,plan=speechCastSnapshot(preferred,casting),segments=speechSegments(frame,{ghost:plan.ghost.voice,companion:plan.companion.voice});readAlong.prepare(segments,true);
-    root.setAttribute?.('data-voice-route',plan.engine);root.setAttribute?.('data-voice-cast',JSON.stringify(Object.fromEntries(['ghost','companion'].map(role=>[role,plan.engine==='neural'?plan[role].neural:plan[role].voice?.voiceURI||'unavailable']))));
+    const token=generation,plan=preparedScene?.plan??(packaged?speechCastSnapshot():speechCastSnapshot(preferred,casting)),tasks=preparedScene?.tasks??tasksFor(frame,plan),segments=[...new Set(tasks.map(task=>task.segment))];readAlong.prepare(segments,true);
+    root.setAttribute?.('data-voice-route',packaged?'recorded':plan.engine);root.setAttribute?.('data-voice-cast',JSON.stringify(Object.fromEntries(['ghost','companion'].map(role=>[role,plan.engine==='neural'?plan[role].neural:plan[role].voice?.voiceURI||'unavailable']))));
     for(const key of ['voice-first-ms','voice-max-gap-ms','voice-play-count'])root.removeAttribute?.('data-'+key);
     async function run(){
       try{
-        const tasks=segments.flatMap(segment=>segment.role==='alien'?[{segment,isAlien:true}]:(plan.engine==='neural'?neuralPassages(segment.text):speechUnits(segment.text)).map(unit=>({segment,unit})));
-        const prepared=new Map(),readyJobs=new Set();let framedRole=null,lastPlaybackEnd=0,maxGap=0,playCount=0;const requestedAt=performance.now();
-        if(plan.engine==='neural'&&tasks.some(t=>!t.isAlien)){await neural.unlock();await ensureAuto();if(token!==generation)return;}
-        const prepare=task=>neural.prepare(speechText(task.unit.text),{voice:plan[task.segment.role].neural,speed:plan[task.segment.role].rate});
+        const prepared=new Map(preparedScene?.messages),readyJobs=new Set(prepared.keys());let framedRole=null,lastPlaybackEnd=0,maxGap=0,playCount=0;const requestedAt=performance.now();
+        if(plan.engine==='neural'&&tasks.some(t=>!t.isAlien)){await neural.unlock();if(!packaged)await ensureAuto();if(token!==generation)return;}
+        const prepare=task=>prepareTask(task,plan);
         function prime(index){for(let i=index;i<Math.min(tasks.length,index+3);i++){if(tasks[i].isAlien||prepared.has(i))continue;const job=prepare(tasks[i]);job.then(()=>{readyJobs.add(i);if(token===generation&&tasks.every((t,n)=>t.isAlien||n<from||readyJobs.has(n))){backgroundSafe=true;queueMicrotask(pumpWarm);}},()=>{});prepared.set(i,job);}}
         if(plan.engine==='neural')prime(from);
         for(let index=from;index<tasks.length;index++){
@@ -252,7 +313,7 @@ export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,comp
               const facePlan=compileFacialPerformance({text:spoken,phonemes:message.phonemes||''});
               root.setAttribute?.('data-face-timing',facePlan.source+' / '+facePlan.timing);
               const receipt=await neural.play(message,{role:segment.role,voice:plan[segment.role].neural,
-                onStart(){if(token===generation){isPlaying=true;setSpeaker(segment.role);companionTalking?.(segment.role==='companion',{measured:true});const now=performance.now();if(lastPlaybackEnd)maxGap=Math.max(maxGap,now-lastPlaybackEnd);playCount++;root.setAttribute?.('data-voice-play-count',String(playCount));root.setAttribute?.('data-voice-max-gap-ms',maxGap.toFixed(1));if(playCount===1)root.setAttribute?.('data-voice-first-ms',(now-requestedAt).toFixed(1));readAlong.begin(segment,unit.start);report((segment.role==='companion'?'ELSE':segment.role.toUpperCase())+' / Kokoro neural / speaking locally');}},
+                onStart(){if(token===generation){isPlaying=true;setSpeaker(segment.role);companionTalking?.(segment.role==='companion',{measured:true});const now=performance.now();if(lastPlaybackEnd)maxGap=Math.max(maxGap,now-lastPlaybackEnd);playCount++;root.setAttribute?.('data-voice-play-count',String(playCount));root.setAttribute?.('data-voice-max-gap-ms',maxGap.toFixed(1));if(playCount===1)root.setAttribute?.('data-voice-first-ms',(now-requestedAt).toFixed(1));readAlong.begin(segment,unit.start);report((segment.role==='companion'?'ELSE':segment.role.toUpperCase())+(message.recorded?' / recorded cast / speaking':' / Kokoro neural / speaking locally'));}},
                 onProgress(fraction){if(token===generation){if(segment.role==='ghost')articulate?.(poseCue(facePlan,fraction));readAlong.progress(segment,unit.start+Math.floor(unit.text.length*fraction));}}});
               if(token!==generation)return;if(!receipt?.played)throw Error('Neural playback did not complete; captions remain unread');lastPlaybackEnd=performance.now();isPlaying=false;companionTalking?.(false,{measured:true});setSpeaker(null);
             }else{
@@ -283,7 +344,7 @@ export function mountSpeech(root,{note,pulse,talking,pcm,articulate,speaker,comp
   if(supported)speechSynthesis.addEventListener('voiceschanged',refresh);
   get('voice-settings').addEventListener('toggle',()=>{if(get('voice-settings').open)refresh();});
   refresh();if(policyChanged||autoChanged||fidelityChanged)save();
-  return {speak,stop,primeFrames,
+  return {speak,stop,primeFrames,prepareFrame,canPrepare,
     suspend(){if(active&&currentFrame){const next={frame:currentFrame,from:cursor},plan=warmQueue;stop(false);warmQueue=plan;suspended=next;report('Voice paused while this tab is hidden. Return to resume.');}neural.release();},
     resume(){queueMicrotask(pumpWarm);if(enabled&&suspended&&!document.hidden){const next=suspended;speak(next.frame,next.from);}},
     warm(frame){const warmGeneration=generation;if(enabled&&!silent&&preferred.engine==='neural')void(async()=>{try{

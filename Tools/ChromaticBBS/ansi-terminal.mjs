@@ -137,6 +137,7 @@ function controlProgram(mode,state={},cover=null){
  let text='';const spots=terminalHotspots(mode),rows=[...new Set(spots.map(x=>x.row))];for(const row of rows)text+=at(row+1)+color(7)+' '.repeat(79);
  if(cover)for(const row of rows)text+=at(row+1)+color(8)+'║'+at(row+1,80)+'║';
  if(state.boardStatus&&!cover){rows.push(15);const status=String(state.boardStatus).replace(/[\x00-\x1f\x7f]/g,'').slice(0,69);text+=at(16,1)+color(7)+' '.repeat(79)+at(16,6)+color(/unavailable|offline/i.test(status)?11:10)+status;}
+ if(mode==='held'&&state.voiceStatus){rows.push(20);text+=at(21,3)+color(11)+state.voiceStatus.slice(0,72).padEnd(72);}
  spots.forEach((spot,i)=>{text+=at(spot.row+1,spot.column+1)+color(state.focus===spot.id?15:spot.id==='dial'||spot.id==='continue'?11:14,state.focus===spot.id?4:0)+labels[i];});return {text,spots,rows};
 }
 export function dialerAnsi(options={}){let text=connectionAnsi(options);for(let row=14;row<=24;row++)text+=at(row)+color(7)+' '.repeat(79);text+=at(14,6)+color(10)+'GHOSTLINK DIALER / MODEM READY / '+(options.bps||2400)+' BPS'+at(15,6)+color(7)+'ONE LOCAL CALL. THE VOID CAN PAY ITS OWN LONG DISTANCE.';return text+controlProgram('dialer',options).text;}

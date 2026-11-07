@@ -9,7 +9,7 @@ import {createHash} from 'node:crypto';
 const base={packet,current:'hello',screen:'map',progress:{rooms:[],score:0,percent:0},answers:{},bbIllustrations:bitcoinIllustrations};
 function decode(p){const b=createAnsiBuffer(p.grid);b.feed(p.text);return b;}
 const overlap=(a,b)=>a.row<b.row+b.height&&a.row+a.height>b.row&&a.column<b.column+b.width&&a.column+a.width>b.column;
-const screens=['map','tools','layer','topic','illustrations','bb-images','answers','roll','ending','packet','words','motion-lab','trip','door-game','crew-builder'];
+const screens=['map','topics','tools','layer','topic','illustrations','bb-images','answers','roll','ending','packet','words','motion-lab','trip','door-game','crew-builder'];
 test('every screen fits portrait, classic and wide grids with one action pane and compact settings',()=>{
  for(const grid of [{columns:80,rows:25},{columns:80,rows:39},{columns:108,rows:25},{columns:160,rows:50}])for(const screen of screens){
   const p=nativeReplyProgram({...base,grid,screen,receipt:'ROW\n'.repeat(80)}),b=decode(p);assert.equal(b.cells.length,grid.columns*grid.rows);assert.equal(b.cells[0].char,'╔');assert.equal(b.cells.at(-1).char,'╝');assert.ok(p.text.length<128000);
@@ -89,7 +89,11 @@ test('point-and-click relay fits actual parts, gates launch, and exports the sam
  assert.match(decode(workshop).text,/-1 CHG  -1 SIG → 5 CHG  2 SIG/);
  assert.match(workshop.hotspots.find(h=>h.id==='relay:storm').ariaLabel,/5 charge and 2 bars/);
  for(const t of relayTargets(ground,workshop.letterScene)){
-  const {id,row,column,width,height}=workshop.hotspots.find(h=>h.id==='relay:'+t.id);
+  const matches=workshop.hotspots.filter(h=>h.id==='relay:'+t.id);
+  assert.equal(matches.length,2);
+  assert.equal(matches[0].key,t.key);
+  assert.ok(matches[0].column>=49);
+  const {id,row,column,width,height}=matches[1];
   assert.deepEqual({id:id.slice(6),row,column,width,height,key:t.key},t);
  }
  const storm=paintLetterRelay(ground,workshop.letterScene,grid,3.6);
@@ -147,7 +151,7 @@ test('the postmark unlocks on the reward postcard and travels with its exact cir
  assert.ok(!nativeReplyProgram({...state,current:reward,letterRelay:fresh}).hotspots.some(h=>h.id==='letter:gift'));
  const action=nativeReplyProgram({...state,current:reward}).hotspots.find(h=>h.id==='letter:gift');
  assert.equal(action.key,'g');
- assert.match(action.ariaLabel,/grown from your circuit/);
+ assert.match(action.ariaLabel,/transmitter parts determine what grows/);
  const text=firstContactText(first,contact,letter.gift);
  const packed=JSON.parse(Buffer.from(text.match(/FGHELLO1\.([A-Za-z0-9_-]+)/)[1],'base64url').toString('utf8'));
  assert.deepEqual(packed.specimen,{recipe:'friktal.postmark-bloom.v1',circuit:[0,0,1]});
@@ -174,4 +178,14 @@ test('letter note is readable and visited Moknon comms join only the portable fi
  assert.deepEqual(data.comms,['krex']);assert.equal(data.postscript,'Inside the stamp.');
  assert.doesNotMatch(text,/Private note\.|Inside the stamp\./);
  assert.deepEqual(openedLetterComms(letter,['hello']),[]);
+});
+
+test('a pending voiced page offers wait, retry and a reading route with no story actions',()=>{
+ const source={ready:3,total:7,error:''};
+ const state={...base,voiceGate:{title:'A future page',source,initial:true}};
+ const first=nativeReplyProgram(state);
+ assert.match(decode(first).text,/3 of 7 voice passages ready/);
+ assert.deepEqual(first.hotspots.map(h=>h.id),['voice']);
+ const failed=nativeReplyProgram({...state,voiceGate:{...state.voiceGate,initial:false,source:{...source,error:'test'}}});
+ assert.deepEqual(failed.hotspots.map(h=>h.id),['voice:retry','voice','back']);
 });

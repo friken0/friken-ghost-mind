@@ -32,6 +32,7 @@ FILES += ['letter-relay.mjs','letter-relay-art.mjs','image-depth.mjs', 'reply-me
 FILES += ['render-budget.test.mjs','profile-renderers.mjs','Render-Performance-2026-11-06.md']
 
 FILES += ['retained-chapter.mjs', 'retained-chapter.test.mjs', 'framework-mode.mjs', 'framework.json', 'bootstrap.md', 'identity/manifest.json', 'identity/public-core.md', 'Framework-Comparison-2026-11-06.md', 'chapters/the-suitcase-that-kept-coming-back.json']
+FILES += ['reply-voice-scenes.mjs', 'render-reply-voice.mjs', 'media/surreal-voice.json']
 WORKFLOW='''name: Admit reviewed Ghost session
 on:
   issues:

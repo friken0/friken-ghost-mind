@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {localWorkshop,mailrun,mailrunLegs,crewTrial,crewRoles,workshopCheck,workshopRoll} from './door-and-crew.mjs';
+import {authoredSpeechFrame} from './speech.mjs';
+import {crewVoice,discoveryVoice,doorVoice,replyAnswerSaved,replyDetailVoice,replyIllustrationVoice,workshopVoice} from './reply-voice-scenes.mjs';
 import {TURN_OUT_OF_TIME as packet} from './turn-out-of-time-data.mjs';
 import {nativeReplyProgram,nativeMemoryLayers,nativeRoomIds,causalApproaches} from './native-response-program.mjs';
 import {newReplyVisit,recordReplyVisit} from './response-theater.mjs';
@@ -18,14 +20,13 @@ import {bitcoinIllustrations,replyIllustrations} from './illustration-data.mjs';
 const source=fs.readFileSync(new URL('./turn-out-of-time.mjs',import.meta.url),'utf8');
 function declaration(name){const match=new RegExp('(?:^|\\n)(?:async )?function '+name+'\\(').exec(source);assert.ok(match,'Missing controller helper '+name);const start=match.index+(source[match.index]==='\n'?1:0),tail=source.slice(start),next=/\n(?:async )?function \w+\(/.exec(tail);return tail.slice(0,next?next.index:tail.length);}
 function harness(){
- const context=vm.createContext({chapterDriver:null,packet:structuredClone(packet),replyDiscoveries,canDiscover,discoveryIds,ansiColourThemes,causalApproaches,newReplyVisit,recordReplyVisit,mindProgress,causalDemo,causalAttributes,nativeReplyProgram,nativeMemoryLayers,normalizeNativeProgram,bitcoinIllustrations,replyIllustrations,localWorkshop,mailrun,mailrunLegs,crewTrial,crewRoles,workshopCheck,workshopRoll,structuredClone,console,document:{activeElement:null,body:{}}});
- const helpers=['totalScore','discover','record','programState','render','voice','authoredVoiceFrame','primeLikelyReplies','voiceFrame','readCurrent','readDetail','show','choose','returnPacket','rollStart','nativeTick','workshopAction','nativeAction'].map(declaration).join('\n');
+ const context=vm.createContext({chapterDriver:null,voiceGateEnabled:false,authoredSpeechFrame,crewVoice,discoveryVoice,doorVoice,replyAnswerSaved,replyDetailVoice,replyIllustrationVoice,workshopVoice,packet:structuredClone(packet),replyDiscoveries,canDiscover,discoveryIds,ansiColourThemes,causalApproaches,newReplyVisit,recordReplyVisit,mindProgress,causalDemo,causalAttributes,nativeReplyProgram,nativeMemoryLayers,normalizeNativeProgram,bitcoinIllustrations,replyIllustrations,localWorkshop,mailrun,mailrunLegs,crewTrial,crewRoles,workshopCheck,workshopRoll,structuredClone,console,document:{activeElement:null,body:{}}});
+ const helpers=['totalScore','discover','record','programState','render','voice','authoredVoiceFrame','primeLikelyReplies','voiceFrame','startOpeningVoice','clearPageRequest','requestVoicedPage','finishPageWithoutVoice','readCurrent','readDetail','show','choose','returnPacket','rollStart','nativeTick','workshopAction','nativeAction'].map(declaration).join('\n');
  vm.runInContext(`
   let screenHistory=[],visit=newReplyVisit(packet),current=visit.current,history=[],state={screen:'map',layer:'now',page:0,focus:null,receipt:'',rollProgress:1,illustrationIndex:0},draft={},boardStatus='LOCAL TEST',boardReceipt={mode:'offline-local'},held=false,overlayKind=null,overlayExitTimer=0,illustrator=null,meshPainter=null,rollAnimation=null,gameRunning=false,skirmish=null,arenaOpen=false,connected=true,silent=true,saveStatus='',retina=true,portrait=null;
   let lastClock=0,lastHUD=0,pendingNote=null;let artSeed=42,bps=14400,pendingRead=null,firstProgram=true,sfxOn=true;const speeds=[300,1200,2400,9600,14400,21100,56000];function placeArena(){};
   const params={has:name=>name==='qaMemory'},calls={stops:0,close:0,arenaClears:0,artifactClears:0,rose:0,rng:0,controls:0},frames=[],copies=[],notes=[],programs=[],uiViews=[];
   const clean=text=>String(text??'').replace(/[\\x00-\\x1f\\x7f]/g,' '),node=id=>packet.nodes.find(n=>n.id===id);
-  const spoken=${source.split('\n').find(line=>line.startsWith('const spoken=')).slice('const spoken='.length)}
   const ui={show(id){uiViews.push(id);},ready(){},note(text){notes.push(text);}},speech={enabled:false,stop(){calls.stops++;},primeFrames(){},warm(){},speak(frame){frames.push(frame);},toggle(){this.enabled=!this.enabled;return this.enabled;}},audio={musicOn:false,info:{track:'TEST TRACK'},nextTrack(){calls.tracks=(calls.tracks||0)+1;},uiCue(){},battleCue(){},sfx(){},toggleMusic(){this.musicOn=!this.musicOn;}};
   const native={get program(){return programs.at(-1)||nativeReplyProgram(programState());},grid:{columns:80,rows:25},clock:0,terminal:{complete:true,setBps(){}},element:{focus(){}},reward(value){calls.rewards=(calls.rewards||[]).concat(value);},show(program){programs.push(normalizeNativeProgram(program));},patch(){},setPalette(){},setReducedMotion(){}};
   const crypto={getRandomValues(bits){calls.rng++;bits[0]=1799;return bits;}},navigator={clipboard:{async writeText(value){if(globalThis.failClipboard)throw Error('clipboard denied');copies.push(value);}}};
