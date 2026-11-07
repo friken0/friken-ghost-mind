@@ -11,3 +11,16 @@ test('hover and score repaints reuse immutable art instead of recomputing six fr
 
 
 test('the garden has a readable flower and leaf palette, and no scattered noise tracks',()=>{const scene=ansiScene('trip',{width:80,height:18,seed:4});assert.equal(scene.tracks.length,0);assert.deepEqual(ansiSceneProgram(scene,{columns:80,rows:18}).animation.cymatics,[]);const inks=new Set(scene.cells.flatMap(c=>[c.fg,c.bg]));for(const ink of [0,2,10,11,13])assert.ok(inks.has(ink));});
+
+test('galaxy and ridge preserve serial stills and generate bounded time-addressed glyphs',()=>{
+ for(const kind of ['spiral-galaxy','monsoon-ridge']){
+  const plate=ansiScene(kind,{width:44,height:20,seed:31});
+  const motion=plate.frame(4.83);
+  assert.deepEqual(plate.cells,plate.frame(0));
+  assert.equal(plate.tracks.length,0);
+  assert.equal(motion.length,880);
+  assert.ok(motion.some((c,i)=>c.glyph!==plate.cells[i].glyph||c.bg!==plate.cells[i].bg));
+  assert.deepEqual(motion,plate.frame(4.83));
+  assert.ok(motion.every(c=>c.row>=1&&c.row<=20&&c.column>=1&&c.column<=44&&c.fg<=15&&c.bg<=15));
+ }
+});

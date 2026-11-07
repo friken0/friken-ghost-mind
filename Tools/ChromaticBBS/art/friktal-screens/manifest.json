@@ -68,6 +68,108 @@
       ],
       "bytes": 527674,
       "sha256": "39c0c4e3144dc1fe6a91dd3b0635287b8cf3583a0f1993c3dbf19d02499d33ab"
+    },
+    {
+      "id": "basalt-citadel",
+      "file": "basalt-citadel.webp",
+      "alt": "Dark terraced structures suspended over an amber-lit void.",
+      "source": "codex-clipboard-de4b247c-efcf-476f-bf89-2aee8ee551c0.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        3072,
+        1287
+      ],
+      "size": [
+        2048,
+        858
+      ],
+      "bytes": 345044,
+      "sha256": "a853deae01456fdbcc9c7f55ce17b32e9b80214039c57042b2c77ac1368a93b8"
+    },
+    {
+      "id": "orchard-of-echoes",
+      "file": "orchard-of-echoes.webp",
+      "alt": "Folded olive and indigo forms above a pink and green depth field.",
+      "source": "codex-clipboard-893a2d6b-8543-4baa-b482-00def6ca8cf4.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        3072,
+        1287
+      ],
+      "size": [
+        2048,
+        858
+      ],
+      "bytes": 367358,
+      "sha256": "80e9ad0d24cbb48db63b176a69c2e56d9f4bfdda4e880f143e72c7a76198ce69"
+    },
+    {
+      "id": "voxel-overlook",
+      "file": "voxel-overlook.webp",
+      "alt": "Blocky cyan cliffs above a lime-green and magenta basin.",
+      "source": "codex-clipboard-3ad4fc19-8552-4f34-bb6b-b54efaeccced.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        2026,
+        1078
+      ],
+      "size": [
+        2026,
+        1078
+      ],
+      "bytes": 451848,
+      "sha256": "5afbc2576e15a7046a5dae617f67ae224d567ce03fb64cc2fcb58c20663448e9"
+    },
+    {
+      "id": "ember-antennas",
+      "file": "ember-antennas.webp",
+      "alt": "Twin red-black spires point into a gold and cream fractal basin.",
+      "source": "codex-clipboard-f0a7d468-38e6-4615-95ff-40381104c9ba.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        2536,
+        908
+      ],
+      "size": [
+        2048,
+        733
+      ],
+      "bytes": 623310,
+      "sha256": "0cacd75f66dc796ff9339e365c8f4bda0f67b63092ef86f80b34b6871abceb6e"
+    },
+    {
+      "id": "halftone-hollows",
+      "file": "halftone-hollows.webp",
+      "alt": "Golden and violet chambers with a dotted halftone surface.",
+      "source": "codex-clipboard-c18b2731-1dd5-4d7d-904b-4c8078a376fa.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        1536,
+        1536
+      ],
+      "size": [
+        1536,
+        1536
+      ],
+      "bytes": 994442,
+      "sha256": "8458d58c74fe9755424096bceb371dda5d4c23a0ab174f110909760b08cff6e0"
+    },
+    {
+      "id": "prismatic-canopy",
+      "file": "prismatic-canopy.webp",
+      "alt": "Iridescent petal-like folds arch over a sloping fractal floor.",
+      "source": "codex-clipboard-97b36613-eadb-42e3-bd21-f381d4f443bf.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        8000,
+        8000
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 1421312,
+      "sha256": "f4f033cb1b910da435b80d72d8df497325f2bac10ca576e127d65c3241af1784"
     }
   ]
 }

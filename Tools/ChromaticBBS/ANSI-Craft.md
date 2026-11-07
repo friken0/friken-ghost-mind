@@ -200,3 +200,19 @@ clock. Serial completion, actor overlays and pending Causality resolution
 hold the payoff; reduced motion keeps a steady card. Labels, source inputs
 and hit regions remain fixed. See Turn-Out-Of-Time.md for the shared
 first-meeting, local-discovery and one-time reward contract.
+
+### Time-addressed plates
+
+A reply node can name an existing scene with `ansiArt`. The opening still
+travels through the same ANSI serial stream. A scene with a `frame(seconds)`
+sampler then animates its glyph positions in the retained art aperture.
+The host supplies time, caps sampling at 15 Hz, and holds the visible
+frame when motion is paused. The display frame leaves the serial buffer,
+hit regions and transcript intact.
+
+`spiral-galaxy` projects two spiral arms into a tilted plane. Dust trails
+sit behind the bright arm ridges. Each star carries its own radius,
+phase, height and angular drift. The outer stars move faster for this
+illustration. `monsoon-ridge` stages layered silhouettes and distant
+lightning. Both emit ANSI quarter blocks with indexed colours, including
+when the viewer selects another terminal palette.

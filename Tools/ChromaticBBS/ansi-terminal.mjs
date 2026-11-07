@@ -139,7 +139,7 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,animat
  canvas=canvas||document.createElement('canvas');canvas.width=1280;canvas.height=800;
  let columns=80,rows=25,buffer=createAnsiBuffer();const ctx=canvas.getContext('2d',{alpha:!!transparent}),animator=createAnsiAnimator({maxCells:8000,maxRate:20,seed:596564});
  let stream=connectionAnsi({recipient,label,bps}),mode='receiving',controlState={},modeKey='',count=-1,revision=0,elapsed=0,complete=false,force=false,presentation=0,lastTick=-1,lastReduced=false,priorCursor=-1,overlay=null,controls=null,lastLabel='',commandProgramKey='',programAnimation=false,programTracks=new Map(),reactiveCells=new Map(),pendingPatches=[],patchBytes=0;
- let displayTheme=ansiColourTheme();const theme=ansiSessionTheme(seed);const painted=new Map(),records=new Map();let manualHotspots=null,serialOffset=0;
+ let displayTheme=ansiColourTheme();const theme=ansiSessionTheme(seed);const painted=new Map(),records=new Map();let manualHotspots=null,serialOffset=0,lastArtCells=null;
  const glyph=(context,char,x,y,w,h)=>paintGlyph(context,char,x,y,w,h);
  function animateCell(index,c,role,now){
   const id=String(index),key=c.char+'|'+c.fg+'|'+c.bg+'|'+role,prior=records.get(index);
@@ -153,12 +153,15 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,animat
   }
   return animator.sample(id,now);
  }
- function update(seconds=elapsed,{reveal=false,time=seconds,reducedMotion=false,energy=null}={}){
+ function update(seconds=elapsed,{reveal=false,time=seconds,reducedMotion=false,energy=null,artCells=null}={}){
   if(!Number.isFinite(time)||time<0)throw Error('Valid ANSI presentation clock required');const paintStart=performance.now();
   const promptMode=mode==='prompt'||mode==='command',typedCharacters=mode==='prompt'?bootCommand.length:Math.min(bootCommand.length,Math.floor(seconds*bootCommandCps));
   if(promptMode){const key=JSON.stringify([mode,typedCharacters,controlState.focus,controlState.boardStatus,Number.isFinite(controlState.connectionProgress)?Math.floor(controlState.connectionProgress*100):null,Math.floor((controlState.connSeconds||0)*8)]);if(key!==commandProgramKey){commandProgramKey=key;stream=promptAnsi({preview:mode==='prompt',typedCharacters,focus:controlState.focus,boardStatus:controlState.boardStatus,connectionProgress:controlState.connectionProgress,connSeconds:controlState.connSeconds});buffer.reset();count=-1;}}
   const next=ansiSerialFrame(stream,Math.max(0,seconds+serialOffset*10/bps),{bps,complete:reveal||promptMode}),tick=Math.floor(time*20);presentation=time;elapsed=seconds;complete=next.complete;if(next.complete&&pendingPatches.length)force=true;
-  if(next.count===count&&!force&&reducedMotion===lastReduced&&(!animation||reducedMotion||tick===lastTick))return false;lastReduced=reducedMotion;
+  if(artCells&&artCells.length!==buffer.cells.length)throw Error('ANSI art frame must match its grid');
+  const frameCells=complete?artCells:null;
+  if(next.count===count&&!force&&frameCells===lastArtCells&&reducedMotion===lastReduced&&(!animation||reducedMotion||tick===lastTick))return false;
+  lastReduced=reducedMotion;lastArtCells=frameCells;
   const labelDirty=next.count!==count||force;
   if(next.count<count){buffer.reset();count=0;records.clear();animator.clear();painted.clear();}
   if(count<0)count=0;buffer.feed(stream.slice(count,next.count));count=next.count;if(next.complete&&pendingPatches.length){for(const patch of pendingPatches)buffer.feed(patch);pendingPatches=[];patchBytes=0;}canvas.dataset.queuedPatches=String(pendingPatches.length);
@@ -166,7 +169,7 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,animat
   force=false;lastTick=tick;ctx.font='32px '+ansiFontFamily;ctx.textBaseline='top';ctx.imageSmoothingEnabled=false;
   if(priorCursor>=0)painted.delete(priorCursor);let changes=0,animated=0,reactive=0;
   for(let i=0;i<buffer.cells.length;i++){
-   const row=Math.floor(i/columns),c=controls.rows.includes(row)?overlay.cells[i]:buffer.cells[i],x=i%columns*16,y=row*32,role=animation&&!reducedMotion&&!promptMode&&(mode!=='program'||programAnimation)?bootAnsiCellRole(i,c.char,controls.rows):null;
+   const row=Math.floor(i/columns),art=frameCells?.[i],c=art?{char:art.glyph,fg:art.fg,bg:art.bg}:controls.rows.includes(row)?overlay.cells[i]:buffer.cells[i],x=i%columns*16,y=row*32,role=animation&&!reducedMotion&&!promptMode&&(mode!=='program'||programAnimation)?bootAnsiCellRole(i,c.char,controls.rows):null;
    let frame=null,signature;const track=mode==='program'&&!reducedMotion&&(c.char!==' '||c.bg!==0)?programTracks.get(i):null;
    if(track&&animation&&c.char===track.frames[0].glyph){ const id=String(i),key=JSON.stringify(track);if(records.get(i)?.key!==key){animator.cycle(id,track.frames,{at:track.at||0,interval:track.interval||200,transition:track.transition??120,effect:track.effect||'scan',mode:'loop'});records.set(i,{key});}frame=animator.sample(id,time*1000);signature=JSON.stringify(frame.layers);animated++;}
    else if(role==='packet-rail'){const fg=bootAnsiRail(i,time);signature=c.char+'|'+fg+'|'+c.bg;frame={layers:[{glyph:c.char,fg,bg:c.bg,alpha:1,scaleX:1,scaleY:1}]};animated++;}

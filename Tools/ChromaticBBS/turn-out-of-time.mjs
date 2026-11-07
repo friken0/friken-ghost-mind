@@ -1,3 +1,4 @@
+import {advanceLetterRelay,newLetterRelay} from './letter-relay.mjs';
 import {replyDiscoveries,canDiscover,discoveryIds} from './reply-discoveries.mjs';
 import {ansiColourThemes} from './ansi-terminal.mjs';
 import {TURN_OUT_OF_TIME as targetedPacket} from './turn-out-of-time-data.mjs';
@@ -40,7 +41,7 @@ let terminalStarted=false,modemStarted=false,held=reduce,musicTouched=false,sfxO
 let boardRead=null,boardStatus='NOT CONNECTED',boardReceipt={mode:'not-connected'},activeSpeaker=null,overlayKind=null,overlayExitTimer=0,speechEndTimer=0,illustrator=null,meshPainter=null;
 let arena=null,arenaField=null,skirmish=null,gameTime=0,gameRunning=false,arenaPaused=false,rollAnimation=null,lastClock=0,lastHUD=0;
 const artSeed=crypto.getRandomValues(new Uint32Array(1))[0],speeds=[300,1200,2400,9600,14400,21100,56000];let bps=14400,pendingRead=null,firstProgram=true;
-let voiceBadge='';let state={actionPage:0,skirmishOn:false,screen:'map',paletteIndex:0,layer:'now',page:0,focus:null,receipt:'',rollProgress:1,illustrationIndex:0},draft={...(visit.answers||{})},pendingNote=null;
+let voiceBadge='';let state={letterRelay:packet.relay?newLetterRelay():null,actionPage:0,skirmishOn:false,screen:'map',paletteIndex:0,layer:'now',page:0,focus:null,receipt:'',rollProgress:1,illustrationIndex:0},draft={...(visit.answers||{})},pendingNote=null;
 const node=id=>packet.nodes.find(n=>n.id===id),clean=text=>String(text??'').replace(/[\x00-\x1f\x7f]/g,' ');
 const spoken=n=>n.title.trim()+(/[.!?…]$/.test(n.title.trim())?'':'.')+'\n\n'+n.paragraphs.join('\n\n');
 function note(text){ui?.note(text);pendingNote=clean(text).slice(0,77);}
@@ -112,7 +113,21 @@ function workshopAction(id,roll=null){
  if(!roll&&w.door.done&&state.screen==='door-game')audio.battleCue({kind:w.door.won?'victory':'defeat',side:0});
  if(!roll&&w.crew.done&&state.screen==='crew-builder')audio.battleCue({kind:w.crew.passed?'victory':'defeat',side:0});
 }
-async function nativeAction(id){if(chapterDriver&&await chapterAction(id))return;const before={screen:state.screen,current,layer:state.layer,page:state.page,illustrationIndex:state.illustrationIndex,secretId:state.secretId,actionPage:state.actionPage,rollTrial:state.rollTrial,rollReturn:state.rollReturn,rollResult:state.rollResult,rollContext:state.rollContext,rollProgress:state.rollProgress,rollStat:state.rollStat,rollBoarding:state.rollBoarding};try{if(id==='next-track'){audio.nextTrack();note('GHOSTTRACKS / '+audio.info.track);return;}if(id.startsWith('secret:')){discover(id.slice(7),id==='secret:night-office'?'city':'trip');return;}if(rollAnimation&&(id==='back'||id.startsWith('nav:')||['verb:ending','verb:packet','verb:answers','verb:rose'].includes(id))){if(!rollAnimation.workshopId)record({kind:'roll',result:rollAnimation.receipt});before.rollProgress=1;state.rollProgress=1;rollAnimation=null;clearArena();state.skirmishOn=false;state.rollBoarding=false;}if((id.startsWith('door:')&&id!=='door:reset')||id.startsWith('crew-order:')){rollStart(id);return;}if(id==='door:reset'||id.startsWith('crew-role:')||id==='crew:reset'){workshopAction(id);return;}if(id.startsWith('rig:')){state.rigEffect=id.slice(4);render(true);return;}if(id.startsWith('stat:')){if(rollAnimation)return;state.rollStat=id.slice(5);state.rollPreview=true;state.rollResult=null;render(true);return;}if(!['speed','palette','voice','music','sfx','motion','verb:skirmish'].includes(id))pendingRead=null;if(id.startsWith('illustration:')){state.illustrationIndex=Number(id.slice(13));render(true);return;}if(id.startsWith('topic:')){show(id.slice(6));return;}if(id.startsWith('choice:')){choose(id.slice(7));return;}if(id.startsWith('layer:')){speech.stop();closeOverlay();clearArtifact();state.actionPage=0;state.screen='layer';state.layer=id.slice(6);render();return;}switch(id){
+async function nativeAction(id){if(chapterDriver&&await chapterAction(id))return;const before={screen:state.screen,current,layer:state.layer,page:state.page,illustrationIndex:state.illustrationIndex,secretId:state.secretId,actionPage:state.actionPage,rollTrial:state.rollTrial,rollReturn:state.rollReturn,rollResult:state.rollResult,rollContext:state.rollContext,rollProgress:state.rollProgress,rollStat:state.rollStat,rollBoarding:state.rollBoarding};try{if(id==='next-track'){audio.nextTrack();note('GHOSTTRACKS / '+audio.info.track);return;}if(id.startsWith('secret:')){discover(id.slice(7),id==='secret:night-office'?'city':'trip');return;}if(rollAnimation&&(id==='back'||id.startsWith('nav:')||['verb:ending','verb:packet','verb:answers','verb:rose'].includes(id))){if(!rollAnimation.workshopId)record({kind:'roll',result:rollAnimation.receipt});before.rollProgress=1;state.rollProgress=1;rollAnimation=null;clearArena();state.skirmishOn=false;state.rollBoarding=false;}if((id.startsWith('door:')&&id!=='door:reset')||id.startsWith('crew-order:')){rollStart(id);return;}if(id==='door:reset'||id.startsWith('crew-role:')||id==='crew:reset'){workshopAction(id);return;}if(id.startsWith('rig:')){state.rigEffect=id.slice(4);render(true);return;}if(id.startsWith('stat:')){if(rollAnimation)return;state.rollStat=id.slice(5);state.rollPreview=true;state.rollResult=null;render(true);return;}if(!['speed','palette','voice','music','sfx','motion','verb:skirmish'].includes(id))pendingRead=null;if(id.startsWith('illustration:')){state.illustrationIndex=Number(id.slice(13));render(true);return;}if(id.startsWith('topic:')){show(id.slice(6));return;}if(id.startsWith('choice:')){choose(id.slice(7));return;}if(id.startsWith('layer:')){speech.stop();closeOverlay();clearArtifact();state.actionPage=0;state.screen='layer';state.layer=id.slice(6);render();return;}if(id.startsWith('relay:')){
+ const relay=state.letterRelay;
+ if(!relay||current!==packet.relay?.entry)return;
+ speech.stop();closeOverlay();
+ state.letterRelay=advanceLetterRelay(relay,id.slice(6));
+ if(state.letterRelay.sent){
+  audio.uiCue('score');
+  state.letterRelay=newLetterRelay();
+  show(packet.relay.reward);
+ }else{
+  audio.uiCue('switch');
+  render(true);
+ }
+ return;
+}switch(id){
  case 'verb:door-game':case 'verb:crew-builder':speech.stop();closeOverlay();clearArtifact();state.screen=id==='verb:door-game'?'door-game':'crew-builder';state.actionPage=0;render();break;
  case 'nav:map':if(packet.layout==='letter'){show(packet.openingId,{remember:false});break;}speech.stop();closeOverlay();clearArtifact();state.actionPage=0;state.screen='map';state.page=0;render();break;
  case 'back':if(state.rollBoarding){clearArena();state.skirmishOn=false;state.rollBoarding=false;}if(rollAnimation){if(!rollAnimation.workshopId)record({kind:'roll',result:rollAnimation.receipt});rollAnimation=null;state.rollReturn=null;state.rollTrial=false;}if(screenHistory.length){speech.stop();closeOverlay();clearArtifact();const prior=screenHistory.pop();current=prior.current;Object.assign(state,prior);if(state.screen==='roll'&&state.rollResult)state.rollProgress=1;if(state.rollBoarding&&state.rollResult){openArena(state.rollResult);skirmish?.resolve();}ui.show(current);ui.ready();render();}else if(history.length)show(history.pop(),{remember:false});else nativeAction('nav:map');break;

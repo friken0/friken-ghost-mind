@@ -2,8 +2,8 @@
 
 Build response scenes with ANSI++, SDFs, Friktal captures, or existing
 Moknon art. Use original supplied photos for an explicitly requested
-composite. No AI-generated images. The Friktal capture library includes
-four WebP screenshots with source names, credit, dimensions and SHA-256.
+composite. No AI-generated images. The Friktal capture library records
+the source name, credit, dimensions and SHA-256 for each WebP.
 [Capture catalogue](art/friktal-screens/manifest.json)
 
 ## Author a postcard locally
@@ -30,18 +30,40 @@ python3 build.py --reply letter.json \
 Install Pillow in the authoring environment. The optional final
 arguments to the mask utility select specific instance IDs. The
 compositor accepts `--center`, `--height` and `--floor` as normalized
-placement. `postcard=postcard` binds the prepared directory on the
+placement. Place the feet on a readable surface and check that their
+contact holds at both extremes of the tilt. `postcard=postcard` binds the prepared directory on the
 right to a node ID on the left. Repeat the flag for multiple nodes.
 `"layout": "letter"` uses only the authored choices and letter
 navigation.
 
+## Author depth from the actual photograph
+
+The compositor accepts aligned grayscale maps through `--subject-depth`
+and `--background-depth`. White is nearer. The source photo and its map
+must have matching oriented dimensions. The compositor normalizes the
+foreground using its opaque interior and extends nearby depth past the
+cutout edge to keep the old background from dragging the silhouette.
+
+On macOS, `estimate-photo-depth.m` runs Apple's
+[Depth Anything V2 Small F16](https://developer.apple.com/machine-learning/models/)
+with Core ML. The image stays on the Mac and only depth is estimated.
+Use an oriented source image. Resize the returned PNG to the image's
+pixel dimensions. A second close crop can recover more detail around
+a pet's face. Match its relative depth to the full scene before blending.
+
+```sh
+clang -O2 -fobjc-arc estimate-photo-depth.m -o /tmp/ghost-depth \
+  -framework Vision -framework CoreML -framework CoreVideo \
+  -framework CoreGraphics -framework ImageIO -framework Foundation
+/tmp/ghost-depth DepthAnythingV2SmallF16.mlpackage oriented.png depth.png
+```
+
 ## How the photo moves
 
 The pack contains a full-colour background, an alpha cutout, two small
-grayscale maps and a flat poster. The background relief derives from
-broad luminance. The subject uses multiscale mask coverage and
-smoothed source luminance. These are artistic depth estimates from
-a single view. The renderer maps them to 0–25% and 25–100% respectively,
+grayscale maps and a flat poster. Use aligned inverse depth when available. For captures with no depth
+estimate, the authoring tool also offers a broad luminance and matte
+coverage relief. Both are approximations from one viewpoint. The renderer maps them to 0–25% and 25–100% respectively,
 then projects two textured grids in the same ANSI illustration slot.
 It never needs to invent the hidden side of a person.
 

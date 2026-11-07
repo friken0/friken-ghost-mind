@@ -60,6 +60,13 @@ reachable opening before mounting. Render strings with `textContent`.
 No supplied HTML, scripts, shaders, remote media or tool permissions enter
 through this graph. New visual capabilities are reviewed source revisions.
 
+A short letter can set `layout: "letter"` and add a `relay` object with
+`entry` and `reward` node IDs. The entry runs the three-ring puzzle
+with five pair turns and a reset. Sending with three locks opens the
+reward. Give it a payoff specific to the recipient and leave a way back
+to the letter. Reply nodes can name an authored `ansiArt` scene or carry
+a local illustration pack. [2.5D illustration authoring](Photo-Illustrations.md)
+
 The Surreal specimen begins as a first meeting with an old friend of Friken,
 not a compulsory tour of six technical departments. Warm hello, one useful
 answer and an invitation to ask about the entity, the BBS or the machinery.

@@ -3,14 +3,146 @@
  * No bitmap generation, WebGL, timer or independent animation clock. */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const palettes=[[4,6,14,7,1,9,11],[4,5,13,7,1,3,11],[4,6,10,7,1,9,11],[4,12,6,7,3,9,11]];
-export const ansiSceneKinds=Object.freeze(['eye','city','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness']);
+export const ansiSceneKinds=Object.freeze(['eye','city','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness','spiral-galaxy','monsoon-ridge']);
 export function ansiSessionTheme(seed=0){const n=Number(seed)>>>0;return {palette:palettes[n%palettes.length],tempo:180+(n%9)*24,seed:n};}
 const marqueeFont=Object.freeze({
  B:['11110','10001','10001','11110','10001','10001','11110'],I:['11111','00100','00100','00100','00100','00100','11111'],T:['11111','00100','00100','00100','00100','00100','00100'],C:['01111','10000','10000','10000','10000','10000','01111'],O:['01110','10001','10001','10001','10001','10001','01110'],N:['10001','11001','11001','10101','10011','10011','10001'],L:['10000','10000','10000','10000','10000','10000','11111'],A:['01110','10001','10001','11111','10001','10001','10001'],R:['11110','10001','10001','11110','10100','10010','10001'],E:['11111','10000','10000','11110','10000','10000','11111']
 });
 function blockLettering(word,u,v,{x,y,width,height}){if(u<x||u>=x+width||v<y||v>=y+height)return false;const px=Math.floor((u-x)/width*(word.length*6-1)),letter=Math.floor(px/6),column=px%6,row=Math.floor((v-y)/height*7);return column<5&&marqueeFont[word[letter]]?.[row]?.[column]==='1';}
+const TAU=2*Math.PI;
+const quadrants=' ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█';
+const inks=['000000','aa0000','00aa00','aa5500','0000aa','aa00aa','00aaaa','aaaaaa',
+ '555555','ff5555','55ff55','ffff55','5555ff','ff55ff','55ffff','ffffff'];
+const rgb=inks.map(hex=>[0,2,4].map(i=>parseInt(hex.slice(i,i+2),16)));
+const colourDistance=rgb.map(a=>rgb.map(b=>a.reduce((sum,n,i)=>sum+(n-b[i])**2,0)));
+
+function grain(x,y,seed){
+ let h=Math.imul(x+71,374761393)^Math.imul(y+139,668265263)^(seed>>>0);
+ h=Math.imul(h^(h>>>16),0x85ebca6b);
+ h=Math.imul(h^(h>>>13),0xc2b2ae35);
+ return ((h^(h>>>16))>>>0)/4294967295;
+}
+
+// These bounded procedural plates sample the actual scene at the host time.
+// Quarter-blocks give two samples across and down each ANSI character.
+function livePlate(kind,width,height,seed){
+ const W=width*2,H=height*2,theme=ansiSessionTheme(seed);
+ const galaxy=kind==='spiral-galaxy';
+ const sky=Uint8Array.from({length:W*H},(_,i)=>{
+  const n=grain(i%W,Math.floor(i/W),seed);
+  return n>.9988?7:n>.993?8:0;
+ });
+ const geometry=galaxy?Array.from(sky,(_,i)=>{
+  const scale=Math.min(W*.46,H*.84);
+  const x=(i%W+.5-W*.50)/scale,y=(Math.floor(i/W)+.5-H*.50)*2/scale;
+  const rx=.977*x-.213*y,ry=(.213*x+.977*y)/.57;
+  const r=Math.hypot(rx,ry);
+  return {r,near:clamp(.5+ry*.55,0,1),phase:Math.atan2(ry,rx)-1.85*Math.log(.15+r),
+          grain:grain(i%W,Math.floor(i/W),seed+73)};
+ }):null;
+ const stars=galaxy?Array.from({length:230},(_,i)=>{
+  const r=.13+.88*Math.sqrt(grain(i,1,seed));
+  return {r,angle:(i%2)*Math.PI+1.85*Math.log(.15+r)+(grain(i,2,seed)-.5)*.95,
+          z:(grain(i,3,seed)-.5)*(.20-.07*r),drift:.70+grain(i,4,seed)*.62,light:grain(i,5,seed)};
+ }):[];
+ const clouds=galaxy?null:Array.from({length:W},(_,x)=>{
+  const u=x/W;
+  return {bank:.29+.056*Math.sin(u*8+1)+.029*Math.sin(u*19),
+          far:.62-.17*Math.sin(u*3.2+.43)-.035*Math.cos(u*14),
+          mid:.74-.16*Math.sin(u*5.9+1.1)-.04*Math.sin(u*15),
+          near:.88-.12*Math.cos(u*8.3)+.025*Math.sin(u*28)};
+ });
+ const lightning=[[.68,.24],[.65,.34],[.70,.38],[.65,.48],[.67,.52],[.61,.65]];
+ const fork=[[.70,.38],[.74,.43],[.72,.50],[.79,.57]];
+ const homes=[[.14,.77],[.22,.82],[.26,.83],[.80,.78]];
+ const lineDistance=(x,y,points)=>{
+  let d=1;
+  for(let i=1;i<points.length;i++){
+   const [ax,ay]=points[i-1],[bx,by]=points[i],dx=bx-ax,dy=by-ay;
+   const t=clamp(((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy),0,1);
+   d=Math.min(d,Math.hypot(x-ax-t*dx,y-ay-t*dy));
+  }
+  return d;
+ };
+ function frame(seconds){
+  const pixels=sky.slice(),time=Number.isFinite(seconds)?Math.max(0,seconds):0;
+  if(galaxy){
+   for(let i=0;i<pixels.length;i++){
+    const {r,near,phase,grain:n}=geometry[i];
+    if(r>1.08)continue;
+    const core=Math.exp(-r*r*25)*(.90+n*.12);
+    const arm=Math.pow(Math.max(0,Math.cos(2*(phase-time*(.036+.058*r)))),6);
+    const tail=Math.pow(Math.max(0,Math.cos(2*(phase-time*(.036+.058*r)-.34))),5);
+    const glow=arm*Math.max(0,1-r*.87)*(.65+.35*near);
+    if(core>.83)pixels[i]=15;
+    else if(core>.55)pixels[i]=11;
+    else if(core>.29)pixels[i]=n>.60?11:3;
+    else if(glow>.64)pixels[i]=n>.66?14:6;
+    else if(glow>.41)pixels[i]=n>.56?14:12;
+    else if(glow>.21)pixels[i]=n>.76?12:4;
+    else if(glow>.08&&n>.35)pixels[i]=n>.78?5:4;
+    else if((tail>.59&&r>.19&&r<.94&&n>.31)||(r<.48&&n>.89))pixels[i]=5;
+   }
+   const scale=Math.min(W*.46,H*.84);
+   for(const s of stars){
+    const a=s.angle+time*(.046+.145*s.r)*s.drift;
+    const x=s.r*Math.cos(a),y=s.r*Math.sin(a)*.57+s.z;
+    const col=Math.floor(W*.50+scale*(.977*x+.213*y));
+    const row=Math.floor(H*.50+scale*(-.213*x+.977*y)/2);
+    if(col<0||row<0||col>=W||row>=H)continue;
+    const i=row*W+col;
+    if(pixels[i]===15||pixels[i]===11)continue;
+    const light=s.light+(y>0?.08:0);
+    pixels[i]=light>.94?15:light>.75?14:light>.52?12:light>.22?6:5;
+   }
+  }else{
+   const beat=(time+2.6)%9.7,flash=beat>4.6&&beat<5.1?Math.sin((beat-4.6)*2*Math.PI):0;
+   for(let row=0;row<H;row++)for(let col=0;col<W;col++){
+    const i=row*W+col,x=(col+.5)/W,y=(row+.5)/H,n=grain(col,row,seed+11);
+    const {bank,far,mid,near}=clouds[col];
+    const cloudEdge=bank+.17+.02*Math.sin(x*19+time*.23);
+    const cloudVein=.034*Math.sin(x*11+y*18-time*.36);
+    if(y>near) pixels[i]=0;
+    else if(y>mid) pixels[i]=y<mid+.027&&n>.53?6:y<mid+.065?4:0;
+    else if(y>far) pixels[i]=y<far+.038?(n>.50?12:4):y<far+.13?4:8;
+    else if(y>bank&&y<cloudEdge){
+     pixels[i]=y+cloudVein>cloudEdge-.04?(n>.42?8:4):4;
+     if(y<bank+.022&&n>.75)pixels[i]=5;
+    }
+    if(y<far&&flash>.17){
+     const d=Math.min(lineDistance(x,y,lightning),lineDistance(x,y,fork)*1.45);
+     if(d<.007)pixels[i]=15;
+     else if(d<.023*flash)pixels[i]=12;
+    }
+    // A small, recognisable cluster of roofs and warm windows in the valley.
+    for(const [homeX,homeY] of homes){
+     const dx=Math.abs(x-homeX),dy=y-homeY;
+     if(dy>=0&&dy<.035&&dx<.017)pixels[i]=8;
+     if(dy<0&&dy>-.024&&dx<.022*(dy+.024)/.024)pixels[i]=7;
+     if(dy>.014&&dy<.026&&dx<.009)pixels[i]=n>.13?11:3;
+    }
+   }
+  }
+  return Array.from({length:width*height},(_,i)=>{
+   const row=Math.floor(i/width),column=i%width,p=row*2*W+column*2;
+   const sample=[pixels[p],pixels[p+1],pixels[p+W],pixels[p+W+1]];
+   if(sample.every(colour=>colour===sample[0]))
+    return {glyph:' ',fg:7,bg:sample[0],row:row+1,column:column+1};
+   let fg=sample[0],bg=fg,best=Infinity;
+   for(const a of sample)for(const b of sample){
+    const score=sample.reduce((cost,c)=>cost+Math.min(colourDistance[c][a],colourDistance[c][b]),0);
+    if(score<best){best=score;fg=a;bg=b;}
+   }
+   const mask=sample.reduce((out,c,j)=>out|(colourDistance[c][fg]<colourDistance[c][bg]?1<<j:0),0);
+   return {glyph:quadrants[mask],fg,bg,row:row+1,column:column+1};
+  });
+ }
+ return {kind,theme,cells:frame(0),tracks:[],frame};
+}
+
 function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
  if(!Number.isInteger(width)||width<20||width>80||!Number.isInteger(height)||height<6||height>50)throw Error('Bounded ANSI painting required');
+ if(kind==='spiral-galaxy'||kind==='monsoon-ridge')return livePlate(kind,width,height,seed);
  const theme=ansiSessionTheme(seed),p=theme.palette,H=height*2;
  const noise=(x,y)=>{let h=Math.imul(x+71,374761393)^Math.imul(y+139,668265263)^(seed>>>0);h=Math.imul(h^(h>>>16),0x85ebca6b);h=Math.imul(h^(h>>>13),0xc2b2ae35);h^=h>>>16;return (h>>>0)/4294967295;};
  function inside(x,y,points){let hit=false;for(let i=0,j=points.length-1;i<points.length;j=i++){const a=points[i],b=points[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;}

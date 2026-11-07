@@ -64,3 +64,18 @@ test('dense paintings declare monotone serial reveal bounds so detail cannot pop
 test('all five causal aptitudes use distinct gate techniques while retaining one exact result',()=>{const receipt={die:10,value:6,total:16,dc:14.1,success:true,grade:'pass',resonance:{lower:13.9,upper:14.4}},pictures=new Set();for(const stat of Object.keys(causalApproaches)){const p=nativeReplyProgram({packet,screen:'roll',rollStat:stat,roll:receipt,rollProgress:.37});const buffer=createAnsiBuffer();buffer.feed(p.text);assert.ok(buffer.text.includes(causalApproaches[stat].name));assert.ok(buffer.text.includes('16.00'));pictures.add(buffer.text);}assert.equal(pictures.size,5);assert.deepEqual(receipt,{die:10,value:6,total:16,dc:14.1,success:true,grade:'pass',resonance:{lower:13.9,upper:14.4}});});
 
 test('animation examples remain directly discoverable from both workbench and More',()=>{for(const [screen,current]of [['topic','source'],['tools','hello']]){const p=nativeReplyProgram({packet,screen,current});assert.equal(p.hotspots[0].id,'nav:motion-lab');assert.match(p.hotspots[0].ariaLabel,/animation|mesh|rigs/i);}});
+
+test('letter relay advances linked rings and opens only on a confirmed lock',async()=>{
+ const {newLetterRelay,advanceLetterRelay}=await import('./letter-relay.mjs');
+ const fresh=newLetterRelay();
+ assert.equal(advanceLetterRelay(fresh,'send').sent,false);
+ let play=['ab','ab','bc','send'].reduce(advanceLetterRelay,fresh);
+ assert.deepEqual(play.rings,[0,0,0]);
+ assert.equal(play.moves,3);
+ assert.equal(play.sent,true);
+ assert.deepEqual(fresh.rings,[1,0,2]);
+ play=Array(6).fill('ab').reduce(advanceLetterRelay,fresh);
+ assert.equal(play.moves,5);
+ assert.equal(advanceLetterRelay(play,'send').sent,false);
+ assert.deepEqual(advanceLetterRelay(play,'reset'),fresh);
+});

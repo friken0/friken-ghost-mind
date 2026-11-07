@@ -47,11 +47,15 @@ export function mountImageDepth(canvas, assets) {
         uv = point;
         float side = min(extent.x, extent.y);
         float d = mix(limits.x, limits.y, texture(relief, uv).r);
-        vec3 p = vec3((uv - .5) * extent / side, (d - .25) * .24);
+        float z = (d - .25) * .32;
+        // Remove perspective stretch from the resting photo. Only a tilted
+        // camera reveals the relief, so the portrait stays exact head-on.
+        const float strength = .20;
+        vec3 p = vec3((uv - .5) * extent / side * (1. - z * strength), z);
         vec2 s = sin(angle), c = cos(angle);
         p.yz = mat2(c.x, s.x, -s.x, c.x) * p.yz;
         p.xz = mat2(c.y, -s.y, s.y, c.y) * p.xz;
-        float perspective = 1. - p.z * .26;
+        float perspective = 1. - p.z * strength;
         vec2 center = 2. * (origin + extent * .5) / viewport - 1.;
         vec2 ndc = center + 2. * p.xy * side / (viewport * perspective);
         gl_Position = vec4(ndc.x * perspective, -ndc.y * perspective, 0., perspective);
@@ -65,7 +69,7 @@ export function mountImageDepth(canvas, assets) {
     `);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw Error(gl.getProgramInfoLog(program));
-    const steps = 72, vertices = [], order = [];
+    const steps = 96, vertices = [], order = [];
     for (let y = 0; y <= steps; y++) for (let x = 0; x <= steps; x++) vertices.push(x / steps, y / steps);
     for (let y = 0; y < steps; y++) for (let x = 0; x < steps; x++) {
       const a = y * (steps + 1) + x, b = a + steps + 1;

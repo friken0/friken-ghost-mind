@@ -114,3 +114,22 @@ test('changing sixteen display inks preserves serial position, transcript and an
  for(const theme of ansiColourThemes){assert.equal(theme.colours.length,16);assert.ok(theme.colours.every(c=>/^#[0-9a-f]{6}$/.test(c)));terminal.setPalette(theme.id);assert.equal(terminal.buffer.text,transcript);assert.equal(canvas.dataset.serialBytes,bytes);assert.equal(terminal.colourTheme,theme.id);assert.equal(canvas.dataset.colourTheme,theme.id);}
  terminal.setMode('held');assert.equal(terminal.colourTheme,'noir');assert.match(terminal.buffer.text,/OPEN THE REPLY/);assert.throws(()=>ansiColourTheme('made-up'));
 });
+
+test('live art changes display glyphs without modifying the received buffer',()=>{
+ const letters=[];
+ const ctx={fillRect(){},fillText(char){letters.push(char);},clearRect(){}};
+ const canvas={dataset:{},getContext:()=>ctx,setAttribute(){}};
+ const terminal=mountAnsiTerminal({canvas,cursor:false});
+ terminal.setGrid(20,8);
+ terminal.setProgram('A');
+ const art=Array.from({length:160},(_,i)=>({glyph:i===0?'X':' ',fg:14,bg:0}));
+ terminal.update(0,{artCells:art});
+ assert.ok(!letters.includes('X'));
+ terminal.update(0,{reveal:true,artCells:art,reducedMotion:true});
+ assert.equal(letters.at(-1),'X');
+ assert.equal(terminal.buffer.cells[0].char,'A');
+ terminal.setPalette('ice');
+ terminal.update(0,{reveal:true,artCells:art,reducedMotion:true});
+ assert.equal(letters.at(-1),'X');
+ assert.equal(terminal.buffer.cells[0].char,'A');
+});

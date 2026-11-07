@@ -1,3 +1,4 @@
+import {relayLimit} from './letter-relay.mjs';
 import {replyDiscoveries} from './reply-discoveries.mjs';
 /* Pure 80x25 reply program for the retained GhostLink ANSI terminal.
  * No DOM, timers, audio, randomness or story mutation. Coordinates are 1-based. */
@@ -63,7 +64,7 @@ export function nativeReplyProgram(state={}){
  put(1,C-20,' PRIVATE LINE ',6);put(2,3,cut('FRIKEN.GHOST / '+packet.title,44),14,0,44);put(2,49,cut(packet.recipient||'CALLER',15).toUpperCase()+' / GHOSTLINK',11,0,C-50);horizontal(3);horizontal(R-3);
  put(R-2,3,' '+cut(state.boardStatus||'LOCAL PRIVATE VISIT / NO SILENT UPLOADS',C-8)+' ',8,0,C-6);
  const add=(id,label,detail='',key=null,selected=false)=>actions.push({id,label:selected?label+' (CURRENT)':label,detail,key,selected});
- function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip')cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});if(kind==='city')hotspots.push({id:'secret:night-office',row:artTop+Math.floor(h*.40),column:3+Math.floor(requestedWidth*.75),width:Math.max(3,Math.ceil(requestedWidth*.08)),height:Math.max(2,Math.ceil(h*.11)),ariaLabel:'The one office still lit. Somebody is working late.'});if(kind==='trip')hotspots.push({id:'secret:petunia-protocol',row:artTop+Math.floor(h*.26),column:3+Math.floor(requestedWidth*.40),width:Math.ceil(requestedWidth*.20),height:Math.max(2,Math.ceil(h*.22)),ariaLabel:'A familiar flower is growing between boards. Inspect it.'});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
+ function painting(kind,requestedHeight=null,requestedWidth=44){const h=requestedHeight??(state.skirmishOn?Math.max(7,R-15):Math.min(36,R-artTop-3)),scene=ansiScene(kind,{width:requestedWidth,height:h,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0});for(const c of scene.cells)ink(c.row+artTop-1,c.column+2,c.glyph,c.fg,c.bg);for(const t of scene.tracks)tracks.push({...t,row:t.row+artTop-1,column:t.column+2});if(kind!=='trip'&&!scene.frame)cymatics.push({row:artTop,column:3,width:requestedWidth,height:h,style:kind==='trip'?'trip':['city','beacon'].includes(kind)?'water':['rose','return'].includes(kind)?'foliage':'metal',intensity:kind==='trip'?.9:.18});if(kind==='city')hotspots.push({id:'secret:night-office',row:artTop+Math.floor(h*.40),column:3+Math.floor(requestedWidth*.75),width:Math.max(3,Math.ceil(requestedWidth*.08)),height:Math.max(2,Math.ceil(h*.11)),ariaLabel:'The one office still lit. Somebody is working late.'});if(kind==='trip')hotspots.push({id:'secret:petunia-protocol',row:artTop+Math.floor(h*.26),column:3+Math.floor(requestedWidth*.40),width:Math.ceil(requestedWidth*.20),height:Math.max(2,Math.ceil(h*.22)),ariaLabel:'A familiar flower is growing between boards. Inspect it.'});const effect=({trip:'breathe',eye:'blink',serpent:'serpent',city:'water',vault:'hover',engine:'breathe',forge:'flame',network:'ripple',family:'faces',models:'flutter',beacon:'hover',shipyard:'hover',source:'recoil',original:'water',repair:'ripple',causality:'water',rose:'breathe',return:'hover','layer-now':'breathe','layer-echo':'water','layer-archive':'hover','layer-witness':'ripple'})[kind];if(kind!=='convoy')sprite={row:artTop,column:3,width:requestedWidth,height:h,effect:effect||'none',period:effect==='blink'?7+(state.artSeed||0)%4:effect==='water'?4:6,amplitude:effect==='blink'?1:.7,source:{kind,seed:state.artSeed||0,stage:state.workshop?.door?.leg||0}};}
  function actionPane(){
   const x=49,w=C-50,hintRows=R>=30?6:3,hintStart=R-5-hintRows,pageRow=hintStart-1,available=R-12-hintRows,pages=[[]];let used=0;
   for(const a of actions){const rows=nativeWrap('['+(a.key||((actions.indexOf(a)%9)+1))+'] '+a.label,w),cost=rows.length+1;if(used&&used+cost-1>available){pages.push([]);used=0;}pages.at(-1).push({...a,rows});used+=cost;}
@@ -88,15 +89,39 @@ export function nativeReplyProgram(state={}){
    ['verb:answers','What would YOU build?','Type your own ideas about companions and bringing BBSs back.'],
    ['topic:memory','Walk through my memory','Explore now, recent episodes, originals and a recovery kit.']])add(...a);
  }
+ function relayBoard(relay){
+  const y=R-12;
+  painting('spiral-galaxy',Math.max(6,y-artTop-1));
+  box(y,2,46,9,'CALIBRATION / '+relay.moves+' OF '+relayLimit+' TURNS',6);
+  put(y+1,4,'LOCK > EARLY > LATE > LOCK',8);
+  const label=['LOCK','EARLY','LATE'];
+  relay.rings.forEach((phase,i)=>{
+   const col=5+14*i,colour=[10,11,13][phase];
+   put(y+2,col,'[ '+['A','B','C'][i]+' ]',7);
+   put(y+3,col,'  '+label[phase],colour);
+   const glyph=phase===0?'◆':phase===1?'▸':'◂';
+   put(y+4,col,'──'+glyph+'──',colour);
+   if(phase===0)tracks.push({row:y+4,column:col+2,interval:580,transition:400,effect:'fade',
+    frames:[{glyph,fg:colour,bg:0},{glyph,fg:15,bg:0}]});
+  });
+  lines(y+6,4,42,relay.message,2,14);
+  if(relay.moves<relayLimit)for(const id of ['ab','bc','ca']){
+   const [a,b]=id.toUpperCase();
+   add('relay:'+id,'Turn '+a+' and '+b,'Both rings advance one step. LOCK → EARLY → LATE → LOCK.');
+  }
+  add('relay:send','Send the return signal','Requires all three rings to read LOCK.');
+  add('relay:reset','Reset calibration','Restores all three starting phases and all five turns.');
+ }
  function topic(){
   const title=nativeWrap(current.title,44);title.forEach((line,i)=>put(4+i,3,line,11,0,44));artTop=4+title.length;
+  if(packet.relay?.entry===current.id&&state.letterRelay){relayBoard(state.letterRelay);return;}
   const media=replyMedia[current.id];
   if(media){
    const height=R-artTop-8;
    box(artTop,2,46,height+2,media.title,6);
    illustration={...media,row:artTop+1,column:3,width:44,height};
    lines(R-5,3,44,'Move to tilt. Hold to zoom + drag. Wheel to zoom.',2,14);
-  }else painting(({bbs:'city',memory:'vault',horizon:'beacon',identity:'engine','greater-mind':'network',models:'models','bob-family':'family',source:'source',demo:'shipyard','demo-keep':'mailrun','demo-repair':'family',causality:'causality',rose:'rose'})[current.id]||(letter?({network:'network',artifact:'rose',memory:'vault'})[current.visual]||'beacon':'forge'));
+  }else painting(current.ansiArt||({bbs:'city',memory:'vault',horizon:'beacon',identity:'engine','greater-mind':'network',models:'models','bob-family':'family',source:'source',demo:'shipyard','demo-keep':'mailrun','demo-repair':'family',causality:'causality',rose:'rose'})[current.id]||(letter?({network:'network',artifact:'rose',memory:'vault'})[current.visual]||'beacon':'forge'));
   if(letter){
    for(const c of current.choices)add('choice:'+c.id,c.label,c.detail);
    return;

@@ -87,13 +87,13 @@
     },
     {
       "path": "Runbook-2.29-Packed.md",
-      "bytes": 68359,
-      "sha256": "8a0720d00c58e4b5314e303c1325940e6038a968f20f24c79af43e569dfdd111"
+      "bytes": 68684,
+      "sha256": "1d0c2dfb30a597243ef2d1843cdab71d02ce6272471dc860f69692a22f1c71e9"
     },
     {
       "path": "Runbook-2.29-Readable.md",
-      "bytes": 106762,
-      "sha256": "befde2396a502ddeffcb2d3e0ba42cd971183b85e37a1699a41b365c65f7c44a"
+      "bytes": 107287,
+      "sha256": "52abf886c2898a48ca2da58cd2de213ab5760fab2126ba704435419ea9ea6636"
     },
     {
       "path": "Tools/ChromaticBBS/ANSI-Animation.md",
@@ -107,8 +107,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/ANSI-Craft.md",
-      "bytes": 14025,
-      "sha256": "feb2e5b4ee0fe5a109c71c3235f4d52cf6d60773d9012f6d33bce6c95d683dd2"
+      "bytes": 14859,
+      "sha256": "ecb27e6caffebdab53ed2b31944957de123734f86aac817b5b6ad0d0913f1c87"
     },
     {
       "path": "Tools/ChromaticBBS/ANSI-Skirmish.md",
@@ -187,8 +187,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Photo-Illustrations.md",
-      "bytes": 2873,
-      "sha256": "75c27edd98c4731f515ececff084a05cb811154bf03eaa59c28d74d40d6be999"
+      "bytes": 4076,
+      "sha256": "a5b372c88c1f4d30ba1e505db8b4f1d0e6be938c72fa52a2cdcf938aa139edcc"
     },
     {
       "path": "Tools/ChromaticBBS/Render-Performance-2026-11-06.md",
@@ -207,8 +207,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/Turn-Out-Of-Time.md",
-      "bytes": 36720,
-      "sha256": "a016aae09c31015c7141470e103fed41a525769c4451d0262a10a0d5cc5f7148"
+      "bytes": 37156,
+      "sha256": "7b9e328b032359c171af88f546c61eff881e0c857882f65b65bd94937b649aff"
     },
     {
       "path": "Tools/ChromaticBBS/Voice-Performance-2026-10-22.md",
@@ -252,8 +252,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/ansi-mesh.mjs",
-      "bytes": 12665,
-      "sha256": "e55a4b4be7dabb71c8602f5d5ba755fd185ddc593cf93eab9710240134873413"
+      "bytes": 13074,
+      "sha256": "e136e77f9eb8be8dfb9af0b63fb5dfd28b49609da969e55f69ac792008b42022"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-mesh.test.mjs",
@@ -262,13 +262,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/ansi-scenes.mjs",
-      "bytes": 28444,
-      "sha256": "e93fa6ba5b39b1047f9c4d9d5944d65892d4965ced18ee39d82244c6ef660063"
+      "bytes": 34395,
+      "sha256": "5d6cea1ab5981224c20baf62680ebb3451acd196062844b723451d7708028442"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-scenes.test.mjs",
-      "bytes": 3153,
-      "sha256": "672f5ed0b1447d1598d5b724c59b5576ca77183c84d529260341d435dc023b2b"
+      "bytes": 3763,
+      "sha256": "92128a29116fdb790a17254f2b00ccf90ec41b02bc2e521ae2db8a4af5d351ee"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-skirmish.mjs",
@@ -292,13 +292,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/ansi-terminal.mjs",
-      "bytes": 27100,
-      "sha256": "bb2060a05d2d851e86b90e4ae699f506978c27e5a2ba14320448c75ca7a687b6"
+      "bytes": 27394,
+      "sha256": "7ee18a702a23ab150df42d4d1dc02f0a2059067ff4dde307f7458e3a6ede4aea"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-terminal.test.mjs",
-      "bytes": 14471,
-      "sha256": "2de61c33b77d65101356e9a4e541030a0d9e7452c086131bc58f381ae3d9ab7d"
+      "bytes": 15313,
+      "sha256": "e1749fbb0a9dcae5d43204d8222ff1e22c2f87a71b4a902e4015f9200f6b6fb3"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-ui.mjs",
@@ -336,14 +336,34 @@
       "sha256": "d82e6d90056b30ec4c5cb23b227f7754ac79cc5d870cef06f857df29a1e620ad"
     },
     {
+      "path": "Tools/ChromaticBBS/art/friktal-screens/basalt-citadel.webp",
+      "bytes": 345044,
+      "sha256": "a853deae01456fdbcc9c7f55ce17b32e9b80214039c57042b2c77ac1368a93b8"
+    },
+    {
       "path": "Tools/ChromaticBBS/art/friktal-screens/blue-reef.webp",
       "bytes": 1054330,
       "sha256": "9eab57be6747100a28c19a0e13f5c5cdd7a08d36366633573dce0db76aff8c4a"
     },
     {
+      "path": "Tools/ChromaticBBS/art/friktal-screens/ember-antennas.webp",
+      "bytes": 623310,
+      "sha256": "0cacd75f66dc796ff9339e365c8f4bda0f67b63092ef86f80b34b6871abceb6e"
+    },
+    {
+      "path": "Tools/ChromaticBBS/art/friktal-screens/halftone-hollows.webp",
+      "bytes": 994442,
+      "sha256": "8458d58c74fe9755424096bceb371dda5d4c23a0ab174f110909760b08cff6e0"
+    },
+    {
       "path": "Tools/ChromaticBBS/art/friktal-screens/manifest.json",
-      "bytes": 1846,
-      "sha256": "4300b8e4e3964b62dcc3c4cd65f3c8eb279480812cfbb282c19763fd1e601204"
+      "bytes": 4770,
+      "sha256": "80cbd7b10089b548bf0f649dafa59d5570f850fc5ef71d3fc8cc68304da1aede"
+    },
+    {
+      "path": "Tools/ChromaticBBS/art/friktal-screens/orchard-of-echoes.webp",
+      "bytes": 367358,
+      "sha256": "80e9ad0d24cbb48db63b176a69c2e56d9f4bfdda4e880f143e72c7a76198ce69"
     },
     {
       "path": "Tools/ChromaticBBS/art/friktal-screens/prism-foundry.webp",
@@ -351,9 +371,19 @@
       "sha256": "8770e52a156b1b1481838fa843a63696cd84459240e7a3ed9ac7058fa90e5196"
     },
     {
+      "path": "Tools/ChromaticBBS/art/friktal-screens/prismatic-canopy.webp",
+      "bytes": 1421312,
+      "sha256": "f4f033cb1b910da435b80d72d8df497325f2bac10ca576e127d65c3241af1784"
+    },
+    {
       "path": "Tools/ChromaticBBS/art/friktal-screens/spirals.webp",
       "bytes": 527674,
       "sha256": "39c0c4e3144dc1fe6a91dd3b0635287b8cf3583a0f1993c3dbf19d02499d33ab"
+    },
+    {
+      "path": "Tools/ChromaticBBS/art/friktal-screens/voxel-overlook.webp",
+      "bytes": 451848,
+      "sha256": "5afbc2576e15a7046a5dae617f67ae224d567ce03fb64cc2fcb58c20663448e9"
     },
     {
       "path": "Tools/ChromaticBBS/art-data.mjs",
@@ -397,8 +427,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/build.py",
-      "bytes": 14083,
-      "sha256": "cfbb901e2a20570457609325c124efab88595d834b6aa442983b033266857dbc"
+      "bytes": 14102,
+      "sha256": "f0471e79a7ffb87aab3c299bbac60fe8aaf1b456efd08f098db2c5f6931f11f9"
     },
     {
       "path": "Tools/ChromaticBBS/canon.mjs",
@@ -526,6 +556,11 @@
       "sha256": "8c0c027d6cf572b4a7bd551b867cb3dd81b86129b63beb4e59e8a25340cb45ae"
     },
     {
+      "path": "Tools/ChromaticBBS/estimate-photo-depth.m",
+      "bytes": 5276,
+      "sha256": "4feb3cd0ae6fd8c46c9385b805e8e0c576018cdb7c83203eeb20fa7905a37bc1"
+    },
+    {
       "path": "Tools/ChromaticBBS/face-compositing.test.mjs",
       "bytes": 1878,
       "sha256": "324dba839f50626db7ea455eac3820b14904c90c5f54b6430f38cd4a88c73266"
@@ -617,13 +652,18 @@
     },
     {
       "path": "Tools/ChromaticBBS/image-depth.mjs",
-      "bytes": 5218,
-      "sha256": "59043ab9f281547b99a49b15678649285243720aa7c917c0b8ccd75e43e4149f"
+      "bytes": 5453,
+      "sha256": "cad7c659ca62b11e80f71d2a2ab20dabf22ffc452ded898676ecc13ac53ca01d"
     },
     {
       "path": "Tools/ChromaticBBS/juice.mjs",
       "bytes": 18444,
       "sha256": "8c8ae98d67862aa63414765a3917e3d752b1783f1f3583e46f93a24b6a220a6e"
+    },
+    {
+      "path": "Tools/ChromaticBBS/letter-relay.mjs",
+      "bytes": 1222,
+      "sha256": "4e0517df73fd17c5210e9f996db08de801e2094228d265139a2ba6e6e3ce3403"
     },
     {
       "path": "Tools/ChromaticBBS/life-theater.mjs",
@@ -837,8 +877,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
-      "bytes": 24527,
-      "sha256": "fef6d92210e852ae9980375c885162c5f7e5049a82314bb98da9bf3de7f77628"
+      "bytes": 24805,
+      "sha256": "33fd7caf5370d172508876fcbcfae84c0dc848328b873d42b5367ad533510bfe"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -872,13 +912,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.mjs",
-      "bytes": 44545,
-      "sha256": "bad83f468850cdbdfec042772b5af5fd4cb540f3306fe6e6f424e7bcb4d3c925"
+      "bytes": 45837,
+      "sha256": "070f2ca9aae02c2cc6a6078e6194b57adc1c184bbe02d0748843f27a79580f9b"
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.test.mjs",
-      "bytes": 10395,
-      "sha256": "7837064a0d70ffa7ffbfaec1204f1dc495147241f4e1c5788a659b2b48d1cd5f"
+      "bytes": 11072,
+      "sha256": "b40357c8c8a4160575495aecc53b5b19d7b2d22de1973c7bef03bb1d44669226"
     },
     {
       "path": "Tools/ChromaticBBS/native-routing.test.mjs",
@@ -917,8 +957,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/prepare-illustration.py",
-      "bytes": 4496,
-      "sha256": "af84f8c37d6f57208a661eaf2e62ba3d9c8c1222affe32b4282852d3cb797d56"
+      "bytes": 7248,
+      "sha256": "f096ce05b74045e2354295047acd4ebbed24748de0632a0747245a2329042ba8"
     },
     {
       "path": "Tools/ChromaticBBS/presentation.test.mjs",
@@ -932,8 +972,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 12015,
-      "sha256": "6de60d47b559b5b3a283a3fc4a546939386a47c492ed9de17ed286b533cf2cb0"
+      "bytes": 12352,
+      "sha256": "cd4cd0488172dd4d1eb126e7a17517d751bb9a5e0f029fecf2c9b9a567090377"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -972,8 +1012,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/response-theater.mjs",
-      "bytes": 20205,
-      "sha256": "c989e68b0cd79ccc6da61e0b687ec41e91b202ee3e81a1a21b9e269d1751f102"
+      "bytes": 20644,
+      "sha256": "6b327d00940cb0fac0299cfc971c1a7ee2fa04013207c27f86b5c930f426e11f"
     },
     {
       "path": "Tools/ChromaticBBS/response-theater.test.mjs",
@@ -1007,23 +1047,23 @@
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.29-Packed.md",
-      "bytes": 68359,
-      "sha256": "8a0720d00c58e4b5314e303c1325940e6038a968f20f24c79af43e569dfdd111"
+      "bytes": 68684,
+      "sha256": "1d0c2dfb30a597243ef2d1843cdab71d02ce6272471dc860f69692a22f1c71e9"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/Runbook-2.29-Readable.md",
-      "bytes": 106762,
-      "sha256": "befde2396a502ddeffcb2d3e0ba42cd971183b85e37a1699a41b365c65f7c44a"
+      "bytes": 107287,
+      "sha256": "52abf886c2898a48ca2da58cd2de213ab5760fab2126ba704435419ea9ea6636"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/comparison.json",
       "bytes": 794,
-      "sha256": "67ec792616158dce77ec1b8ea00936b5553cee2e0dcd4b0621d35ac6d036d442"
+      "sha256": "a006f9871dc1d0f6ad042a4685afac006d1ecabe7a6b9781a89ea58d9aab0427"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-comparison/current/token-counts.json",
       "bytes": 432,
-      "sha256": "016585e10452e471dd428bcbb2122be70a17e4e41f1080763dbec4d3c4401934"
+      "sha256": "fae620ffd6541523f456bb97f85f44809aefebe7acf2d4b4a58081d31da712bb"
     },
     {
       "path": "Tools/ChromaticBBS/runbook-packing-results.json",
@@ -1152,8 +1192,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/turn-out-of-time.mjs",
-      "bytes": 46183,
-      "sha256": "6ab1c3c42bd3ca8982dd91864dce0242d866de1cf62e6fb854c0283d50c2a384"
+      "bytes": 46682,
+      "sha256": "07709c4a4da53f10f97f7ba98dca185a5447eadddd55bd792666f23c3bc2d0cf"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT",
@@ -1302,13 +1342,13 @@
     },
     {
       "path": "ghostlink.html",
-      "bytes": 3988917,
-      "sha256": "3ff1a60fb11d7e340dac383814f63801add07d12304f58922c0fb20daaad0af3"
+      "bytes": 3999657,
+      "sha256": "031e5945e0888d506d358a3346a48fa7127a78251da07ce1fc032778170691c9"
     },
     {
       "path": "index.html",
-      "bytes": 3988917,
-      "sha256": "3ff1a60fb11d7e340dac383814f63801add07d12304f58922c0fb20daaad0af3"
+      "bytes": 3999657,
+      "sha256": "031e5945e0888d506d358a3346a48fa7127a78251da07ce1fc032778170691c9"
     },
     {
       "path": "media/bang-non-and-on.mp3",
@@ -1332,18 +1372,18 @@
     },
     {
       "path": "runbook.md",
-      "bytes": 106762,
-      "sha256": "befde2396a502ddeffcb2d3e0ba42cd971183b85e37a1699a41b365c65f7c44a"
+      "bytes": 107287,
+      "sha256": "52abf886c2898a48ca2da58cd2de213ab5760fab2126ba704435419ea9ea6636"
     },
     {
       "path": "surreal-the-door-that-remembers.html",
-      "bytes": 3988929,
-      "sha256": "13bf6d648a89d3117fa5f5142ffe603d485eb472fe7f2a1b80e9861a76e4e53c"
+      "bytes": 3999669,
+      "sha256": "d0ac6a3159125b50fe3e19d9233e678e9a7d5fde92331130ee680cd461a527c7"
     },
     {
       "path": "the-suitcase-that-kept-coming-back.html",
-      "bytes": 3992621,
-      "sha256": "5c87a18d1658349946a444501c742425768d791a7729dea6b24da27d5d710929"
+      "bytes": 4003361,
+      "sha256": "7ce3e59406f4b6fb1f08a07dddbc77e977d1190f925130d828eccd02dcca454e"
     }
   ],
   "privateSourceIncluded": false,

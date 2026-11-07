@@ -46,8 +46,10 @@ and real renderer captures belong in ANSI frames with retained provenance.
 PHOTO2.5D{For an explicitly requested personal composite only, select original
 source pixels with an aligned alpha matte, then layer over a real Friktal
 capture. No synthesized subject or background imagery. Publish only assets
-authorized for the board. Depth: two low-resolution relief maps from blurred
-luma and matte coverage; remap background to [0,.25], subject [.25,1]; two
+authorized for the board. Depth: use aligned local monocular inverse depth
+for portraits when available; normalize and extend interior depth across
+the matte edge. Broad luma/coverage relief is available for quick studies.
+Remap background to [0,.25], subject [.25,1]; two
 textured grids, bounded 12deg tilt, terminal clock and existing pan/zoom.
 Honor motion preference; retain a real flat poster. build.py --reply-illustration
 NODE=PACKDIR; Photo-Illustrations.md and art/friktal-screens/manifest.json.
@@ -56,7 +58,13 @@ A new unsupported scene is explicitly unillustrated until authored;never fake
 semantic agreement. Readable silhouette,grouped values/materials,negative
 space,local highlights and restrained motion before detail. Use cell tracks,
 hue-flow,palette remapping,weighted sprite bones and coherent measured-audio
-fields with a reason. Quiet remains quiet. No independent per-cell RAF/FFT.}
+fields with a reason. Reply nodes can name registered art with ansiArt.
+For continuous motion use a host-clock frame(seconds) cell recipe such as
+spiral-galaxy or monsoon-ridge. It preserves serial art and hit regions.
+Personal letters may use relay:{entry,reward} with layout:letter. Five
+pair turns advance linked rings; SEND at three locks opens the reward.
+Make the payoff specific to the recipient and keep a route back.
+Quiet remains quiet. No independent per-cell RAF/FFT.}
 
 STAGE{one scene,one wrapped action pane,one small settings line. Full option
 labels+cost/target/odds/pass-fail stakes available before commit. Scene text
