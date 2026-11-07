@@ -43,6 +43,15 @@ recipe to the shared framework;staging.ansi={kind,seed:uint32,caption} binds it.
 Use real place/actors/objects;no unrelated city/ship,inventory-card substitute,
 AI-generated raster illustration or random texture soup. Original race art
 and real renderer captures belong in ANSI frames with retained provenance.
+PHOTO2.5D{For an explicitly requested personal composite only, select original
+source pixels with an aligned alpha matte, then layer over a real Friktal
+capture. No synthesized subject or background imagery. Publish only assets
+authorized for the board. Depth: two low-resolution relief maps from blurred
+luma and matte coverage; remap background to [0,.25], subject [.25,1]; two
+textured grids, bounded 12deg tilt, terminal clock and existing pan/zoom.
+Honor motion preference; retain a real flat poster. build.py --reply-illustration
+NODE=PACKDIR; Photo-Illustrations.md and art/friktal-screens/manifest.json.
+Personal image, matte, pack and reply remain local absent separate approval.}
 A new unsupported scene is explicitly unillustrated until authored;never fake
 semantic agreement. Readable silhouette,grouped values/materials,negative
 space,local highlights and restrained motion before detail. Use cell tracks,
@@ -1274,9 +1283,9 @@ COMMANDS:=≤6sentence actions/topic,actualANSIcellhotspots;pointer/focus/touch
 ART_CURRENT:=SDF/fractal/procedural finish+actual ANSI only. No AI raster
  image generation or generated scene paintings in new responses.
  Actualrenderer captures permitted ONLY with sourcepath/hash+retainedbytes;
- resize okay,never invent scene evidence or redraw as speculative gameart. Supplied
- screenshots are request evidence,not scene textures. This direct27Oct
- correction supersedes earlier illustrative-painting display directions.
+ resize okay,never invent scene evidence or redraw as speculative gameart.
+ Supplied captures are request evidence unless expressly selected for visual
+ reuse. PHOTO2.5D applies to expressly requested photographic composites.
 ANSI_SCREEN:=add real terminal geometry beside existing modem+portal;map
  live coloured80x25cell buffer to screen,boxdrawing/blocks/cursor/CR;
  source clip guides layout+wire arrival,never loop a borrowed recording.

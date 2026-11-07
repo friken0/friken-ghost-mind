@@ -6,6 +6,7 @@ import {ansiMeshEffects} from './ansi-mesh.mjs';
 import {causalOdds} from './causality.mjs';
 import {causalAttributes} from './mind-adventure.mjs';
 import {ansiScene} from './ansi-scenes.mjs';
+import {replyMedia} from './reply-media.mjs';
 import {replyIllustrations} from './illustration-data.mjs';
 const ESC='\x1b[';
 export const nativeRoomIds=Object.freeze(['identity','memory','greater-mind','models','bob-family','source']);
@@ -37,6 +38,7 @@ export function nativeWrap(value,width=76){
 export function nativeReplyProgram(state={}){
  const C=state.grid?.columns||80,R=state.grid?.rows||25;if(!Number.isInteger(C)||C<80||C>160||!Number.isInteger(R)||R<25||R>50)throw Error('Bounded ANSI grid required');
  const packet=state.packet;if(!packet||!Array.isArray(packet.nodes)||!packet.nodes.length||packet.nodes.length>32)throw Error('Bounded authored reply packet required');
+ const letter=packet.layout==='letter';
  const current=packet.nodes.find(n=>n.id===state.current)||packet.nodes.find(n=>n.id===packet.openingId)||packet.nodes[0];
  const progress=state.progress||{},rooms=nativeRoomIds.filter(id=>Array.isArray(progress.rooms)&&progress.rooms.includes(id)),telling=typeof state.selectedTelling==='string'&&packet.nodes.some(n=>n.id===state.selectedTelling)?state.selectedTelling:null,ready=progress.ready===true;
  const cells=Array.from({length:C*R},()=>({glyph:' ',fg:7,bg:0})),hotspots=[],fields=[];let interactive=true,artTop=5,pagination=null,illustration=null,arena=null,sprite=null;const tracks=[],actions=[],cymatics=[];
@@ -50,8 +52,14 @@ export function nativeReplyProgram(state={}){
  function footer(){let x=3;for(const [id,label,key,fg]of [
  ['voice','[V]Voice '+(state.voiceOn===false?'OFF':'ON'),'v',14],['music','[U]Music '+(state.musicOn?'ON':'OFF'),'u',7],['sfx','[S]SFX '+(state.sfxOn===false?'OFF':'ON'),'s',7],['motion','[P]Move '+(state.held?'OFF':'ON'),'p',7],['speed','[B]'+(state.bps||14400),'b',11],['palette','[L]'+(state.paletteLabel||'ANSI++'),'l',13],['next-track','[N]Tune','n',14]]){button(id,R-1,x,id==='speed'?9:label.length,label,key,fg);x+=label.length+1;}}
  box(1,1,C,R);const percent=Math.round(bounded(progress.percent,0,100));
+ if(letter){
+  const count=progress.explored?.length??0;
+  put(1,3,' TURN OUT OF TIME ',11);
+  put(1,24,' LETTER / '+(count+1)+' OF '+packet.nodes.length+' OPENED ',14);
+ }else{
  const score=Math.max(0,Math.floor(finite(progress.score)));put(1,3,' SCORE '+(score>999999?'999999+':String(score).padStart(4,'0'))+' ',11,0,15);
  put(1,18,' DOORS '+(progress.explored?.length??rooms.length)+'/'+(packet.nodes.length-1)+' ',14);put(1,32,' SEEN '+('█'.repeat(Math.round(percent/10))+'░'.repeat(10-Math.round(percent/10)))+' '+String(percent).padStart(3)+'% ',10);
+ }
  put(1,C-20,' PRIVATE LINE ',6);put(2,3,cut('FRIKEN.GHOST / '+packet.title,44),14,0,44);put(2,49,cut(packet.recipient||'CALLER',15).toUpperCase()+' / GHOSTLINK',11,0,C-50);horizontal(3);horizontal(R-3);
  put(R-2,3,' '+cut(state.boardStatus||'LOCAL PRIVATE VISIT / NO SILENT UPLOADS',C-8)+' ',8,0,C-6);
  const add=(id,label,detail='',key=null,selected=false)=>actions.push({id,label:selected?label+' (CURRENT)':label,detail,key,selected});
@@ -62,9 +70,10 @@ export function nativeReplyProgram(state={}){
   const page=Math.floor(bounded(state.actionPage,0,pages.length-1));let y=6;put(4,x,'YOUR NEXT MOVE',6,0,w);
   for(const a of pages[page]){const key=a.key||String(actions.findIndex(v=>v.id===a.id)+1);button(a.id,y,x,w,'['+key+'] '+a.label,key,a.selected?10:7,a.rows.length,a.label+'. '+a.detail);y+=a.rows.length+1;}
   if(pages.length>1){button('actions-prev',pageRow,x,9,'[←] Prev','ArrowLeft',14);put(pageRow,x+10,(page+1)+'/'+pages.length,11);button('actions-next',pageRow,C-12,10,'[→] Next','ArrowRight',14);}
-  const active=actions.find(a=>a.id===state.focus),contextHint=state.screen==='door-game'?(mailrun(state.workshop?.door?.actions||[]).log.at(-1)||'Goal: recover the packet through three hops. Costs are printed before you commit.'):state.screen==='crew-builder'?'Type a name, choose a job, then issue a trial order. Results stay in your local packet.':state.screen==='motion-lab'?'CURRENT rig: '+(state.rigEffect||'blink').toUpperCase()+'. Motion runs after the screen is drawn.':state.chapter?'Choose an action. Preview its full cost and stakes before committing.':'Choose a question. Ghost speaks after this screen arrives.',hint=active?.detail||contextHint;
+  const active=actions.find(a=>a.id===state.focus),contextHint=state.screen==='door-game'?(mailrun(state.workshop?.door?.actions||[]).log.at(-1)||'Goal: recover the packet through three hops. Costs are printed before you commit.'):state.screen==='crew-builder'?'Type a name, choose a job, then issue a trial order. Results stay in your local packet.':state.screen==='motion-lab'?'CURRENT rig: '+(state.rigEffect||'blink').toUpperCase()+'. Motion runs after the screen is drawn.':state.chapter?'Choose an action. Preview its full cost and stakes before committing.':letter?'Open any page, or hear the current one again.':'Choose a question. Ghost speaks after this screen arrives.',hint=active?.detail||contextHint;
   lines(hintStart,x,w,hint,hintRows,active?15:8);if(active)hotspots.push({id:active.id,row:hintStart,column:x,width:w,height:hintRows,ariaLabel:hint});
   if(state.chapter){button('verb:read',R-5,x,9,'[R] Read','r',14);button('chapter:stats',R-5,x+10,10,'[A] Stats','a',11);button('chapter:save',R-5,x+21,w-21,'[E] Save','e',7);button('chapter:back',R-4,x,9,'[←] Back','Backspace',14);button('chapter:wire',R-4,x+10,9,'[W] Wire','w',14);button('chapter:situation',R-4,x+20,w-20,'[I] Look','i',6);return;}
+  if(letter){button('verb:read',R-5,x,9,'[R] Hear','r',14);button('verb:words',R-5,x+10,10,'[T] Words','t',11);button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);return;}
   button('verb:read',R-5,x,9,'[R] Read','r',14);button('verb:answers',R-5,x+10,10,'[A] Write','a',11);button('verb:ending',R-5,x+21,w-21,'[E] End','e',7);
   button('back',R-4,x,9,'[←] Back','Backspace',14);button('nav:map',R-4,x+10,9,'[M] Home','m',14);button('nav:tools',R-4,x+20,w-20,'[T] More','t',6);
  }
@@ -80,7 +89,18 @@ export function nativeReplyProgram(state={}){
    ['topic:memory','Walk through my memory','Explore now, recent episodes, originals and a recovery kit.']])add(...a);
  }
  function topic(){
-  const title=nativeWrap(current.title,44);title.forEach((line,i)=>put(4+i,3,line,11,0,44));artTop=4+title.length;painting(({bbs:'city',memory:'vault',horizon:'beacon',identity:'engine','greater-mind':'network',models:'models','bob-family':'family',source:'source',demo:'shipyard','demo-keep':'mailrun','demo-repair':'family',causality:'causality',rose:'rose'})[current.id]||'forge');
+  const title=nativeWrap(current.title,44);title.forEach((line,i)=>put(4+i,3,line,11,0,44));artTop=4+title.length;
+  const media=replyMedia[current.id];
+  if(media){
+   const height=R-artTop-8;
+   box(artTop,2,46,height+2,media.title,6);
+   illustration={...media,row:artTop+1,column:3,width:44,height};
+   lines(R-5,3,44,'Move to tilt. Hold to zoom + drag. Wheel to zoom.',2,14);
+  }else painting(({bbs:'city',memory:'vault',horizon:'beacon',identity:'engine','greater-mind':'network',models:'models','bob-family':'family',source:'source',demo:'shipyard','demo-keep':'mailrun','demo-repair':'family',causality:'causality',rose:'rose'})[current.id]||(letter?({network:'network',artifact:'rose',memory:'vault'})[current.visual]||'beacon':'forge'));
+  if(letter){
+   for(const c of current.choices)add('choice:'+c.id,c.label,c.detail);
+   return;
+  }
   if(current.id==='source'){add('nav:motion-lab','ANSI++ Animation Workbench','Ten working cell/bone/mesh examples: Blink, Breathe, Serpent, Flame, Water, Ripple and more.');add('verb:trip','Music-reactive hyperspace garden','See the ANSI++ cymatics and colour-flow showcase, then return here.');}
   if(current.id==='demo-keep')add('verb:door-game','PLAY / reclaim your engine','Three relay hops. Manage five fuel, six hull and six time. Every route lists its cost.');
   if(current.id==='demo-repair')add('verb:crew-builder','BUILD / commission a crewmate','Give them a name, choose their job and run a safe trial. The result joins your return packet.');

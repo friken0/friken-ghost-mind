@@ -453,5 +453,7 @@ Prime rejected the M1 portrait downsample: Ghost and Else now keep their
 field/depth/history at full output resolution. Only the connection can
 adapt its 3D target. The earlier scaled-face FPS figures are historical.
 
+[2.5D photo authoring and original Friktal captures](Tools/ChromaticBBS/Photo-Illustrations.md)
+
 Public boot instructions: [runbook.md](runbook.md).
 Public player carrier: https://friken0.github.io/friken-ghost-mind/.

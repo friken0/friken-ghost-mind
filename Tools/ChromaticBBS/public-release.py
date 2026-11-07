@@ -22,6 +22,10 @@ FILES += ['mind-adventure.mjs','mind-adventure.css','mind-adventure.test.mjs','a
 FILES += ['render-ansi-review.py', 'door-and-crew.mjs', 'door-and-crew.test.mjs', 'ansi-mesh.mjs', 'ansi-mesh.test.mjs', 'ansi-scenes.mjs', 'ansi-scenes.test.mjs', 'ANSI-Craft.md', 'art/fizzpow/bitcoin-billionaire-office.webp', 'art/fizzpow/bitcoin-billionaire-upgrades.webp', 'art/fizzpow/provenance.json', 'native-response-host.mjs','native-response-host.test.mjs','native-response-program.mjs','native-response-program.test.mjs','native-routing.test.mjs','Native-Response-Host.md']
 FILES += ['subtitle-cues.mjs', 'subtitle-cues.test.mjs', 'ansi-illustration.mjs', 'illustration-data.mjs', 'Illustration-Provenance.json', 'face-pixel-check.mjs', 'face-pixel-check-source.html', 'build-face-pixel-check.py', 'Face-Compositing.md', 'face-compositing.test.mjs','speaker-camera.test.mjs','design/speaker-camera-results.json','design/face-compositing-results.json']
 FILES += ['runbook-comparison/current/'+n for n in ('Runbook-2.29-Readable.md', 'Runbook-2.29-Packed.md', 'comparison.json', 'token-counts.json')]
+FILES += ['image-depth.mjs', 'reply-media.mjs', 'prepare-illustration.py', 'foreground-mask.m',
+          'Photo-Illustrations.md', 'art/friktal-screens/manifest.json', 'art/friktal-screens/blue-reef.webp',
+          'art/friktal-screens/prism-foundry.webp', 'art/friktal-screens/amber-terminator.webp',
+          'art/friktal-screens/spirals.webp']
 FILES += ['render-budget.test.mjs','profile-renderers.mjs','Render-Performance-2026-11-06.md']
 
 FILES += ['retained-chapter.mjs', 'retained-chapter.test.mjs', 'framework-mode.mjs', 'framework.json', 'bootstrap.md', 'identity/manifest.json', 'identity/public-core.md', 'Framework-Comparison-2026-11-06.md', 'chapters/the-suitcase-that-kept-coming-back.json']

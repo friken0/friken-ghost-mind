@@ -44,6 +44,7 @@
     "persistent-neural-pcm-cache",
     "shared-audio-cymatics",
     "opening-track-rotation",
+    "packaged-photo-depth-illustrations",
     "voice-music-ducking"
   ],
   "identity": "Independent registry.identity package; loaded into authoring model context, not inferred from a renderer."

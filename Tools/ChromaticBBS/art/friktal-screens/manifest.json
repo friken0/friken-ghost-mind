@@ -1,0 +1,73 @@
+{
+  "schema": "friktal.capture-library.v1",
+  "captures": [
+    {
+      "id": "blue-reef",
+      "file": "blue-reef.webp",
+      "alt": "Ice-blue fractal reef with a luminous opening.",
+      "source": "Friktal-4k_scaled_7.jpg",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        1920,
+        1080
+      ],
+      "size": [
+        1920,
+        1080
+      ],
+      "bytes": 1054330,
+      "sha256": "9eab57be6747100a28c19a0e13f5c5cdd7a08d36366633573dce0db76aff8c4a"
+    },
+    {
+      "id": "prism-foundry",
+      "file": "prism-foundry.webp",
+      "alt": "A prismatic corridor in a Friktal development build.",
+      "source": "Screenshot 2025-12-23 at 9.55.06 PM.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        2880,
+        1800
+      ],
+      "size": [
+        2048,
+        1280
+      ],
+      "bytes": 1386312,
+      "sha256": "8770e52a156b1b1481838fa843a63696cd84459240e7a3ed9ac7058fa90e5196"
+    },
+    {
+      "id": "amber-terminator",
+      "file": "amber-terminator.webp",
+      "alt": "Amber light along the edge of dark fractal lobes.",
+      "source": "Screenshot 2025-12-25 at 1.50.11 PM.png",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        2880,
+        1800
+      ],
+      "size": [
+        2048,
+        1280
+      ],
+      "bytes": 336268,
+      "sha256": "d82e6d90056b30ec4c5cb23b227f7754ac79cc5d870cef06f857df29a1e620ad"
+    },
+    {
+      "id": "spirals",
+      "file": "spirals.webp",
+      "alt": "Cobalt and gold spirals on either side of a recursive chamber.",
+      "source": "Spirals.jpg",
+      "credit": "Friken / Friktal",
+      "sourceSize": [
+        7640,
+        5048
+      ],
+      "size": [
+        2048,
+        1353
+      ],
+      "bytes": 527674,
+      "sha256": "39c0c4e3144dc1fe6a91dd3b0635287b8cf3583a0f1993c3dbf19d02499d33ab"
+    }
+  ]
+}
