@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Friktal Sealed Relay</title>
+<style>
+html { color-scheme:dark; background:#080e17; color:#c9ffff; font:1rem/1.6 ui-monospace,monospace; }
+main { max-width:38rem; margin:15vh auto; padding:1.5rem; }
+h1 { color:#ffc963; font-size:1.4rem; }
+form { display:grid; gap:.65rem; margin-top:1.5rem; }
+input,button { font:inherit; color:inherit; background:#101b28; border:1px solid #5d97a0; border-radius:.25rem; padding:.65rem; }
+button { justify-self:start; cursor:pointer; }
+</style>
+<script defer src="relay.js"></script>
+</head>
+<body><main><h1>GHOSTLINK / SEALED RELAY</h1>
+<p id="status" role="status">Open the full link you received to unlock the transmission.</p>
+<form id="unlock">
+<label for="key">Unlock code</label>
+<input id="key" name="key" maxlength="43" required autocomplete="off" autocapitalize="none" spellcheck="false">
+<button type="submit">Open transmission</button>
+</form>
+<noscript>Enable JavaScript to unlock the transmission in this browser.</noscript>
+</main></body>
+</html>
