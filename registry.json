@@ -888,7 +888,7 @@
     {
       "path": "Tools/ChromaticBBS/mind-data.mjs",
       "bytes": 25367,
-      "sha256": "8220462fb28ba3872c6318511cff33f994971460ba43a725d356af2ee495ad59"
+      "sha256": "d189b7daae28688ed262f8c211b4d4d2d3315071eb3b873daeb95652ba653251"
     },
     {
       "path": "Tools/ChromaticBBS/modem.mjs",
@@ -922,8 +922,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.mjs",
-      "bytes": 57868,
-      "sha256": "1e84f7def0f05bbd75813487dea2294cf2bedd370e2789069b6765b349dab633"
+      "bytes": 58272,
+      "sha256": "251a0d572e42426aa7b6d977d605662c6b54db04d3ba051221243f2e42e13c84"
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.test.mjs",
@@ -932,8 +932,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/native-routing.test.mjs",
-      "bytes": 19882,
-      "sha256": "4ac3bb96c3542a48ba2412624c16693727ef7bfc562c0e778bf9c6dd5801e8f2"
+      "bytes": 20411,
+      "sha256": "0c12947cab2384afc2a97dbefcbc76d93f7f285a1c3504dd4d4e295e9f0a1782"
     },
     {
       "path": "Tools/ChromaticBBS/neural-check.html",
@@ -1217,8 +1217,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/turn-out-of-time.mjs",
-      "bytes": 54941,
-      "sha256": "f3b13aff7d3795bf9d97e0d1b79aead244e3eef5e1b80e5f53257797074c5ee9"
+      "bytes": 54948,
+      "sha256": "560cb18d0e46317ce109c5e2864ed39cc842841cf5cf76a0204aca9bd9daeecc"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT",
@@ -1367,13 +1367,13 @@
     },
     {
       "path": "ghostlink.html",
-      "bytes": 4060463,
-      "sha256": "f3a37cb907a310577ff4969bab2cb30f0fc34380ccac437725029a38f2ee740f"
+      "bytes": 4060874,
+      "sha256": "b0752ce37f1d80353d4ddb1869ffc6bce5b799512bd015dc741cc95f57149a66"
     },
     {
       "path": "index.html",
-      "bytes": 4060463,
-      "sha256": "f3a37cb907a310577ff4969bab2cb30f0fc34380ccac437725029a38f2ee740f"
+      "bytes": 4060874,
+      "sha256": "b0752ce37f1d80353d4ddb1869ffc6bce5b799512bd015dc741cc95f57149a66"
     },
     {
       "path": "media/bang-non-and-on.mp3",
@@ -1402,13 +1402,13 @@
     },
     {
       "path": "surreal-the-door-that-remembers.html",
-      "bytes": 12091691,
-      "sha256": "5793867914a9ad9a4b186a38e19de8a212a618a42c4616123d4eb76fa09c87fb"
+      "bytes": 12092102,
+      "sha256": "aa1a5c203b3dc9d101172918af40085114a17e7322bb29d377d84142fc84ee38"
     },
     {
       "path": "the-suitcase-that-kept-coming-back.html",
-      "bytes": 4064167,
-      "sha256": "b574893680a055d4a21ed0ff4a831cd19269f03f6010f2c6e76dbad47fdb86bb"
+      "bytes": 4064578,
+      "sha256": "e1a00cd37ed3937af8d8b57492ea76f7878822389313fad6d41f4c44f10a2998"
     }
   ],
   "privateSourceIncluded": false,

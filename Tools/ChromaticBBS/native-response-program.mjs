@@ -312,7 +312,15 @@ export function nativeReplyProgram(state={}){
    if(shot>.77){put(13,34,'\\│/',approach.colour);put(14,34,'─※─',15);put(15,34,'/│\\',approach.colour);}
   }
   put(17,3,'PRECISION WINDOW '+number(r?.resonance?.lower||13.9)+' .. '+number(r?.resonance?.upper||14.4),11,0,44);
-  if(!r||phase>=1){lines(20,3,44,!r?'Choose an aptitude, then launch.':r.grade==='resonance'?(state.chapter?'RESONANCE / exact result kept.':'RESONANCE / the gate recognises your ship.'):state.chapter?(r.success?'ACTION HOLDS / consequence saved.':'ACTION FAILS / consequence saved.'):r.success?'DELIVERED / the farm gets its spring.':'BLOCKED / the convoy retreats with its seeds.',2,r?.success?10:11);add(state.rollReturn?'trial-continue':'roll-start',state.rollReturn?'Continue / apply this result':r?'Launch another convoy':'Launch the seed convoy','A local probability dive. The exact roll decides the whole battle before animation; effects never reroll it.','Enter');}else lines(20,3,44,gate===0?'GATE OPEN / taking the convoy through.':'SIX '+approach.verb+' / shift the gate outcome.',2,14);
+  if(!r||phase>=1){
+   let outcome='Choose an aptitude, then launch.';
+   if(r&&state.rollReturn==='door-game')outcome=r.grade==='resonance'?'EXACT LOCK / One fuel recovered.':r.success?'RELAY CROSSED / Route costs paid.':'EMERGENCY RESEND / One extra hull and time spent.';
+   else if(r&&state.rollReturn==='crew-builder')outcome=r.success?'TRIAL PASSED / Return for the crew report.':'TRIAL FAILED / Return for the crew report.';
+   else if(r&&state.chapter)outcome=r.grade==='resonance'?'RESONANCE / exact result kept.':r.success?'ACTION HOLDS / consequence saved.':'ACTION FAILS / consequence saved.';
+   else if(r)outcome=r.grade==='resonance'?'RESONANCE / the gate recognises your ship.':r.success?'DELIVERED / the farm gets its spring.':'BLOCKED / the convoy retreats with its seeds.';
+   lines(20,3,44,outcome,2,r?.success?10:11);
+   add(state.rollReturn?'trial-continue':'roll-start',state.rollReturn?'Continue / review this result':r?'Launch another convoy':'Launch the seed convoy','The exact roll settles the outcome before the animation. Continue to see what it cost.','Enter');
+  }else lines(20,3,44,gate===0?'GATE OPEN / crossing.':'SIX '+approach.verb+' / shift the gate outcome.',2,14);
   put(R-7,3,selected.title+' +'+selected.value+' / PASS '+odds.percent.toFixed(2)+'% / EXACT '+odds.resonance.toFixed(2)+'%',11,0,44);
   if(!state.rollTrial&&(!r||phase>=1))for(const [i,[id,d]]of Object.entries(attributes).entries())add('stat:'+id,d.title+' +'+d.value,d.text+' This training build changes the chance to open the lock.',String(i+1),id===(state.rollStat||'focus'));
  }

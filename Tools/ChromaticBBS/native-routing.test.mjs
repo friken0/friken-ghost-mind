@@ -88,6 +88,14 @@ test('reading pauses the existing skirmish, and roll start creates exactly one r
 
 test('actor overlays wait for actual ANSI completion even when reading was requested earlier',async()=>{const h=harness();h.init();h.complete(false);await h.action('verb:read');assert.equal(h.snapshot().frames.length,0);h.complete(true);h.drainRead();assert.equal(h.snapshot().frames.length,1);assert.ok(h.snapshot().frames[0].ghost.startsWith(packet.nodes[0].title));});
 
+test('a courier choice settles once with motion disabled and shows a courier receipt',async()=>{
+ const h=harness();h.init();await h.action('motion');await h.action('verb:door-game');
+ await h.action('door:direct');h.tick(.1);h.tick(.2);
+ const s=h.snapshot();assert.equal(s.calls.rng,1);assert.equal(s.state.rollProgress,1);
+ assert.match(s.program.text,/RELAY CROSSED/);assert.ok(s.program.hotspots.some(h=>h.id==='trial-continue'));
+ await h.action('trial-continue');assert.equal(h.snapshot().visit.workshop.door.leg,1);
+});
+
 test('double-click fast finish skips the handshake but starts receiving, never jumps into held/fullscreen',()=>{const commands=[],context=vm.createContext({performance:{now:()=>20000},connected:false,connecting:true,world:{terminal:{mode:'command',commandDuration:2},set(s){commands.push(s);this.terminal.mode=s.terminalMode;}},modemDuration:8,bootAt:0,modemStarted:false,terminalStarted:false,boardStatus:'local test',audio:{musicOn:false,stopModem(){},connection(){}},speech:{enabled:true},root:{dataset:{}},dial(){throw Error('Already dialing');}});vm.runInContext(declaration('finishHandshake')+'\nfinishHandshake();',context);assert.equal(commands.length,1);assert.equal(commands[0].terminalMode,'receiving');assert.equal(commands[0].terminalElapsed,0);assert.equal(context.bootAt,10000);assert.equal(context.root.dataset.connectionSkipped,'handshake-only');vm.runInContext('finishHandshake();',context);assert.equal(commands.length,1,'repeated double-click cannot restart a receiving logo');});
 
 test('the real Door and crew controller saves exact outcomes and exports both, without a model call',async()=>{const h=harness();h.init();await h.action('verb:door-game');for(const id of ['piggyback','spoof','boost']){await h.action('door:'+id);for(let n=0;n<66;n++)h.tick((['piggyback','spoof','boost'].indexOf(id)*66+n+1)/10);await h.action('trial-continue');}assert.equal(h.snapshot().visit.workshop.door.won,true);await h.action('verb:crew-builder');h.state({crewDraft:'SURREAL'});await h.action('crew-role:quartermaster');await h.action('crew-order:filters');for(let n=0;n<66;n++)h.tick(20+n/10);await h.action('trial-continue');const receipt=unpack(h.packetText(true));assert.equal(receipt.workshop.crew.name,'SURREAL');assert.equal(receipt.workshop.crew.passed,true);assert.equal(receipt.workshop.door.score,73);assert.match(receipt.workshop.crew.artifact,/six air filters/);});
