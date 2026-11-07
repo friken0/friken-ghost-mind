@@ -4,9 +4,10 @@ import {surfaceShader,surfaceLighting} from './vendor/sdf-craft/material-glsl.mj
 import {isLivingRecipe,recipeShader} from './vendor/sdf-craft/recipe-glsl.mjs';
 /* CHROMATIC specimen stage. One bounded SDF field consumes committed game
  * state. This renderer has no gameplay authority and never advances a turn. */
+import {postmarkBloomFragment} from './postmark-bloom.mjs';
 import { roseSource } from './rose-data.mjs';
 import { sdfExpression, sdfBounds, contentChecksum } from './chapters.mjs';
-export function mountStage(canvas, report = () => {}) {
+export function mountStage(canvas, report = () => {}, {postmark=false}={}) {
   const gl = canvas.getContext('webgl', { alpha: false, antialias: false,
     powerPreference: 'low-power', preserveDrawingBuffer: true });
   if (!gl) { report('WebGL unavailable · story controls remain available'); return null; }
@@ -112,15 +113,14 @@ void main(){
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
     return shader;
   }
-  let program,roseProgram;
+  let program,roseProgram,postmarkProgram;
   try {
     program = gl.createProgram();
     gl.attachShader(program, compile(gl.VERTEX_SHADER, vertex));
     gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragment));
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
-    // Keep the recovered source verbatim; these three declared changes bind
-    // its original curved golden-angle petals to the committed world recipe.
+    // Bind the recovered golden-angle petals to world state and the optional pigment edition.
     const roseFragment=roseSource.fragment
       .replace('uniform float uTime;','uniform float uTime,cgBranch,cgScars,cgNoise,cgZoom;uniform vec2 cgOrbit;')
       .replace('uPointer.x*.42','uPointer.x*.42+cgOrbit.x')
@@ -134,6 +134,13 @@ void main(){
     gl.attachShader(roseProgram,compile(gl.FRAGMENT_SHADER,roseFragment));
     gl.linkProgram(roseProgram);
     if(!gl.getProgramParameter(roseProgram,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(roseProgram));
+    if(postmark){
+      postmarkProgram=gl.createProgram();
+      gl.attachShader(postmarkProgram,compile(gl.VERTEX_SHADER,vertex));
+      gl.attachShader(postmarkProgram,compile(gl.FRAGMENT_SHADER,postmarkBloomFragment));
+      gl.linkProgram(postmarkProgram);
+      if(!gl.getProgramParameter(postmarkProgram,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(postmarkProgram));
+    }
   } catch (error) { report(`SDF compile failed: ${error.message}`); return null; }
   gl.useProgram(program);
   const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -141,6 +148,9 @@ void main(){
   const attr = gl.getAttribLocation(program, 'p');gl.enableVertexAttribArray(attr);gl.vertexAttribPointer(attr,2,gl.FLOAT,false,0,0);
   let uniforms = Object.fromEntries(['resolution','gaze','clock','form','noise','seed','mouth','branch','wounds','ink','accent','zoom','orbit','cymatics','specimenFrame','skinAlbedo','skinMatrix','skinSize','skinScale','skinReady'].map(k=>[k,gl.getUniformLocation(program,k)]));
   const roseUniforms=Object.fromEntries(['uResolution','uPointer','uModes','uTime','uAudio','cgBranch','cgScars','cgNoise','cgZoom','cgOrbit'].map(k=>[k,gl.getUniformLocation(roseProgram,k)]));
+  const postmarkUniforms=postmarkProgram&&Object.fromEntries(
+    ['uResolution','uPointer','cgOrbit','uAudio','uCircuit','uTime','uGrowth','cgZoom']
+    .map(k=>[k,gl.getUniformLocation(postmarkProgram,k)]));
   let audioBands=[0,0,0,0];
   let recipeKey=null,recipeBounds=null,skinMaps=null,skinEpoch=0,disposed=false;
   const atlasTexture=(data,w,h)=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,data);return t;};
@@ -195,11 +205,20 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
     const w=Math.max(1,Math.round(rect.width*scale)),h=Math.max(1,Math.round(rect.height*scale));
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
     const isRose=!state?.pack&&state?.world.relic.form==='rose';
-    const selected=isRose?roseProgram:program;
+    const blooming=postmarkProgram&&state?.world.relic.form==='postmark-bloom';
+    const selected=blooming?postmarkProgram:isRose?roseProgram:program;
     gl.useProgram(selected);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
     const attribute=gl.getAttribLocation(selected,isRose?'aPosition':'p');gl.enableVertexAttribArray(attribute);gl.vertexAttribPointer(attribute,2,gl.FLOAT,false,0,0);
-    canvas.dataset.renderer=state?.pack?(isLivingRecipe(state.pack.scenes[Math.min(state.turn-1,state.pack.scenes.length-1)]?.artifact)?'living-form':'generated-csg'):isRose?'golden-whorl-surfaces':'SDF';
-    if(isRose){
+    canvas.dataset.renderer=blooming?'postmark-implicit-field':state?.pack?(isLivingRecipe(state.pack.scenes[Math.min(state.turn-1,state.pack.scenes.length-1)]?.artifact)?'living-form':'generated-csg'):isRose?'golden-whorl-surfaces':'SDF';
+    if(blooming){
+      const u=postmarkUniforms,growth=paused?1:Math.min(1,elapsed/5.6);
+      canvas.dataset.growth=growth.toFixed(3);
+      gl.uniform1f(u.uGrowth,growth);gl.uniform1f(u.uTime,elapsed);
+      gl.uniform2f(u.uResolution,w,h);gl.uniform2f(u.uPointer,...pose);
+      gl.uniform2f(u.cgOrbit,...orbit);gl.uniform1f(u.cgZoom,zoom);
+      gl.uniform4f(u.uAudio,...audioBands);
+      gl.uniform3f(u.uCircuit,...state.world.relic.circuit);
+    }else if(isRose){
       const branchValue=Math.max(0,['witness','negative','echo'].indexOf(state?.modules.find(m=>m.id==='observe')?.law.id));
       gl.uniform1f(roseUniforms.cgZoom,zoom);gl.uniform2f(roseUniforms.cgOrbit,...orbit);
       gl.uniform2f(roseUniforms.uResolution,w,h);gl.uniform2f(roseUniforms.uPointer,...pose);
@@ -253,13 +272,22 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
   for(const name of ['pointerup','pointercancel'])canvas.addEventListener(name,event=>{touches.delete(event.pointerId);previousPoint=null;pinchDistance=0;if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);});
   canvas.addEventListener('wheel',event=>{if(!inspecting())return;event.preventDefault();zoomBy(Math.max(-.18,Math.min(.18,event.deltaY*.001)));},{passive:false});
   canvas.addEventListener('dblclick',reset);
-  document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(raf);raf=0;last=0;if(!document.hidden)wake();});
+  function visibilityChanged(){cancelAnimationFrame(raf);raf=0;last=0;if(!document.hidden)wake();}
+  document.addEventListener('visibilitychange',visibilityChanged);
   canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;cancelAnimationFrame(raf);report('Graphics context lost · reload to restore art');});
   report('SDF ready');wake();
   return {
     zoom:zoomBy,reset,
     cymatics(bands){audioBands=bands.map(x=>Math.max(0,Math.min(1,Number(x)||0)));canvas.dataset.cymatics=audioBands.map(x=>x.toFixed(3)).join(',');},
-    update(next){const node=next.pack?.scenes[Math.min(next.turn-1,next.pack.scenes.length-1)];try{setRecipe(node?.artifact||null);}catch(error){report('Generated SDF refused: '+error.message);return;}state=next;targetForm=({seed:-1,rose:0,face:1,gate:2})[next.world.relic.form];
+    update(next){if(next.world.relic.form==='postmark-bloom'){
+      const circuit=next.world.relic.circuit;
+      if(!postmarkProgram||!Array.isArray(circuit)||circuit.length!==3||circuit.some(bit=>bit!==0&&bit!==1)){
+        report('Postmark bloom requires a sealed circuit');return;
+      }
+      state=next;elapsed=0;last=0;canvas.dataset.circuit=circuit.join('');
+      report('FIRST POSTMARK / READY');wake(true);return;
+    }
+    const node=next.pack?.scenes[Math.min(next.turn-1,next.pack.scenes.length-1)];try{setRecipe(node?.artifact||null);}catch(error){report('Generated SDF refused: '+error.message);return;}state=next;targetForm=({seed:-1,rose:0,face:1,gate:2})[next.world.relic.form];
       report(next.pack?(isLivingRecipe(node?.artifact)?'LIVING FORM / SHARED NATIVE GEOMETRY':'MODEL CSG / READY'):next.world.relic.form==='rose'?'GOLDEN WHORLS / READY':'SDF ready');
       const palettes=[[[.23,.95,.91],[.96,.22,.62]],[[.85,.4,1],[.15,.95,.8]],[[1,.65,.23],[.5,.6,1]]];
       palette=palettes[(next.scars.length+next.chapter-1)%3];
@@ -267,6 +295,6 @@ float field(vec3 p){p.xz*=rot(orbit.x+gaze.x*.22+sin(clock*.12)*.15);p.yz*=rot(o
     hold(value){paused=value;cancelAnimationFrame(raf);raf=0;last=0;wake();},
     pulse(){if(!paused){mouthLevel=.8;wake();}},
     get fps(){return paused?'HELD':fps;}, get paused(){return paused;},
-    dispose(){disposed=true;skinEpoch++;releaseMaterialOwner(canvas);cancelAnimationFrame(raf);observer.disconnect();visibilityObserver.disconnect();gl.deleteBuffer(buffer);gl.deleteProgram(program);gl.deleteProgram(roseProgram);if(skinMaps){gl.deleteTexture(skinMaps.albedo);gl.deleteTexture(skinMaps.matrix);}}
+    dispose(){disposed=true;document.removeEventListener('visibilitychange',visibilityChanged);skinEpoch++;releaseMaterialOwner(canvas);cancelAnimationFrame(raf);observer.disconnect();visibilityObserver.disconnect();gl.deleteBuffer(buffer);gl.deleteProgram(program);gl.deleteProgram(roseProgram);if(postmarkProgram)gl.deleteProgram(postmarkProgram);if(skinMaps){gl.deleteTexture(skinMaps.albedo);gl.deleteTexture(skinMaps.matrix);}}
   };
 }

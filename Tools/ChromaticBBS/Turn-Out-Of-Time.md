@@ -60,12 +60,39 @@ reachable opening before mounting. Render strings with `textContent`.
 No supplied HTML, scripts, shaders, remote media or tool permissions enter
 through this graph. New visual capabilities are reviewed source revisions.
 
-A short letter can set `layout: "letter"` and add a `relay` object with
-`entry` and `reward` node IDs. The entry runs the three-ring puzzle
-with five pair turns and a reset. Sending with three locks opens the
-reward. Give it a payoff specific to the recipient and leave a way back
-to the letter. Reply nodes can name an authored `ansiArt` scene or carry
-a local illustration pack. [2.5D illustration authoring](Photo-Illustrations.md)
+Give every targeted reply its own connected GhostLINK cover. Set
+`replyCover: {art, preview}` to a reviewed ANSI painting and a one-sentence
+preview addressed to this reader. The terminal prints the recipient,
+subject and preview beside the art before Enter. If omitted, the cover
+takes the opening scene's art and kicker. Keep the art on the glass and
+the words readable during the 8N1 draw. A letter should read as a first
+delivery from the subject onward, including when a prior local visit exists.
+The footer's `[DEL] Reset` opens a confirmation, clears this reply's
+local progress and discoveries, and returns to the dialer.
+
+A letter can set `layout: "letter"` and `relay: {entry, reward, contact?}`.
+Find the double-pulse mark in the 1.65× local telescope chart. The same
+projected cells own the clicks. Wheel or X magnifies, C cycles the reticle,
+and F samples. In still mode glyph shapes carry the clue. The transmitter
+has three slots with two clickable alternatives apiece, a live inventory,
+a schematic, and full refunds when undoing a pick. Assembly requires
+three signal bars and one reserved charge. Launch spends the last charge.
+Local saves replay exact parts, assembly, launch and discovered details.
+A contact envelope supplies origin, destination, greeting and question.
+After the local launch, one ANSI plate offers a readable hello and a
+copyable FGHELLO1 UTF-8 JSON/base64url payload with the exact circuit.
+Recipients can read the greeting without decoding. Local simulation and
+explicit copy never send the greeting to another system. The reward stays
+available beside the sealed greeting. Optional `gift: "postmark-bloom"` stamps the reward postcard with a
+specimen recipe derived from the three sealed circuit choices. The
+postcard opens the authored bud-to-flower viewer and the copy packet
+carries the same three-bit recipe. It is independent of the archived rose. Letter nodes can attach a readable `note`
+and use a packaged Moknon `portrait` from the resident-art table. The
+optional contact `postscript` and found margin notes travel in the encoded
+stamp. The portable receipt includes any resident channels actually opened.
+The readable copy retains the greeting, route and seed. Reply nodes can name an authored
+`ansiArt` scene, use a short `caption`, or carry a local illustration
+pack with a full-width view. [2.5D illustration authoring](Photo-Illustrations.md)
 
 The Surreal specimen begins as a first meeting with an old friend of Friken,
 not a compulsory tour of six technical departments. Warm hello, one useful

@@ -108,10 +108,14 @@ def main():
     parser.add_argument('--height', type=float, default=.83)
     parser.add_argument('--subject-depth', type=Path, help='Aligned relative inverse-depth image, white is nearer')
     parser.add_argument('--background-depth', type=Path, help='Aligned inverse depth for the original capture')
+    parser.add_argument('--ground-contact', type=float,
+                        help='Normalized image row where the cutout joins the ground depth')
     parser.add_argument('--width', type=int, default=1800)
     args = parser.parse_args()
     if not all(0 < value <= 1 for value in (args.center, args.floor, args.height)) or not 256 <= args.width <= 2400:
         parser.error('Use normalized placement and a 256–2400 pixel maximum dimension')
+    if args.ground_contact is not None and not .16 <= args.ground_contact <= args.floor:
+        parser.error('Ground contact must be between .16 and the placed floor row')
     args.output.mkdir(parents=True, exist_ok=True)
     bg, subject, far, front, poster = prepare(
         source(args.photo, 'RGB'), source(args.mask, 'L'), source(args.background, 'RGB'),
@@ -124,7 +128,8 @@ def main():
     front.save(args.output/'subject-depth.png', optimize=True)
     poster.save(args.output/'poster.webp', quality=90, method=6)
     (args.output/'illustration.json').write_text(json.dumps({
-        'schema':'friktal.illustration-depth.v1', 'title':args.title, 'alt':args.alt
+        'schema':'friktal.illustration-depth.v1', 'title':args.title, 'alt':args.alt,
+        **({'groundFrom':args.ground_contact} if args.ground_contact is not None else {})
     }, ensure_ascii=False)+'\n', encoding='utf-8')
 
 

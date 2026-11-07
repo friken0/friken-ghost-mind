@@ -6,6 +6,7 @@ export const TURN_OUT_OF_TIME = {
   "id": "surreal-the-living-workshop",
   "title": "The Door That Remembers",
   "recipient": "Surreal",
+  "replyCover": {"art":"eye","preview":"Your board got a call back. Come talk games, old doors and the things we leave running."},
   "openingId": "hello",
   "answerPrompts": {
     "question": "What would you want an entity system to do in your own games or projects? What should a companion get on with while you are away?",

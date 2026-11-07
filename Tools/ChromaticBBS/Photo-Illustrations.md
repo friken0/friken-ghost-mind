@@ -36,6 +36,13 @@ right to a node ID on the left. Repeat the flag for multiple nodes.
 `"layout": "letter"` uses only the authored choices and letter
 navigation.
 
+Use the same pack for existing Moknon portraits. Keep the original
+composition as the poster, cut the resident onto the subject plane,
+and extend nearby background colour under the cutout so camera motion
+can reveal the edge. Supply the original artwork credit in the optional
+`source` field of `illustration.json`. Bind the pack to the node ID
+that displays the portrait.
+
 ## Author depth from the actual photograph
 
 The compositor accepts aligned grayscale maps through `--subject-depth`
@@ -65,6 +72,11 @@ grayscale maps and a flat poster. Use aligned inverse depth when available. For 
 estimate, the authoring tool also offers a broad luminance and matte
 coverage relief. Both are approximations from one viewpoint. The renderer maps them to 0–25% and 25–100% respectively,
 then projects two textured grids in the same ANSI illustration slot.
+For a standing subject, pass `--ground-contact ROW` with a normalized
+image row at or above both feet. Relief blends into the backdrop's
+sampled depth over the .16 image heights above that row. The foot pixels
+and the surface under them then use the same projection. Bake a soft
+contact shadow into the capture plane. Face and torso relief stays live.
 It never needs to invent the hidden side of a person.
 
 The terminal clock drives the camera. Pointer motion controls a

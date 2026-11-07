@@ -3,7 +3,7 @@
  * No bitmap generation, WebGL, timer or independent animation clock. */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const palettes=[[4,6,14,7,1,9,11],[4,5,13,7,1,3,11],[4,6,10,7,1,9,11],[4,12,6,7,3,9,11]];
-export const ansiSceneKinds=Object.freeze(['eye','city','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness','spiral-galaxy','monsoon-ridge']);
+export const ansiSceneKinds=Object.freeze(['eye','city','trip','serpent','vault','engine','forge','network','family','models','beacon','shipyard','source','original','repair','causality','rose','return','convoy','mailrun','quay','auction','layer-now','layer-echo','layer-archive','layer-witness','spiral-galaxy','monsoon-ridge','aurora-home','postmark-stamp']);
 export function ansiSessionTheme(seed=0){const n=Number(seed)>>>0;return {palette:palettes[n%palettes.length],tempo:180+(n%9)*24,seed:n};}
 const marqueeFont=Object.freeze({
  B:['11110','10001','10001','11110','10001','10001','11110'],I:['11111','00100','00100','00100','00100','00100','11111'],T:['11111','00100','00100','00100','00100','00100','00100'],C:['01111','10000','10000','10000','10000','10000','01111'],O:['01110','10001','10001','10001','10001','10001','01110'],N:['10001','11001','11001','10101','10011','10011','10001'],L:['10000','10000','10000','10000','10000','10000','11111'],A:['01110','10001','10001','11111','10001','10001','10001'],R:['11110','10001','10001','11110','10100','10010','10001'],E:['11111','10000','10000','11110','10000','10000','11111']
@@ -27,13 +27,13 @@ function grain(x,y,seed){
 // Quarter-blocks give two samples across and down each ANSI character.
 function livePlate(kind,width,height,seed){
  const W=width*2,H=height*2,theme=ansiSessionTheme(seed);
- const galaxy=kind==='spiral-galaxy';
+ const galaxy=kind==='spiral-galaxy',clearing=kind==='aurora-home';
+ const scale=Math.min(W*.59,H*1.08);
  const sky=Uint8Array.from({length:W*H},(_,i)=>{
   const n=grain(i%W,Math.floor(i/W),seed);
   return n>.9988?7:n>.993?8:0;
  });
  const geometry=galaxy?Array.from(sky,(_,i)=>{
-  const scale=Math.min(W*.46,H*.84);
   const x=(i%W+.5-W*.50)/scale,y=(Math.floor(i/W)+.5-H*.50)*2/scale;
   const rx=.977*x-.213*y,ry=(.213*x+.977*y)/.57;
   const r=Math.hypot(rx,ry);
@@ -83,7 +83,6 @@ function livePlate(kind,width,height,seed){
     else if(glow>.08&&n>.35)pixels[i]=n>.78?5:4;
     else if((tail>.59&&r>.19&&r<.94&&n>.31)||(r<.48&&n>.89))pixels[i]=5;
    }
-   const scale=Math.min(W*.46,H*.84);
    for(const s of stars){
     const a=s.angle+time*(.046+.145*s.r)*s.drift;
     const x=s.r*Math.cos(a),y=s.r*Math.sin(a)*.57+s.z;
@@ -96,7 +95,7 @@ function livePlate(kind,width,height,seed){
     pixels[i]=light>.94?15:light>.75?14:light>.52?12:light>.22?6:5;
    }
   }else{
-   const beat=(time+2.6)%9.7,flash=beat>4.6&&beat<5.1?Math.sin((beat-4.6)*2*Math.PI):0;
+  const beat=(time+2.6)%9.7,flash=!clearing&&beat>4.6&&beat<5.1?Math.sin((beat-4.6)*2*Math.PI):0;
    for(let row=0;row<H;row++)for(let col=0;col<W;col++){
     const i=row*W+col,x=(col+.5)/W,y=(row+.5)/H,n=grain(col,row,seed+11);
     const {bank,far,mid,near}=clouds[col];
@@ -105,9 +104,16 @@ function livePlate(kind,width,height,seed){
     if(y>near) pixels[i]=0;
     else if(y>mid) pixels[i]=y<mid+.027&&n>.53?6:y<mid+.065?4:0;
     else if(y>far) pixels[i]=y<far+.038?(n>.50?12:4):y<far+.13?4:8;
-    else if(y>bank&&y<cloudEdge){
+    else if(!clearing&&y>bank&&y<cloudEdge){
      pixels[i]=y+cloudVein>cloudEdge-.04?(n>.42?8:4):4;
      if(y<bank+.022&&n>.75)pixels[i]=5;
+    }
+    if(clearing&&y<far){
+     const ribbon=.29-.12*Math.sin(x*4+time*.20)+.035*Math.sin(x*12-time*.26);
+     const distance=Math.abs(y-ribbon);
+     if(distance<.013)pixels[i]=x>.70?14:6;
+     else if(distance<.040&&n>.40)pixels[i]=x>.58?5:2;
+     else if(distance<.074&&n>.75)pixels[i]=1;
     }
     if(y<far&&flash>.17){
      const d=Math.min(lineDistance(x,y,lightning),lineDistance(x,y,fork)*1.45);
@@ -142,12 +148,40 @@ function livePlate(kind,width,height,seed){
 
 function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
  if(!Number.isInteger(width)||width<20||width>80||!Number.isInteger(height)||height<6||height>50)throw Error('Bounded ANSI painting required');
- if(kind==='spiral-galaxy'||kind==='monsoon-ridge')return livePlate(kind,width,height,seed);
+ if(['spiral-galaxy','monsoon-ridge','aurora-home'].includes(kind))return livePlate(kind,width,height,seed);
  const theme=ansiSessionTheme(seed),p=theme.palette,H=height*2;
  const noise=(x,y)=>{let h=Math.imul(x+71,374761393)^Math.imul(y+139,668265263)^(seed>>>0);h=Math.imul(h^(h>>>16),0x85ebca6b);h=Math.imul(h^(h>>>13),0xc2b2ae35);h^=h>>>16;return (h>>>0)/4294967295;};
  function inside(x,y,points){let hit=false;for(let i=0,j=points.length-1;i<points.length;j=i++){const a=points[i],b=points[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;}
  function foreground(x,y,frame){
   const u=(x+.5)/(width*2),v=(y+.5)/H,t=frame*Math.PI/3;
+  if(kind==='postmark-stamp'){
+   // Perforated first-issue stamp, paper shadow, two orbit marks and a seed.
+   const qx=(u-.485)*2,qy=(v-.49)*2,edge=Math.max(Math.abs(qx)/.80,Math.abs(qy)/.91);
+   if(edge>.99)return edge<1.07&&qx>-.76&&qy>-.86?8:noise(x,y)>.996?6:0;
+   if(edge>.90){
+    const along=Math.abs(qx)/.80>Math.abs(qy)/.91?qy:qx;
+    return Math.abs(Math.sin(along*35.))>.88?0:edge>.96?7:15;
+   }
+   if(edge>.82)return 3;
+   const a=Math.atan2((qy+.22)*1.30,qx),r=Math.hypot(qx,(qy+.22)*1.30);
+   const petal=.22+.13*Math.cos(6*a)+.034*Math.sin(a*12);
+   if(r<.072)return r<.031?15:11;
+   if(r<petal&&r>.061){
+    const vein=Math.abs(Math.sin(6*a))*r;
+    if(vein<.016)return r>.14?15:11;
+    return r>petal-.038?14:r<.18?13:12;
+   }
+   if(Math.abs(qx-.035*Math.sin(qy*6))<.027&&qy>-.04&&qy<.56)return 10;
+   for(const side of [-1,1]){
+    const dx=side*qx-.14,dy=qy-.28+side*.09+dx*.54;
+    if(Math.hypot(dx/.15,dy/.067)<1)return dy<0?10:2;
+   }
+   const orbit=Math.hypot(qx,(qy+.13)*1.45);
+   if(Math.abs(orbit-.53)<.015)return Math.sin(a*9+t)>.76?14:6;
+   if(Math.abs(qy-.64)<.018&&Math.abs(qx)<.54)return qx<-.30||qx>.31?6:14;
+   if(noise(x,y)>.978)return noise(x+22,y)>.6?15:8;
+   return 4;
+  }
   if(kind==='quay'){
    // A luggage-service room: wall, supervised hatch, suitcase, belt, route
    // record, isolated relay and worker. Never substitute a ship for the room.

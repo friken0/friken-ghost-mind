@@ -1,3 +1,4 @@
+import {residentArt} from './art-data.mjs';
 import {ansiSceneKinds} from './ansi-scenes.mjs';
 import {discoveryIds,canDiscover} from './reply-discoveries.mjs';
 import {localWorkshop} from './door-and-crew.mjs';
@@ -8,16 +9,23 @@ import {mountAnsiUI} from './ansi-ui.mjs';
 export function validateTurnOutOfTime(packet){
   const text=(v,n)=>typeof v==='string'&&v.length>0&&v.length<=n&&!/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(v);
   if(!packet||(packet.layout!==undefined&&packet.layout!=='letter')||packet.schema!=='friktal.turn-out-of-time.v1'||JSON.stringify(packet).length>60000||!text(packet.id,100)||!text(packet.title,120)||!text(packet.recipient,80)||!Array.isArray(packet.nodes)||packet.nodes.length<1||packet.nodes.length>32)throw Error('Invalid reply packet');
+  if(packet.replyCover!==undefined&&(!ansiSceneKinds.includes(packet.replyCover?.art)||!text(packet.replyCover?.preview,120)))throw Error('Invalid GhostLINK reply cover');
+  if(packet.gift!==undefined&&(packet.layout!=='letter'||packet.gift!=='postmark-bloom'||!packet.relay?.contact))throw Error('Unknown letter gift');
   const ids=new Set();
   for(const n of packet.nodes){
-    if(!text(n.id,80)||ids.has(n.id)||!text(n.title,160)||!text(n.kicker,200)||!['ghost','memory','network','artifact'].includes(n.visual)||(n.ansiArt!==undefined&&!ansiSceneKinds.includes(n.ansiArt))||(n.companion!==undefined&&!text(n.companion,2200))||(n.ghostReply!==undefined&&!text(n.ghostReply,1200))||!Array.isArray(n.paragraphs)||n.paragraphs.length<1||n.paragraphs.length>8||n.paragraphs.some(p=>!text(p,2200))||!Array.isArray(n.choices)||n.choices.length>6)throw Error('Invalid reply node');
+    if(!text(n.id,80)||ids.has(n.id)||!text(n.title,160)||!text(n.kicker,200)||!['ghost','memory','network','artifact'].includes(n.visual)||(n.ansiArt!==undefined&&!ansiSceneKinds.includes(n.ansiArt))||(n.caption!==undefined&&!text(n.caption,80))||(n.companion!==undefined&&!text(n.companion,2200))||(n.ghostReply!==undefined&&!text(n.ghostReply,1200))||!Array.isArray(n.paragraphs)||n.paragraphs.length<1||n.paragraphs.length>8||n.paragraphs.some(p=>!text(p,2200))||!Array.isArray(n.choices)||n.choices.length>6)throw Error('Invalid reply node');
+    if((n.note!==undefined&&(packet.layout!=='letter'||!text(n.note,1800)))||
+       (n.portrait!==undefined&&(packet.layout!=='letter'||!Object.hasOwn(residentArt,n.portrait))))throw Error('Invalid letter note or portrait');
     ids.add(n.id);const choices=new Set();for(const c of n.choices){if(!text(c.id,80)||choices.has(c.id)||!text(c.label,120)||!text(c.detail,700)||!text(c.target,80))throw Error('Invalid reply choice');choices.add(c.id);}
   }
   if(!ids.has(packet.openingId)||packet.nodes.some(n=>n.choices.some(c=>!ids.has(c.target))))throw Error('Missing reply target');
   if(packet.relay!==undefined){
-    const {entry,reward}=packet.relay??{};
+    const {entry,reward,contact}=packet.relay??{};
     if(packet.layout!=='letter'||!ids.has(entry)||!ids.has(reward)||entry===reward||entry===packet.openingId||reward===packet.openingId||
        packet.nodes.some(n=>n.choices.some(c=>c.target===reward)))throw Error('Invalid letter relay routes');
+    if(contact!==undefined&&(!contact||!text(contact.origin,80)||!text(contact.destination,120)||
+       !text(contact.greeting,800)||!text(contact.question,320)||
+       (contact.postscript!==undefined&&!text(contact.postscript,500))))throw Error('Invalid first contact letter');
   }
   return structuredClone(packet);
 }

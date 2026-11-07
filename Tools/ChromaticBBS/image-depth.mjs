@@ -40,13 +40,18 @@ export function mountImageDepth(canvas, assets) {
   try {
     shader(gl.VERTEX_SHADER, `#version 300 es
       layout(location=0) in vec2 point;
-      uniform sampler2D relief;
+      uniform sampler2D relief, ground;
       uniform vec2 viewport, origin, extent, angle, limits;
+      uniform float groundFrom;
       out vec2 uv;
       void main() {
         uv = point;
         float side = min(extent.x, extent.y);
         float d = mix(limits.x, limits.y, texture(relief, uv).r);
+        if (groundFrom > 0. && limits.x > 0. && uv.y > groundFrom - .16) {
+          float contact = smoothstep(groundFrom - .16, groundFrom, uv.y);
+          d = mix(d, .25 * texture(ground, uv).r, contact);
+        }
         float z = (d - .25) * .32;
         // Remove perspective stretch from the resting photo. Only a tilted
         // camera reveals the relief, so the portrait stays exact head-on.
@@ -84,13 +89,17 @@ export function mountImageDepth(canvas, assets) {
       [texture(assets.subject), texture(assets.subjectDepth, true), .25, 1],
     ];
     const uniforms = Object.fromEntries(
-      ['viewport','origin','extent','angle','limits','photo','relief'].map(name => [name, gl.getUniformLocation(program, name)])
+      ['viewport','origin','extent','angle','limits','photo','relief','ground','groundFrom'].map(name => [name, gl.getUniformLocation(program, name)])
     );
     gl.useProgram(program);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     gl.uniform1i(uniforms.photo, 0);
     gl.uniform1i(uniforms.relief, 1);
+    gl.uniform1i(uniforms.ground, 2);
+    gl.uniform1f(uniforms.groundFrom, assets.groundFrom ?? -1);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, planes[0][1]);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.clearColor(.025, .047, .07, 1);

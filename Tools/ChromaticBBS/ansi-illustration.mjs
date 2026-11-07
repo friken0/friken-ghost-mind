@@ -97,14 +97,14 @@ export function mountAnsiIllustration(root,{host}={}){
    if(background.width!==subject.width||background.height!==subject.height)return;
    const surface=doc.createElement('canvas');
    surface.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
-   const renderer=mountImageDepth(surface,Object.fromEntries(names.map((name,i)=>[name,images[i]])));
+   const renderer=mountImageDepth(surface,{...Object.fromEntries(names.map((name,i)=>[name,images[i]])),groundFrom:next.depth.groundFrom});
    if(!renderer)return;
    depthCanvas=surface;depth=renderer;
    slot.append(surface);
    surface.addEventListener('webglcontextlost',event=>{event.preventDefault();lastPose='';paint();},opts);
    surface.addEventListener('webglcontextrestored',()=>{
     if(depthCanvas!==surface)return;
-    depth=mountImageDepth(surface,Object.fromEntries(names.map((name,i)=>[name,images[i]])));
+    depth=mountImageDepth(surface,{...Object.fromEntries(names.map((name,i)=>[name,images[i]])),groundFrom:next.depth.groundFrom});
     lastPose='';paint();
    },opts);
    layoutKey='';layout();paint();

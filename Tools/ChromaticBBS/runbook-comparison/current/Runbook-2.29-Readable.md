@@ -61,8 +61,14 @@ hue-flow,palette remapping,weighted sprite bones and coherent measured-audio
 fields with a reason. Reply nodes can name registered art with ansiArt.
 For continuous motion use a host-clock frame(seconds) cell recipe such as
 spiral-galaxy or monsoon-ridge. It preserves serial art and hit regions.
-Personal letters may use relay:{entry,reward} with layout:letter. Five
-pair turns advance linked rings; SEND at three locks opens the reward.
+Personal letters may use relay:{entry,reward,contact?} with layout:letter.
+Zoom+sample a local double-pulse chart mark; rendered cells own hits.
+Click one part per slot; show inventory, signed costs, schematic, undo,
+and local resume. Assemble with >=3 bars and >=1 charge, then launch
+in simulation. Optional contact:{origin,destination,greeting,question}
+opens a readable/copyable greeting plus FGHELLO1 base64url UTF-8 JSON
+of the exact circuit. No automatic transmission. Still mode keeps clues.
+Standing photo cutouts use --ground-contact to share the ground depth.
 Make the payoff specific to the recipient and keep a route back.
 Quiet remains quiet. No independent per-cell RAF/FFT.}
 
@@ -1268,10 +1274,15 @@ VOICE:=max snark serves clarity;first answer fits tired human ears. Earned
  Recipient keeps control of depth;90..160words/topic;TITLEspokenBEFOREbody,
  exactsame title+body captionorder;full readable transcript.
 TOT_PACKET={schema:'friktal.turn-out-of-time.v1',id,title,recipient,openingId,
+ replyCover?:{art:reviewedANSIscene,preview:plain text≤120},
  nodes:[{id,title,kicker,paragraphs:[text],companion?:text,
  visual:ghost|memory|network|artifact,
  choices:[{id,label,detail,target}]}]};unique IDs,all targets,known visuals,
  finite text/graph budgets. Strings=data/textContent,never markup/tools.
+COVER:=author new connected GhostLINK artwork for each targeted reply.
+ Draw recipient+subject+one-sentence preview beside the art at wire speed;
+ keep text at stable contrast. Missing cover inherits opening art+kicker.
+ Footer [DEL] Reset asks once, clears this reply's visit and puzzle, redials.
 ONE_VIEW:=physicalCRT dialer→heldContinue approaches glass→fullscreenreply;
  destroy3Dconnectionroom on handoff,never unseen room behind face. Later
  direct27Oct correction supersedes earlier whole-reply-inside-bezel law.

@@ -1,5 +1,5 @@
 import {ensureAnsiFont,ansiFontFamily} from './ansi-ui.mjs';
-import {ansiSessionTheme} from './ansi-scenes.mjs';
+import {ansiScene,ansiSessionTheme} from './ansi-scenes.mjs';
 import {createAnsiAnimator,ansiCymaticCell,drawAnsiCell} from './ansi-animation.mjs';
 import {modemStages,modemDuration} from './modem.mjs';
 /* An actual bounded 80-column ANSI terminal, streamed at serial 8N1 speed.
@@ -42,9 +42,47 @@ export function createAnsiBuffer({columns=80,rows=25}={}){
  }}
  return {cells,feed,clear,reset(){pending='';row=col=0;fg=7;bg=0;bold=false;saved=[0,0];clear();},get revision(){return revision;},get cursor(){return {row,col:Math.min(columns-1,col),fg,bg};},get text(){return Array.from({length:rows},(_,y)=>cells.slice(y*columns,(y+1)*columns).map(c=>c.char).join('')).join('\n');}};
 }
+// Keep text outside the illustrated area so the reply reads at CRT size.
+function coverLines(value,width){
+ const lines=[];
+ let line='';
+ for(let word of String(value??'').replace(/[\x00-\x20\x7f]+/g,' ').trim().split(' ')){
+  if(line&&line.length+word.length+1>width){lines.push(line);line='';}
+  while(word.length>width){lines.push(word.slice(0,width));word=word.slice(width);}
+  line+=(line?' ':'')+word;
+ }
+ if(line)lines.push(line);
+ return lines;
+}
+function addressedCover(recipient,cover,bps,seed){
+ let text=ESC+'2J'+at(1)+color(8)+'╔'+'═'.repeat(78)+'╗';
+ for(let row=2;row<25;row++)text+=at(row,1)+'║'+at(row,80)+'║';
+ text+=at(25)+'╚'+'═'.repeat(78)+'╝';
+ const put=(row,col,ink,value)=>{text+=at(row,col)+color(ink)+value;};
+ put(2,4,14,'G H O S T L I N K');
+ put(2,45,10,'CONNECT '+bps+' / 8N1');
+ put(2,68,7,'LOCAL LINE');
+ put(3,2,8,'─'.repeat(78));
+ const art=ansiScene(cover.art,{width:32,height:15,seed});
+ let prior='';
+ for(const c of art.cells){
+  if(c.column===1)text+=at(c.row+3,4);
+  const ink=c.fg+':'+c.bg;
+  if(ink!==prior){text+=color(c.fg,c.bg);prior=ink;}
+  text+=c.glyph;
+ }
+ put(5,40,14,'TO / '+(coverLines(recipient.toUpperCase(),33)[0]||'CALLER'));
+ coverLines(cover.title,38).slice(0,4).forEach((line,i)=>put(7+i,40,15,line));
+ coverLines(cover.preview,38).slice(0,4).forEach((line,i)=>put(12+i,40,7,line));
+ put(17,40,11,'FROM / FRIKEN.GHOST');
+ put(18,40,10,'CARRIER HELD');
+ put(20,2,8,'─'.repeat(78));
+ return text+color(14)+at(24,4);
+}
 // Each character is one CP437-style serial cell, including shade/block art.
 // The glyphs are Unicode equivalents, not a painting masquerading as ANSI.
-export function connectionAnsi({recipient='SURREAL',label='TURN OUT OF TIME',bps=2400}={}){
+export function connectionAnsi({recipient='SURREAL',label='TURN OUT OF TIME',bps=2400,cover=null,seed=0}={}){
+ if(cover)return addressedCover(String(recipient),cover,bps,seed);
  recipient=String(recipient).replace(/[^\w .-]/g,'').slice(0,28).toUpperCase();label=String(label).replace(/[^\w .-]/g,'').slice(0,32).toUpperCase();
  let s=ESC+'2J'+color(8)+at(1)+'╔'+'═'.repeat(78)+'╗';
  const line=(y,text,fg=7,x=3)=>{s+=at(y,x)+color(fg)+text.slice(0,81-x);};
@@ -93,15 +131,16 @@ export function terminalHotspots(mode='dialer'){
  const defs=mode==='prompt'?[['dial',9,14,22,'enter'],['dial',10,14,55,'enter']]:mode==='command'?[]:mode==='dialer'?[['dial',17,5,28,'d'],['music',18,5,28,'m'],['voice',19,5,28,'v'],['finish',20,5,34,'f']]:mode==='held'?[['continue',21,5,40,'enter'],['reconnect',22,5,28,'r'],['music',23,5,27,'m'],['voice',23,40,25,'v']]:[['pause',21,5,30,' '],['finish',22,5,34,'f'],['music',23,5,27,'m'],['voice',23,40,25,'v']];
  return defs.map(([id,row,column,width,key])=>({id,row,column,width,height:1,key}));
 }
-function controlProgram(mode,state={}){
+function controlProgram(mode,state={},cover=null){
  if(mode==='prompt'||mode==='command')return {text:'',spots:terminalHotspots(mode),rows:[]};
  const labels=mode==='dialer'?['[ D ] DIAL THE VOID','[ M ] MUSIC: '+(state.music?'ON':'OFF'),'[ V ] VOICE: '+(state.voice===false?'OFF':'ON'),'[ F ] FINISH CONNECTION ANIMATION']:mode==='held'?['[ ENTER ] OPEN THE REPLY','[ R ] RECONNECT / BOOT AGAIN','[ M ] MUSIC: '+(state.music?'ON':'OFF'),'[ V ] VOICE: '+(state.voice===false?'OFF':'ON')]:['[ SPACE ] '+(state.paused?'RESUME CONNECTION':'PAUSE / HOLD THE LINE'),'[ F ] FINISH CONNECTION ANIMATION','[ M ] MUSIC: '+(state.music?'ON':'OFF'),'[ V ] VOICE: '+(state.voice===false?'OFF':'ON')];
  let text='';const spots=terminalHotspots(mode),rows=[...new Set(spots.map(x=>x.row))];for(const row of rows)text+=at(row+1)+color(7)+' '.repeat(79);
- if(state.boardStatus){rows.push(15);const status=String(state.boardStatus).replace(/[\x00-\x1f\x7f]/g,'').slice(0,69);text+=at(16,1)+color(7)+' '.repeat(79)+at(16,6)+color(/unavailable|offline/i.test(status)?11:10)+status;}
+ if(cover)for(const row of rows)text+=at(row+1)+color(8)+'║'+at(row+1,80)+'║';
+ if(state.boardStatus&&!cover){rows.push(15);const status=String(state.boardStatus).replace(/[\x00-\x1f\x7f]/g,'').slice(0,69);text+=at(16,1)+color(7)+' '.repeat(79)+at(16,6)+color(/unavailable|offline/i.test(status)?11:10)+status;}
  spots.forEach((spot,i)=>{text+=at(spot.row+1,spot.column+1)+color(state.focus===spot.id?15:spot.id==='dial'||spot.id==='continue'?11:14,state.focus===spot.id?4:0)+labels[i];});return {text,spots,rows};
 }
 export function dialerAnsi(options={}){let text=connectionAnsi(options);for(let row=14;row<=24;row++)text+=at(row)+color(7)+' '.repeat(79);text+=at(14,6)+color(10)+'GHOSTLINK DIALER / MODEM READY / '+(options.bps||2400)+' BPS'+at(15,6)+color(7)+'ONE LOCAL CALL. THE VOID CAN PAY ITS OWN LONG DISTANCE.';return text+controlProgram('dialer',options).text;}
-export function heldAnsi(options={}){return connectionAnsi(options)+controlProgram('held',options).text;}
+export function heldAnsi(options={}){return connectionAnsi(options)+controlProgram('held',options,options.cover).text;}
 export function ansiSerialFrame(text,seconds,{bps=2400,bitsPerByte=10,complete=false}={}){
  if(!Number.isFinite(seconds)||seconds<0||!Number.isFinite(bps)||bps<=0)throw Error('Valid serial clock required');
  // The admitted stream uses one-byte CP437 equivalents. ESC/control bytes count.
@@ -134,11 +173,11 @@ export function bootAnsiRail(index,seconds){
  const distance=(Math.floor(seconds*22)-at+total*1000)%total;
  return distance===0?15:distance<3?14:distance<7?6:8;
 }
-export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,animation=true,transparent=false,cursor:showCursor=true}={}){
+export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,cover=null,animation=true,transparent=false,cursor:showCursor=true}={}){
  if(typeof document==='undefined'&&!canvas)throw Error('Canvas host required');
  canvas=canvas||document.createElement('canvas');canvas.width=1280;canvas.height=800;
  let columns=80,rows=25,buffer=createAnsiBuffer();const ctx=canvas.getContext('2d',{alpha:!!transparent}),animator=createAnsiAnimator({maxCells:8000,maxRate:20,seed:596564});
- let stream=connectionAnsi({recipient,label,bps}),mode='receiving',controlState={},modeKey='',count=-1,revision=0,elapsed=0,complete=false,force=false,presentation=0,lastTick=-1,lastReduced=false,priorCursor=-1,overlay=null,controls=null,lastLabel='',commandProgramKey='',programAnimation=false,programTracks=new Map(),reactiveCells=new Map(),pendingPatches=[],patchBytes=0;
+ let receiving=connectionAnsi({recipient,label,bps,cover,seed}),stream=receiving,mode='receiving',controlState={},modeKey='',count=-1,revision=0,elapsed=0,complete=false,force=false,presentation=0,lastTick=-1,lastReduced=false,priorCursor=-1,overlay=null,controls=null,lastLabel='',commandProgramKey='',programAnimation=false,programTracks=new Map(),reactiveCells=new Map(),pendingPatches=[],patchBytes=0;
  let displayTheme=ansiColourTheme();const theme=ansiSessionTheme(seed);const painted=new Map(),records=new Map();let manualHotspots=null,serialOffset=0,lastArtCells=null;
  const glyph=(context,char,x,y,w,h)=>paintGlyph(context,char,x,y,w,h);
  function animateCell(index,c,role,now){
@@ -153,6 +192,11 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,animat
   }
   return animator.sample(id,now);
  }
+ function addressAccent(index,c){
+  const row=Math.floor(index/columns),column=index%columns;
+  if(row>=3&&row<=17&&column>=3&&column<=34&&c.fg===14&&c.bg===4&&(row+column+seed)%5===0)return 'logo-edge';
+  return null;
+ }
  function update(seconds=elapsed,{reveal=false,time=seconds,reducedMotion=false,energy=null,artCells=null}={}){
   if(!Number.isFinite(time)||time<0)throw Error('Valid ANSI presentation clock required');const paintStart=performance.now();
   const promptMode=mode==='prompt'||mode==='command',typedCharacters=mode==='prompt'?bootCommand.length:Math.min(bootCommand.length,Math.floor(seconds*bootCommandCps));
@@ -165,11 +209,11 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,animat
   const labelDirty=next.count!==count||force;
   if(next.count<count){buffer.reset();count=0;records.clear();animator.clear();painted.clear();}
   if(count<0)count=0;buffer.feed(stream.slice(count,next.count));count=next.count;if(next.complete&&pendingPatches.length){for(const patch of pendingPatches)buffer.feed(patch);pendingPatches=[];patchBytes=0;}canvas.dataset.queuedPatches=String(pendingPatches.length);
-  if(force||!overlay){controls=manualHotspots?{text:'',spots:manualHotspots,rows:[]}:controlProgram(mode,controlState);overlay=createAnsiBuffer({columns,rows});overlay.feed(controls.text);if(force)painted.clear();}
+  if(force||!overlay){controls=manualHotspots?{text:'',spots:manualHotspots,rows:[]}:controlProgram(mode,controlState,cover);overlay=createAnsiBuffer({columns,rows});overlay.feed(controls.text);if(force)painted.clear();}
   force=false;lastTick=tick;ctx.font='32px '+ansiFontFamily;ctx.textBaseline='top';ctx.imageSmoothingEnabled=false;
   if(priorCursor>=0)painted.delete(priorCursor);let changes=0,animated=0,reactive=0;
   for(let i=0;i<buffer.cells.length;i++){
-   const row=Math.floor(i/columns),art=frameCells?.[i],c=art?{char:art.glyph,fg:art.fg,bg:art.bg}:controls.rows.includes(row)?overlay.cells[i]:buffer.cells[i],x=i%columns*16,y=row*32,role=animation&&!reducedMotion&&!promptMode&&(mode!=='program'||programAnimation)?bootAnsiCellRole(i,c.char,controls.rows):null;
+   const row=Math.floor(i/columns),art=frameCells?.[i],c=art?{char:art.glyph,fg:art.fg,bg:art.bg}:controls.rows.includes(row)?overlay.cells[i]:buffer.cells[i],x=i%columns*16,y=row*32,role=animation&&!reducedMotion&&!promptMode&&(mode!=='program'||programAnimation)?(cover&&mode!=='program'?addressAccent(i,c):bootAnsiCellRole(i,c.char,controls.rows)):null;
    let frame=null,signature;const track=mode==='program'&&!reducedMotion&&(c.char!==' '||c.bg!==0)?programTracks.get(i):null;
    if(track&&animation&&c.char===track.frames[0].glyph){ const id=String(i),key=JSON.stringify(track);if(records.get(i)?.key!==key){animator.cycle(id,track.frames,{at:track.at||0,interval:track.interval||200,transition:track.transition??120,effect:track.effect||'scan',mode:'loop'});records.set(i,{key});}frame=animator.sample(id,time*1000);signature=JSON.stringify(frame.layers);animated++;}
    else if(role==='packet-rail'){const fg=bootAnsiRail(i,time);signature=c.char+'|'+fg+'|'+c.bg;frame={layers:[{glyph:c.char,fg,bg:c.bg,alpha:1,scaleX:1,scaleY:1}]};animated++;}
@@ -184,5 +228,5 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,animat
   canvas.dataset.colourTheme=displayTheme.id;canvas.dataset.columns=String(columns);canvas.dataset.rows=String(rows);canvas.dataset.serialBytes=String(count);canvas.dataset.bps=String(bps);canvas.dataset.complete=String(complete);canvas.dataset.animationCells=String(animated);canvas.dataset.cymaticCells=String(reactive);canvas.dataset.changedCells=String(changes);canvas.dataset.animationFps=animation&&!reducedMotion&&!promptMode?'20':'0';canvas.dataset.mode=mode;canvas.dataset.transparent=String(transparent);canvas.dataset.commandCharacters=String(promptMode?typedCharacters:0);canvas.dataset.paintMs=(performance.now()-paintStart).toFixed(2);if(labelDirty){const label=buffer.text;if(label!==lastLabel){canvas.setAttribute('aria-label',label);lastLabel=label;}}return true;
  }
  ensureAnsiFont().then(()=>{force=true;update(elapsed,{reveal:complete,time:presentation});}).catch(error=>{canvas.dataset.fontError=error.message;});
- update(0);return {canvas,get buffer(){return buffer;},get colourTheme(){return displayTheme.id;},setPalette(id){const next=ansiColourTheme(id);if(displayTheme===next)return false;displayTheme=next;force=true;painted.clear();update(elapsed,{reveal:complete,time:presentation,reducedMotion:lastReduced});return true;},setBps(value){if(![300,1200,2400,9600,14400,21100,56000].includes(value))throw Error('Known serial speed required');serialOffset=Math.max(0,count)-elapsed*value/10;bps=value;},setGrid(nextColumns,nextRows,{preserve=true}={}){const next=createAnsiBuffer({columns:nextColumns,rows:nextRows});if(nextColumns===columns&&nextRows===rows)return; if(preserve)for(let y=0;y<Math.min(rows,nextRows);y++)for(let x=0;x<Math.min(columns,nextColumns);x++)Object.assign(next.cells[y*nextColumns+x],buffer.cells[y*columns+x]);columns=nextColumns;rows=nextRows;buffer=next;canvas.width=columns*16;canvas.height=rows*32;overlay=null;priorCursor=-1;painted.clear();records.clear();animator.clear();force=true;},update,get mode(){return mode;},get hotspots(){return manualHotspots||terminalHotspots(mode);},get program(){return stream;},setMode(next,state={}){if(!['prompt','command','dialer','receiving','held'].includes(next))throw Error('Unknown terminal mode');const key=JSON.stringify([next,state]);if(key===modeKey)return;modeKey=key;const changed=mode!==next;mode=next;controlState=state;manualHotspots=null;commandProgramKey='';if(changed){serialOffset=0;pendingPatches=[];patchBytes=0;buffer.reset();stream=next==='dialer'?dialerAnsi({recipient,label,bps,...state}):next==='held'?heldAnsi({recipient,label,bps,...state}):connectionAnsi({recipient,label,bps});count=-1;elapsed=0;records.clear();animator.clear();painted.clear();}force=true;update(elapsed,{reveal:mode!=='receiving',time:presentation});},setControls(patch){controlState={...controlState,...patch};modeKey=JSON.stringify([mode,controlState]);commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setFocus(id){if(controlState.focus===id)return;controlState={...controlState,focus:id};commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setProgram(text,{hotspots=[],animation:animateProgram=false,preserve=false}={}){if(typeof text!=='string'||text.length>128000||!Array.isArray(hotspots)||hotspots.length>96)throw Error('Bounded ANSI program required');mode='program';programAnimation=animateProgram===true;programTracks=new Map();reactiveCells=new Map();if(animateProgram&&typeof animateProgram==='object'){if(!Array.isArray(animateProgram.tracks)||animateProgram.tracks.length>256)throw Error('Bounded ANSI art tracks required');for(const t of animateProgram.tracks){if(!Number.isInteger(t.row)||t.row<1||t.row>rows||!Number.isInteger(t.column)||t.column<1||t.column>columns||!Array.isArray(t.frames)||t.frames.length>16)throw Error('Bounded ANSI art cell required');programTracks.set((t.row-1)*columns+t.column-1,t);}}if(animateProgram?.cymatics){if(!Array.isArray(animateProgram.cymatics)||animateProgram.cymatics.length>4)throw Error('Bounded ANSI audio regions required');for(const r of animateProgram.cymatics){if(!Number.isInteger(r.row)||!Number.isInteger(r.column)||!Number.isInteger(r.width)||!Number.isInteger(r.height)||r.row<1||r.column<1||r.row+r.height>rows+1||r.column+r.width>columns+1||!Number.isFinite(r.intensity)||r.intensity<0||r.intensity>1)throw Error('Bounded ANSI audio region required');const count=r.width*r.height,budget=r.style==='trip'?384:128;for(let n=0;n<Math.min(count,budget);n++){const offset=Math.floor(n*count/Math.min(count,budget)),y=r.row-1+Math.floor(offset/r.width),x=r.column-1+offset%r.width;reactiveCells.set(y*columns+x,r);}}}pendingPatches=[];patchBytes=0;stream=preserve?text.replace(/\x1b\[2J/g,''):text;manualHotspots=hotspots;serialOffset=0;if(!preserve)buffer.reset();count=-1;modeKey='';elapsed=0;force=true;records.clear();animator.clear();painted.clear();update(0,{time:presentation});},patch(text){if(typeof text!=='string'||text.length>16000)throw Error('Bounded ANSI patch required');if(!complete){if(pendingPatches.length>=128||patchBytes+text.length>128000)throw Error('Pending ANSI patch budget exceeded');pendingPatches.push(text);patchBytes+=text.length;canvas.dataset.queuedPatches=String(pendingPatches.length);return false;}buffer.feed(text);force=true;return update(elapsed,{reveal:true,time:presentation});},setAnimationEnabled(value){animation=!!value;force=true;update(elapsed,{reveal:complete,time:presentation});},get commandDuration(){return bootCommand.length/bootCommandCps;},get duration(){return (manualHotspots===null?connectionAnsi({recipient,label,bps}).length:stream.length)*10/bps;},get elapsed(){return elapsed;},get revision(){return revision;},get complete(){return complete;},reset(){pendingPatches=[];patchBytes=0;buffer.reset();count=-1;records.clear();animator.clear();painted.clear();return update(0,{time:presentation});},reveal(){return update(elapsed,{reveal:true,time:presentation});}};
+ update(0);return {canvas,get buffer(){return buffer;},get colourTheme(){return displayTheme.id;},setPalette(id){const next=ansiColourTheme(id);if(displayTheme===next)return false;displayTheme=next;force=true;painted.clear();update(elapsed,{reveal:complete,time:presentation,reducedMotion:lastReduced});return true;},setBps(value){if(![300,1200,2400,9600,14400,21100,56000].includes(value))throw Error('Known serial speed required');serialOffset=Math.max(0,count)-elapsed*value/10;bps=value;receiving=connectionAnsi({recipient,label,bps,cover,seed});},setGrid(nextColumns,nextRows,{preserve=true}={}){const next=createAnsiBuffer({columns:nextColumns,rows:nextRows});if(nextColumns===columns&&nextRows===rows)return; if(preserve)for(let y=0;y<Math.min(rows,nextRows);y++)for(let x=0;x<Math.min(columns,nextColumns);x++)Object.assign(next.cells[y*nextColumns+x],buffer.cells[y*columns+x]);columns=nextColumns;rows=nextRows;buffer=next;canvas.width=columns*16;canvas.height=rows*32;overlay=null;priorCursor=-1;painted.clear();records.clear();animator.clear();force=true;},update,get mode(){return mode;},get hotspots(){return manualHotspots||terminalHotspots(mode);},get program(){return stream;},setMode(next,state={}){if(!['prompt','command','dialer','receiving','held'].includes(next))throw Error('Unknown terminal mode');const key=JSON.stringify([next,state]);if(key===modeKey)return;modeKey=key;const changed=mode!==next;mode=next;controlState=state;manualHotspots=null;commandProgramKey='';if(changed){serialOffset=0;pendingPatches=[];patchBytes=0;buffer.reset();stream=next==='dialer'?dialerAnsi({recipient,label,bps,...state}):next==='held'?heldAnsi({recipient,label,bps,cover,seed,...state}):receiving;count=-1;elapsed=0;records.clear();animator.clear();painted.clear();}force=true;update(elapsed,{reveal:mode!=='receiving',time:presentation});},setControls(patch){controlState={...controlState,...patch};modeKey=JSON.stringify([mode,controlState]);commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setFocus(id){if(controlState.focus===id)return;controlState={...controlState,focus:id};commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setProgram(text,{hotspots=[],animation:animateProgram=false,preserve=false}={}){if(typeof text!=='string'||text.length>128000||!Array.isArray(hotspots)||hotspots.length>96)throw Error('Bounded ANSI program required');mode='program';programAnimation=animateProgram===true;programTracks=new Map();reactiveCells=new Map();if(animateProgram&&typeof animateProgram==='object'){if(!Array.isArray(animateProgram.tracks)||animateProgram.tracks.length>256)throw Error('Bounded ANSI art tracks required');for(const t of animateProgram.tracks){if(!Number.isInteger(t.row)||t.row<1||t.row>rows||!Number.isInteger(t.column)||t.column<1||t.column>columns||!Array.isArray(t.frames)||t.frames.length>16)throw Error('Bounded ANSI art cell required');programTracks.set((t.row-1)*columns+t.column-1,t);}}if(animateProgram?.cymatics){if(!Array.isArray(animateProgram.cymatics)||animateProgram.cymatics.length>4)throw Error('Bounded ANSI audio regions required');for(const r of animateProgram.cymatics){if(!Number.isInteger(r.row)||!Number.isInteger(r.column)||!Number.isInteger(r.width)||!Number.isInteger(r.height)||r.row<1||r.column<1||r.row+r.height>rows+1||r.column+r.width>columns+1||!Number.isFinite(r.intensity)||r.intensity<0||r.intensity>1)throw Error('Bounded ANSI audio region required');const count=r.width*r.height,budget=r.style==='trip'?384:128;for(let n=0;n<Math.min(count,budget);n++){const offset=Math.floor(n*count/Math.min(count,budget)),y=r.row-1+Math.floor(offset/r.width),x=r.column-1+offset%r.width;reactiveCells.set(y*columns+x,r);}}}pendingPatches=[];patchBytes=0;stream=preserve?text.replace(/\x1b\[2J/g,''):text;manualHotspots=hotspots;serialOffset=0;if(!preserve)buffer.reset();count=-1;modeKey='';elapsed=0;force=true;records.clear();animator.clear();painted.clear();update(0,{time:presentation});},patch(text){if(typeof text!=='string'||text.length>16000)throw Error('Bounded ANSI patch required');if(!complete){if(pendingPatches.length>=128||patchBytes+text.length>128000)throw Error('Pending ANSI patch budget exceeded');pendingPatches.push(text);patchBytes+=text.length;canvas.dataset.queuedPatches=String(pendingPatches.length);return false;}buffer.feed(text);force=true;return update(elapsed,{reveal:true,time:presentation});},setAnimationEnabled(value){animation=!!value;force=true;update(elapsed,{reveal:complete,time:presentation});},get commandDuration(){return bootCommand.length/bootCommandCps;},get duration(){return (manualHotspots===null?receiving.length:stream.length)*10/bps;},get elapsed(){return elapsed;},get revision(){return revision;},get complete(){return complete;},reset(){pendingPatches=[];patchBytes=0;buffer.reset();count=-1;records.clear();animator.clear();painted.clear();return update(0,{time:presentation});},reveal(){return update(elapsed,{reveal:true,time:presentation});}};
 }

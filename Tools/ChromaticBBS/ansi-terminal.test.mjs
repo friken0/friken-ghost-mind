@@ -133,3 +133,20 @@ test('live art changes display glyphs without modifying the received buffer',()=
  assert.equal(letters.at(-1),'X');
  assert.equal(terminal.buffer.cells[0].char,'A');
 });
+
+test('an addressed cover draws bounded art, readable subject and exact connected controls',()=>{
+ const buffer=createAnsiBuffer();
+ const cover={art:'postmark-stamp',title:'The First Postmark',preview:'A greeting from Friktal. First mail for your observatory.'};
+ buffer.feed(heldAnsi({recipient:'Finch',cover,bps:14400,seed:90,boardStatus:'PUBLIC REGISTRY'}));
+ assert.match(buffer.text,/CONNECT 14400 \/ 8N1/);
+ assert.match(buffer.text,/TO \/ FINCH/);
+ assert.match(buffer.text,/The First Postmark/);
+ assert.match(buffer.text,/for your observatory/);
+ assert.match(buffer.text,/OPEN THE REPLY/);
+ assert.doesNotMatch(buffer.text,/PUBLIC REGISTRY|CALLER: SURREAL/);
+ assert.ok(buffer.cells.filter(c=>c.char==='▀').length>50);
+ assert.ok(buffer.text.split('\n').slice(1,-1).every(row=>row.startsWith('║')&&row.endsWith('║')));
+ const other=createAnsiBuffer();other.feed(heldAnsi({recipient:'Surreal',cover:{...cover,art:'eye'}}));
+ assert.match(other.text,/TO \/ SURREAL/);
+ assert.notDeepEqual(other.cells.slice(3*80,4*80+35),buffer.cells.slice(3*80,4*80+35));
+});

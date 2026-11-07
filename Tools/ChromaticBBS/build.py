@@ -44,8 +44,8 @@ framework = json.loads((base/'framework.json').read_text())
 
 sources = []
 for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','vendor/sdf-craft/runtime-catalogue.mjs','vendor/sdf-craft/recipe.mjs','vendor/sdf-craft/recipe-glsl.mjs','vendor/sdf-craft/texture-engine.mjs','vendor/sdf-craft/material-worker-source.mjs','vendor/sdf-craft/materials-client.mjs','vendor/sdf-craft/materials.mjs','vendor/sdf-craft/material-glsl.mjs','vendor/sdf-craft/roll.mjs','facial-rig.mjs','music-data.mjs','modem.mjs','audio.mjs','art-data.mjs','alien-comms.mjs','creation.mjs','causality.mjs','engine.mjs', 'canon.mjs', 'scanner.mjs', 'image-cinema.mjs', 'ansi-scenes.mjs', 'storycraft.mjs', 'staging-art.mjs','staging.mjs', 'chapters.mjs', 'storage.mjs', '../InfiniEngineSite/ghost-renderer.js',
-             'dream-face.mjs','face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'stage.mjs',
-             'ansi-animation.mjs','ansi-ui.mjs','ansi-terminal.mjs','ansi-mesh.mjs','boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'story-guidance.mjs', 'turn-out-of-time-data.mjs', 'reply-discoveries.mjs', 'door-and-crew.mjs', 'response-theater.mjs','ghostlink-transport.mjs','ansi-sprites.mjs','ansi-skirmish.mjs','mind-adventure.mjs','subtitle-cues.mjs','native-response-host.mjs','illustration-data.mjs','image-depth.mjs','reply-media.mjs','letter-relay.mjs','ansi-illustration.mjs','native-response-program.mjs', 'retained-chapter.mjs', 'framework-mode.mjs', 'turn-out-of-time.mjs' if retained else 'app.mjs'):
+             'dream-face.mjs','face-data.mjs', 'portrait.mjs', 'rose-data.mjs', 'postmark-bloom.mjs','stage.mjs',
+             'ansi-animation.mjs','ansi-ui.mjs','ansi-terminal.mjs','ansi-mesh.mjs','boot-world.mjs', 'cinema.mjs', 'chapter-library.mjs', 'session-share.mjs', 'chapter-data.mjs', 'commentary.mjs', 'shell.mjs', 'juice.mjs', 'life-theater.mjs','roll-battle.mjs', 'recorded-voice.mjs', 'voice-data.mjs', 'neural-voice.mjs', 'speech.mjs', 'response.mjs', 'mind-data.mjs', 'story-guidance.mjs', 'turn-out-of-time-data.mjs', 'reply-discoveries.mjs', 'door-and-crew.mjs', 'response-theater.mjs','ghostlink-transport.mjs','ansi-sprites.mjs','ansi-skirmish.mjs','mind-adventure.mjs','subtitle-cues.mjs','native-response-host.mjs','illustration-data.mjs','image-depth.mjs','reply-media.mjs','letter-relay.mjs','letter-relay-art.mjs','ansi-illustration.mjs','native-response-program.mjs', 'retained-chapter.mjs', 'framework-mode.mjs', 'turn-out-of-time.mjs' if retained else 'app.mjs'):
     source = (base / name).read_text()
     if name == 'music-data.mjs' and args.bundle_track:
         tracks = json.loads((base/'media/manifest.json').read_text())['tracks']
@@ -76,6 +76,12 @@ for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','v
             metadata = json.loads((path/'illustration.json').read_text())
             if metadata.get('schema') != 'friktal.illustration-depth.v1':
                 parser.error('Unrecognized illustration format')
+            credit = metadata.get('source', 'Original photo and Friktal screenshot')
+            if not isinstance(credit, str) or not credit.strip() or len(credit) > 160 or not credit.isprintable():
+                parser.error('Illustration source must be a short, printable credit')
+            ground_from = metadata.get('groundFrom')
+            if ground_from is not None and (type(ground_from) not in (float, int) or not .16 <= ground_from <= 1):
+                parser.error('Invalid illustration ground-contact row')
             def package(filename, mime):
                 file = path/filename
                 if not 0 < file.stat().st_size <= 4_000_000:
@@ -83,13 +89,14 @@ for name in ('vendor/sdf-craft/craft.mjs','vendor/sdf-craft/craft-shader.mjs','v
                 return 'data:image/'+mime+';base64,'+base64.b64encode(file.read_bytes()).decode('ascii')
             media[node_id] = dict(
                 id='depth:'+node_id, title=metadata['title'], alt=metadata['alt'],
-                source='Original photo and Friktal screenshot',
+                source=credit,
                 sha256=hashlib.sha256((path/'poster.webp').read_bytes()).hexdigest(),
                 url=package('poster.webp','webp'), contain=True, depth=dict(
                     background=package('background.webp','webp'),
                     subject=package('subject.webp','webp'),
                     backgroundDepth=package('background-depth.png','png'),
-                    subjectDepth=package('subject-depth.png','png')))
+                    subjectDepth=package('subject-depth.png','png'),
+                    groundFrom=ground_from))
         source = 'export const replyMedia='+json.dumps(media,ensure_ascii=False).replace('</','<\\/')+';'
 
     if name == 'chapter-data.mjs' and args.chapter:
