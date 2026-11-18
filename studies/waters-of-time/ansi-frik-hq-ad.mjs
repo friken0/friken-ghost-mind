@@ -1,5 +1,5 @@
 import {ansiLightPulse} from './ansi-animation.mjs?v=surface-light-3';
-import {frikStoryGrade,gradeFrikStory,frikStoryIndex} from './ansi-frik-story.mjs?v=lancing-1';
+import {frikStoryGrade,gradeFrikStory,frikStoryIndex} from './ansi-frik-story.mjs?v=lancing-2';
 
 const letters={
  F:['11111','10000','10000','11110','10000','10000','10000'],

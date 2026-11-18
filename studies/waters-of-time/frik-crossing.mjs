@@ -1,7 +1,7 @@
 // The lens shape is drawn from the public-domain NASA frame STS088-724-66.
 // Coordinates describe the cranked shoulder, broad chipped heel and long lower spar.
 import {mandelEscape} from './ansi-mandel-field.mjs';
-import {flightTraces} from './lancing-route.mjs';
+import {flightTraces} from './lancing-route.mjs?v=lancing-2';
 import {globeAtlas} from './frik-planet-atlas.mjs';
 import {clamp,mix,smooth} from './ansi-frik-color.mjs';
 export const crossing=[
@@ -223,10 +223,10 @@ function frontRange(x,y,f,sky){
   const fall=y-ridge;
   const vein=Math.sin(px*39+8*Math.sin(px*12)+fall*19)+.4*Math.sin(px*123+fall*55);
   const gull=px+.19*fall+.047*Math.sin(7*px+fall*10);
-  const h=mountainLine(gull+.001,k)-mountainLine(gull,k);
+  const h=mountainLine(gull+.002,k)-mountainLine(gull,k);
   ink=mix(k===0?0x434364:k===1?0x32334c:0x192d38,k===0?0xe6bcb1:k===1?0x9b7a7e:0x586165,
-   clamp(.36+h*68+.19*vein-.72*fall));
-  if(k<2&&fall<.014+.020*vein&&h<.0014)ink=mix(ink,0xf8d5bd,.76);
+   clamp(.36+h*39+.16*vein-.72*fall));
+  if(k<2&&fall<.014+.020*vein&&h<.0014)ink=mix(ink,0xf8d5bd,.55);
   if(k===2&&fall>.035){
    const p=px*128,tree=Math.abs(p-Math.round(p));
    if(fall<.113&&tree<fall*3.7)ink=mix(ink,0x102430,.72);
@@ -238,7 +238,15 @@ function frontRange(x,y,f,sky){
   ink=mix(ink,0xcaad99,smooth((.0014-f.pixel)*1200)*.21*layer);
  }
  // Windows of the town below the ridge, reflected in the wet rail cut.
- if(y>.55&&y<.566+.024*Math.sin(x*11)&&Math.sin(x*437)>.72)ink=0xf2b76b;
+ const street=.579+.022*Math.sin(x*9)+.008*Math.cos(x*36);
+ if(Math.abs(y-street)<.0024&&Math.sin(x*437)>.84)ink=0xe7ac75;
+ if(x>.031&&x<.222){
+  const roof=.614-.28*Math.min(x-.031,.222-x);
+  if(y>roof&&y<.665){
+   ink=y<roof+.009?0x9e8381:0x3d3944;
+   if(Math.abs(y-.637)<.008&&Math.cos(x*240)>.45)ink=0xd9a674;
+  }
+ }
  const lead=Math.abs(y-.29-.31*(x-.26)-.048*Math.sin((x-.26)*7));
  if(x>.26&&x<.74&&lead<.002)ink=0x252638;
  return ink;
@@ -358,34 +366,62 @@ function workshop(x,y,f,ink){
  }
  return ink;
 }
+// Tesla in three-quarter profile. The suit is cut into shoulder, elbow,
+// waistcoat and cuff; the exposed knife switch is just beyond his fingers.
 function operatorInk(x,y,under){
- const u=(x-.393)/.044,v=(y-.423)/.077;
+ const u=(x-.390)/.049,v=(y-.420)/.084;
  let ink=under;
- // Frock coat, sloping lapels, high collar, then an asymmetrical lit face in profile.
- const coat=((x-.383)/.068)**2+((y-.598)/.147)**2;
- if(coat<1){
-  ink=mix(0x182331,0x586275,clamp(.37+(x-.36)*5+.24*Math.cos((x-.38)*61)));
-  const lapel=Math.abs(x-.386+.17*(y-.55));
-  if(y<.60&&lapel<.013)ink=mix(0x303344,0xc4b6a0,clamp((.013-lapel)*62));
-  if(y>.56&&Math.abs(x-.397)<.0028&&Math.cos(y*134)>.7)ink=0xc5a377;
+ const tx=(x-.380)/.084,ty=(y-.492)/.232;
+ const shoulder=.50+.52*smooth(ty/.20)-.32*smooth((ty-.37)/.63);
+ if(ty>-.093&&ty<1.07&&tx> -shoulder+.13*ty&&tx<shoulder-.34*ty&&ty>-.14+.20*Math.abs(tx-.03)){
+  const weave=.04*Math.cos(tx*83+ty*22);
+  ink=mix(0x131d2b,0x566172,clamp(.25+.35*(1-Math.abs(tx+.09))+.15*tx+.13*Math.sin(tx*9+ty*4)+weave));
+  const lapel=tx-.053+.27*ty;
+  if(ty<.58&&lapel>-.22+.16*ty&&lapel<.25-.52*ty)ink=mix(0x948573,0xe2d4ae,clamp(.75-.9*ty-.5*tx));
+  if(ty<.39&&Math.abs(lapel-.02)<.06-.06*ty)ink=0x3b323b;
+  const seam=Math.abs(tx+.29-.49*ty-.083*Math.sin(ty*7));
+  if(ty<.78&&seam<.051)ink=mix(ink,0x82909c,.53);
+  if(ty>.49&&Math.abs(tx+.046)<.029&&Math.cos(ty*34)>.77)ink=0xa89b80;
  }
- const head=(u/.73)**2+((v+.13)/.91)**2;
- if(head<1){
-  const round=Math.sqrt(1-head);
-  ink=mix(0x4a3540,0xe2b18a,clamp(.19+.65*round+.25*u-.10*v));
-  if(v<-.63+.13*Math.cos(u*5)||u<-.46+.05*Math.cos(v*4)){
-   ink=mix(0x202634,0x665247,clamp(.23+.26*Math.sin(u*21+v*3)));
+ // The left hand steadies the station log on the near edge of the table.
+ const lower=Math.abs(y-.644-.96*(x-.336));
+ if(x>.313&&x<.397&&lower<.026-.13*(x-.315))ink=mix(0x253144,0x586071,clamp(.63-lower*20));
+ if(x>.388&&x<.420&&Math.abs(y-.704+.12*(x-.405))<.009)ink=0xbe9877;
+ if(u>-.34&&u<.34&&v>.46&&v<1.04)ink=mix(0x694c47,0xbc9676,clamp(.45+u-v*.17));
+ // Measured profile sections. The brow, nose, lips and projecting chin have different depths.
+ let left=0,right=0;
+ for(const [top,bottom,l0,l1,r0,r1] of [[-1.19,-.98,-.25,-.69,-.25,.21],[-.98,-.70,-.69,-.79,.21,.44],[-.70,-.41,-.79,-.76,.44,.57],[-.41,-.26,-.76,-.66,.57,.51],[-.26,-.04,-.66,-.60,.51,.83],[-.04,.08,-.60,-.58,.83,.63],[.08,.19,-.58,-.48,.63,.52],[.19,.28,-.48,-.42,.52,.62],[.28,.46,-.42,-.27,.62,.50],[.46,.65,-.27,.05,.50,.36],[.65,.72,.05,.19,.36,.19]]){
+  if(v>=top&&v<bottom){const k=(v-top)/(bottom-top);left=l0+(l1-l0)*k;right=r0+(r1-r0)*k;}
+ }
+ if(right>left&&u>left&&u<right){
+  const q=(u-left)/(right-left),round=Math.sqrt(Math.max(0,4*q*(1-q)));
+  ink=mix(0x64474a,0xe4b68c,clamp(.14+.58*round+.28*q-.12*v));
+  const hairline=-.68+.75*smooth((-u-.07)*2.7);
+  if(v<hairline||u<-.53){
+   const curl=.5+.5*Math.cos((u+.33*v*v)*27+2*Math.sin(v*4));
+   ink=mix(0x1c2433,0x74615a,clamp(.15+.35*curl+.24*q-.16*v));
+  }else{
+   const cheek=Math.exp(-(((u-.26)/.34)**2)-((v-.02)/.16)**2);
+   ink=mix(ink,0xf4caa0,cheek*.44);
+   if(v>.23&&u<.42)ink=mix(ink,0x8b665e,clamp(.39-(v-.37)*1.8));
+   const brow=Math.abs(v+.40-.11*(u-.24));
+   if(u>.04&&u<.55&&brow<.047)ink=0x504044;
+   const eye=((u-.345)/.135)**2+((v+.276)/.045)**2;
+   if(eye<1)ink=u>.348&&u<.413?0x242938:0xc2a38d;
+   const whisker=Math.abs(v-.142-.19*Math.abs(u-.45));
+   if(u>.245&&u<.655&&whisker<.048)ink=0x47373a;
+   if(u>.40&&Math.abs(v-.285)<.020)ink=0x875b51;
   }
-  if(u>.11&&v>-.44&&v<-.31+.13*u)ink=mix(ink,0x46353b,.92);
-  if(u>.28&&u<.43&&v>-.32&&v<-.26)ink=0xe9c8a2;
-  if(v>.15&&v<.23+.12*u&&u>.22)ink=0x40323a;
  }
- if(u>.51&&u<.93&&v>-.33+.54*(u-.51)&&v<.10-.20*(u-.51))ink=mix(0x936555,0xe5b88e,clamp(.75-2*v));
- const ear=((u+.5)/.18)**2+((v+.05)/.25)**2;
- if(ear<1)ink=mix(0x795449,0xc49476,.3+.53*ear);
- const sleeve=Math.abs(y-.56+.21*(x-.42));
- if(x>.40&&x<.519&&sleeve<.021)ink=mix(0x273343,0x808085,clamp(.75-sleeve*28));
- if(x>.503&&x<.543&&sleeve<.011)ink=mix(0x966e5c,0xeac198,clamp(.87-sleeve*31));
+ const ear=((u+.46)/.148)**2+((v+.13)/.225)**2;
+ if(ear<1)ink=mix(0x80584f,0xc09375,.20+.62*ear);
+ // Bent sleeve: distinct upper arm and forearm, covered at the elbow.
+ const upper=Math.abs(y-.553-.91*(x-.416));
+ if(x>.398&&x<.455&&upper<.021)ink=mix(0x2a3445,0x5f6875,clamp(.68-upper*25));
+ const sleeve=Math.abs(y-.581+.51*(x-.449));
+ if(x>.443&&x<.514&&sleeve<.014+.06*(.514-x))ink=mix(0x303c50,0x87919a,clamp(.73-sleeve*39));
+ if(x>.506&&x<.516&&sleeve<.012)ink=0xd8cbb2;
+ if(x>.516&&x<.55&&Math.abs(y-.548+.25*(x-.526))<.0065)ink=mix(0xad7f65,0xefc9a3,clamp(.6+(x-.53)*18));
  return ink;
 }
 export function crossingInk(x,y,f){
@@ -398,10 +434,11 @@ export function crossingInk(x,y,f){
  if(star>.905&&Math.abs(sx*82-a-.5)+Math.abs(sy*48-b-.5)<.23)ink=mix(ink,0xe0e9cc,.52+.4*star);
  if(chapter===1){
   ink=workshop(x,y,f,frontRange(x,y,f,ink));
+  const background=ink;
   const tower=Math.abs(x-.28),height=.65-y;
   if(height>0&&height<.51&&tower<.006+.047*(1-height/.51)){
    ink=mix(0x704740,0xe0af78,clamp(.75-tower*10));
-   if(tower>.0025&&tower<.042*(1-height/.51)&&Math.abs(Math.sin(height*69+tower*153))>.28)ink=workshop(x,y,f,frontRange(x,y,f,0x253044));
+   if(tower>.0025&&tower<.042*(1-height/.51)&&Math.abs(Math.sin(height*69+tower*153))>.28)ink=tower<.004?0x50414a:background;
    if(height>.14&&height<.38&&tower<.005)ink=mix(0x6b443a,0xc18655,.5+.45*Math.cos(height*740));
   }
   const torus=((x-.28)/.068)**2+((y-.164)/.025)**2;

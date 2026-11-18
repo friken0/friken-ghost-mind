@@ -1,5 +1,5 @@
-import {crossingPort} from './lancing-route.mjs';
-import {renderFrikMindRows} from './ansi-frik-mind.mjs?v=lancing-1';
+import {crossingPort} from './lancing-route.mjs?v=lancing-2';
+import {renderFrikMindRows} from './ansi-frik-mind.mjs?v=lancing-2';
 // Explicit accuracy diagnostic. Its readback is deliberately outside playback.
 export async function auditFrikGpu(gpu,artwork,{deep=false}={}){
  const rows=[],columns=deep?970:128,height=deep?564:74;let buffer;

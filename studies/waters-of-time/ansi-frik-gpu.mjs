@@ -1,9 +1,9 @@
 import {globeAtlas} from './frik-planet-atlas.mjs';
-import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=lancing-1';
-import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=lancing-1';
-import {frikMindFields} from './ansi-frik-mind-art.mjs?v=lancing-1';
-import {frikAdSource,frikAdBounds} from './ansi-frik-hq-ad.mjs?v=lancing-1';
-import {projectState} from './ansi-frik-mind.mjs?v=lancing-1';
+import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=lancing-2';
+import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=lancing-2';
+import {frikMindFields} from './ansi-frik-mind-art.mjs?v=lancing-2';
+import {frikAdSource,frikAdBounds} from './ansi-frik-hq-ad.mjs?v=lancing-2';
+import {projectState} from './ansi-frik-mind.mjs?v=lancing-2';
 
 const vertex=`#version 300 es
 void main(){vec2 p=vec2(gl_VertexID==1?3.:-1.,gl_VertexID==2?3.:-1.);gl_Position=vec4(p,0.,1.);}`;

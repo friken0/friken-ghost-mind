@@ -1,14 +1,14 @@
 import {clamp,smooth,mix} from './ansi-frik-color.mjs';
 export {clamp,smooth,mix} from './ansi-frik-color.mjs';
 import {mandelEscape} from './ansi-mandel-field.mjs';
-import {globeInk,knightInk} from './frik-crossing.mjs?v=lancing-1';
-import {frikIdleMotion} from './ansi-frik-motion.mjs?v=lancing-1';
-import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=lancing-1';
-import {mirrorAnsiInk} from './ansi-mirror.mjs?v=lancing-1';
+import {globeInk,knightInk} from './frik-crossing.mjs?v=lancing-2';
+import {frikIdleMotion} from './ansi-frik-motion.mjs?v=lancing-2';
+import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=lancing-2';
+import {mirrorAnsiInk} from './ansi-mirror.mjs?v=lancing-2';
 import {ansiLightPulse} from './ansi-animation.mjs?v=surface-light-3';
-import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-1';
-import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=lancing-1';
-import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=lancing-1';
+import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-2';
+import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=lancing-2';
+import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=lancing-2';
 
 // Each material in the bridge and the three views is authored in ANSI++.
 const ellipse = (x, y, rx, ry) => (x / rx) ** 2 + (y / ry) ** 2;

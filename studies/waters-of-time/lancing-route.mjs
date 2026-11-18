@@ -33,3 +33,9 @@ export const flightTraces=[
 export function flightTraceAt(chapter,pose){
  return flightTraces.find(p=>p.chapter===chapter&&p.r*2**pose.zoom>.20&&Math.hypot((pose.centerX-p.x)/p.r,(pose.centerY-p.y)/(p.r*1.72))<1);
 }
+
+export const crossingHints=[
+ 'A green conductor stays lit on the Black Knight’s unlit face.',
+ 'The switch is open. There is a different ink on the receiver tape.',
+ 'Someone left a mark on the sunward weld.',
+];

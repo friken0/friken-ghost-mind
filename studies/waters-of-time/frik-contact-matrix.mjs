@@ -1,4 +1,4 @@
-import {flightTraces} from './lancing-route.mjs';
+import {flightTraces} from './lancing-route.mjs?v=lancing-2';
 // Offline instrument for one Frik encounter. Repeated samples of the same
 // transmission are one piece of evidence, regardless of frame rate.
 const shore={id:'shell',x:.599,y:.779,r:.026,name:'Under the chipped shell',concept:'answer',hint:'The brood mother keeps turning one shell uphill.'};
@@ -110,4 +110,4 @@ export function recoveredReading(scene,trip,rank,evidence='',answered=false){
  return null;
 }
 
-export {returnArtCamera as traceReturnCamera} from './ansi-review-camera.mjs?v=lancing-1';
+export {returnArtCamera as traceReturnCamera} from './ansi-review-camera.mjs?v=lancing-2';

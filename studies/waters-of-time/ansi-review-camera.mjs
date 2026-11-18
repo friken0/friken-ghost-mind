@@ -1,4 +1,4 @@
-import {logoCamera,heldZoomDepth,beginArtGesture,updateArtPan,artHoldAim} from './ansi-fractal.mjs?v=lancing-1';
+import {logoCamera,heldZoomDepth,beginArtGesture,updateArtPan,artHoldAim} from './ansi-fractal.mjs?v=lancing-2';
 
 const limit=(x,a,b)=>Math.max(a,Math.min(b,x));
 export function reviewReliefAim(pointer){
