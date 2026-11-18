@@ -476,6 +476,28 @@ export function mountAnsiLoupe(root,source,inspect){
 // Changing the camera can invalidate pixels without rewinding the carrier.
 const hasSampledArt=item=>Boolean(item.sample||item.sampleArtBatch);
 
+export const heldZoomDepth=seconds=>Math.min(8,.5+Math.max(0,seconds-.22)*2.3);
+export const isArtPan=(dx,dy)=>Math.hypot(dx,dy)>=5;
+export function beginArtGesture(event,point,seconds){
+ return {id:event.pointerId,at:seconds,startX:event.clientX,startY:event.clientY,point,moved:false};
+}
+export function updateArtPan(drag,event){
+ drag.moved ||= isArtPan(event.clientX-drag.startX,event.clientY-drag.startY);
+ return drag.moved;
+}
+export function artHoldAim(drag,seconds,remaining){
+ if(!drag||drag.moved||seconds-drag.at<.22)return null;
+ return {...drag.point,level:Math.min(Math.max(0,remaining),heldZoomDepth(seconds-drag.at))};
+}
+function drawReviewAim(ctx,canvas,aim,colorTheme,glyph){
+   const {x,y,level}=aim,w=Math.max(10,canvas.width*.44/2**level),h=Math.max(10,canvas.height*.44/2**level);
+   const cx=x*canvas.width,cy=y*canvas.height;
+   const palette=ansiColourTheme(colorTheme).colours;
+   ctx.strokeStyle=palette[0];ctx.lineWidth=4;ctx.strokeRect(cx-w/2,cy-h/2,w,h);
+   ctx.strokeStyle=palette[11];ctx.lineWidth=2;ctx.strokeRect(cx-w/2,cy-h/2,w,h);
+   glyph(ctx,'+ '+level.toFixed(1)+' DEPTH',Math.max(0,Math.min(canvas.width-96,cx-w/2)),Math.max(0,cy-h/2-20),9,palette[15]);
+  }
+
 export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
  const doc=root.ownerDocument,canvas=doc.createElement('canvas');
  canvas.className='ansi-fractal-layer';
@@ -1072,7 +1094,7 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
   inspectOverlay=item.inspectOverlay;inspectionPass=Math.max(1,displayPass+1);
   if(!textureOnly){
    const geometryStamp=[item.centerX,item.centerY,item.zoom,item.viewport?.x,item.viewport?.y,item.letterbox,colorTheme,reduced,displayPass,counts[top],item.smoothSprites,shownRelief?item.reliefFrame:''].join('/');
-   const stamp=[item.overlayKey,geometryStamp,colourMode,item.depthOffset?.join(),layers[displayPass]?.artPhase].join('/');
+   const stamp=[item.aim?.x,item.aim?.y,item.aim?.level,item.overlayKey,geometryStamp,colourMode,item.depthOffset?.join(),layers[displayPass]?.artPhase].join('/');
    const redraw=hasObjects&&(!item.staticOverlay||stamp!==overlayStamp);
    if(redraw){
     spriteEpoch++;
@@ -1336,6 +1358,7 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
      }
     }
     if(item.letterbox)objectsContext.restore();
+    if(item.aim)drawReviewAim(objectsContext,objects,item.aim,colorTheme,glyph);
     if(smoothSprites&&spriteJobs.size)refineSprites(performance.now()+4);
    }
 
@@ -1579,14 +1602,7 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
    });
    canvas.dataset.shipPose=[ship.x/canvas.width,ship.y/canvas.height,ship.px].map(n=>n.toFixed(3)).join(',');
   } else {shipPick=null;delete canvas.dataset.shipPose;delete canvas.dataset.courierPass;}
-  if(item.aim){
-   const {x,y,level}=item.aim,w=Math.max(10,canvas.width*.44/2**level),h=Math.max(10,canvas.height*.44/2**level);
-   const cx=x*canvas.width,cy=y*canvas.height;
-   const palette=ansiColourTheme(colorTheme).colours;
-   ctx.strokeStyle=palette[0];ctx.lineWidth=4;ctx.strokeRect(cx-w/2,cy-h/2,w,h);
-   ctx.strokeStyle=palette[11];ctx.lineWidth=2;ctx.strokeRect(cx-w/2,cy-h/2,w,h);
-   glyph(ctx,'+ '+level.toFixed(1)+' DEPTH',Math.max(0,Math.min(canvas.width-96,cx-w/2)),Math.max(0,cy-h/2-20),9,palette[15]);
-  }
+  if(item.aim&&!hasObjects)drawReviewAim(ctx,canvas,item.aim,colorTheme,glyph);
   if(item.entry&&!reduced){
    const p=clamp((time-item.entry)/1.08,0,1);
    if(p<1){

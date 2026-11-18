@@ -1,11 +1,12 @@
-import {crossing,crossingInk,paintCrossingInstruments} from './frik-crossing.mjs?v=first-crossing-4';
-import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=first-crossing-4';
+import {crossingPort,flightTraces} from './lancing-route.mjs';
+import {crossing,crossingInk,crossingForeground,paintCrossingInstruments} from './frik-crossing.mjs?v=lancing-1';
+import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=lancing-1';
 import {ansiRgbWord,packAnsiRgb,ansiCymaticCell} from './ansi-animation.mjs?v=surface-light-3';
-import {progressivePasses} from './ansi-fractal.mjs?v=frik-mind-46';
-import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=first-crossing-4';
-import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-4';
-import {frikLook} from './ansi-frik-bridge-ink.mjs?v=first-crossing-4';
-import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=first-crossing-4';
+import {progressivePasses} from './ansi-fractal.mjs?v=lancing-1';
+import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=lancing-1';
+import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-1';
+import {frikLook} from './ansi-frik-bridge-ink.mjs?v=lancing-1';
+import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=lancing-1';
 
 export const frikMindGrid = {width:48,height:28};
 const nativeGrades=progressivePasses(frikMindGrid.width,frikMindGrid.height,8);
@@ -111,10 +112,12 @@ export function projectState(shot,time,effects,grade,columns=analysisColumns) {
   const levels = [];
   let incoming=shot.rewinding&&shot.scene<frikMindScenes.length-1;
   let motionSeed=shot.motionSeed==null?undefined:shot.done?nextFrikMotionSeed(shot.motionSeed):shot.motionSeed;
-  for (let depth = 0, index = scene; depth < frikMindScenes.length; depth++, index = after(index)) {
+  let chapter=shot.prologue??-1,index=scene;
+  for (let depth=0;depth<frikMindScenes.length+3;depth++) {
     if(index===frikMindScenes.length-1)incoming=false;
     const artTrip=incoming?rewindArtTrip(index,shot.trip??0,true):shot.trip??0;
-    const gate = frikMindSceneSet(artTrip)[index];
+    const socket=chapter>=0&&chapter<7?crossingPort(chapter===2?3:chapter,effects?time:0):null;
+    const gate=socket??frikMindSceneSet(artTrip)[index];
     const travel=Math.max(-2,Math.min(9,-Math.log2(span)));
     const phase=travel*1.12+index*.91;
     const yaw=1.58*Math.sin(phase+.37)+.36*Math.sin(phase*1.91)+aimX;
@@ -122,10 +125,17 @@ export function projectState(shot,time,effects,grade,columns=analysisColumns) {
     const reach=Math.min(1,span**.64);
     const data=makeMindState(index,time,effects,pixel,yaw*reach,motionSeed??index*7919,grade,artTrip,
       shot.audio,shot.rewinding,pitch*reach,yaw,pitch);
-    data.prologue=shot.prologue??-1;data.beatAge=shot.beatAge??7;
+    data.prologue=chapter;data.beatAge=depth===0?(shot.beatAge??7):0;data.travel=depth===0?(shot.travel??0):0;
     data.answered=!!shot.answered;
     levels.push({index,gate,span,data,trace:frikTrace(index,data.layout.mirrorBridge)});
-    if(data.prologue>=0&&data.prologue<7)break;
+    if(chapter>=0&&chapter<7){
+      if(!socket)break;
+      chapter=chapter===2?4:chapter+1;index=0;pixel/=gate.span;span/=gate.span;
+      if(span/columns>2)break;
+      continue;
+    }
+    chapter=-1;index=after(index);
+    if(index===scene)break;
     if(motionSeed!=null)motionSeed=nextFrikMotionSeed(motionSeed);
     pixel/=gate.span;
     span/=gate.span;
@@ -135,7 +145,13 @@ export function projectState(shot,time,effects,grade,columns=analysisColumns) {
 
 function sampleLevel(levels, level, x, y) {
   const {index,gate,data,span}=levels[level];
-  if(data.prologue>=0&&data.prologue<7)return crossingInk(x,y,data);
+  if(data.prologue>=0&&data.prologue<7){
+    const u=(x-gate.x)/gate.span,v=(y-gate.y)/gate.span,metric=u*u+v*v;
+    const child=level+1<levels.length&&metric<.82;
+    let ink=child&&metric<=.52?0:crossingInk(x,y,data);
+    if(child)ink=mix(ink,sampleLevel(levels,level+1,u+.5,v+.5),smooth((.82-metric)/.30));
+    return crossingForeground(x,y,data,ink);
+  }
   const u=(x-gate.x)/gate.span, v=(y-gate.y)/gate.span;
   const metric = aperture(u, v, index);
   const edgeLimit=data.style.shore?.92:.695;
@@ -249,7 +265,12 @@ function surfaceSocket(u,v,index,gate,data){
 function lightAndMotes(put, state) {
   let scale = 1 / state.window, ox = .5 - state.x * scale, oy = .5 - state.y * scale;
   for (const {index, gate, data} of state.levels.slice(0, 3)) {
-    if(data.prologue>=0&&data.prologue<7){paintCrossingInstruments(put,state);return;}
+    if(data.prologue>=0&&data.prologue<7){
+      const visibility=state.levels[0].data===data?1:smooth((scale-.16)/.70);
+      if(visibility>0)paintCrossingInstruments(put,{levels:[{data}],window:1/scale,x:(.5-ox)/scale,y:(.5-oy)/scale,visibility});
+      ox+=(gate.x-gate.span*.5)*scale;oy+=(gate.y-gate.span*.5)*scale;scale*=gate.span;
+      continue;
+    }
     if(data.style.paintCells&&gate.span*scale<2){
       data.style.paintCells(put,data,scale,ox,oy);
     }
@@ -304,7 +325,8 @@ function paintStoryCaption(put,state){
   const {index}=state.levels[level];
   const chapter=state.levels[0].data.prologue;
   if(chapter>=0){
-    const [title,line]=crossing[chapter];
+    const evidence=flightTraces.find(p=>p.id===state.narration.find);
+    const [title,line]=evidence?[evidence.name,evidence.line]:crossing[chapter];
     put.depthRegion(1,()=>{
       put(.035,.79,.93,.20,'#060d1cf0');
       put.textBlock(title.toUpperCase(),.06,.803,.88,.038,.030,'#f7ce94',{maxSize:26,maxLines:1});

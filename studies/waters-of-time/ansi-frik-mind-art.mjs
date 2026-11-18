@@ -1,14 +1,14 @@
 import {clamp,smooth,mix} from './ansi-frik-color.mjs';
 export {clamp,smooth,mix} from './ansi-frik-color.mjs';
 import {mandelEscape} from './ansi-mandel-field.mjs';
-import {globeInk,knightInk} from './frik-crossing.mjs?v=first-crossing-4';
-import {frikIdleMotion} from './ansi-frik-motion.mjs?v=first-crossing-4';
-import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=first-crossing-4';
-import {mirrorAnsiInk} from './ansi-mirror.mjs?v=frik-mind-46';
+import {globeInk,knightInk} from './frik-crossing.mjs?v=lancing-1';
+import {frikIdleMotion} from './ansi-frik-motion.mjs?v=lancing-1';
+import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=lancing-1';
+import {mirrorAnsiInk} from './ansi-mirror.mjs?v=lancing-1';
 import {ansiLightPulse} from './ansi-animation.mjs?v=surface-light-3';
-import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-4';
-import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=first-crossing-4';
-import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=frik-mind-46';
+import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-1';
+import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=lancing-1';
+import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=lancing-1';
 
 // Each material in the bridge and the three views is authored in ANSI++.
 const ellipse = (x, y, rx, ry) => (x / rx) ** 2 + (y / ry) ** 2;
@@ -504,7 +504,7 @@ function orbit(x,y,f) {
       if(n>.928)color=mark(color,n>.986?0xbadfe5:0x4d7894,
         Math.hypot(repeat(x,1/71),repeat(y,1/46)),n>.986?.0035:.0017,f.pixel);
     }
-    color=knightInk((x-.184)/.14,(y-.127)/.22,color);
+    color=knightInk((x-.184)/.14,(y-.127)/.22,color,f.pixel,f.time);
     return color;
   }
   const z=Math.sqrt(Math.max(0,1-r));
@@ -513,7 +513,7 @@ function orbit(x,y,f) {
   const land=Math.sin(bx*4.2+lat*3.6+f.trip*.57)+.65*Math.sin(lat*10-bx*5)+.29*Math.cos(lat*25+bx*18)+
     .14*Math.sin(lat*51-bx*41);
   const arc=ellipse(x-.600+.022*Math.sin(y*29),y-.537+.031*Math.sin(x*16),.090,.104);
-  let color=globeInk(dx,dy,f.time,1);
+  let color=globeInk(dx,dy,f.time,1,f.pixel);
   if(arc<1.45){
     const shoal=clamp((1.45-arc)*.70);
     color=mix(color,arc>.74?0x6c9f91:0x245c72,shoal*.82);

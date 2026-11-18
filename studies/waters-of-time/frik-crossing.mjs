@@ -1,13 +1,15 @@
 // The lens shape is drawn from the public-domain NASA frame STS088-724-66.
 // Coordinates describe the cranked shoulder, broad chipped heel and long lower spar.
+import {mandelEscape} from './ansi-mandel-field.mjs';
+import {flightTraces} from './lancing-route.mjs';
 import {globeAtlas} from './frik-planet-atlas.mjs';
 import {clamp,mix,smooth} from './ansi-frik-color.mjs';
 export const crossing=[
  ['Earth · 1899','We called it the Black Knight. It passed over Earth long before anyone thought to listen. Every time it crosses Colorado, three pulses fall out of the sky.'],
- ['Colorado Springs · The receiver','Nikola Tesla disconnects his transmitter. The needle jumps anyway. On a strip of paper he marks three strokes. The next three land right on top of them.'],
+ ['Colorado Springs · The receiver','Nikola Tesla disconnects his transmitter. Outside the shed, the Rockies go blue before dawn. Inside, the needle jumps anyway. On a strip of paper he marks three strokes. The next three land right on top of them.'],
  ['The Black Knight · A thousand years','The Black Knight sent us plans for a gate to a planet we named New Earth. For a thousand years, one crew finished its shift and another took its place.'],
  ['Earth orbit · Launch day','Every city turns its lights on for the first colony ship. A girl at our aft window waves a paper Earth. A billion people wave back.'],
- ['New Earth · Aft window','We cross. From this side, Earth fits inside the ring. A white line passes through the Pacific. The two halves drift apart. The girl keeps waving.'],
+ ['New Earth · Aft window','We cross. New Earth fills the bow windows. At the stern the girl can still see home through the doorway. A line of light goes in blue and comes out white. She folds her paper Earth and puts it in her pocket.'],
  ['Colony ship · Contact astern','A machine follows us through. A second ship is chasing it. A sheet of red light crosses our bunks. One by one, our names appear on the machine.'],
  ['Frik cutter · Archive interrupted','The pursuer pours an ocean of memories into the scan. The machine tries to file every life at once. Its shield opens. A thin cutting beam goes clean through.'],
  ['First contact · The Waters','A claw dips into a bowl aboard the ship that saved us. Our receiver fills with the smell of rain. I’m Friken.Ghost, Captain. I can show you what came through.'],
@@ -18,14 +20,36 @@ export function paintCrossingInstruments(put,state){
  const f=state.levels[0].data,n=f.prologue;
  if(n<0||n>6)return;
  const project=(v,center)=>.5+(v-center)/state.window;
+ const visibility=state.visibility??1;
  const sign=(label,x,y,size,color,alpha=1)=>put.glyph(label,project(x,state.x),project(y,state.y),
-  size/state.window,color,{maxSize:36,alpha});
+  size/state.window,color,{maxSize:36,alpha:alpha*visibility});
  const t=f.time;
+ const lamp=(x,y,r,ink,power)=>{
+  const u=project(x,state.x),v=project(y,state.y);
+  if(f.effects&&u>-.1&&v>-.1&&u<1.1&&v<1.1)put.bloom(u,v,Math.min(.14,r/state.window),ink,power*visibility,'point',5);
+ };
+ if(n===1){lamp(.866,.265,.046,'#ffc78d',.53+.1*Math.cos(t*1.9));lamp(.28,.152,.028,'#b8d6f7',.15+.3*smooth((Math.cos(t*3)-.68)*3));}
+ if(n===2||n===3){
+  for(let k=0;k<6;k++){
+   const a=k*Math.PI/3+t*.18;
+   lamp(.643+.202*Math.cos(a),.421+.290*Math.sin(a),.014,'#8ae1e4',.39);
+  }
+ }
+ for(const p of flightTraces){
+  if(p.chapter!==n||state.window>.25)continue;
+  sign(p.name.toUpperCase(),p.x,p.y-.012,.00095,'#f7dc9e');
+ }
+ if(state.window<.16&&n===1){
+  sign('OPEN   /   3:07 AM',.521,.554,.00082,'#ffdea8');
+  sign('REPLY  /   N.T.',.741,.757,.00078,'#60463a');
+ }
+
  if(n===0){
+  if(state.window<.10)sign('BUS 07   ╫   BYPASS',.659,.391,.00074,'#b0f2ce');
   sign('EARTH   /   NIGHT PASS',.185,.16,.013,'#bcd6d0');
   sign('·   ·   ·',.515,.415,.026,'#b8f3db',.55+.35*Math.cos(t*2));
  }else if(n===1){
-  sign('COLORADO SPRINGS',.68,.484,.012,'#3a2931');
+  sign('WESTINGHOUSE  /  No. 3',.671,.483,.008,'#45333b');
   sign('I   I   I',.74,.751,.012,'#3f3544');
  }else if(n===2){
   sign('ORBITAL YARD   /   GATE 01',.24,.16,.013,'#e8cb94');
@@ -56,19 +80,34 @@ export function globeChannel(u,v,world,channel){
  const read=(a,b)=>globeAtlas[(base+b*384+a)*4+channel];
  return ((1-fx)*read(ix,iy)+fx*read(jx,iy))*(1-fy)+((1-fx)*read(ix,jy)+fx*read(jx,jy))*fy;
 }
-export function globeInk(dx,dy,t,world){
- const r=dx*dx+dy*dy,z=Math.sqrt(Math.max(0,1-r)),lat=dy*.984+z*.178;
- const u=Math.atan2(dx,z*.984-dy*.178)/(2*Math.PI)+.5,v=Math.asin(Math.max(-1,Math.min(1,lat)))/Math.PI+.5;
- const spin=t*.0038+(world===0?-.16:0),land=globeChannel(u+spin,v,world,0)/185,water=globeChannel(u+spin,v,world,1)/17;
+function cloudGrain(x,y){
+ const i=Math.floor(x),j=Math.floor(y),fx=smooth(x-i),fy=smooth(y-j);
+ const a=Math.cos(i*13+j*27)*Math.sin(i*17-j*11),b=Math.cos((i+1)*13+j*27)*Math.sin((i+1)*17-j*11);
+ const c=Math.cos(i*13+(j+1)*27)*Math.sin(i*17-(j+1)*11),d=Math.cos((i+1)*13+(j+1)*27)*Math.sin((i+1)*17-(j+1)*11);
+ return (a+(b-a)*fx)*(1-fy)+(c+(d-c)*fx)*fy;
+}
+export function globeInk(dx,dy,t,world,pixel){
+ const r=dx*dx+dy*dy,z=Math.sqrt(Math.max(0,1-r)),lat=world===0?dy*.94-z*.342:dy*.984+z*.178;
+ const u=Math.atan2(dx,world===0?z*.94+dy*.342:z*.984-dy*.178)/(2*Math.PI)+.5,v=Math.asin(Math.max(-1,Math.min(1,lat)))/Math.PI+.5;
+ const spin=world===0?-.28+.023*Math.sin(t*.11):t*.0038,land=globeChannel(u+spin,v,world,0)/185,water=globeChannel(u+spin,v,world,1)/17;
  const low=globeChannel(u+spin*.71,v,world,2)/255,high=globeChannel(u+spin*1.32,v,world,3)/255;
  const sun=clamp(.29-.44*dx-.20*dy+.59*z);
  let color=mix(mix(world?0x1c514c:0x274c3c,world?0xa4b995:0xc7b67d,land),mix(0x3a9baf,0x123564,water),clamp(water*16));
  color=mix(color,0xe1ece0,smooth((Math.abs(lat)-.82)*8)*.90);
- color=mix(color,0xf0eddb,clamp(low*.94+high*.61));
+ const lon=u+spin;
+ const fine=smooth((.003-pixel)*430);
+ const landRelief=cloudGrain(lon*92,v*130);
+ color=mix(color,water>.1?0x287d9a:0xd2ab76,.12+.105*landRelief);
+ const wind=u+spin*.71+t*.0007,eddy=cloudGrain(wind*16,v*23),stream=cloudGrain(wind*66+eddy*2.2,v*95-eddy);
+ let folds=.64*eddy+.36*stream;
+ if(fine>.01)folds+=fine*(.22*cloudGrain(wind*273+stream*3,v*380)+.09*cloudGrain(wind*801,v*1070));
+ const vapor=clamp((low*.80+high*.54-.13+.34*folds)*1.33);
+ color=mix(color,0x426274,.23*smooth((low+high-.54)*4)*(1-vapor));
+ color=mix(color,0xf8f0df,vapor);
  color=mix(0x071028,color,sun);
  return mix(color,0x80d9f1,clamp((r-.87)*6)*(.30+.49*sun));
 }
-export function knightInk(u,v,under){
+export function knightInk(u,v,under,pixel,t){
  if(v<0||v>1||u<-.40||u>.49)return under;
  // Horizontal silhouette intervals, traced top to bottom through the folded outline.
  let left=0,right=0;
@@ -79,18 +118,274 @@ export function knightInk(u,v,under){
  const d=(u-left)/Math.max(.0001,right-left);
  let ink=mix(0x050913,0x4c5966,clamp(.18+.34*Math.cos(12*d+v*6)+.29*d));
  if(Math.abs(d-.76+.08*Math.sin(v*6))<.038)ink=mix(ink,0xb6aba7,.71);
+ const panelU=d*12+Math.floor(v*19)*.37,panelV=v*21;
+ const pu=panelU-Math.floor(panelU),pv=panelV-Math.floor(panelV);
+ if(pv<.036||pu<.029)ink=mix(ink,0x0c1721,.91);
+ const trunk=Math.abs(d-.42-.043*Math.sin(v*24));
+ const via=Math.hypot(pu-.79,pv-.63);
+ const etch=Math.min(Math.abs(pv-.63),Math.abs(pu-.23-.35*Math.max(0,pv-.32)));
+ if(trunk<.009||(pu>.23&&pu<.79&&etch<.022)||via<.075)ink=mix(ink,via<.035?0xf7e5ae:0x55c1b3,.85);
+ if(pu>.78&&pu<.87&&pv>.13&&pv<.40)ink=mix(ink,0xafa383,.65);
+ if(pixel<.00048){
+  // Inside each hatch live smaller carrier boards. Feed tracks join pads
+  // and terminate at a die; clear metal between packages stays quiet.
+  let bx=pu,by=pv,footprint=pixel*212;
+  for(let level=0;level<4;level++){
+   if(footprint>.12||bx<.12||bx>.90||by<.10||by>.89)break;
+   const kx=(bx-.12)*6.41,ky=(by-.10)*5.06;
+   bx=kx-Math.floor(kx);by=ky-Math.floor(ky);
+   const die=bx>.31&&bx<.73&&by>.25&&by<.71;
+   const legs=Math.cos(by*96);
+   if(die)ink=mix(ink,0x17393d,.63);
+   if(by>.26&&by<.71&&legs>.70&&((bx>.21&&bx<.31)||(bx>.73&&bx<.83)))ink=mix(ink,0xc7ac79,.75);
+   const feed=Math.abs(by-.78+.23*Math.max(0,bx-.47));
+   if(feed<.014&&bx>.16&&bx<.88)ink=mix(ink,0x65dfcf,.68+.3*Math.cos(t*2-kx*3));
+   if(Math.hypot(bx-.15,by-.78)<.033)ink=0xdbcb85;
+   if(!die)break;
+   footprint*=6;
+  }
+ }
  if(d>.948)ink=0xc3ccc5;
  return ink;
 }
+// The hull's long axis runs from the drive bells (-x) to the observation crown.
 function courierHull(x,y,f,under){
- const width=.12+.65*Math.sqrt(Math.max(0,1-x*x))*(1-.42*x);
- if(Math.abs(x)>1||Math.abs(y)>width)return under;
- const cylinder=Math.sqrt(Math.max(0,1-(y/width)**2));
- let ink=mix(0x20283b,0xd4c4a8,clamp(.12+.80*cylinder-.28*y));
- const ribs=Math.abs((x+.67)*11-Math.round((x+.67)*11));
- if(x>-.69&&x<.47&&ribs<.095)ink=mix(ink,0x464957,.76);
- if(x>.40&&x<.83&&y<0)ink=mix(ink,0x548c9a,.80);
- if(Math.abs(y+.075)<.083&&x<.26&&ribs>.27)ink=0xffcf79;
+ if(x<-1.60||x>1.12||Math.abs(y)>.95)return under;
+ let ink=under;
+ const keel=Math.abs(y-.07);
+ if(x>-.84&&x<.92&&keel<.086)ink=mix(0x25394b,0xceae82,clamp(.81-keel*8));
+ // Open Pratt trusses between pressure vessels, with a continuous service line.
+ if(x>-.68&&x<.64&&Math.abs(y+.07)<.22){
+  const rail=Math.abs(Math.abs(y+.07)-.18);
+  const web=Math.abs(Math.abs(((x+1)*6)%1-.5)-.5*(y+.25)/.36);
+  if(rail<.026||web<.058)ink=mix(0x3e4657,0xe7b66f,clamp(.8-y*2));
+ }
+ // Three ribbed, paired cylindrical habitats offset in perspective.
+ for(const k of [0,1,2]){
+  const xx=x+.37-k*.30,yy=y+.29-k*.032;
+  const d=(xx/.152)**2+(yy/.285)**2;
+  if(d<1){
+   const normal=Math.sqrt(1-d),ribs=.5+.5*Math.cos(xx*141);
+   ink=mix(0x243448,0xd4cbbb,clamp(.18+.82*normal-.85*yy-.18*ribs));
+   if(Math.abs(xx)<.027)ink=mix(0x825338,0xfbb671,normal);
+   if(Math.abs(yy+.072)<.024&&Math.cos(xx*111)>.12)ink=0xffdc94;
+  }
+ }
+ // Angled radiator leaves, separated by dark vacuum rather than one solid wing.
+ for(const sign of [-1,1]){
+  const blade=(y-sign*.53+f.tilt*.19)*sign;
+  const across=x+.50+blade*.72;
+  if(Math.abs(blade)<.29&&Math.abs(across)<.16){
+   const grid=Math.abs(Math.sin(across*83)*Math.sin(blade*61));
+   ink=mix(0x17273f,0x697cb4,.23+.55*grid);
+   if(Math.abs(across)>.143||Math.abs(blade)>.267)ink=0xb99359;
+  }
+  const bell=y-sign*.245,engine=x+.81;
+  if(engine>-.39&&engine<.22&&Math.abs(bell)<.10+.12*Math.max(0,-engine)){
+   ink=mix(0x1b2437,0xa78976,clamp(.76-Math.abs(bell)*5+.13*Math.cos(engine*73)));
+  }
+  if(x< -1.17){
+   const plume=Math.exp(-Math.abs(bell)*22)*clamp((x+1.58)*2.5);
+   ink=mix(ink,0x73e5ff,plume*(.8+.19*Math.sin(f.time*6+x*42)));
+  }
+ }
+ // A rotating gravity wheel straddles the keel. Passing spokes are visible through its bore.
+ const wx=(x+.23-f.ray*.15)/.178,wy=(y+.11+f.tilt*.20)/.69,wr=Math.hypot(wx,wy),wa=Math.atan2(wy,wx);
+ if(wr<1.05&&wr>.84){
+  const rim=Math.sqrt(Math.max(0,1-((wr-.945)/.108)**2));
+  const cabin=.5+.5*Math.cos(wa*19-f.time*.62);
+  ink=mix(0x41323a,0xdba571,clamp(.18+.65*rim-.16*wy));
+  if(wr<.94&&wr>.88&&cabin>.54)ink=0xffdd8c;
+ }else if(wr<.87&&wr>.21&&Math.abs(Math.sin(wa*3-f.time*.095))<.045)ink=0xa89d88;
+ // Porcelain bow shield with a cut-back underside and wraparound glass bridge.
+ const nose=(x-.58)/.47,cheek=(y+.035+.08*nose)/(.27-.06*nose);
+ const shell=nose*nose+cheek*cheek;
+ if(shell<1&&y<.21-.10*nose){
+  ink=mix(0x394658,0xf1d8a7,clamp(.16+.80*Math.sqrt(1-shell)-cheek*.24));
+  if(cheek>-.48&&cheek<-.21&&x>.60)ink=Math.cos(x*98)>.78?0x6c5c51:0x24627a;
+  if(shell>.90&&y<-.03)ink=0xffe7ae;
+  const inlay=Math.abs(cheek-.33+.21*Math.sin(nose*4));
+  if(nose<.51&&inlay<.070)ink=0xa35743;
+  if(nose<.54&&Math.abs(cheek+.07)<.044&&Math.cos(nose*49)>.18)ink=0x395368;
+ }
+ return ink;
+}
+function mountainLine(x,band){
+ const ridge=Math.abs(Math.sin(x*4.1+band*1.7));
+ return .28+.094*band+.141*ridge+.047*Math.abs(Math.sin(x*19+ridge*9))+
+ .019*Math.abs(Math.sin(x*63+ridge*15))+.006*Math.sin(x*211+band)+.002*Math.sin(x*641);
+}
+function frontRange(x,y,f,sky){
+ let ink=mix(sky,0x9b626b,clamp(y*1.8)*.62);
+ for(const k of [0,1,2]){
+  const px=x+f.ray*.006*k,ridge=mountainLine(px,k);
+  if(y<ridge)continue;
+  const fall=y-ridge;
+  const vein=Math.sin(px*39+8*Math.sin(px*12)+fall*19)+.4*Math.sin(px*123+fall*55);
+  const gull=px+.19*fall+.047*Math.sin(7*px+fall*10);
+  const h=mountainLine(gull+.001,k)-mountainLine(gull,k);
+  ink=mix(k===0?0x434364:k===1?0x32334c:0x192d38,k===0?0xe6bcb1:k===1?0x9b7a7e:0x586165,
+   clamp(.36+h*68+.19*vein-.72*fall));
+  if(k<2&&fall<.014+.020*vein&&h<.0014)ink=mix(ink,0xf8d5bd,.76);
+  if(k===2&&fall>.035){
+   const p=px*128,tree=Math.abs(p-Math.round(p));
+   if(fall<.113&&tree<fall*3.7)ink=mix(ink,0x102430,.72);
+  }
+ }
+ if(f.pixel<.0014&&y>mountainLine(x,0)&&y<.64){
+  const talus=mandelEscape(-.74631+.022*x,.10882+.037*(y-mountainLine(x,0)),64);
+  const layer=talus<0?0:.5+.5*Math.cos(talus*1.9);
+  ink=mix(ink,0xcaad99,smooth((.0014-f.pixel)*1200)*.21*layer);
+ }
+ // Windows of the town below the ridge, reflected in the wet rail cut.
+ if(y>.55&&y<.566+.024*Math.sin(x*11)&&Math.sin(x*437)>.72)ink=0xf2b76b;
+ const lead=Math.abs(y-.29-.31*(x-.26)-.048*Math.sin((x-.26)*7));
+ if(x>.26&&x<.74&&lead<.002)ink=0x252638;
+ return ink;
+}
+function gateFoundry(x,y,f,under){
+ let dx=(x-.643)/.239,dy=(y-.421)/.346;
+ const base=Math.hypot(dx,dy);
+ if(base<.75||base>1.42)return under;
+ // Two relief samples follow the groove into its outer wall. The edge
+ // envelope pins the silhouette and leaves the portal registration intact.
+ const retain=smooth((base-.78)*20)*smooth((1.39-base)*18);
+ const cross=(base-.971)/.114,round=Math.sqrt(Math.max(0,1-cross*cross));
+ const panel=.5+.5*Math.cos(Math.atan2(dy,dx)*48);
+ const raised=.35*round+.13*panel+.16*Math.exp(-Math.abs(base-1.18)*46);
+ const qx=dx-f.ray*raised,qy=dy+f.tilt*raised;
+ const second=Math.hypot(qx,qy),slat=.5+.5*Math.cos(Math.atan2(qy,qx)*96+second*65);
+ const height=retain*(raised+.10*round*slat);
+ dx-=f.ray*height;dy+=f.tilt*height;
+ const r=Math.hypot(dx,dy),a=Math.atan2(dy,dx),w=a*12/Math.PI;
+ if(r<.76||r>1.39)return under;
+ const cell=w-Math.floor(w),sector=Math.abs(cell-.5);
+ const spoke=Math.abs(Math.sin(a*12)),lit=clamp(.60-.24*dx-.46*dy);
+ const gantry=Math.abs(r-1.18);
+ let ink=under;
+ // Outer lattice and counterweighted radial buttresses.
+ if(gantry<.048&&(gantry>.034||Math.abs(Math.sin(a*108+(r-1.18)*74))>.75))ink=mix(0x313f53,0xc79964,lit);
+ if(r>1.02&&r<1.33&&spoke<.13+.31*clamp((1.32-r)*4)){
+  ink=mix(0x28384e,0xcab998,clamp(lit+.25*Math.cos(r*85)-spoke));
+  if(spoke<.061&&r>1.13)ink=mix(ink,0x72e2e0,.85);
+ }
+ if(r>.86&&r<1.075){
+  const cross=(r-.96)/.108,round=Math.sqrt(Math.max(0,1-cross*cross));
+  ink=mix(0x1c2438,0xb1a48b,clamp(lit*.87*round+.095*Math.cos(a*168)));
+  if(sector>.469)ink=0x172535;
+  if(r>.957&&r<1.006&&sector<.36){
+   ink=mix(0x29364b,0x625e60,round*.74);
+   const louvers=Math.cos((cell*21+r*7)*6.28);
+   if(louvers>.19)ink=mix(ink,0xe6bc79,.65*lit);
+   if(f.pixel<.00035){
+    const rivet=Math.hypot((cell*23)%1-.5,(r-.963)*36-.5);
+    if(rivet<.115)ink=mix(0x24313d,0xd9b590,clamp(.8-rivet*3));
+    const slit=Math.abs(Math.sin(cell*977+r*192));
+    if(r>.980&&r<.986&&slit>.35)ink=mix(ink,0x9dd4c9,.7);
+   }
+  }
+  if(Math.abs(r-1.054)<.009||Math.abs(r-.88)<.008)ink=mix(0x44747c,0xeff4d8,lit);
+ }
+ const tooth=.825+.036*Math.cos(a*24-f.time*.26);
+ if(r>tooth&&r<.885&&sector<.41)ink=mix(0x265a6b,0xb9fff0,clamp(.80-(r-tooth)*11));
+ const coil=Math.abs(r-.833-.012*Math.sin(a*24-f.time*.74));
+ const pulse=.53+.42*Math.cos(a*6-f.time*1.7);
+ if(coil<.042)ink=mix(ink,0x67dfe8,Math.exp(-coil*98)*pulse);
+ return ink;
+}
+function brokenEarth(dx,dy,age,t,pixel,under){
+ const q=smooth((age-4)/7),x=dx,y=dy;
+ let ink=under;
+ // The largest pieces retain their original coastlines and curved limb.
+ for(const k of [0,1,2,3]){
+  const sx=k===0?-.43:k===1?.38:k===2?-.24:.28,sy=k===0?-.28:k===1?-.26:k===2?.34:.45;
+  const spin=(k-1.5)*q*.15,px=x-sx*q,py=y-sy*q;
+  const ax=px*Math.cos(spin)-py*Math.sin(spin),ay=px*Math.sin(spin)+py*Math.cos(spin);
+  const u=ax+.16*ay+.075*Math.sin(ay*7)+.034*Math.sin(ay*22);
+  const v=ay-.41*ax+.047*Math.sin(ax*14)-.019*Math.cos(ax*36);
+  if((u>0)!==(k===1||k===3)||(v>0)!==(k>=2)||ax*ax+ay*ay>1)continue;
+  ink=globeInk(ax,ay,t,0,pixel);
+  const edge=Math.min(Math.abs(u),Math.abs(v));
+  ink=mix(ink,0xff894e,smooth((age-2.4)/1.9)*Math.exp(-edge*16));
+  ink=mix(ink,0xffe5ab,smooth((age-3.1)/1.7)*Math.exp(-edge*69));
+  const wave=Math.hypot(ax+.58,ay-.24);
+  for(const n of [0,.35,.83]){
+   const ring=Math.abs(wave-(age-1.65-n)*.54);
+   ink=mix(ink,0xffdbab,Math.exp(-ring*54)*clamp((4.7-age)*.7));
+  }
+ }
+ if(q>.01){
+  for(let n=1;n<=30;n++){
+   const a=n*2.399,dist=.18+(n%5)*.17+q*(.53+(n%7)*.135);
+   const rx=x-dist*Math.cos(a),ry=y-dist*Math.sin(a);
+   if(Math.abs(rx)+Math.abs(ry+.45*rx)<(.014+.007*(n%4))*q)ink=ry<0?0xffa561:0x774a49;
+  }
+ }
+ const corona=Math.hypot(x+.58,y-.24);
+ const wavefront=Math.abs(corona-(age-1.65)*.54);
+ if(x*x+y*y>1&&age>1.65&&age<5.8)ink=mix(ink,0xffb783,Math.exp(-wavefront*42)*smooth((5.8-age)*.8)*.86);
+ const path=Math.abs(y+.40*x),front=-2.4+(age-1)*2.3;
+ if(x<front&&age>1&&age<4.7){
+  const power=smooth((age-1)*3)*smooth((4.7-age)*1.5);
+  ink=mix(ink,0xff642f,power*Math.exp(-path*19));
+  ink=mix(ink,0xffffdd,power*Math.exp(-path*127));
+ }
+ return ink;
+}
+function workshop(x,y,f,ink){
+ const shade=.5+.5*Math.sin(x*4.1);
+ // Timber eaves and diagonal braces frame the open west wall.
+ const roof=.06+.17*Math.abs(x-.46);
+ if(y<roof){
+  ink=mix(0x151822,0x4a3841,clamp(y*4+.13*Math.sin(x*71)));
+  if(Math.abs(y-roof+.013)<.007)ink=mix(0x735747,0xb58b60,shade);
+ }
+ if(x>.923&&Math.abs(x-.963)<.022)ink=mix(0x25232e,0x634835,clamp((.985-x)*19));
+ const wire=y-.18-.092*Math.sin(x*3.12);
+ if(x>.38&&Math.abs(wire)<.0016)ink=0x29252c;
+ // The hanging cage lamp throws an amber pool over the ledger and shoulder.
+ const bulb=Math.hypot((x-.866)*1.72,y-.265);
+ ink=mix(ink,0xefad70,.38*Math.exp(-bulb*13));
+ if(Math.abs(x-.866)<.0017&&y>.078&&y<.23)ink=0x332931;
+ const bell=(x-.866)/.033;
+ if(Math.abs(bell)<1&&y>.222&&y<.239+.009*(1-bell*bell))ink=mix(0x4a3d3b,0xd3a36b,1-Math.abs(bell));
+ if(bulb<.019)ink=mix(0xdb9b53,0xfff3c0,1-bulb*35);
+ // Planks, inlaid copper busbars and the planed lip of the operating bench.
+ if(y>.714){
+  const grain=Math.sin(148*y+3*Math.sin(19*x+11*y))+.48*Math.cos(101*y-x*15);
+  ink=mix(0x33222d,0x996747,clamp(.46+.11*grain+.18*x-(y-.71)*1.7));
+  if(Math.abs(y-.803+.03*x)<.004)ink=0xc69a6c;
+ }
+ return ink;
+}
+function operatorInk(x,y,under){
+ const u=(x-.393)/.044,v=(y-.423)/.077;
+ let ink=under;
+ // Frock coat, sloping lapels, high collar, then an asymmetrical lit face in profile.
+ const coat=((x-.383)/.068)**2+((y-.598)/.147)**2;
+ if(coat<1){
+  ink=mix(0x182331,0x586275,clamp(.37+(x-.36)*5+.24*Math.cos((x-.38)*61)));
+  const lapel=Math.abs(x-.386+.17*(y-.55));
+  if(y<.60&&lapel<.013)ink=mix(0x303344,0xc4b6a0,clamp((.013-lapel)*62));
+  if(y>.56&&Math.abs(x-.397)<.0028&&Math.cos(y*134)>.7)ink=0xc5a377;
+ }
+ const head=(u/.73)**2+((v+.13)/.91)**2;
+ if(head<1){
+  const round=Math.sqrt(1-head);
+  ink=mix(0x4a3540,0xe2b18a,clamp(.19+.65*round+.25*u-.10*v));
+  if(v<-.63+.13*Math.cos(u*5)||u<-.46+.05*Math.cos(v*4)){
+   ink=mix(0x202634,0x665247,clamp(.23+.26*Math.sin(u*21+v*3)));
+  }
+  if(u>.11&&v>-.44&&v<-.31+.13*u)ink=mix(ink,0x46353b,.92);
+  if(u>.28&&u<.43&&v>-.32&&v<-.26)ink=0xe9c8a2;
+  if(v>.15&&v<.23+.12*u&&u>.22)ink=0x40323a;
+ }
+ if(u>.51&&u<.93&&v>-.33+.54*(u-.51)&&v<.10-.20*(u-.51))ink=mix(0x936555,0xe5b88e,clamp(.75-2*v));
+ const ear=((u+.5)/.18)**2+((v+.05)/.25)**2;
+ if(ear<1)ink=mix(0x795449,0xc49476,.3+.53*ear);
+ const sleeve=Math.abs(y-.56+.21*(x-.42));
+ if(x>.40&&x<.519&&sleeve<.021)ink=mix(0x273343,0x808085,clamp(.75-sleeve*28));
+ if(x>.503&&x<.543&&sleeve<.011)ink=mix(0x966e5c,0xeac198,clamp(.87-sleeve*31));
  return ink;
 }
 export function crossingInk(x,y,f){
@@ -102,17 +397,27 @@ export function crossingInk(x,y,f){
  const star=Math.cos(a*27+b*13)*Math.cos(b*37-a*11);
  if(star>.905&&Math.abs(sx*82-a-.5)+Math.abs(sy*48-b-.5)<.23)ink=mix(ink,0xe0e9cc,.52+.4*star);
  if(chapter===1){
-  const horizon=.54+.09*Math.cos(x*7)+.023*Math.sin(x*29);
-  if(y>horizon)ink=mix(0x24263a,0x091123,clamp((y-horizon)*4));
+  ink=workshop(x,y,f,frontRange(x,y,f,ink));
   const tower=Math.abs(x-.28),height=.65-y;
   if(height>0&&height<.51&&tower<.006+.047*(1-height/.51)){
    ink=mix(0x704740,0xe0af78,clamp(.75-tower*10));
-   if(tower>.005&&Math.abs(Math.sin(height*96+tower*142))<.6)ink=0x212333;
+   if(tower>.0025&&tower<.042*(1-height/.51)&&Math.abs(Math.sin(height*69+tower*153))>.28)ink=workshop(x,y,f,frontRange(x,y,f,0x253044));
+   if(height>.14&&height<.38&&tower<.005)ink=mix(0x6b443a,0xc18655,.5+.45*Math.cos(height*740));
   }
   const torus=((x-.28)/.068)**2+((y-.164)/.025)**2;
-  if(torus<1)ink=mix(0xa27c62,0xffdca6,1-torus);
+  if(torus<1)ink=mix(0x745449,0xf5d19a,clamp((1-torus)*.6+.34-(y-.164)*15));
+  const sparkX=x-.28;
+  const sparkY=y-.148+Math.abs(sparkX)*.59+.006*Math.sin(sparkX*227+f.time*9)+.002*Math.sin(sparkX*945);
+  if(sparkX>0&&sparkX<.094){
+   const flash=smooth((Math.cos(f.time*3)-.69)*3);
+   ink=mix(ink,0xb3c3ff,Math.exp(-Math.abs(sparkY)*219)*flash);
+  }
   if(y>.43&&y<.73&&x>.48&&x<.88){
    ink=mix(0x272839,0x927f65,clamp(.57+(x-.66)*1.7));
+   const bevel=Math.min(x-.48,.88-x,y-.43,.73-y);
+   if(bevel<.012)ink=mix(0x4b3840,0xc8a67d,clamp(.7+.3*Math.sin((x+y)*15)));
+   if(bevel>.011&&bevel<.017)ink=0x403540;
+   const grain=.5+.5*Math.cos(x*176+2*Math.sin(y*38));ink=mix(ink,0x624435,.16*grain);
    const dial=((x-.67)/.14)**2+((y-.60)/.135)**2;
    if(dial<1&&y<.635){
     ink=mix(0xaa9773,0xf0d69e,1-dial);
@@ -130,107 +435,93 @@ export function crossingInk(x,y,f){
    const ticks=Math.abs(Math.sin((x-t*.009)*59));
    if(ticks<.12&&Math.cos((x-t*.009)*19)>.02&&y<.757)ink=0x383746;
   }
-  // A three-quarter silhouette leans into the receiver, with one hand still on the switch.
-  const head=((x-.395)/.029)**2+((y-.418)/.067)**2;
-  const collar=((x-.382)/.060)**2+((y-.550)/.093)**2;
-  if(collar<1)ink=mix(0x162234,0x465060,clamp(.68-(x-.38)*5+(y-.54)*1.8));
-  if(head<1)ink=mix(0x352d39,0xc69b72,clamp(.46+(x-.397)*12+Math.sqrt(1-head)*.42));
-  if(head<1&&y<.402+.009*Math.cos(x*127))ink=0x302d39;
-  const nose=Math.abs(y-.426+.24*(x-.419));
-  if(x>.415&&x<.432&&nose<.008)ink=0xbd9072;
-  if(x>.406&&x<.423&&Math.abs(y-.446)<.004)ink=0x352832;
-  const sleeve=Math.abs(y-.555+.25*(x-.41));
-  if(x>.409&&x<.519&&sleeve<.017)ink=mix(0x343a48,0x8b847c,clamp(.8-sleeve*33));
-  if(x>.501&&x<.544&&sleeve<.010)ink=0xc99c75;
-  const signal=Math.abs(y-.32+.07*Math.sin(x*41-t*4)*Math.max(0,Math.cos(x*15-t)));
-  if(x>.32&&x<.87&&signal<.004)ink=0x9de6dc;
-  return ink;
- }
- const earthX=chapter===0?.30:chapter===2?.23:chapter===3?.15:chapter===4?.53:.09;
- const earthY=chapter===0?.83:chapter===2?.72:chapter===3?.78:chapter===4?.40:.30;
- const radius=chapter===0?.54:chapter===4?.185:chapter<=3?.30:.12;
- const dx=(x-earthX)/radius,dy=(y-earthY)/(radius*1.72);
- const crack=dy+.63*dx+.057*Math.sin(dx*13);
- const split=chapter===4?.18*smooth(f.beatAge/5.4):0;
- const hx=dx+(crack>0?-split*.22:split*.22),hy=dy+(crack>0?-split:split),r=hx*hx+hy*hy;
- const fissure=hy+.63*hx+.039*Math.sin(hx*16)+.010*Math.cos(hx*46);
- if(r<1.03){
-  ink=globeInk(hx,hy,t,chapter>=5?1:0);
-  if(r>1)ink=mix(ink,0x132f48,clamp((r-1)*31));
-  if(chapter===4){
-   const edge=crack>0?fissure:-fissure;
-   if(edge<0){
-    ink=mix(0x080e20,0x753b36,Math.exp(edge*29)*.66);
-    const debris=Math.sin(hx*71+hy*143)*Math.cos(hx*137-hy*61+t*.13);
-    if(debris>.89&&split>.04)ink=mix(0x967257,0xffba81,debris*.55);
-   }else{
-    const lava=Math.exp(-edge*47)*smooth(f.beatAge*1.1);
-    ink=mix(ink,0xffc078,lava);
-    const fault=Math.abs(fissure+.17*Math.sin(hx*6)-.075*Math.cos(hx*18));
-    if(edge<.31&&fault<.009)ink=mix(ink,0xfa925a,(1-edge/.31)*smooth(f.beatAge/2));
-   }
-   const lance=Math.abs(crack+.004*Math.sin(dx*51));
-   if(lance<.018&&f.beatAge<3.2)ink=mix(ink,0xffecb7,clamp((3.2-f.beatAge)*1.4));
+  ink=operatorInk(x,y,ink);
+  const knife=Math.abs(y-.548+.52*(x-.525));
+  if(x>.505&&x<.554&&knife<.0035)ink=0xe7bd79;
+  for(const k of [0,1]){
+   const socket=Math.hypot((x-.513-k*.048)*1.72,y-.555);
+   if(socket<.007)ink=mix(0x674936,0xe5c18b,1-socket*60);
   }
+  // The mahogany receiver has a glass sight and a wound brass armature.
+  const lens=Math.hypot((x-.672)/.044,(y-.572)/.066);
+  if(lens<1.12)ink=mix(0x202d3a,0xe2b77b,clamp(.52+.39*Math.cos(lens*27)-(y-.572)*4));
+  if(x>.48&&x<.88&&y>.69&&y<.715&&Math.sin(x*214)>.13)ink=0xc7a170;
+  return ink;
  }
  if(chapter===0){
-  const range=Math.hypot((x-.65)*1.72,y-.44);
+  const dx=(x-.34)/.51,dy=(y-.75)/(.51*1.72),r=dx*dx+dy*dy;
+  if(r<1){
+   ink=globeInk(dx,dy,t,0,f.pixel);
+   const fine=smooth((.0018-f.pixel)*800);
+   if(fine>.001){
+    const drainage=mandelEscape(-.7461+dx*.034,.1135+dy*.031,62);
+    const terraces=.5+.5*Math.cos(drainage*2.7+dx*38);
+    const vein=clamp((.115-Math.abs(Math.sin(drainage*1.7)))*7);
+    ink=mix(ink,0xe0bb9c,fine*.22*terraces);
+    ink=mix(ink,0xb1e3db,fine*.31*vein);
+    if(f.pixel<.00016){
+     const stone=cloudGrain(dx*2200+terraces*4,dy*3100+Math.sin(dx*27+dy*31)*2);
+     ink=mix(ink,stone>0?0xe3d5ae:0x294e62,.22*Math.abs(stone));
+     if(f.pixel<.000018){
+      const grit=cloudGrain(dx*28300+stone,dy*32600);
+      ink=mix(ink,0xd0dbb4,.13+.12*grit);
+     }
+    }
+   }
+  }
+  if(r>=1&&r<1.075)ink=mix(ink,0x8cddf3,Math.exp(-(r-1)*64)*.75);
+  const creep=f.ray*.0015,range=Math.hypot((x-.65)*1.72,y-.44);
   const ping=range-t*.058,tip=Math.abs(ping-Math.floor(ping/.43)*.43-.08);
-  if(x<.65&&tip<.004)ink=mix(ink,0x9fe3dc,.45*smooth((.65-x)*12));
-  return knightInk((x-.66-drift*.006)/.194,(y-.135)/.51,ink);
+  if(x<.65&&tip<.0025)ink=mix(ink,0x9fe3dc,.45*smooth((.65-x)*12));
+  return knightInk((x-.66-creep)/.194,(y-.135-f.tilt*.001)/.51,ink,f.pixel,t);
  }
- if(chapter>=2&&chapter<=4){
-  const cx=chapter===4?.53:.61,cy=chapter===4?.40:.43;
-  const gx=(x-cx)/.235,gy=(y-cy)/.355;
-  const ring=Math.hypot(gx,gy),angle=Math.atan2(gy,gx);
-  if(ring>.91&&ring<1.11){
-   const panel=.5+.5*Math.cos(angle*64);
-   ink=mix(0x293448,0xc49c65,clamp(.57-gx*.27-gy*.27+.16*panel));
-   if(panel<.06)ink=0x18283e;
-   if(ring<.947)ink=chapter===2&&angle>.85?0x413445:0x9df6eb;
-   if(chapter===2&&angle>.85&&Math.cos(angle*35+ring*36)<.14)ink=0x111a2a;
+ if(chapter===2||chapter===3){
+  const dx=(x-.16)/.41,dy=(y-.93)/.71,r=dx*dx+dy*dy;
+  if(r<1)ink=globeInk(dx,dy,t,0,f.pixel);
+  if(r>1&&r<1.06)ink=mix(ink,0x88cfec,Math.exp(-(r-1)*74)*.68);
+  // The construction cradle stays in both launch shots. Copper cranes dwarf the tugs.
+  const rail=y-.68+.21*(x-.36),span=x-.09;
+  if(span>0&&span<.70&&Math.abs(rail)<.023){
+   if(Math.abs(rail)>.016||Math.abs(Math.sin(span*167+rail*72))>.66)ink=mix(0x283844,0xcf9c6e,.61-rail*9);
   }
-  if(chapter===2){
-   const yard=Math.abs(y-.68+.24*(x-.50));
-   if(x>.13&&x<.77&&yard<.023)ink=mix(0x253339,0xcba575,.45+.30*Math.cos(x*180));
-   for(const k of [0,1,2]){
-    const px=.32+k*.073,py=.70-k*.023;
-    if(Math.abs(x-px)<.004&&y>py-.11&&y<py)ink=0xbf955f;
-    if(Math.abs(y-py+.10+.14*(x-px))<.004&&x>px-.03&&x<px+.029)ink=0xffcb80;
-   }
+  for(const k of [0,1,2,3]){
+   const cx=.26+.091*k,cy=.68-.21*(cx-.36),height=cy-y;
+   if(height>0&&height<.104&&Math.abs(x-cx)<.003+.008*(1-height/.104))ink=0xae8164;
+   if(Math.abs(y-cy+.103+.32*(x-cx))<.003&&Math.abs(x-cx)<.037)ink=0xe3b478;
+   const wire=Math.abs(x-cx-.028);
+   if(wire<.0014&&height>.035&&height<.109)ink=0xcdad8c;
   }
-  if(chapter===3){
-   const spark=Math.abs(Math.sin((x-.20)*101+(y-.41)*43));
-   if(x>.06&&x<.35&&y>.31&&y<.60&&spark>.992)ink=mix(ink,0xffbb7b,pulse*.7);
-   // Far-side harbour flares open in spokes above the cheering dock.
-   for(const k of [0,1,2]){
-    const ax=x-.19-.10*k,ay=(y-.28-.057*Math.cos(k*3))*.58;
-    const fire=Math.hypot(ax,ay),phase=(t*.23+k*.33)%1;
-    const spokes=.5+.5*Math.cos(Math.atan2(ay,ax)*13+k);
-    if(fire<.049&&Math.abs(fire-.046*phase)<.0035&&spokes>.36)ink=mix(ink,0xffb973,(1-phase)*spokes);
-   }
-   const sail=smooth(f.beatAge/6),hullX=.43+.15*sail,hullScale=1-.39*sail;
-   ink=courierHull((x-hullX)/(.18*hullScale),(y-.46+.14*(x-hullX))/(.065*hullScale),f,ink);
-  }
-  if(chapter===4){
-   const rail=Math.abs(Math.abs(x-.52)+.60*(y-.41)-.53);
-   if(rail<.05||y>.76)ink=mix(0x101d30,0x61717a,clamp(.65-rail*7));
-  }
-  if((chapter===3||chapter===4)&&y>.53&&x<.25){
-   const head=((x-.117)/.026)**2+((y-.626)/.048)**2;
-   const shoulder=((x-.106)/.071)**2+((y-.776)/.120)**2;
-   const wave=.008*Math.sin(t*2),flag=Math.hypot((x-.199-wave)/.036,(y-.57)/.061);
-   if(head<1||shoulder<1)ink=mix(0x0c1629,0x825455,clamp(.29+(x-.11)*7));
-   if(Math.abs(x-.149-(.55+wave*6)*(.74-y))<.006&&y>.589&&y<.74)ink=0xb99872;
-   if(flag<1)ink=mix(0x2d7796,0xadddb9,smooth((Math.sin((x-wave)*102+Math.cos(y*79)*1.8)+.50*Math.cos(y*88)-.20)*3));
-  }
-  return ink;
+  return gateFoundry(x+f.ray*.0014,y-f.tilt*.0011,f,ink);
  }
- const ship=courierHull((x-.24)/.16,(y-.55+.18*(x-.24))/.058,f,ink);
- ink=ship;
- const droneX=.59,droneY=.37;
+ // New Earth stays on the near side. The shrinking aperture admits the view
+ // of the Solar System only on its inside. It has no physical ring here.
+ const after=chapter>=5;
+ const age=after?23:f.beatAge;
+ const turn=smooth(age/4),close=smooth((age-12)/5);
+ const px=.22-.28*turn,py=.60+.22*turn,rad=.50-.22*turn;
+ const ndx=(x-px)/rad,ndy=(y-py)/(rad*1.72),nr=ndx*ndx+ndy*ndy;
+ if(nr<1)ink=globeInk(ndx,ndy,t,1,f.pixel);
+ if(nr>1&&nr<1.07)ink=mix(ink,0x9ceacf,.7*Math.exp(-(nr-1)*64));
+ const portalX=1.42-.87*turn,portalY=.47-.07*turn;
+ const width=(.19+.075*turn)*(1-close),height=.39*(1-close);
+ if(width>.001){
+  const ix=(x-portalX)/width,iy=(y-portalY)/height,rr=ix*ix+iy*iy;
+  if(rr<1){
+   ink=mix(0x030817,0x1d243c,clamp(.5+.28*iy));
+   ink=brokenEarth(ix/.56,iy/.64,Math.max(0,age-3.4),t,f.pixel,ink);
+   // Remnants of the old, physical gate are back on the Solar side.
+   const debris=Math.cos(ix*61+iy*37)*Math.sin(iy*54);
+   if(age>9&&rr>.62&&debris>.83)ink=0xbc9671;
+  }
+  if(Math.abs(rr-1)<.27)ink=mix(ink,0x80dee6,Math.exp(-Math.abs(rr-1)*23)*(.75+.20*Math.cos(iy*24-t*4)));
+ }
+ // Follow the colony from above the bow to its aft quarter as Earth comes into view.
+ const shipX=-.34+.55*smooth(age/2.9),shipY=.47+.20*turn,size=.156+.063*turn;
+ ink=courierHull((x-shipX)/(size*(1-.39*turn)),(y-shipY+(.30-.72*turn)*(x-shipX))/(size*(.62+.14*turn)),f,ink);
+ if(chapter===4)return ink;
+ const approach=chapter===5?smooth(f.beatAge/4):1,droneX=1.28-.69*approach,droneY=.26+.11*approach;
  const ux0=(x-droneX)/.19,uy0=(y-droneY)/.22;
- const cut=uy0+.49*ux0,opening=chapter===6?.075+.038*pulse:0;
+ const cut=uy0+.49*ux0,opening=chapter===6?(.075+.038*pulse)*smooth(f.beatAge/2.6):0;
  const ux=ux0+(cut<0?opening:-opening),uy=uy0+(cut<0?opening:-opening);
 
  const body=Math.abs(ux)*.55+Math.abs(uy)*.73;
@@ -245,7 +536,8 @@ export function crossingInk(x,y,f){
  const scan=Math.abs(y-.37+.46*(x-.59));
  if(chapter===5&&x>.15&&x<.59&&scan<(.59-x)*.39)ink=mix(ink,0xf95968,.17+.19*Math.cos(x*93+t*5));
  // Forked Frik cutter. The keel carries paired wet chambers and an exposed cutting prong.
- const fx=(x-.82)/.116,fy=(y-.235+.48*(x-.82))/.089;
+ const frigate=chapter===5?(1-smooth((f.beatAge-.9)/4))*.53:0;
+ const fx=(x-.82-frigate)/.116,fy=(y-.235+.48*(x-.82-frigate))/.089;
  const boat=fx*fx+(fy/.62)**2;
  if(boat<1){
   const round=Math.sqrt(1-boat);
@@ -262,7 +554,7 @@ export function crossingInk(x,y,f){
   const bowl=((fx-k)/.19)**2+((fy+.39)/.23)**2;
   if(bowl<1)ink=mix(0x2e9daa,0xe6ffe1,clamp(1-bowl+.13*pulse));
  }
- if(chapter===6&&x>.52&&x<.82){
+ if(chapter===6&&x>.52&&x<.82&&f.beatAge>.65){
   const beam=y-.23+.56*(x-.82);
   ink=mix(ink,0x5bebdc,.32*Math.exp(-Math.abs(beam)*47));
   if(Math.abs(beam)<.004)ink=0xfff2bb;
@@ -270,4 +562,14 @@ export function crossingInk(x,y,f){
   if(Math.abs(ribbon)<.010&&Math.cos(x*130-t*4)>.0)ink=0xa4dcef;
  }
  return ink;
+}
+
+// Foreground geometry occludes a live portal on the launch side.
+export function crossingForeground(x,y,f,ink){
+ if(f.prologue!==3)return ink;
+ const travel=f.travel,entry=smooth(f.beatAge/6.5);
+ const scale=(.216-.065*entry)*(1-smooth((travel-.12)/.80));
+ if(scale<.0001)return ink;
+ const cx=-.32+.70*entry+travel*.29,cy=.64-.15*entry-.073*travel;
+ return courierHull((x-cx)/scale,(y-cy+.24*(x-cx))/(scale*.65),f,ink);
 }

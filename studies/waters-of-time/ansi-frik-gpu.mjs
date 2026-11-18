@@ -1,14 +1,14 @@
 import {globeAtlas} from './frik-planet-atlas.mjs';
-import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=first-crossing-4';
-import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=first-crossing-4';
-import {frikMindFields} from './ansi-frik-mind-art.mjs?v=first-crossing-4';
-import {frikAdSource,frikAdBounds} from './ansi-frik-hq-ad.mjs?v=first-crossing-4';
-import {projectState} from './ansi-frik-mind.mjs?v=first-crossing-4';
+import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=lancing-1';
+import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=lancing-1';
+import {frikMindFields} from './ansi-frik-mind-art.mjs?v=lancing-1';
+import {frikAdSource,frikAdBounds} from './ansi-frik-hq-ad.mjs?v=lancing-1';
+import {projectState} from './ansi-frik-mind.mjs?v=lancing-1';
 
 const vertex=`#version 300 es
 void main(){vec2 p=vec2(gl_VertexID==1?3.:-1.,gl_VertexID==2?3.:-1.);gl_Position=vec4(p,0.,1.);}`;
 const names=['bridge','orbit','coreMemory','coast','heatSight','frikAdInk','tideSight'];
-const floats=['time','pixel','primary','pulse','waterLight','blink','grade','trip','throat','swimA','swimB','ray','tilt','bass','energy','bearing','elevation','level','prologue','beatAge'];
+const floats=['time','pixel','primary','pulse','waterLight','blink','grade','trip','throat','swimA','swimB','ray','tilt','bass','energy','bearing','elevation','level','prologue','beatAge','travel'];
 const bools=['effects','distant','hasRig'];
 const fragment=index=>`#version 300 es
 precision highp float;precision highp int;
@@ -25,7 +25,14 @@ void main(){
  vec2 screen=vec2(gl_FragCoord.x,outputSize.y-gl_FragCoord.y)/outputSize;
  vec2 p=viewCenter+(screen-.5)*viewSpan;
  State f=sceneState;
- ${index===0?'if(f.prologue>=0.&&f.prologue<7.){outInk=vec4(unpackInk(crossingInk(p.x,p.y,f))/255.,1.);return;}':''}
+ ${index===0?`if(f.prologue>=0.&&f.prologue<7.){
+  vec2 local=(p-gate.xy)/gate.z;
+  float d2=dot(local,local);
+  bool hasInner=childVisible&&d2<.82;
+  float color=hasInner&&d2<=.52?0.:crossingInk(p.x,p.y,f);
+  if(hasInner)color=inkMix(color,packInk(texture(childInk,vec2(screen.x,1.-screen.y)).rgb*255.),fieldSmooth((.82-d2)/.30));
+  outInk=vec4(unpackInk(crossingForeground(p.x,p.y,f,color))/255.,1.);return;
+ }`:''}
  vec2 d=(p-gate.xy)/gate.z;
  float metric=${index===1?'square(d.x/1.03)+square((d.y+.105*sin(d.x*3.3)*(abs(d.y)>.47?fieldSmooth((abs(d.y)-.47)*3.):0.))/.98)':'square((d.x+'+(index===0?'.12':'0.')+'*d.y)/.94)+square(d.y/1.06)'};
  float limit=${index===1?'.92':'.695'};

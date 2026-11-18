@@ -1,6 +1,6 @@
 import {roomReliefCrossing} from './ansi-parallax.mjs';
-import {frikMotionSource} from './ansi-frik-motion.mjs?v=first-crossing-4';
-import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=frik-mind-46';
+import {frikMotionSource} from './ansi-frik-motion.mjs?v=lancing-1';
+import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=lancing-1';
 
 // Shapes read in the coordinate system of the supplied standing sketch.
 // The drawing supplies proportions. These ink, relief and movement

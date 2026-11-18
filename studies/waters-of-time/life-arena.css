@@ -75,3 +75,9 @@ header .modes{flex:1;justify-content:flex-end}
  .portrait-review:has(.reader-bar){width:min(1040px,100%,calc((100svh - 138px)*1.7143 + 4vw));padding-block:10px}
  .portrait-review:has(.reader-bar) header{padding-bottom:7px;margin-bottom:8px}
 }
+
+.story-terminal{position:relative}.story-terminal header{display:flex;align-items:center;gap:.7rem}.story-terminal header h1{flex:1}.story-terminal header button{font-size:.83em}
+.story-screen{position:relative;padding:6px 7px;background:#0b1019}#terminal-rim{position:absolute;inset:0;pointer-events:none;z-index:3}#terminal-rim i{display:block;position:absolute;inset:0;color:#779aab;font:14px monospace;--ansi-ink:#779aab}
+.story-terminal:fullscreen,.story-terminal.expanded{width:100%;max-width:none;height:100dvh;padding:6px max(10px,2vw);overflow:auto;background:#090c14}
+.story-terminal:fullscreen #stage,.story-terminal.expanded #stage{width:min(100%,calc((100dvh - 130px)*1.7143));margin:auto}
+.story-terminal:fullscreen .story-screen,.story-terminal.expanded .story-screen{width:fit-content;max-width:100%;min-width:min(100%,calc((100dvh - 130px)*1.7143 + 14px));margin:auto}

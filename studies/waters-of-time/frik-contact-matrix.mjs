@@ -1,3 +1,4 @@
+import {flightTraces} from './lancing-route.mjs';
 // Offline instrument for one Frik encounter. Repeated samples of the same
 // transmission are one piece of evidence, regardless of frame rate.
 const shore={id:'shell',x:.599,y:.779,r:.026,name:'Under the chipped shell',concept:'answer',hint:'The brood mother keeps turning one shell uphill.'};
@@ -31,13 +32,13 @@ export const traceReadings={
  post:['My outgoing bit is back. Same address. Someone has added a second pulse.',
   'Our reply survived a round trip through their water. We can leave a message here.'],
 };
-export const traceTotal=paths.filter(Boolean).length;
-const ids=new Set(paths.filter(Boolean).map(p=>p.id));
+export const traceTotal=paths.filter(Boolean).length+flightTraces.length;
+const ids=new Set([...paths.filter(Boolean),...flightTraces].map(p=>p.id));
 const key='friktal.frik-first-contact.matrix.v1';
 export const matrixStages=['Carrier isolation','Hive / Waters separation','Affect alignment','Duplex matrix'];
 const costs=[3,8,16];
 export function openFrikMatrix(storage){
- const seen=new Set(),traces=new Set();
+ const seen=new Set(),traces=new Set(),chapters=new Set();
  let rank=0,answered=false,evidence='';
  const points=()=>seen.size+traces.size*3;
  const complete=trip=>Array.from({length:7},(_,scene)=>seen.has(trip+'/'+scene)).every(Boolean);
@@ -50,6 +51,7 @@ export function openFrikMatrix(storage){
    if(typeof code==='string'&&/^[0-2]\/[0-6]$/.test(code))seen.add(code);
   }
   if(Array.isArray(saved?.traces))for(const id of saved.traces)if(ids.has(id))traces.add(id);
+  if(Array.isArray(saved?.chapters))for(const n of saved.chapters)if(Number.isInteger(n)&&n>=0&&n<8)chapters.add(n);
   answered ||= saved?.answered===true;
   rank=Math.max(rank,readingRank(),Math.min(earned(),Number.isInteger(saved?.rank)?saved.rank:0));
   evidence=[...traces].join(',');
@@ -57,7 +59,7 @@ export function openFrikMatrix(storage){
  sync();
  function save(){
   sync();
-  try{storage?.setItem(key,JSON.stringify({seen:[...seen],traces:[...traces],rank,answered}));}catch{}
+  try{storage?.setItem(key,JSON.stringify({chapters:[...chapters],seen:[...seen],traces:[...traces],rank,answered}));}catch{}
  }
  function record(group,id){
   if(group.has(id))return false;
@@ -65,6 +67,8 @@ export function openFrikMatrix(storage){
  }
  return {
   listen(scene,trip){return Number.isInteger(scene)&&scene>=0&&scene<7&&Number.isInteger(trip)&&trip>=0&&trip<3&&record(seen,trip+'/'+scene);},
+  hearChapter(n){return Number.isInteger(n)&&n>=0&&n<8&&record(chapters,n);},
+  get score(){return Math.round(70*(chapters.size+seen.size)/29+30*traces.size/traceTotal);},
   discover(id){return ids.has(id)&&record(traces,id);},
   tune(){if(rank>=earned())return false;rank++;save();return true;},
   answer(){if(answered)return false;answered=true;save();return true;},
@@ -106,18 +110,4 @@ export function recoveredReading(scene,trip,rank,evidence='',answered=false){
  return null;
 }
 
-// Return via the enclosing scene. Translation is distributed in proportion
-// to visible world width so a deep inspection never sweeps sideways at 100×.
-export function traceReturnCamera(from,to,t){
- const wide={zoom:0,centerX:.5,centerY:.5};
- const pivot=from.zoom<=.01?0:to.zoom<=.01?1:.55;
- const split=pivot>0&&pivot<1;
- const outward=split&&t<pivot;
- const a=split&&!outward?wide:from,b=outward?wide:to;
- const u=Math.max(0,Math.min(1,split?(outward?t/pivot:(t-pivot)/(1-pivot)):t));
- const ease=u*u*(3-2*u);
- const zoom=a.zoom+(b.zoom-a.zoom)*ease;
- const spanA=2**-a.zoom,spanB=2**-b.zoom;
- const shift=Math.abs(spanB-spanA)<.00001?ease:(2**-zoom-spanA)/(spanB-spanA);
- return {zoom,centerX:a.centerX+(b.centerX-a.centerX)*shift,centerY:a.centerY+(b.centerY-a.centerY)*shift};
-}
+export {returnArtCamera as traceReturnCamera} from './ansi-review-camera.mjs?v=lancing-1';
