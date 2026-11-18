@@ -1,7 +1,7 @@
 export const config = /*json-start*/{
   "mainAssemblyName": "InfiniGenAudio.dll",
   "resources": {
-    "hash": "sha256-yOYrWLfNcFKZropWWYgIU2S4nqa2j8xwPo59n+G70ok=",
+    "hash": "sha256-PbOYEyHROkDglewC+IzE3I0RvZMChkYc26YxowSDg8Y=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.js"
@@ -15,14 +15,14 @@ export const config = /*json-start*/{
     "wasmNative": [
       {
         "name": "dotnet.native.wasm",
-        "integrity": "sha256-aTU85I5mhl1ohxdm8GFOQ5RNKFGyAVEYjz/YsPt1rO0="
+        "integrity": "sha256-TZ0cVB7l+kMEPVVLXuPHl5O7euDdIjVBeIL6ukA2Cv8="
       }
     ],
     "coreAssembly": [
       {
         "virtualPath": "InfiniGenAudio.wasm",
         "name": "InfiniGenAudio.wasm",
-        "integrity": "sha256-jHgV8LCpw2muB7R4nUCFBVouhxHyTIXWJlyQeY/J6Bo="
+        "integrity": "sha256-CZCuBm3f0qMf3Iw8L6e1iekzpJ5Af8WNoQ/BrzsqeZg="
       },
       {
         "virtualPath": "System.Collections.Concurrent.wasm",

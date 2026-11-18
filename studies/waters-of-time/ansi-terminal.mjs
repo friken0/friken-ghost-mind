@@ -370,3 +370,76 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,cover=
  update(elapsed,{reveal:complete,time:presentation,reducedMotion:lastReduced,artCells:lastArtCells});
  },update,get paused(){return heldCount!==null;},setPaused(value){if(value&&heldCount===null)heldCount=Math.max(0,count);else if(!value&&heldCount!==null){serialOffset=heldCount-elapsed*bps/10;heldCount=null;}canvas.dataset.paused=String(heldCount!==null);},get mode(){return mode;},get hotspots(){return manualHotspots||terminalHotspots(mode);},get program(){return stream;},setMode(next,state={}){if(!['prompt','command','dialer','receiving','held'].includes(next))throw Error('Unknown terminal mode');const key=JSON.stringify([next,state]);if(key===modeKey)return;modeKey=key;const changed=mode!==next;mode=next;controlState=state;manualHotspots=null;commandProgramKey='';if(changed){serialOffset=0;heldCount=null;pendingPatches=[];patchBytes=0;buffer.reset();stream=next==='dialer'?dialerAnsi({recipient,label,bps,...state}):next==='held'?heldAnsi({recipient,label,bps,cover,seed,...state}):receiving;count=-1;elapsed=0;records.clear();animator.clear();painted.clear();}force=true;update(elapsed,{reveal:mode!=='receiving',time:presentation});},setControls(patch){controlState={...controlState,...patch};modeKey=JSON.stringify([mode,controlState]);commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setFocus(id){if(controlState.focus===id)return;controlState={...controlState,focus:id};commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setProgram(text,{hotspots=[],animation:animateProgram=false,preserve=false}={}){if(typeof text!=='string'||text.length>128000||!Array.isArray(hotspots)||hotspots.length>96)throw Error('Bounded ANSI program required');configureInk(animateProgram?.ink??[]);mode='program';programAnimation=animateProgram===true;programTracks=new Map();reactiveCells=new Map();if(animateProgram&&typeof animateProgram==='object'){if(!Array.isArray(animateProgram.tracks??[])||(animateProgram.tracks??[]).length>256)throw Error('Bounded ANSI art tracks required');for(const t of animateProgram.tracks??[]){if(!Number.isInteger(t.row)||t.row<1||t.row>rows||!Number.isInteger(t.column)||t.column<1||t.column>columns||!Array.isArray(t.frames)||t.frames.length>16)throw Error('Bounded ANSI art cell required');programTracks.set((t.row-1)*columns+t.column-1,t);}}if(animateProgram?.cymatics){if(!Array.isArray(animateProgram.cymatics)||animateProgram.cymatics.length>4)throw Error('Bounded ANSI audio regions required');for(const r of animateProgram.cymatics){if(!Number.isInteger(r.row)||!Number.isInteger(r.column)||!Number.isInteger(r.width)||!Number.isInteger(r.height)||r.row<1||r.column<1||r.row+r.height>rows+1||r.column+r.width>columns+1||!Number.isFinite(r.intensity)||r.intensity<0||r.intensity>1)throw Error('Bounded ANSI audio region required');const count=r.width*r.height,budget=r.style==='trip'?384:128;for(let n=0;n<Math.min(count,budget);n++){const offset=Math.floor(n*count/Math.min(count,budget)),y=r.row-1+Math.floor(offset/r.width),x=r.column-1+offset%r.width;reactiveCells.set(y*columns+x,r);}}}pendingPatches=[];patchBytes=0;stream=preserve?text.replace(/\x1b\[2J/g,''):text;manualHotspots=hotspots;serialOffset=0;heldCount=null;if(!preserve)buffer.reset();count=-1;modeKey='';elapsed=0;force=true;records.clear();animator.clear();painted.clear();update(0,{time:presentation});},patch(text){if(typeof text!=='string'||text.length>16000)throw Error('Bounded ANSI patch required');if(!complete){if(pendingPatches.length>=128||patchBytes+text.length>128000)throw Error('Pending ANSI patch budget exceeded');pendingPatches.push(text);patchBytes+=text.length;canvas.dataset.queuedPatches=String(pendingPatches.length);return false;}buffer.feed(text);force=true;return update(elapsed,{reveal:true,time:presentation});},setAnimationEnabled(value){animation=!!value;force=true;update(elapsed,{reveal:complete,time:presentation});},get commandDuration(){return bootCommand.length/bootCommandCps;},get duration(){return (manualHotspots===null?receiving.length:stream.length)*10/bps;},get elapsed(){return elapsed;},get revision(){return revision;},get complete(){return complete;},reset(){heldCount=null;serialOffset=0;pendingPatches=[];patchBytes=0;buffer.reset();count=-1;records.clear();animator.clear();painted.clear();return update(0,{time:presentation});},reveal(){heldCount=null;return update(elapsed,{reveal:true,time:presentation});}};
 }
+
+// Shared cell chrome for HQ rooms and full-screen story programs.
+const cleanBoardText = value => String(value ?? '').replace(/[\x00-\x1f\x7f-\x9f]/g, ' ');
+export const clipTerminalText = (value, width) => [...cleanBoardText(value)].slice(0, width).join('');
+export function wrapTerminalText(value, width) {
+  const rows = [];
+  for (const paragraph of String(value ?? '').split(/\r?\n/)) {
+    let chars = [...cleanBoardText(paragraph).trim()];
+    while (chars.length > width) {
+      const gap = chars.slice(0, width + 1).lastIndexOf(' ');
+      const end = gap > 0 ? gap : width;
+      rows.push(chars.splice(0, end).join(''));
+      while (chars[0] === ' ') chars.shift();
+    }
+    rows.push(chars.join(''));
+  }
+  return rows;
+}
+
+export function boardTerminalGrid(rect,wide=false) {
+  const aspect = rect.width / Math.max(1, rect.height);
+  if (aspect < 1.2) {
+    const columns = rect.width < 530 ? (wide?62:48) : (wide?74:62);
+    return {columns, rows: Math.max(42, Math.min(50, Math.round(columns / (2 * aspect))))};
+  }
+  const rows = Math.max(32, Math.min(38, Math.round(45 / aspect)));
+  return {columns: Math.min(wide?160:140, Math.max(80, Math.round(aspect * rows * (wide?2.4:2)))), rows};
+}
+
+
+export function boardTerminalPage({columns:C,rows:R},focus){
+  const cells = Array.from({length:C * R}, () => ({glyph:' ', fg:7, bg:0}));
+  const hotspots = [], fields = [], tracks = [], inkStyles=[];
+  const ink = (r,c,glyph,fg=7,bg=0) => {
+    if (r >= 1 && r <= R && c >= 1 && c <= C) cells[(r-1)*C+c-1] = {glyph,fg,bg};
+  };
+  function put(r,c,value,fg=7,bg=0,width=C-c) {
+    [...clipTerminalText(value,width)].forEach((glyph,i) => ink(r,c+i,glyph,fg,bg));
+  }
+  function prose(r,c,width,value,maxRows,fg=7) {
+    const lines = wrapTerminalText(value,width).slice(0,maxRows);
+    lines.forEach((line,i) => put(r+i,c,line,fg,0,width));
+    return r+lines.length;
+  }
+  function box(r,c,width,height,title='',fg=6,bg=0) {
+    put(r,c,'╔'+'═'.repeat(width-2)+'╗',fg,bg,width);
+    put(r+height-1,c,'╚'+'═'.repeat(width-2)+'╝',fg,bg,width);
+    for (let y=r+1; y<r+height-1; y++) put(y,c,'║'+' '.repeat(width-2)+'║',fg,bg,width);
+    if(title) put(r,c+2,' '+title+' ',fg,bg,width-4);
+  }
+  function rule(r,title='') {
+    put(r,1,'╠'+'═'.repeat(C-2)+'╣',6,0,C);
+    if (title) put(r,3,' '+title+' ',14,0,C-5);
+  }
+  function action(id,r,c,width,key,title,{fg=14,primary=false,label=title,disabled=false}={}) {
+    width=Math.min(width,C-c);
+    if(r<1||r>R||c<1||width<1)return r;
+    const keycap = {Enter:'↵',Escape:'ESC',Backspace:'←',' ':'SPACE',ArrowLeft:'←',ArrowRight:'→',ArrowUp:'↑',ArrowDown:'↓',PageUp:'↑',PageDown:'↓'}[key] || key;
+    const lines = wrapTerminalText('['+keycap.toUpperCase()+'] '+title,width).slice(0,R-r+1);
+    const bg = focus === id ? 4 : 0;
+    lines.forEach((line,i) => put(r+i,c,line.padEnd(width),disabled?8:primary?11:fg,bg,width));
+    hotspots.push({id,row:r,column:c,width,height:lines.length,key,ariaLabel:label,disabled});
+    if(primary&&width>1){
+      // Light the command key, not the label or the surrounding controls.
+      inkStyles.push({row:r,column:c+1,bloom:4,pass:5});
+      const keyGlyph=keycap[0].toUpperCase();
+      tracks.push({row:r,column:c+1,interval:740,transition:410,effect:'pulse',
+        frames:[{glyph:keyGlyph,fg:11,bg},{glyph:keyGlyph,fg:15,bg}]});
+    }
+    return r+lines.length;
+  }
+  return {cells,hotspots,fields,tracks,inkStyles,ink,put,prose,box,rule,action};
+}

@@ -1,59 +1,115 @@
-import {mountAnsiUI} from './ansi-ui.mjs';
+import {mountNativeResponseHost} from './native-response-host.mjs';
+import {boardTerminalPage,boardTerminalGrid,mountAnsiTerminal} from './ansi-terminal.mjs?v=terminal-score-1';
+import {ansiSceneProgram} from './ansi-scenes.mjs';
 import {chapterSeconds,crossingFlight,crossingHints,flightTraceAt} from './lancing-route.mjs?v=lancing-2';
 import {crossing} from './frik-crossing.mjs?v=lancing-2';
 import {keeperLine,frikStoryCaption} from './ansi-frik-story.mjs?v=lancing-2';
-import {traceTotal,recoveredReading,traceReadings,matrixStages,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=brood-1';
+import {traceTotal,recoveredReading,traceReadings,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=brood-1';
 import {fractalPassOptions, mountAnsiFractal} from './ansi-fractal.mjs?v=brood-1';
 import {createFrikGpu} from './ansi-frik-gpu.mjs?v=brood-1';
 import {mountAnsiReviewCamera} from './ansi-review-camera.mjs?v=brood-1';
 import {mountAudio} from './audio.mjs';
-import {mountFrikStudyScore} from './frik-study-score.mjs?v=ensemble-1';
-import {frikCameraRate,frikRewindRate,frikTraversalBoundary,frikMemoryNames,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=lancing-2';
+import {mountFrikStudyScore} from './frik-study-score.mjs?v=score-windows-1';
+import {frikCameraRate,frikRewindRate,frikTraversalBoundary,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=lancing-2';
 import {nextFrikMotionSeed,priorFrikMotionSeed} from './ansi-frik-motion.mjs?v=lancing-2';
 import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=brood-1';
 
 const artwork = createFrikMindInk();
 
 const byId = id => document.getElementById(id);
-const stage = byId('stage'), rate = byId('rate'), details = byId('details'), status = byId('status');
-const dive = byId('dive'), retreat = byId('return'), effectsButton = byId('effects');
-const filteringButton=byId('filtering');
-const musicButton=byId('music'),musicStatus=byId('music-status');
-const memoryButtons=[...byId('memories').querySelectorAll('button')];
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-const passButtons = new Map();
-const scaleButtons = [...byId('scales').querySelectorAll('button')];
-const exploreButton=byId('explore'),calibrate=byId('calibrate'),matrixReading=byId('matrix-reading'),guide=byId('trace-guide');
+const screen=document.querySelector('main'),stage=byId('stage'),status=byId('status');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+const chapterTitle=byId('chapter-title'),chapterCopy=byId('chapter-copy');
 let storage;try{storage=window.localStorage;}catch{}
 const matrix=openFrikMatrix(storage);
-mountAnsiUI(byId('terminal-rim'));
-const screenButton=byId('screen'),screen=document.querySelector('main');
-SDUI.press(screenButton,async()=>{try{if(screen.classList.contains('expanded'))screen.classList.remove('expanded');else if(document.fullscreenElement)await document.exitFullscreen();else await screen.requestFullscreen();}catch{screen.classList.toggle('expanded');}screenButton.textContent=document.fullscreenElement||screen.classList.contains('expanded')?'Restore frame':'Full screen';});
-document.addEventListener('fullscreenchange',()=>{screenButton.textContent=document.fullscreenElement?'Restore frame':'Full screen';});
-const answer=byId('answer');
-SDUI.press(answer,()=>{if(!answer.hidden&&matrix.answer()){revision++;showMatrix();}});
-let excursion,rejoin,listenKey='',listenTime=0,traceKey='',traceTime=0;
-function showMatrix(){
-  const activeRank=Math.max(matrix.rank,trip===2?3:trip);
-  const canTune=matrix.ready&&activeRank===matrix.rank;
-  const progress=activeRank===3?'online':matrix.ready?matrix.points+' evidence · calibration ready':matrix.points+' / '+matrix.needed+' evidence';
-  matrixReading.textContent=matrixStages[activeRank]+' · '+progress+' · '+matrix.finds+'/'+traceTotal+' memory paths · Record '+matrix.score+'/100';
-  answer.disabled=matrix.answered;
-  answer.textContent=matrix.answered?'Two taps received':'Send two taps';
-  calibrate.disabled=!canTune;
-  calibrate.textContent=canTune?'Tune '+matrix.next:'Calibrate matrix';
+let settings=false,expanded=false,focus=null,chromeKey='',fps='— FPS',guide='',frameDetails='';
+const terminal=mountAnsiTerminal({canvas:document.createElement('canvas'),cursor:false,animation:true});
+const host=mountNativeResponseHost(screen,{terminal,gridForRect:boardTerminalGrid,maxFps:20,
+  label:'GhostLINK / The Lancing: Human Hubris',onAction:storyAction,onFocus:id=>{focus=id;}});
+host.element.append(stage);
+host.focus();
+let fitKey='';
+function storyFrame(){
+  const fit=host.rect(),grid=host.grid,{columns:C,rows:R}=grid;
+  // The frame and the art occupy the same character rectangle as a board room.
+  const margin=expanded?0:C<70?1:3,top=expanded?1:3;
+  const h=Math.max(3,Math.min(R-top-(settings?8:2),Math.floor((C-2*margin-2)*7/24)));
+  const w=Math.min(C-2*margin-2,Math.round(h*24/7));
+  const col=1+Math.floor((C-w-2)/2),row=Math.max(top,Math.floor((R-h-(settings?7:1))/2));
+  const geometry=[fit.left,fit.top,fit.cellWidth,fit.cellHeight,col,row,w,h].join('/');
+  if(fitKey!==geometry){
+    fitKey=geometry;
+    const root=screen.getBoundingClientRect();
+    Object.assign(stage.style,{left:(fit.left-root.left+col*fit.cellWidth)+'px',
+      top:(fit.top-root.top+row*fit.cellHeight)+'px',width:w*fit.cellWidth+'px',height:h*fit.cellHeight+'px'});
+  }
+  const next=bookmark?'Resume story':mode==='hold'?'Resume':chapter>=0||mode==='reading'?'Continue':'';
+  const canAdvance=!settings&&!!next&&!excursion&&!returning&&(!routeFlight||bookmark);
+  const hint=guide||(chapter>=0?crossingHints[chapter]:'');
+  const key=JSON.stringify([geometry,settings,expanded,focus,canAdvance,next,chapterTitle.textContent,fps,
+    settings&&[effects,filtering,cap,musicWanted,musicState,frameDetails,hint,mode,matrix.score,matrix.ready,matrix.answered,scene,chapter]]);
+  if(key===chromeKey)return;
+  chromeKey=key;
+  const {box,put,rule,action,hotspots,cells,tracks,inkStyles}=boardTerminalPage(grid,focus);
+  const title='THE LANCING: HUMAN HUBRIS';
+  if(row>1)put(row-1,col+1,'GHOSTLINK',6);
+  if(row>1)put(row-1,col+w-8,fps.padStart(8),8);
+  box(row,col,w+2,h+2,title,6);
+  action('flight-screen',row,col+w-7,7,'I',expanded?'↙':'↗',{label:expanded?'Restore frame':'Full screen'});
+  const foot=row+h+1;
+  if(canAdvance)action('continue',foot,col+2,17,'Enter',next,{primary:true});
+  else if(!settings&&excursion)action('explore',foot,col+2,19,'T','Rejoin stream');
+  action('settings',foot,col+w-13,12,'F2',settings?'Close':'Setup',{fg:7,label:settings?'Close settings':'Terminal settings'});
+  if(settings){
+    const y=foot+1,mid=Math.min(C-21,Math.max(22,Math.floor(C*.48)));
+    rule(y,'TERMINAL SETTINGS');
+    action('passes',y+1,3,19,'Q',cap+' passes');
+    action('filtering',y+1,mid,21,'Z','Filter '+(filtering?'on':'off'));
+    action('effects',y+2,3,19,'E','Effects '+(effects?'on':'off'));
+    action('music',y+2,mid,21,'V','Music '+(musicWanted?'on':'off'));
+    if(chapter<0)action('explore',y+3,3,19,'T',excursion?'Rejoin stream':'Dilate time');
+    if(chapter<0&&matrix.ready)action('calibrate',y+3,mid,20,'C','Tune matrix');
+    if(chapter<0&&scene===5&&!matrix.answered)action('answer',y+4,3,20,'A','Send two taps');
+    if(chapter>=0||!matrix.ready){
+      const audioLabel=musicState==='playing'?stage.dataset.scoreTracks+' tracks / '+Math.round(stage.dataset.scoreSeconds)+'s':
+        musicState==='synthesizing'?'Preparing score':musicState==='idle'?'':musicState;
+      put(y+3,mid,audioLabel,7);
+    }
+    put(y+4,mid,matrix.finds+'/'+traceTotal+' paths  '+matrix.score+'/100',7);
+    put(y+5,3,hint||frameDetails,8);
+  }
+  const page=ansiSceneProgram({cells:cells.map((cell,i)=>({...cell,column:i%C+1,row:Math.floor(i/C)+1})),tracks},grid);
+  host.show({grid,text:page.text,hotspots,settingsOpen:settings,animation:{tracks,ink:inkStyles}},{immediate:true,preserve:true});
 }
-window.addEventListener('storage',()=>{matrix.sync();showMatrix();revision++;});
-SDUI.press(calibrate,()=>{if(matrix.tune()){showMatrix();revision++;}});
+async function storyAction(id){
+  if(id==='settings'||id==='settings-close'){settings=id==='settings'&&!settings;focus=null;}
+  else if(id==='flight-screen'){
+    expanded=!expanded;
+    if(expanded&&!document.fullscreenElement&&screen.requestFullscreen){try{await screen.requestFullscreen();}catch{/* Embedded board keeps the expanded cell frame. */}}
+    else if(!expanded&&document.fullscreenElement)await document.exitFullscreen();
+  }else if(id==='continue'){if(mode==='hold'&&!bookmark)resumeFlight();else proceed();}
+  else if(id==='music')setMusic(!musicWanted);
+  else if(id==='passes'){cap=fractalPassOptions[cap%fractalPassOptions.length];clearFrameReceipt();viewer.reveal();}
+  else if(id==='effects')effects=!effects;
+  else if(id==='filtering')filtering=!filtering;
+  else if(id==='explore')toggleExploration();
+  else if(id==='calibrate'&&matrix.tune())revision++;
+  else if(id==='answer'&&matrix.answer())revision++;
+  storyFrame();
+}
+document.addEventListener('fullscreenchange',()=>{expanded=!!document.fullscreenElement;chromeKey='';});
+window.addEventListener('storage',()=>{matrix.sync();revision++;});
+
+let excursion,rejoin,listenKey='',listenTime=0,traceKey='',traceTime=0;
 let shown;
 let cap = 8, revision = 0, effects = true;
 let filtering=false;
 let scene = 0, depthZoom = 0, time = 0, elapsed = 0, start;
 let routeFlight,bookmark,returning,flightFind='';
 let trip=0,direction=1,endingAge=0,chapter=-1,readAge=0,readScene='',holdPose;
-const nextReading=byId('next-reading'),chapterTitle=byId('chapter-title'),chapterCopy=byId('chapter-copy');
+
 function enterReading(){
-  mode='reading';readAge=0;holdPose=camera.frame(performance.now());updateControls();
+  mode='reading';readAge=0;holdPose=camera.frame(performance.now());
 }
 function readDrift(base,age){
   if(reduced.matches)return base;
@@ -64,27 +120,20 @@ function readDrift(base,age){
 }
 const routeTrip=()=>rewindArtTrip(scene,trip,direction<0);
 let audioBands=[0,0,0,0],audioRms=0,musicWanted=false,musicAsked=false,musicState='idle',audioBeat=0;
-const audio=mountAudio(document.querySelector('main'),{frame(bands){
+const audio=mountAudio(document.querySelector('main'),{musicLevel:1,frame(bands){
   audioBands=musicWanted?bands:[0,0,0,0];audioRms=musicWanted?audio.info.rms:0;
   audioBeat++;
   stage.dataset.cymaticSignal=audioBands.map(n=>n.toFixed(3)).join(',');
-  if(audioBeat%8===0&&musicWanted&&musicState==='playing')musicStatus.textContent=
-    'FrikBridge · '+(stage.dataset.scoreTracks??'…')+' tracks · '+(stage.dataset.scoreNotes??'…')+' notes · live signal '+Math.round(Math.min(1,audioRms*12)*100)+'%';
 }});
-const score=mountFrikStudyScore(audio,stage,state=>{
-  musicState=state;
-  musicStatus.textContent=musicWanted?'InfiniGen · FrikBridge · '+state:'';
-},{ensemble:true});
+const score=mountFrikStudyScore(audio,stage,state=>{musicState=state;},{ensemble:true});
 function setMusic(on){
   musicWanted=on;musicAsked=true;
-  musicButton.textContent=on?'Music on':'Music off';
-  musicButton.setAttribute('aria-pressed',String(on));
   if(on)void score.play();
   else{score.stop();audioBands=[0,0,0,0];audioRms=0;}
 }
 window.addEventListener('pagehide',()=>score.stop());
 function musicGesture(event){
-  if(!musicAsked&&!event.target.closest?.('#music,#dive,#replay'))setMusic(true);
+  if(!musicAsked&&!settings&&event.key!=='F2')setMusic(true);
 }
 document.querySelector('main').addEventListener('pointerdown',musicGesture,{capture:true});
 document.querySelector('main').addEventListener('keydown',musicGesture,{capture:true});
@@ -104,7 +153,7 @@ function measurePixels(){
   clearFrameReceipt();
 }
 
-SDUI.grant(document.querySelector('main'), 'Standalone Frik ANSI++ viewer');
+
 const viewer = mountAnsiFractal(stage, {
   frameBudget: 5,
   host: {
@@ -124,11 +173,11 @@ resizeObserver.observe(viewer.canvas);
 window.addEventListener('resize',measurePixels);
 
 function rememberRoute(){
-  if(returning){bookmark=returning.mark;returning=undefined;mode=chapter>=0?'opening-inspect':'hold';updateControls();}
+  if(returning){bookmark=returning.mark;returning=undefined;mode=chapter>=0?'opening-inspect':'hold';}
   if(!bookmark&&!excursion&&['opening','reading','flight','crossing'].includes(mode)){
     bookmark={pose:camera.frame(performance.now()),mode,scene,depthZoom,chapter,travel:shot?.travel??0};
     mode=chapter>=0?'opening-inspect':'hold';
-    updateControls();
+
   }
 }
 function returnToStory(){
@@ -136,34 +185,11 @@ function returnToStory(){
   const from=camera.frame(performance.now()),goal=bookmark.pose;
   const aligned=Math.abs(from.zoom-goal.zoom)<.0001&&Math.hypot(from.centerX-goal.centerX,from.centerY-goal.centerY)<.0001*2**-goal.zoom;
   returning={from,age:aligned?2.35:0,mark:bookmark};
-  scene=bookmark.scene;depthZoom=bookmark.depthZoom;mode='return-story';updateControls();return true;
+  scene=bookmark.scene;depthZoom=bookmark.depthZoom;mode='return-story';return true;
 }
 function holdFlight() {
   heldRay = shot?.swing ?? 0;
   mode = 'hold';
-}
-
-function updateControls() {
-  showMatrix();
-  nextReading.hidden=chapter<0&&mode!=='reading'&&!bookmark;
-  nextReading.disabled=!!excursion||!!returning||(!!routeFlight&&!bookmark);
-  nextReading.textContent=returning?'Returning to story…':bookmark?'Resume story ▸':routeFlight?'In transit…':'Continue ▸';
-  dive.hidden=chapter>=0||mode==='reading';
-  exploreButton.hidden=chapter>=0;
-  exploreButton.textContent=excursion?'Rejoin stream':'Dilate time';
-  exploreButton.disabled=mode==='rejoin';exploreButton.setAttribute('aria-pressed',String(!!excursion));
-  guide.hidden=!excursion&&!(chapter>=0&&crossingHints[chapter]);
-  if(!excursion&&!guide.hidden)guide.textContent='Inspect · '+crossingHints[chapter];
-  dive.disabled=!!excursion;
-  dive.textContent = mode === 'flight' ? 'Hold motion' : mode === 'hold' ? 'Resume motion' : 'Infinizoom';
-  dive.setAttribute('aria-pressed', String(mode === 'flight'));
-  retreat.disabled = mode === 'review' && !scene && !depthZoom && !shot?.zoom;
-  effectsButton.textContent = effects ? 'Effects on' : 'Effects off';
-  effectsButton.setAttribute('aria-pressed', String(effects));
-  filteringButton.textContent=filtering?'Filtering on':'Filtering off';
-  filteringButton.setAttribute('aria-pressed',String(filtering));
-  for(const button of memoryButtons)button.setAttribute('aria-pressed',String(Number(button.dataset.memory)===trip));
-  byId('memory-name').textContent=frikMemoryNames[trip];
 }
 
 const camera = mountAnsiReviewCamera(stage, {
@@ -174,58 +200,15 @@ const camera = mountAnsiReviewCamera(stage, {
     if(mode==='opening')mode='opening-inspect';
     if (mode === 'flight'||mode==='reading')holdFlight();
     if(mode==='rejoin'){mode='explore';rejoin=undefined;}
-    for (const button of scaleButtons) {
-      button.setAttribute('aria-pressed', String(button.dataset.scale === preset));
-    }
-    updateControls();
   },
 });
 
-for (const button of scaleButtons) {
-  SDUI.press(button, () => {
-    rememberRoute();
-    const gate = frikMindSceneSet(routeTrip())[scene];
-    camera.go(button.dataset.scale, [gate.x, gate.y]);
-  });
-}
 function clearFrameReceipt(){
   shown=undefined;
   liveFrame=undefined;
   delete viewer.canvas.dataset.inkFrameGrid;
   delete viewer.canvas.dataset.inkFramePass;
 }
-function selectPass(value) {
-  if(cap!==value)clearFrameReceipt();
-  cap=value;
-  for (const [pass, button] of passButtons) button.setAttribute('aria-pressed', String(pass === value));
-  viewer.reveal();
-}
-for (const value of fractalPassOptions) {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.textContent = value;
-  button.setAttribute('aria-label', 'Pass ' + value);
-  byId('render-passes').append(button);
-  passButtons.set(value, button);
-  SDUI.press(button, () => selectPass(value));
-}
-selectPass(8);
-for(const button of memoryButtons)SDUI.press(button,()=>{
-  bookmark=returning=routeFlight=undefined;flightFind='';chapter=-1;readScene='';excursion=rejoin=undefined;endingAge=0;trip=Number(button.dataset.memory);direction=1;mode='hold';start=undefined;elapsed=0;
-  motionSeed=nextFrikMotionSeed(motionSeed);
-  depthZoom=frikMindSceneSet(trip).slice(0,scene).reduce((sum,gate)=>sum+gate.zoom,0);
-  camera.go('wide');clearFrameReceipt();updateControls();viewer.reveal();
-});
-// Stable specimen links open the same retained camera at a physical memory.
-const specimen=new URLSearchParams(location.search).get('specimen');
-const specimenScenes=new Map([['belljaw',3],['siltback',4],['uplink',5]]);
-if(specimenScenes.has(specimen)){
-  scene=specimenScenes.get(specimen);
-  depthZoom=frikMindSceneSet(trip).slice(0,scene).reduce((sum,gate)=>sum+gate.zoom,0);
-  mode='hold';
-}
-updateControls();
-
 function reset() {
   bookmark=returning=routeFlight=undefined;flightFind='';chapter=-1;readScene='';
   excursion=rejoin=undefined;
@@ -240,22 +223,22 @@ function reset() {
   mode = 'review';
   heldRay = 0;
   camera.go('wide');
-  updateControls();
+
 }
-SDUI.press(exploreButton,()=>{
+function toggleExploration(){
   if(!excursion){
     const pose=camera.frame(performance.now());
     excursion={pose,mode};
     mode='explore';traceTime=0;traceKey='';
     const path=frikTrace(scene,routeTrip()===2);
-    guide.textContent='Time ×⅛ · Hold to zoom, drag to pan, right-click to back out. '+(path?.hint??'The clearest side signals come from the bowl, satellite, nursery and modem.');
+    guide='Time ×⅛ · Hold to zoom, drag to pan, right-click to back out. '+(path?.hint??'The clearest side signals come from the bowl, satellite, nursery and modem.');
   }else{
     rejoin={pose:camera.frame(performance.now()),age:0};
     mode='rejoin';
   }
-  updateControls();
-});
-SDUI.press(dive, () => {
+
+}
+function resumeFlight(){
   if(!musicAsked || (mode==='review' && musicWanted))setMusic(true);
   if(returnToStory())return;
   if (mode === 'flight') {
@@ -278,43 +261,19 @@ SDUI.press(dive, () => {
     } else mode = 'flight';
   }
   viewer.reveal();
-  updateControls();
-});
-SDUI.press(retreat, () => {
-  reset();
-  enterReading();
-  revision++;
-  clearFrameReceipt();
-  viewer.reveal();
-});
-SDUI.press(byId('replay'), () => {
-  if(!musicAsked || musicWanted)setMusic(true);
-  reset();
-  revision++;
-  clearFrameReceipt();
-  cap=8;
-  for (const [pass, button] of passButtons) button.setAttribute('aria-pressed', String(pass === cap));
-});
-SDUI.press(effectsButton, () => {
-  effects = !effects;
-  updateControls();
-});
-SDUI.press(filteringButton,()=>{
-  filtering=!filtering;
-  updateControls();
-});
-SDUI.press(musicButton,()=>setMusic(!musicWanted));
+
+}
 reduced.addEventListener('change', () => {
   if (reduced.matches && mode === 'flight') holdFlight();
-  updateControls();
+
 });
 function startCrossing(){
-  reset();chapter=0;mode='opening';readAge=0;revision++;clearFrameReceipt();viewer.reveal();updateControls();
+  reset();chapter=0;mode='opening';readAge=0;revision++;clearFrameReceipt();viewer.reveal();
 }
 function proceed(){
   if(excursion||returning||returnToStory()||routeFlight)return;
   if(chapter>=0){
-    if(matrix.hearChapter(chapter))showMatrix();
+    matrix.hearChapter(chapter);
     routeFlight={start:camera.frame(performance.now()),age:0};
     mode='crossing';
   }else if(mode==='reading'){
@@ -322,24 +281,22 @@ function proceed(){
     readScene=trip+'/'+scene;
     start={...pose,duration:Math.max(4,gate.duration*(1-pose.zoom/gate.zoom))};elapsed=0;mode='flight';
   }
-  updateControls();
+
 }
-SDUI.press(nextReading,proceed);
-SDUI.press(byId('restart-story'),startCrossing);
-window.addEventListener('keydown',event=>{
-  if(event.repeat||event.defaultPrevented||event.key!=='Enter'||event.target.closest?.('button,a,input')||nextReading.hidden)return;
-  event.preventDefault();proceed();
-});
-camera.go();
-if(!specimen&&!new URLSearchParams(location.search).has('gpu-audit')&&!new URLSearchParams(location.search).has('gpu-bench')){
- startCrossing();
- const requested=['earth','receiver','yard','launch','lancing','scan','cutter','waters'].indexOf(new URLSearchParams(location.search).get('chapter'));
- if(requested>=0){chapter=requested;updateControls();}
+// Old gallery links resolve to the same first chapter as the board door.
+const entry=new URL(location.href);
+if(entry.searchParams.has('specimen')){
+  entry.searchParams.delete('specimen');history.replaceState(history.state,'',entry);
 }
+startCrossing();
+const requested=['earth','receiver','yard','launch','lancing','scan','cutter','waters'].indexOf(entry.searchParams.get('chapter'));
+if(requested>=0)chapter=requested;
+storyFrame();
+if(!entry.searchParams.has('gpu-audit')&&!entry.searchParams.has('gpu-bench'))void score.prepare();
 
 let inkFrames;
 try{inkFrames=createFrikGpu(document);}
-catch(error){status.textContent='GPU field stopped · '+error.message.split('\n')[0];throw error;}
+catch(error){status.hidden=false;status.textContent='GPU field stopped · '+error.message.split('\n')[0];throw error;}
 window.addEventListener('pagehide',()=>inkFrames.dispose());
 if(new URLSearchParams(location.search).has('gpu-audit')){
  const {auditFrikGpu}=await import('./ansi-frik-gpu-audit.mjs?v=brood-1');
@@ -438,10 +395,11 @@ function tick(now) {
     measuredAt = now;
     return;
   }
-  const delta = previous ? Math.min(.07, (now - previous) / 1000) : 0;
+  const frameDelta = previous ? Math.min(.07, (now - previous) / 1000) : 0;
+  const delta=settings?0:frameDelta;
   previous = now;
   const pose = camera.frame(now);
-  if(!reduced.matches&&effects)time+=delta*(excursion ? .125 : 1);
+  if(!reduced.matches&&effects)time+=frameDelta*(excursion ? .125 : 1);
   if((chapter>=0&&!bookmark)||mode==='reading')readAge+=delta;
   if(mode==='return-story'){
     returning.age+=delta;
@@ -451,7 +409,7 @@ function tick(now) {
     if(q===1){
       mode=mark.mode;bookmark=returning=undefined;flightFind='';
       if(mode==='opening'||mode==='reading'){holdPose=view;readAge=chapter>=0?readAge:0;proceed();}
-      updateControls();
+
     }
   }else if(mode==='crossing'){
     routeFlight.age+=delta;
@@ -465,7 +423,7 @@ function tick(now) {
       const wide={zoom:0,centerX:.5,centerY:.5};camera.set(wide);shot={...wide,scene,depthZoom};
       if(chapter>=crossing.length){chapter=-1;readScene=trip+'/'+scene;enterReading();}
       else mode='opening';
-      updateControls();
+
     }
   }else if(mode==='opening'||mode==='reading'){
     const stationary=mode==='opening'?{zoom:0,centerX:.5,centerY:.5}:holdPose;
@@ -485,7 +443,7 @@ function tick(now) {
         start={...view,duration:Math.max(2.5,frikMindSceneSet(trip)[scene].duration*(1-view.zoom/frikMindSceneSet(trip)[scene].zoom))};
         elapsed=0;
       }
-      updateControls();
+
     }
   }else if (mode === 'flight') {
     elapsed=Math.max(0,elapsed+delta*frikCameraRate*(direction>0?.72:-frikRewindRate));
@@ -508,9 +466,9 @@ function tick(now) {
   shot.roomAim=reduced.matches?[0,0]:reading?[(pose.roomAim?.[0]??0)+.061*Math.sin(readAge*.21),
    (pose.roomAim?.[1]??0)+.036*Math.sin(readAge*.14)]:pose.roomAim;
   const discovery=chapter>=0&&mode==='opening-inspect'?flightTraceAt(chapter,shot):null;
-  if(discovery&&flightFind!==discovery.id){if(matrix.discover(discovery.id))showMatrix();revision++;}
-  if(discovery)guide.textContent='Recorded · '+discovery.name;
-  else if(flightFind&&chapter>=0)guide.textContent='Inspect · '+crossingHints[chapter];
+  if(discovery&&flightFind!==discovery.id){if(matrix.discover(discovery.id))revision++;}
+  if(discovery)guide='Recorded · '+discovery.name;
+  else if(flightFind&&chapter>=0)guide='Inspect · '+crossingHints[chapter];
   flightFind=discovery?.id??'';
   const focus=discovery??(mode==='explore'?traceInFocus(scene,routeTrip(),shot):null);
   shot.find=focus?.id;shot.matrixRank=Math.max(matrix.rank,trip===2?3:trip);shot.evidence=matrix.evidence;shot.answered=matrix.answered;
@@ -536,7 +494,7 @@ function tick(now) {
   const presentedShot=shown?.shot??shot;
   const presentedTrip=presentedShot.trip??trip;
   const presentedScene=presentedShot.done?(presentedShot.scene+1)%frikMindScenes.length:presentedShot.scene;
-  answer.hidden=presentedScene!==5||chapter>=0;
+
   const prologue=presentedShot.prologue??-1;
   const section=prologue>=0?crossing[prologue][0]+' · '+(prologue+1)+'/'+crossing.length:frikMindScenes[presentedScene].name+' · Memory '+(presentedTrip+1)+'/3 · '+['Ghost inference','Voices aligned','Keeper transcription'][presentedTrip];
   if(chapterTitle.textContent!==section)chapterTitle.textContent=section;
@@ -547,7 +505,7 @@ function tick(now) {
     const key=presentedTrip+'/'+presentedScene;
     listenTime=key===listenKey?listenTime+delta:0;listenKey=key;
     if(listenTime>=1.25){
-      if(matrix.listen(presentedScene,presentedTrip))showMatrix();
+      matrix.listen(presentedScene,presentedTrip);
       listenTime=-Infinity;
     }
   }
@@ -557,26 +515,21 @@ function tick(now) {
     let message;
     traceTime=id&&id===traceKey?traceTime+delta:0;traceKey=id;
     if(id&&traceTime>=.60){
-      if(matrix.discover(id)){revision++;showMatrix();}
+      if(matrix.discover(id)){revision++;}
       message='Trace recorded · '+path.name+' · Back out to keep looking, or rejoin the stream.';
     }else{
       message='Time ×⅛ · Hold to zoom, drag to pan, right-click to back out. '+(path?.hint??'Try the bowl, satellite, nursery or modem.');
     }
-    if(guide.textContent!==message)guide.textContent=message;
+    if(guide!==message)guide=message;
   }
   const pass=shown?.pass??(Number(viewer.canvas.dataset.samplePass)||0);
   const zoom=presentedShot.zoom+(shown?.depthZoom??depthZoom);
   const mult = zoom > 17 || zoom < -5 ? '2^' + zoom.toFixed(1) : (2 ** zoom).toFixed(zoom !== 0 && zoom < 8 ? 1 : 0);
   const pixels=shown?' · '+shown.columns+'×'+shown.rows+' px':'';
   const label = mult + '× / PASS ' + pass + ' OF ' + cap+pixels;
-  if (details.textContent !== label) details.textContent = label;
-  const {name}=frikMindScenes[presentedScene];
-  const description=inkFrames.error?'GPU field stopped · '+inkFrames.error:
-    prologue>=0?crossing[prologue][0]:name+' · '+(presentedTrip+1)+'/3'+(presentedShot.rewinding?' · rewinding':'');
-  if (status.textContent !== description) status.textContent = description;
-  const memoryLabel=(direction<0?frikMemoryNames[(trip+1)%3]+' · returning':frikMemoryNames[trip])+(presentedTrip!==trip?' · refining…':'');
-  if(byId('memory-name').textContent!==memoryLabel)byId('memory-name').textContent=memoryLabel;
-  if (retreat.disabled && shot.zoom > 0) retreat.disabled = false;
+  frameDetails=label;
+  if(inkFrames.error){status.hidden=false;status.textContent='GPU field stopped · '+inkFrames.error;}
+  storyFrame();
   const lastInward=direction>0&&shot.atTurn;
   if(mode==='flight'&&lastInward)endingAge+=delta;
   if(mode==='flight'&&(direction<0?elapsed<=0:(shot.done||shot.atTurn))&&(!lastInward||endingAge>=endingReadSeconds(trip))){
@@ -592,13 +545,13 @@ function tick(now) {
     else if(next.seedStep<0)motionSeed=priorFrikMotionSeed(motionSeed);
     camera.set(direction<0?frikTeaserFlight(scene,elapsed,turnStart,routeTrip()):{zoom:0,centerX:.5,centerY:.5});
     start=turnStart;
-    updateControls();
+
   }
   if (!measuredAt) measuredAt = now;
   if (now - measuredAt >= 1000) {
     const completed=inkFrames.stats.completed-measuredFrames;
     const frameRate = Math.round(completed * 1000 / (now - measuredAt));
-    rate.textContent = completed ? Math.min(frameRate,Math.round((composited-measuredComposites)*1000/(now-measuredAt))) + ' fps' : '— fps';
+    fps = completed ? Math.min(frameRate,Math.round((composited-measuredComposites)*1000/(now-measuredAt))) + ' FPS' : '— FPS';
     Object.assign(viewer.canvas.dataset,{inkLayerCpuMs:layerMs.toFixed(2),
       inkLightCpuMs:lightMs.toFixed(2),inkViewerCpuMs:viewerMs.toFixed(2),inkGpuUploadedBytes:String(inkFrames.stats.bytesUploaded),
       samplingFilter:filtering?'linear':'nearest'});

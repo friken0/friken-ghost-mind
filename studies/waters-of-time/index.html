@@ -5,56 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Lancing: Human Hubris · FRIKTAL</title>
 <script src="./vendor/native-gallery/input.js?v=1"></script>
-<link rel="stylesheet" href="./life-arena.css?v=lancing-2">
+<style>
+html,body,main{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
+main{position:relative}#stage{position:absolute;z-index:2;overflow:hidden;touch-action:none;cursor:crosshair}
+#stage:focus{outline:none}.sr{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
+#status:not([hidden]){position:absolute;inset:3em 1em auto;z-index:12;color:white;background:black}
+</style>
 </head>
 <body>
-<main class="portrait-review story-terminal">
-<header>
- <h1>The Lancing: Human Hubris</h1><button id="screen" type="button">Full screen</button>
- <output id="rate" aria-label="Viewer frame rate">— fps</output>
-</header>
-<section aria-label="Frik Infinizoom study">
- <div class="story-screen"><div id="terminal-rim" aria-hidden="true"><i data-ansi-frame="double"></i></div><div id="stage" tabindex="0" role="group"
-  aria-label="Frik study. Hold to aim, release to zoom, drag to pan, or right-click to zoom out."></div></div>
- <div class="reader-bar" aria-label="Transmission controls">
-  <div><strong id="chapter-title">Incoming flight record</strong><output id="chapter-copy" aria-live="polite"></output></div>
-  <button type="button" id="next-reading" class="primary">Continue ▸</button>
- </div>
- <div class="viewer-tools">
-  <div id="scales" role="group" aria-label="Camera scale">
-   <button type="button" data-scale="wide">Wide</button>
-   <button type="button" data-scale="near">Near</button>
-   <button type="button" data-scale="detail">Detail</button>
-  </div>
-  <div id="render-passes" role="group" aria-label="Maximum render passes"></div>
-  <output id="details" aria-label="Camera scale and rendered passes"></output>
- </div>
- <div class="actions" role="group" aria-label="Translation matrix and exploration">
-  <button type="button" id="explore" aria-pressed="false">Dilate time</button>
-  <button type="button" id="calibrate" disabled>Calibrate matrix</button>
-  <button type="button" id="answer" hidden>Send two taps</button>
-  <output id="matrix-reading" aria-live="polite">Listening for a carrier</output>
- </div>
- <output id="trace-guide" hidden></output>
- <div id="memories" class="actions" role="group" aria-label="Memory edition">
-  <button type="button" data-memory="0" aria-pressed="true">Memory 1</button>
-  <button type="button" data-memory="1" aria-pressed="false">Memory 2</button>
-  <button type="button" data-memory="2" aria-pressed="false">Memory 3</button>
-  <output id="memory-name">Tidal jade</output>
- </div>
- <div class="actions">
-  <button type="button" id="dive" class="primary">Infinizoom</button>
-  <button type="button" id="return" disabled>Return to bridge</button>
-  <button type="button" id="replay">Play all passes</button>
-  <button type="button" id="effects" aria-pressed="true">Effects on</button>
-  <button type="button" id="filtering" aria-pressed="false">Filtering off</button>
-  <button type="button" id="music" aria-pressed="false">Music off</button>
-  <output id="status" aria-live="polite">Waters of Time · The Frik listens at the sacred bowls</output>
- </div>
- <button type="button" id="restart-story">Replay from Earth</button>
- <output id="music-status">FrikBridge soundtrack · click artwork to enable</output>
-</section>
+<main aria-label="The Lancing: Human Hubris">
+<div id="stage" role="group" tabindex="0" aria-label="Story artwork. Hold to aim, release to zoom, drag to pan, right-click to zoom out."></div>
+<output id="chapter-title" class="sr"></output><output id="chapter-copy" class="sr" aria-live="polite"></output>
+<output id="status" hidden></output>
 </main>
-<script type="module" src="./frik-mind-view.mjs?v=brood-1"></script>
+<script type="module" src="./frik-mind-view.mjs?v=terminal-score-1"></script>
 </body>
 </html>

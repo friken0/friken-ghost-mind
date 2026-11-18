@@ -1522,8 +1522,8 @@
     },
     {
       "path": "studies/waters-of-time/ansi-terminal.mjs",
-      "bytes": 36942,
-      "sha256": "f1fb578adc6f20b1d1204bee59d49fb60c9cbcdfe38845c4dbd7f42eb8b31b27"
+      "bytes": 40435,
+      "sha256": "5a04f6911eb48fbd675a8f6eec5943b6fb221eaff5a07694514fe284c7a621c4"
     },
     {
       "path": "studies/waters-of-time/ansi-ui.mjs",
@@ -1532,8 +1532,8 @@
     },
     {
       "path": "studies/waters-of-time/audio.mjs",
-      "bytes": 20290,
-      "sha256": "53e4aacfa7a71ca103baf51f8b144c20fcac3cba7b011b35ebb4650a801f9ab2"
+      "bytes": 20326,
+      "sha256": "02e92e2d3cf0f8d37452317f1c30849c01e0fb971daf79c0d7c0351f1f819165"
     },
     {
       "path": "studies/waters-of-time/frik-contact-matrix.mjs",
@@ -1552,8 +1552,8 @@
     },
     {
       "path": "studies/waters-of-time/frik-mind-view.mjs",
-      "bytes": 31457,
-      "sha256": "5e9f241f41f3f8eeef97ae925d5fb3db9ec61269198619864ea0f2a2cd23ceea"
+      "bytes": 29046,
+      "sha256": "52acd6c189e135cbb0c9a2edd0af781136faddb5268c0d6877aaed223773f771"
     },
     {
       "path": "studies/waters-of-time/frik-mind-worker.mjs",
@@ -1567,13 +1567,13 @@
     },
     {
       "path": "studies/waters-of-time/frik-study-score.mjs",
-      "bytes": 957,
-      "sha256": "c6562636ab41308169ddcbde7abb87e236693995692b315283e30d0d82a8c90e"
+      "bytes": 1205,
+      "sha256": "58f1175cf79df6fa0b5c26e836efc3fb3498a77c8c5789b7d80dd64e08916312"
     },
     {
       "path": "studies/waters-of-time/index.html",
-      "bytes": 3197,
-      "sha256": "b1cc54c0e53514b3dce8890a4103c3878731f85177ce7f74521075517d5a475b"
+      "bytes": 1117,
+      "sha256": "457e9494641285e59fbcf9cc9e405f07c47d7df1ae00a9385ca23a551bf33237"
     },
     {
       "path": "studies/waters-of-time/infinigen/DOTNET-LICENSE.txt",
@@ -1587,8 +1587,8 @@
     },
     {
       "path": "studies/waters-of-time/infinigen/_framework/InfiniGenAudio.wasm",
-      "bytes": 394517,
-      "sha256": "8c7815f0b0a9c369ae07b4789d4085055a2e8711f24c85d6265c90798fc9e81a"
+      "bytes": 396053,
+      "sha256": "0990ae066ddfd2a31fdc8c3c2fa7b589e933a49e407fc58da10fc1af3b2a7998"
     },
     {
       "path": "studies/waters-of-time/infinigen/_framework/System.Collections.Concurrent.wasm",
@@ -1668,7 +1668,7 @@
     {
       "path": "studies/waters-of-time/infinigen/_framework/dotnet.boot.js",
       "bytes": 5835,
-      "sha256": "6076e3ef14f0b5d844ebaa24eb675a50d4091c5b29089a1bd686a3d28383c9a8"
+      "sha256": "ee84359ce220f2d89448557fb412ed82eac6bf3e7addaa17fe389d4eb1847a97"
     },
     {
       "path": "studies/waters-of-time/infinigen/_framework/dotnet.js",
@@ -1682,8 +1682,8 @@
     },
     {
       "path": "studies/waters-of-time/infinigen/_framework/dotnet.native.wasm",
-      "bytes": 9920109,
-      "sha256": "69353ce48e66865d68871766f0614e43944d2851b20151188f3fd8b0fb75aced"
+      "bytes": 9924168,
+      "sha256": "4d9d1c541ee5fa43043d554b5ee3c79793bb7ae0dd2235417882faba40360aff"
     },
     {
       "path": "studies/waters-of-time/infinigen/_framework/dotnet.runtime.js",
@@ -1692,13 +1692,13 @@
     },
     {
       "path": "studies/waters-of-time/infinigen/score-player.mjs",
-      "bytes": 4278,
-      "sha256": "46932f17d5d9548a295bef1d69504c5250f4366ec10aa2271b40dc19720776af"
+      "bytes": 5961,
+      "sha256": "30a7b52df4b085040f1d2667f081044d941b0f3a54c64e87d9789fe6a5af7861"
     },
     {
       "path": "studies/waters-of-time/infinigen/score-worker.mjs",
-      "bytes": 1506,
-      "sha256": "4180915240dda8b805fc4f3e850e7089c93da5c76240772e4f0a690973ee2e1a"
+      "bytes": 2636,
+      "sha256": "2bdb1d07eb680b326534a3077ea4fa0c972f8e6aaa90a4fbefdda01e36fd7872"
     },
     {
       "path": "studies/waters-of-time/lancing-route.mjs",
@@ -1719,6 +1719,21 @@
       "path": "studies/waters-of-time/music-data.mjs",
       "bytes": 1105,
       "sha256": "9d74bbb81bbdad018fb39f00ac82a9526dfb9fc34b6c253c538e2a094033a0c8"
+    },
+    {
+      "path": "studies/waters-of-time/native-response-host.mjs",
+      "bytes": 23487,
+      "sha256": "74ea499ac2ff9a8a6722e6cc25271a19a3c3bacca425a1b034459d005e593a48"
+    },
+    {
+      "path": "studies/waters-of-time/reply-discoveries.mjs",
+      "bytes": 3307,
+      "sha256": "f562cf4cb958530d8ced1098d7ee5348626b52ac5d9301327c53cf50ef0f4961"
+    },
+    {
+      "path": "studies/waters-of-time/subtitle-cues.mjs",
+      "bytes": 5372,
+      "sha256": "a83cf605cfcb272c54a870ba248e522c309c7478953daa9c24002769debb1b14"
     },
     {
       "path": "studies/waters-of-time/vendor/ansi-ui/LICENSE.TXT",
