@@ -1447,8 +1447,8 @@
     },
     {
       "path": "studies/waters-of-time/ansi-frik-field-generated.mjs",
-      "bytes": 97858,
-      "sha256": "e2ea46d9f7492af9010d1dd59a5ac64d4a6e3023642ce88179bd2c0bbb1deb35"
+      "bytes": 102018,
+      "sha256": "500f7bb96ccd2dcb186526ad350abc65dbc225a0ce51a4e4b16df310fea45b95"
     },
     {
       "path": "studies/waters-of-time/ansi-frik-frame-bench.mjs",
@@ -1462,8 +1462,8 @@
     },
     {
       "path": "studies/waters-of-time/ansi-frik-gpu.mjs",
-      "bytes": 13718,
-      "sha256": "0416d06520566c960a3ebc60a589238f7e77b12972fe52b832bc59c98c9c5baf"
+      "bytes": 13736,
+      "sha256": "2c9ee19b06c022d4fb80462955866868c0373ba55db3de00c364c090ba1ab627"
     },
     {
       "path": "studies/waters-of-time/ansi-frik-hq-ad.mjs",
@@ -1472,13 +1472,13 @@
     },
     {
       "path": "studies/waters-of-time/ansi-frik-mind-art.mjs",
-      "bytes": 62955,
-      "sha256": "083a224582d56459c30187b18c5b6927b85d06bfe9c8a0a8dd7f38a0748dd0d5"
+      "bytes": 62959,
+      "sha256": "4ee97d4f3c7b9cb89cde242b38041254a33b22a6de45a8756106393ef7364d44"
     },
     {
       "path": "studies/waters-of-time/ansi-frik-mind.mjs",
-      "bytes": 23073,
-      "sha256": "dd5b5ac842c54b41cb144aaabb59d8d5437aa8f2300f29f30f75ac9e8af3e1c5"
+      "bytes": 23083,
+      "sha256": "d6b420f8c6a054ca751ac20f4949580bff3c44069790d7aa05f9ef08ce4f3fea"
     },
     {
       "path": "studies/waters-of-time/ansi-frik-motion.mjs",
@@ -1542,8 +1542,8 @@
     },
     {
       "path": "studies/waters-of-time/frik-crossing.mjs",
-      "bytes": 31017,
-      "sha256": "71ea0935e7c8c13e0aa1d334dfb5cddfa2c6648cc404261d3d089b8be558457d"
+      "bytes": 34991,
+      "sha256": "487d8440620bccaa76ba361b29f6f5950f9cb5919a42370875b9a220be89c6e1"
     },
     {
       "path": "studies/waters-of-time/frik-mind-frames.mjs",
@@ -1552,13 +1552,18 @@
     },
     {
       "path": "studies/waters-of-time/frik-mind-view.mjs",
-      "bytes": 29046,
-      "sha256": "52acd6c189e135cbb0c9a2edd0af781136faddb5268c0d6877aaed223773f771"
+      "bytes": 29062,
+      "sha256": "d7e7227b7e0bdb306ef1bbaca5dfd140130e8029dd4633221650a64d5fda98ce"
     },
     {
       "path": "studies/waters-of-time/frik-mind-worker.mjs",
       "bytes": 361,
       "sha256": "ac9e098a6d21edc2d90323675631811a5a9fa9d6314bbd7ee9c78ea88365ab97"
+    },
+    {
+      "path": "studies/waters-of-time/frik-mind.css",
+      "bytes": 397,
+      "sha256": "1a6ec2a620fb323edaa6f2f5c5e2c8ced2d146271361e031159bb5c39c3414ec"
     },
     {
       "path": "studies/waters-of-time/frik-planet-atlas.mjs",
@@ -1572,8 +1577,8 @@
     },
     {
       "path": "studies/waters-of-time/index.html",
-      "bytes": 1117,
-      "sha256": "457e9494641285e59fbcf9cc9e405f07c47d7df1ae00a9385ca23a551bf33237"
+      "bytes": 747,
+      "sha256": "c2712fea590eff49399b5e65341458959527094d292d8ef1531ef3c050196ec1"
     },
     {
       "path": "studies/waters-of-time/infinigen/DOTNET-LICENSE.txt",

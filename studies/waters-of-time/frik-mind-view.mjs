@@ -2,17 +2,17 @@ import {mountNativeResponseHost} from './native-response-host.mjs';
 import {boardTerminalPage,boardTerminalGrid,mountAnsiTerminal} from './ansi-terminal.mjs?v=terminal-score-1';
 import {ansiSceneProgram} from './ansi-scenes.mjs';
 import {chapterSeconds,crossingFlight,crossingHints,flightTraceAt} from './lancing-route.mjs?v=lancing-2';
-import {crossing} from './frik-crossing.mjs?v=lancing-2';
+import {crossing} from './frik-crossing.mjs?v=tesla-print-1';
 import {keeperLine,frikStoryCaption} from './ansi-frik-story.mjs?v=lancing-2';
 import {traceTotal,recoveredReading,traceReadings,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=brood-1';
 import {fractalPassOptions, mountAnsiFractal} from './ansi-fractal.mjs?v=brood-1';
-import {createFrikGpu} from './ansi-frik-gpu.mjs?v=brood-1';
+import {createFrikGpu} from './ansi-frik-gpu.mjs?v=tesla-print-1';
 import {mountAnsiReviewCamera} from './ansi-review-camera.mjs?v=brood-1';
 import {mountAudio} from './audio.mjs';
 import {mountFrikStudyScore} from './frik-study-score.mjs?v=score-windows-1';
 import {frikCameraRate,frikRewindRate,frikTraversalBoundary,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=lancing-2';
 import {nextFrikMotionSeed,priorFrikMotionSeed} from './ansi-frik-motion.mjs?v=lancing-2';
-import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=brood-1';
+import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=tesla-print-1';
 
 const artwork = createFrikMindInk();
 
