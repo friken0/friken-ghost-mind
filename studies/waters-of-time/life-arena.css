@@ -1,0 +1,72 @@
+:root{color-scheme:dark;--paper:#f1e9fa;--muted:#b1a3c3;--background:#100e19;--panel:#191524;--line:#42354c;--accent:#ffcb87}
+*{box-sizing:border-box}
+body{margin:0;background:var(--background);color:var(--paper);font:15px/1.45 "IBM Plex Mono",ui-monospace,monospace}
+main{width:min(1240px,100%);margin:auto;padding:clamp(12px,3vw,34px)}
+header,.top,.actions,.modes,.settings,.viewer-tools,.viewer-tools>div{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+header{justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:17px}
+h1,h2,p{margin:0}
+h1{font-size:clamp(23px,4vw,35px);letter-spacing:-.07em;line-height:1.05}
+h1 small{color:var(--accent);font-size:.48em;letter-spacing:0;display:inline-block;margin-left:.5em}
+h2{font-size:clamp(22px,3vw,31px);line-height:1.1;letter-spacing:-.07em}
+button,.study-link{font:inherit;line-height:1.25;cursor:pointer;min-height:37px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--paper);padding:7px 13px}
+button[aria-pressed=true]{border-color:var(--accent);background:#352838;color:#ffdfb3}
+button:focus-visible,.study-link:focus-visible{outline:2px solid #a9ddff;outline-offset:2px}
+button:disabled{opacity:.55;cursor:default}
+.primary{background:var(--accent);color:#27152a;border-color:var(--accent);font-weight:bold}
+.top{justify-content:space-between;min-height:60px;padding:4px 1px 12px}
+#description{color:var(--muted);font-size:13px;margin-top:5px}
+#tag,#rate,#status{color:var(--muted);font-size:12px}
+#tag{color:var(--accent)}
+header .modes{flex:1;justify-content:flex-end}
+#rate{min-width:6em;text-align:right;font-variant-numeric:tabular-nums}
+.workbench{display:grid;grid-template-columns:minmax(0,1fr) minmax(208px,266px);gap:15px;align-items:start}
+#stage{width:100%;aspect-ratio:800/464;position:relative;overflow:hidden;border:1px solid var(--line);background:#000;touch-action:none;cursor:crosshair}
+#stage:focus-visible{outline:2px solid #a9ddff;outline-offset:2px}
+.viewer-tools{margin-top:10px;justify-content:space-between}
+.viewer-tools output{color:var(--accent);font-size:12px}
+.viewer-tools button{min-height:32px;padding:5px 9px;font-size:12px}
+.roster img{display:block;width:100%;aspect-ratio:3/2;object-fit:contain;margin-bottom:5px}
+.actions{margin-top:12px}
+#krex-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#krex-tools a{color:var(--accent);font-size:12px}
+#status{flex:1 1 135px;text-align:right}
+.roster{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.roster button{position:relative;min-width:0;padding:2px 4px 7px;text-align:center;font-size:11px;line-height:1.2}
+.roster canvas{display:block;width:100%;height:clamp(55px,7.3vw,78px);object-fit:contain;image-rendering:pixelated}
+.roster span{display:block;white-space:normal}
+.settings{justify-content:space-between;grid-column:1/-1}
+.effects{display:flex;gap:6px;flex-wrap:wrap}
+[hidden]{display:none!important}
+@media(max-width:790px){
+ .workbench{grid-template-columns:minmax(0,1fr)}
+ .roster{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .roster canvas{height:clamp(44px,10vw,78px)}
+ header .modes{justify-content:flex-start}
+}
+@media(max-width:425px){.roster{grid-template-columns:repeat(3,minmax(0,1fr))} header .modes{order:3;flex-basis:100%} #status{text-align:left}}
+
+.study-link{display:inline-flex;align-items:center;text-decoration:none}
+.solo{grid-template-columns:minmax(0,1fr)}
+
+.world-roster{display:grid;gap:12px}
+.world-roster section{border:1px solid var(--line);padding:9px;display:grid;gap:5px}
+.world-roster h3{color:var(--muted);font-size:12px;margin:0 3px 3px}
+.world-roster h3 a{color:var(--accent);text-underline-offset:.18em}
+.world-roster button{text-align:left;font-size:13px;padding:6px 10px}
+.duel-readout{margin:9px 1px 0;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+@media(max-width:790px){.world-roster{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}
+@media(max-width:450px){.world-roster button{padding:6px;line-height:1.15}.world-roster section{padding:5px}}
+
+.station-arena #stage{aspect-ratio:16/9}
+.station-arena .duel-readout a{color:var(--muted);text-underline-offset:.17em}
+.station-arena .world-roster button{min-height:31px}
+
+.portrait-review{width:min(1040px,100%);padding-block:clamp(12px,2vw,25px)}
+.portrait-review header{padding-bottom:12px;margin-bottom:12px}
+.portrait-review #stage{aspect-ratio:12/7}
+
+.reader-bar{display:flex;align-items:center;justify-content:space-between;gap:1em;margin:.6em 0;background:#171925;border-left:3px solid #d5b180;padding:.65em .85em}
+.reader-bar strong{display:block;color:#edca93;font-size:.88em}
+.reader-bar button{flex:none}
+#chapter-copy{display:block;position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:650px){.reader-bar{align-items:flex-start;flex-wrap:wrap}.reader-bar>div{width:100%}#chapter-copy{position:static;width:auto;height:auto;clip-path:none;font-size:1rem;line-height:1.48;margin-top:.3em}}

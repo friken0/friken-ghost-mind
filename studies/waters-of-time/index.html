@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frik · Waters of Time · ANSI++</title>
+<script src="./vendor/native-gallery/input.js?v=1"></script>
+<link rel="stylesheet" href="./life-arena.css?v=crossing-1">
+</head>
+<body>
+<main class="portrait-review">
+<header>
+ <h1>Waters of Time <small>Frik Infinizoom · ANSI++</small></h1>
+ <output id="rate" aria-label="Viewer frame rate">— fps</output>
+</header>
+<section aria-label="Frik Infinizoom study">
+ <div id="stage" tabindex="0" role="group"
+  aria-label="Frik study. Hold to aim, release to zoom, drag to pan, or right-click to zoom out."></div>
+ <div class="reader-bar" aria-label="Transmission controls">
+  <div><strong id="chapter-title">Incoming flight record</strong><output id="chapter-copy" aria-live="polite"></output></div>
+  <button type="button" id="next-reading" class="primary">Continue ▸</button>
+ </div>
+ <div class="viewer-tools">
+  <div id="scales" role="group" aria-label="Camera scale">
+   <button type="button" data-scale="wide">Wide</button>
+   <button type="button" data-scale="near">Near</button>
+   <button type="button" data-scale="detail">Detail</button>
+  </div>
+  <div id="render-passes" role="group" aria-label="Maximum render passes"></div>
+  <output id="details" aria-label="Camera scale and rendered passes"></output>
+ </div>
+ <div class="actions" role="group" aria-label="Translation matrix and exploration">
+  <button type="button" id="explore" aria-pressed="false">Dilate time</button>
+  <button type="button" id="calibrate" disabled>Calibrate matrix</button>
+  <button type="button" id="answer" hidden>Send two taps</button>
+  <output id="matrix-reading" aria-live="polite">Listening for a carrier</output>
+ </div>
+ <output id="trace-guide" hidden></output>
+ <div id="memories" class="actions" role="group" aria-label="Memory edition">
+  <button type="button" data-memory="0" aria-pressed="true">Memory 1</button>
+  <button type="button" data-memory="1" aria-pressed="false">Memory 2</button>
+  <button type="button" data-memory="2" aria-pressed="false">Memory 3</button>
+  <output id="memory-name">Tidal jade</output>
+ </div>
+ <div class="actions">
+  <button type="button" id="dive" class="primary">Infinizoom</button>
+  <button type="button" id="return" disabled>Return to bridge</button>
+  <button type="button" id="replay">Play all passes</button>
+  <button type="button" id="effects" aria-pressed="true">Effects on</button>
+  <button type="button" id="filtering" aria-pressed="false">Filtering off</button>
+  <button type="button" id="music" aria-pressed="false">Music off</button>
+  <output id="status" aria-live="polite">Waters of Time · The Frik listens at the sacred bowls</output>
+ </div>
+ <button type="button" id="restart-story">Replay from Earth</button>
+ <output id="music-status">FrikBridge soundtrack · click artwork to enable</output>
+</section>
+</main>
+<script type="module" src="./frik-mind-view.mjs?v=waters-echo-2"></script>
+</body>
+</html>
