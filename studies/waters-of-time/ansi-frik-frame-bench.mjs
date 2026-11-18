@@ -1,4 +1,4 @@
-import {createFrikMindFrames} from './frik-mind-frames.mjs?v=first-crossing-3';
+import {createFrikMindFrames} from './frik-mind-frames.mjs?v=first-crossing-4';
 const median=a=>a.slice().sort((a,b)=>a-b)[Math.floor(a.length/2)];
 const p95=a=>a.slice().sort((a,b)=>a-b)[Math.min(a.length-1,Math.ceil(a.length*.95)-1)];
 const next=()=>new Promise(resolve=>requestAnimationFrame(resolve));

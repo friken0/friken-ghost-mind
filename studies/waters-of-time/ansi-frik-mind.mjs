@@ -1,11 +1,11 @@
-import {crossing,crossingInk,paintCrossingInstruments} from './frik-crossing.mjs?v=first-crossing-3';
-import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=echo-2';
+import {crossing,crossingInk,paintCrossingInstruments} from './frik-crossing.mjs?v=first-crossing-4';
+import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=first-crossing-4';
 import {ansiRgbWord,packAnsiRgb,ansiCymaticCell} from './ansi-animation.mjs?v=surface-light-3';
 import {progressivePasses} from './ansi-fractal.mjs?v=frik-mind-46';
-import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=first-crossing-3';
-import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-3';
-import {frikLook} from './ansi-frik-bridge-ink.mjs?v=first-crossing-3';
-import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=first-crossing-3';
+import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=first-crossing-4';
+import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-4';
+import {frikLook} from './ansi-frik-bridge-ink.mjs?v=first-crossing-4';
+import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=first-crossing-4';
 
 export const frikMindGrid = {width:48,height:28};
 const nativeGrades=progressivePasses(frikMindGrid.width,frikMindGrid.height,8);
@@ -122,7 +122,7 @@ export function projectState(shot,time,effects,grade,columns=analysisColumns) {
     const reach=Math.min(1,span**.64);
     const data=makeMindState(index,time,effects,pixel,yaw*reach,motionSeed??index*7919,grade,artTrip,
       shot.audio,shot.rewinding,pitch*reach,yaw,pitch);
-    data.prologue=shot.prologue??-1;
+    data.prologue=shot.prologue??-1;data.beatAge=shot.beatAge??7;
     data.answered=!!shot.answered;
     levels.push({index,gate,span,data,trace:frikTrace(index,data.layout.mirrorBridge)});
     if(data.prologue>=0&&data.prologue<7)break;

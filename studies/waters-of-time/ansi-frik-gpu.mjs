@@ -1,14 +1,14 @@
 import {globeAtlas} from './frik-planet-atlas.mjs';
-import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=first-crossing-3';
-import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=first-crossing-3';
-import {frikMindFields} from './ansi-frik-mind-art.mjs?v=first-crossing-3';
-import {frikAdSource,frikAdBounds} from './ansi-frik-hq-ad.mjs?v=first-crossing-3';
-import {projectState} from './ansi-frik-mind.mjs?v=first-crossing-3';
+import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=first-crossing-4';
+import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=first-crossing-4';
+import {frikMindFields} from './ansi-frik-mind-art.mjs?v=first-crossing-4';
+import {frikAdSource,frikAdBounds} from './ansi-frik-hq-ad.mjs?v=first-crossing-4';
+import {projectState} from './ansi-frik-mind.mjs?v=first-crossing-4';
 
 const vertex=`#version 300 es
 void main(){vec2 p=vec2(gl_VertexID==1?3.:-1.,gl_VertexID==2?3.:-1.);gl_Position=vec4(p,0.,1.);}`;
 const names=['bridge','orbit','coreMemory','coast','heatSight','frikAdInk','tideSight'];
-const floats=['time','pixel','primary','pulse','waterLight','blink','grade','trip','throat','swimA','swimB','ray','tilt','bass','energy','bearing','elevation','level','prologue'];
+const floats=['time','pixel','primary','pulse','waterLight','blink','grade','trip','throat','swimA','swimB','ray','tilt','bass','energy','bearing','elevation','level','prologue','beatAge'];
 const bools=['effects','distant','hasRig'];
 const fragment=index=>`#version 300 es
 precision highp float;precision highp int;

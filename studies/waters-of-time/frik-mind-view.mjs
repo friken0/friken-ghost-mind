@@ -1,14 +1,14 @@
-import {crossing} from './frik-crossing.mjs?v=first-crossing-3';
-import {keeperLine,frikStoryCaption} from './ansi-frik-story.mjs?v=first-crossing-3';
-import {traceTotal,recoveredReading,traceReadings,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=echo-2';
+import {crossing} from './frik-crossing.mjs?v=first-crossing-4';
+import {keeperLine,frikStoryCaption} from './ansi-frik-story.mjs?v=first-crossing-4';
+import {traceTotal,recoveredReading,traceReadings,matrixStages,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=first-crossing-4';
 import {fractalPassOptions, mountAnsiFractal} from './ansi-fractal.mjs?v=frik-mind-46';
-import {createFrikGpu} from './ansi-frik-gpu.mjs?v=first-crossing-3';
+import {createFrikGpu} from './ansi-frik-gpu.mjs?v=first-crossing-4';
 import {mountAnsiReviewCamera} from './ansi-review-camera.mjs?v=relay-15';
 import {mountAudio} from './audio.mjs';
 import {mountFrikStudyScore} from './frik-study-score.mjs?v=ensemble-1';
-import {frikCameraRate,frikRewindRate,frikTraversalBoundary,frikMemoryNames,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=first-crossing-3';
-import {nextFrikMotionSeed,priorFrikMotionSeed} from './ansi-frik-motion.mjs?v=first-crossing-3';
-import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=first-crossing-3';
+import {frikCameraRate,frikRewindRate,frikTraversalBoundary,frikMemoryNames,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=first-crossing-4';
+import {nextFrikMotionSeed,priorFrikMotionSeed} from './ansi-frik-motion.mjs?v=first-crossing-4';
+import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=first-crossing-4';
 
 const artwork = createFrikMindInk();
 
@@ -28,16 +28,17 @@ const answer=byId('answer');
 SDUI.press(answer,()=>{if(!answer.hidden&&matrix.answer()){revision++;showMatrix();}});
 let excursion,rejoin,listenKey='',listenTime=0,traceKey='',traceTime=0;
 function showMatrix(){
-  const progress=matrix.needed==null?'online':matrix.ready?matrix.points+' evidence · calibration ready':matrix.points+' / '+matrix.needed+' evidence';
-  matrixReading.textContent=matrix.stage+' · '+progress+' · '+matrix.finds+'/'+traceTotal+' memory paths';
+  const activeRank=Math.max(matrix.rank,trip===2?3:trip);
+  const canTune=matrix.ready&&activeRank===matrix.rank;
+  const progress=activeRank===3?'online':matrix.ready?matrix.points+' evidence · calibration ready':matrix.points+' / '+matrix.needed+' evidence';
+  matrixReading.textContent=matrixStages[activeRank]+' · '+progress+' · '+matrix.finds+'/'+traceTotal+' memory paths';
   answer.disabled=matrix.answered;
   answer.textContent=matrix.answered?'Two taps received':'Send two taps';
-  calibrate.disabled=!matrix.ready;
-  calibrate.textContent=matrix.ready?'Tune '+matrix.next:'Calibrate matrix';
+  calibrate.disabled=!canTune;
+  calibrate.textContent=canTune?'Tune '+matrix.next:'Calibrate matrix';
 }
 window.addEventListener('storage',()=>{matrix.sync();showMatrix();revision++;});
 SDUI.press(calibrate,()=>{if(matrix.tune()){showMatrix();revision++;}});
-showMatrix();
 let shown;
 let cap = 8, revision = 0, effects = true;
 let filtering=false;
@@ -121,6 +122,7 @@ function holdFlight() {
 }
 
 function updateControls() {
+  showMatrix();
   nextReading.hidden=chapter<0&&mode!=='reading';
   nextReading.disabled=!!excursion;
   dive.hidden=chapter>=0||mode==='reading';
@@ -310,13 +312,13 @@ try{inkFrames=createFrikGpu(document);}
 catch(error){status.textContent='GPU field stopped · '+error.message.split('\n')[0];throw error;}
 window.addEventListener('pagehide',()=>inkFrames.dispose());
 if(new URLSearchParams(location.search).has('gpu-audit')){
- const {auditFrikGpu}=await import('./ansi-frik-gpu-audit.mjs?v=first-crossing-3');
+ const {auditFrikGpu}=await import('./ansi-frik-gpu-audit.mjs?v=first-crossing-4');
  const proof=await auditFrikGpu(inkFrames,artwork,{deep:new URLSearchParams(location.search).get('gpu-audit')==='deep'});
  const output=document.createElement('output');output.id='gpu-audit';
  output.textContent=JSON.stringify(proof);document.querySelector('main').append(output);
 }
 if(new URLSearchParams(location.search).has('gpu-bench')){
- const {benchFrikFrames}=await import('./ansi-frik-frame-bench.mjs?v=first-crossing-3');
+ const {benchFrikFrames}=await import('./ansi-frik-frame-bench.mjs?v=first-crossing-4');
  const proof=await benchFrikFrames(inkFrames,document,frikMindFrameGrid(8,pixelBounds),status);
  const output=document.createElement('output');output.id='gpu-bench';output.hidden=true;
  output.textContent=JSON.stringify(proof);document.querySelector('main').append(output);
@@ -447,7 +449,7 @@ function tick(now) {
     }
     shot = mode === 'hold' ? {...view, swing: heldRay + (pose.roomAim?.[0] ?? 0) * .8} : view;
   }
-  shot.prologue=chapter;
+  shot.prologue=chapter;shot.beatAge=reduced.matches?7:readAge;
   const reading=mode==='opening'||mode==='reading';
   shot.roomAim=reduced.matches?[0,0]:reading?[(pose.roomAim?.[0]??0)+.061*Math.sin(readAge*.21),
    (pose.roomAim?.[1]??0)+.036*Math.sin(readAge*.14)]:pose.roomAim;

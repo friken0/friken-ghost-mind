@@ -34,13 +34,15 @@ export const traceReadings={
 export const traceTotal=paths.filter(Boolean).length;
 const ids=new Set(paths.filter(Boolean).map(p=>p.id));
 const key='friktal.frik-first-contact.matrix.v1';
-const stages=['Carrier isolation','Hive / Waters separation','Affect alignment','Duplex matrix'];
+export const matrixStages=['Carrier isolation','Hive / Waters separation','Affect alignment','Duplex matrix'];
 const costs=[3,8,16];
 export function openFrikMatrix(storage){
  const seen=new Set(),traces=new Set();
  let rank=0,answered=false,evidence='';
  const points=()=>seen.size+traces.size*3;
- const earned=()=>costs.filter(cost=>points()>=cost).length;
+ const complete=trip=>Array.from({length:7},(_,scene)=>seen.has(trip+'/'+scene)).every(Boolean);
+ const readingRank=()=>complete(0)?(complete(1)?3:1):0;
+ const earned=()=>Math.max(readingRank(),costs.filter(cost=>points()>=cost).length);
  function sync(){
   let saved;
   try{saved=JSON.parse(storage?.getItem(key)??'null');}catch{}
@@ -49,7 +51,7 @@ export function openFrikMatrix(storage){
   }
   if(Array.isArray(saved?.traces))for(const id of saved.traces)if(ids.has(id))traces.add(id);
   answered ||= saved?.answered===true;
-  rank=Math.max(rank,Math.min(earned(),Number.isInteger(saved?.rank)?saved.rank:0));
+  rank=Math.max(rank,readingRank(),Math.min(earned(),Number.isInteger(saved?.rank)?saved.rank:0));
   evidence=[...traces].join(',');
  }
  sync();
@@ -69,7 +71,7 @@ export function openFrikMatrix(storage){
   sync,
   get evidence(){return evidence;},get answered(){return answered;},
   get rank(){return rank;},get points(){return points();},get needed(){return costs[rank];},
-  get ready(){return rank<earned();},get stage(){return stages[rank];},get next(){return stages[rank+1];},
+  get ready(){return rank<earned();},get stage(){return matrixStages[rank];},get next(){return matrixStages[rank+1];},
   get finds(){return traces.size;},has:id=>traces.has(id),
  };
 }

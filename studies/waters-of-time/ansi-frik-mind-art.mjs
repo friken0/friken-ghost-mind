@@ -1,13 +1,13 @@
 import {clamp,smooth,mix} from './ansi-frik-color.mjs';
 export {clamp,smooth,mix} from './ansi-frik-color.mjs';
 import {mandelEscape} from './ansi-mandel-field.mjs';
-import {globeInk,knightInk} from './frik-crossing.mjs?v=first-crossing-3';
-import {frikIdleMotion} from './ansi-frik-motion.mjs?v=first-crossing-3';
-import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=first-crossing-3';
+import {globeInk,knightInk} from './frik-crossing.mjs?v=first-crossing-4';
+import {frikIdleMotion} from './ansi-frik-motion.mjs?v=first-crossing-4';
+import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=first-crossing-4';
 import {mirrorAnsiInk} from './ansi-mirror.mjs?v=frik-mind-46';
 import {ansiLightPulse} from './ansi-animation.mjs?v=surface-light-3';
-import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-3';
-import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=first-crossing-3';
+import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-4';
+import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=first-crossing-4';
 import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=frik-mind-46';
 
 // Each material in the bridge and the three views is authored in ANSI++.
