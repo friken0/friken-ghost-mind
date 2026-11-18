@@ -110,4 +110,4 @@ export function recoveredReading(scene,trip,rank,evidence='',answered=false){
  return null;
 }
 
-export {returnArtCamera as traceReturnCamera} from './ansi-review-camera.mjs?v=lancing-2';
+export {returnArtCamera as traceReturnCamera} from './ansi-review-camera.mjs?v=brood-1';

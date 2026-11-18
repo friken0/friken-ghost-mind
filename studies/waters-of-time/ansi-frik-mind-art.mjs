@@ -7,7 +7,7 @@ import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=lancing-
 import {mirrorAnsiInk} from './ansi-mirror.mjs?v=lancing-2';
 import {ansiLightPulse} from './ansi-animation.mjs?v=surface-light-3';
 import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-2';
-import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=lancing-2';
+import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=brood-1';
 import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=lancing-2';
 
 // Each material in the bridge and the three views is authored in ANSI++.
@@ -689,59 +689,20 @@ function lensEye(x,y,f,anchor,rx,ry,tint,under){
   let ink=r>1?mix(0x101b2c,tint,light*.49):mix(0x132437,tint,light*.78);
   ink=mark(ink,0x14252b,Math.abs(r-1.13)*rx,.0022,f.pixel);
   ink=mark(ink,mix(tint,0x597c67,.6),Math.abs(r-.93)*rx,.0016,f.pixel);
-  if(r<.71){
-    const radial=Math.atan2(v,u),fibers=Math.sin(radial*39+Math.sqrt(r)*9);
-    ink=mix(ink,tint,Math.max(0,fibers)*.20);
+  const px=x-cx,py=(y-cy)*28/48;
+  const radius=Math.hypot(px,py)/rx,angle=Math.atan2(py,px);
+  if(radius<.87){
+    const spoke=angle*43+.81*Math.sin(angle*8)+radius*9+1.4*Math.sin(5*angle-11*radius);
+    const fibers=.5+.5*Math.cos(spoke);
+    ink=mix(0x263d3f,tint,clamp(.26+fibers*.30+light*.32));
+    const collarette=.61+.031*Math.sin(11*angle)+.016*Math.sin(19*angle);
+    ink=mix(ink,0x714c38,(1-smooth(Math.abs(radius-collarette)/.044))*.61);
+    ink=mix(ink,0xffe3a4,.35*(1-smooth(Math.abs(radius-collarette+.036)/.042)));
   }
-  if(ellipse(u-.074,v-.028,.61,.72)<1)ink=0x0b172b;
-  return cast(ink,0xfff2c0,ellipse(u+.24,v+.37,.29,.23),.83);
-}
-
-const bellLimbs=[
-  [.468,.547,.380,.691,.358,.833,.026],[.503,.596,.474,.771,.446,.894,.038],
-  [.576,.556,.653,.693,.716,.818,.029],[.624,.548,.693,.647,.766,.746,.038],
-];
-
-function limbInk(x,y,f,under,[ax,ay,bx,by,cx,cy,radius],near) {
-  if(x<Math.min(ax,bx,cx)-radius-.027||x>Math.max(ax,bx,cx)+radius+.040||
-    y<Math.min(ay,by,cy)-radius*1.4||y>Math.max(ay,by,cy)+.045)return under;
-  const ux=bx-ax,uy=by-ay,lx=cx-bx,ly=cy-by;
-  const upperT=clamp(((x-ax)*ux+(y-ay)*uy)/(ux*ux+uy*uy));
-  const lowerT=clamp(((x-bx)*lx+(y-by)*ly)/(lx*lx+ly*ly));
-  const a=distance(x,y,ax,ay,bx,by), b=distance(x,y,bx,by,cx,cy);
-  const joint=ellipse(x-bx+.14*(y-by),y-by,radius*.70,radius*1.24);
-  const upper=a/(radius*(1.04+.32*Math.sin(upperT*Math.PI)-upperT*.29));
-  const lower=b/(radius*(.69-.35*lowerT+.14*Math.sin(lowerT*Math.PI)));
-  const d=Math.min(upper,lower,Math.sqrt(joint));
-  if(d<1.12) {
-    const z=Math.sqrt(Math.max(0,1-d*d));
-    const upperPart=upper<lower;
-    const qx=upperPart?ax+ux*upperT:bx+lx*lowerT;
-    const side=(x-qx)/radius;
-    const bend=clamp(.21-side*.39+z*.59-(near?0:.13));
-    let tone=mix(0x142a37,near?0xd1a272:0x846c63,bend);
-    if(joint<1.8){
-      tone=mix(tone,0x514a41,smooth((joint-.68)*3)*smooth((1.28-joint)*3)*.33);
-    }
-    if(upperPart&&upperT>.18&&upperT<.77){
-      const shield=ellipse(side+.12,upperT-.46,.66,.31);
-      tone=cast(tone,near?0xceab84:0x665a52,shield,near?.27:.20);
-    }
-    const tendon=distance(x+.009,y-.007,bx,by,cx,cy);
-    const groove=mark(tone,0xf0ac71,tendon,.0025,f.pixel);
-    under=mix(under,mix(tone,groove,z*.36),smooth((1.12-d)*8.34));
-  }
-  const pad=ellipse(x-cx-.016,y-cy,.036,.014);
-  if(pad<1)under=mix(under,mix(0x392938,0xc08d74,clamp((1-pad)*.92)),smooth((1-pad)*6));
-  if(y>cy-.011&&y<cy+.025){
-    for(let toe=0;toe<3;toe++){
-      const tipX=cx+.017+toe*.015,tipY=cy+.022-(toe===1?.006:0);
-      const digit=distance(x,y,cx+.008+toe*.007,cy+.002,tipX,tipY);
-      under=mark(under,0x523e49,digit,.0034,f.pixel);
-      under=mark(under,0xdac195,Math.abs(digit-.0008),.0011,f.pixel);
-    }
-  }
-  return under;
+  const pupil=smooth((.49-radius)/.036);
+  ink=mix(ink,mix(0x05131c,0x193536,clamp(radius*1.6)*.53),pupil);
+  ink=cast(ink,0xc7e4cd,ellipse(px/rx+.22,py/rx+.36,.19,.11),.89);
+  return cast(ink,0xfff2c0,ellipse(px/rx+.27,py/rx+.37,.10,.070),.98);
 }
 
 // Each lobe contributes to one relief envelope. Slope and color are sampled
@@ -749,76 +710,6 @@ function limbInk(x,y,f,under,[ax,ay,bx,by,cx,cy,radius],near) {
 function merge(a,b,width) {
   const overlap=Math.max(width-Math.abs(a-b),0)/width;
   return Math.max(a,b)+overlap*overlap*width*.25;
-}
-
-function bellMantle(x,y) {
-  const torso=1-ellipse(x-.481,y-.551-.075*Math.sin((x-.34)*6.3),.176,.151);
-  const shoulder=1-ellipse(x-.565+.19*(y-.521),y-.525,.112,.132);
-  const neck=1-ellipse(x-.607-.096*Math.cos((y-.364)*10.2),y-.431,.076,.170);
-  const skull=1-ellipse(x-.625,y-.335+.34*(x-.636),.104,.094);
-  const muzzle=1-ellipse(x-.691,y-.338-.20*(x-.69),.079,.048);
-  const jaw=1-ellipse(x-.697,y-.414+.14*(x-.71),.075,.041);
-  let skin=merge(merge(merge(torso,shoulder,.31),merge(neck*.92,skull,.29),.29),muzzle*.73,.20);
-  skin=merge(skin,jaw*.66,.11);
-  skin=Math.min(skin,(ellipse(x-.731,y-.381,.068,.022)-1)*.54);
-  return merge(skin,(1-bellArmor(x,y))*.63,.10);
-}
-
-function bellArmor(x,y){
-  let hull=8;
-  for(let i=0;i<3;i++){
-    const cx=.354+.071*i,cy=.483+i*.008;
-    const dy=y-cy;
-    const plate=ellipse(x-cx+.31*dy,dy,.064,.059);
-    hull=Math.min(hull,plate);
-  }
-  return hull;
-}
-
-const bellCrestSegments=Array.from({length:3},(_,trip)=>{
- const out=[],crests=[[[.602,.308],[.528,.261],[.526,.151],.020],
-  [[.655,.309],[.616,.231],[.650,.158],.017]];
- for(const [a,b,c,width] of crests)for(let segment=0;segment<6;segment++){
-  const at=t=>[(1-t)**2*a[0]+2*t*(1-t)*b[0]+t*t*c[0],
-    (1-t)**2*a[1]+2*t*(1-t)*b[1]+t*t*(c[1]-(trip===1?.023:trip===2?-.012:0))];
-  const t=segment/6,next=(segment+1)/6,p=at(t),q=at(next);
-  out.push([...p,...q,width*(1-t*.90),t]);
- }
- return out;
-});
-function bellCrest(x,y,f,under){
- if(x<.49||x>.73||y<.12||y>.33)return under;
- let closest=1;
- for(const [ax,ay,bx,by,radius,t] of bellCrestSegments[f.trip]){
-  if(x<Math.min(ax,bx)-radius||x>Math.max(ax,bx)+radius||y<Math.min(ay,by)-radius*1.4||y>Math.max(ay,by)+radius*1.4)continue;
-  const d=distance(x,y,ax,ay,bx,by);
-  if(d/radius>=closest)continue;
-  closest=d/radius;
-  const shade=Math.sqrt(Math.max(0,1-(d/radius)**2));
-  const dx=bx-ax,dy=by-ay;
-  const along=clamp(((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy));
-  const across=((x-ax)*dy-(y-ay)*dx)/Math.hypot(dx,dy)/radius;
-  let ink=mix(0x17343c,0xd5c99a,clamp(.23+shade*.53-across*.26));
-  ink=mark(ink,mix(ink,0x556b61,.4),repeat(t+along/6,.18)*radius*2,.0004,f.pixel);
-  under=ink;
- }
- return under;
-}
-
-function bellRelief(x,y) {
-  const mantle=bellMantle(x,y);
-  const gill=ellipse(x-.646-.24*(y-.430),y-.430,.081,.104);
-  const hip=ellipse(x-.408,y-.560,.068,.125);
-  const brow=ellipse(x-.600,y-.309+.22*(x-.603),.064,.022);
-  const cheek=ellipse(x-.661,y-.368,.078,.061);
-  const flank=ellipse(x-.475,y-.553,.171,.117);
-  const scutes=smooth((1-flank)*4)*Math.max(0,1-bellArmor(x,y));
-  const shoulder=ellipse(x-.554,y-.508,.072,.112);
-  const flutes=repeat(y-.052*Math.sin((x-.41)*11)+x*.29,.047);
-  const pleat=Math.sqrt(Math.max(0,1-(flutes/.022)**2))*smooth((1-shoulder)*3);
-  return Math.sqrt(Math.max(0,mantle))*.126+
-    .032*Math.max(0,1-hip)+.024*Math.max(0,1-brow)+.025*Math.max(0,1-cheek)+
-    .018*scutes+.003*pleat-.032*Math.max(0,1-gill);
 }
 
 // Normals are immutable surface data, sampled in the creature's bent local
@@ -858,119 +749,180 @@ function createCreatureSurface(relief,materialAt) {
   return {fields:{width,height,depth,light:field,pigment,roughness},light:(x,y)=>sample(field,x,y),depth:(x,y)=>sample(depth,x,y),
     pigment:(x,y)=>sample(pigment,x,y)/255,roughness:(x,y)=>sample(roughness,x,y)/255};
 }
-const bellSurface=createCreatureSurface(bellRelief,(x,y)=>bellArmor(x,y)<1.1?1:y>.48?4:2);
-
-function belljaw(x,y,f,under) {
-  if(x<.245||x>.85||y<.12||y>.943)return under;
-  if(f.trip){
-    const q=Math.max(0,1-ellipse(x-.48,y-.555,.27,.16)),weight=q*q;
-    x+=(x-.48)*(f.trip===1?.27:-.24)*weight;
-    y+=(y-.555)*(f.trip===1?-.10:.17)*weight;
-  }
-  const p=f.pixel;
-  let ink=cast(under,0x08162a,ellipse(x-.554,y-.862,.265,.069),.91);
-  ink=bellCrest(x,y,f,ink);
-  const mouth=ellipse(x-.731,y-.381,.071,.024);
-  if(mouth<1.1){
-    ink=mix(0x090f20,0x743644,clamp(1-mouth)*.39);
-    ink=mark(ink,0xd18474,Math.abs(y-.386-.028*(x-.72)),.0018,p);
-  }
-  // A single dusk-red brood mantle between three load-bearing spines.
-  if(x>.28&&x<.53){
-    const u=(x-.28)/.25,root=.515+.03*u;
-    const height=Math.sin(Math.PI*u)*(.114+.035*Math.cos(u*Math.PI*4));
-    const h=(root-y)/Math.max(.0001,height);
-    if(h>0&&h<1){
-      ink=mix(0x5e3847,0xc37c5b,.23+.52*h);
-      ink=mark(ink,0xecb17e,Math.abs(1-h)*height,.0024,p);
-      ink=mark(ink,0x97594e,repeat(u+.022*h,.49)*.25,.003,p);
+// A shore brooder in three-quarter profile. Section knots are [x,y,z,rx,ry,rz].
+// The z-buffer holds the front of each ellipsoidal sweep. Paired limbs have
+// different depth and footfall positions; the high outside hip grows into the
+// same flank as the ribs. The open space under the breast belongs to the eggs.
+const bellFeet=[[.292,.729],[.373,.777],[.617,.708],[.705,.766]];
+function bakeBelljaw(){
+  const width=1024,height=600,count=width*height;
+  const depth=new Float32Array(count),group=new Float32Array(count);
+  const albedo=new Uint32Array(count),rgb=new Float32Array(count*4);
+  const exterior=0x284449,skin=0xb18467,shell=0x589687,horn=0xe1bb89,bib=0xbb674f;
+  // Each sweep is welded only once into its neighbours. Overlapping sections
+  // of the same limb cannot stack up into lumps.
+  function sweep(knots,tint,join=.026,material=4){
+    let xmin=width,xmax=0,ymin=height,ymax=0;
+    for(let s=0;s<knots.length-1;s++){
+      const a=knots[Math.max(0,s-1)],b=knots[s],c=knots[s+1],d=knots[Math.min(s+2,knots.length-1)];
+      const steps=Math.max(4,Math.ceil(Math.hypot((c[0]-b[0])*width,(c[1]-b[1])*height)/2));
+      for(let k=0;k<=steps;k++){
+        const t=k/steps;
+        const [x,y,z,rx,ry,rz]=b.map((v,i)=>v+.5*t*((c[i]-a[i])+t*(2*a[i]-5*v+4*c[i]-d[i]+t*(3*v-3*c[i]+d[i]-a[i]))));
+        if(rx<=0||ry<=0)continue;
+        const left=Math.max(0,Math.floor((x-rx)*width)),right=Math.min(width-1,Math.ceil((x+rx)*width));
+        const top=Math.max(0,Math.floor((y-ry)*height)),bottom=Math.min(height-1,Math.ceil((y+ry)*height));
+        xmin=Math.min(xmin,left);xmax=Math.max(xmax,right);ymin=Math.min(ymin,top);ymax=Math.max(ymax,bottom);
+        for(let j=top;j<=bottom;j++){
+          const v=((j+.5)/height-y)/ry,half=1-v*v;if(half<=0)continue;
+          for(let i=left;i<=right;i++){
+            const u=((i+.5)/width-x)/rx,q=half-u*u;if(q<=0)continue;
+            const n=j*width+i;group[n]=Math.max(group[n],z+rz*Math.sqrt(q));
+          }
+        }
+      }
+    }
+    for(let j=ymin;j<=ymax;j++)for(let i=xmin;i<=xmax;i++){
+      const n=j*width+i,g=group[n];if(!g)continue;group[n]=0;
+      const h=depth[n],w=h?smooth(.5+(g-h)/(2*join)):1;
+      if(w<=0)continue;
+      const x=i/width,y=j/height;
+      const grain=frikCraftSurface(material,2.3*x+.24*y,2.4*y);
+      const color=mix(tint,grain>.5?0xffdeb1:0x182f41,Math.abs(grain-.5)*.38);
+      albedo[n]=mix(albedo[n],color,w);
+      depth[n]=h?merge(h,g,join):g;
     }
   }
-  const skin=bellMantle(x,y);
-  if(skin<0&&y>.51){
-    for(const i of [0,2])ink=limbInk(x,y,f,ink,bellLimbs[i],false);
-  }
-  if(skin>-.054) {
-    const edgeWeight=smooth(skin*4);
-    const dx=f.ray*1.40*edgeWeight,dy=-f.tilt*1.35*edgeWeight;
-    let lift=bellSurface.depth(x,y);
-    if(Math.abs(dx)+Math.abs(dy)>.001){
-      for(let step=0;step<3;step++)lift=bellSurface.depth(x+dx*lift,y+dy*lift);
-    }
-    const surfaceX=x+dx*lift,surfaceY=y+dy*lift;
-    const light=bellSurface.light(surfaceX,surfaceY);
-    const undertone=clamp(.50+(surfaceX-.49)*1.41+(surfaceY-.5)*.43);
-    const pigment=mix(0x647c78,0xb77b55,undertone);
-    let body=mix(0x142637,pigment,light);
-    body=mix(body,0xf2c997,smooth((light-.52)*1.95)*.62);
-    const physical=bellSurface.pigment(surfaceX,surfaceY),rough=bellSurface.roughness(surfaceX,surfaceY);
-    body=mix(body,0x5b796f,physical*.20);
-    body=mix(body,0xf2cba0,Math.max(0,light-.64)*(1-rough)*.75);
-    // One matte saddle silhouette over a warm unbroken flank. Only the
-    // overlapping free edges of its three shields take a light-catching cut.
-    const mantle=bellArmor(surfaceX,surfaceY);
-    const coverage=smooth((1.13-mantle)*4);
-    const freeEdge=repeat(surfaceX+.37*(surfaceY-.46)-.007*Math.cos(surfaceY*28),.071);
-    let plate=mix(0x354447,0xa18b68,clamp(.25+light*.64));
-    plate=mark(plate,0x6a6458,freeEdge,.0021,p);
-    body=mix(body,plate,coverage*.91);
-    body=mark(body,mix(body,0xcfad80,.65),Math.abs(mantle-.99)*.026,.0018,p);
-    // Broad insulating breast runs up into a pale, horn-sheathed snout.
-    const bib=smooth((surfaceX-.558+.24*(surfaceY-.43))*20);
-    body=mix(body,0xcc956c,bib*.33*light);
-    if(surfaceX>.655&&surfaceY<.378)body=mix(body,0xe1c499,smooth((surfaceX-.655)*19)*.64);
-    // Cheek inserts, seated jaw hinge and a real recessed nostril.
-    if(surfaceX>.572&&surfaceY<.423){
-      const cheek=ellipse(surfaceX-.665,surfaceY-.368,.072,.054);
-      body=edge(body,(cheek-.88)*.021,.0020,f,0x27303e,0xd5af83);
-      const nostril=ellipse(surfaceX-.756,surfaceY-.345,.009,.0055);
-      body=cast(body,0x0b1927,nostril,.96);
-      body=mark(body,0xe4be8c,Math.abs(nostril-1.1)*.004,.0011,p);
-      const hinge=ellipse(surfaceX-.579,surfaceY-.398,.019,.024);
-      body=cast(body,0x243343,hinge,.76);
-      body=mark(body,0xb49278,Math.abs(hinge-.91)*.014,.0018,p);
-    }
-    if(surfaceX>.655) {
-      const bite=.357+.14*(surfaceX-.68)+.014*Math.sin(surfaceX*26);
-      const taper=smooth((surfaceX-.655)*35);
-      body=mix(body,mark(body,0x241d2e,Math.abs(surfaceY-bite),.0036,p),taper);
-      body=mix(body,mark(body,0xe8b38a,Math.abs(surfaceY-bite+.009),.0017,p),taper);
-    }
-    body=cast(body,0xca765b,ellipse(surfaceX-.626,surfaceY-.477,.147,.180),.30*f.primary);
-    ink=mix(ink,body,smooth((skin+.054)*18.52));
-  }
-  if(y>.54){
-    for(const i of [1,3]){
-      const root=i===1?.503:.624;
-      if(Math.abs(x-root)>.22)continue;
-      const thigh=limbInk(x,y,f,ink,bellLimbs[i],true);
-      ink=mix(ink,thigh,smooth((y-(i===1?.594:.56))*22));
+  const k=(x,y,z,r)=>[x,y,z,r,r*1.62,r*.94];
+  function leg(points,far){
+    const foot=points.at(-1),[x,y,z]=foot;
+    sweep(points.map(v=>k(...v)),far?0x4c5a59:skin,.046);
+    for(let toe=0;toe<3;toe++){
+      const spread=(toe-1)*.014;
+      sweep([k(x-.003,y-.008,z,.012),k(x+.013,y+spread,z+.003,.009),
+        k(x+.028+(toe===1?.014:0),y+spread*1.6-.005,z,.004),
+        k(x+.034+(toe===1?.014:0),y+spread*1.9-.010,z,.001)],far?exterior:horn,.009,1);
     }
   }
-  if(x>.682&&x<.780&&y>.355&&y<.412){
-    const tooth=Math.floor((x-.682)/.025),cx=.694+tooth*.025;
-    const top=.363+.005*(tooth%2),length=.029-(tooth%2)*.006,t=(y-top)/length;
-    if(t>0&&t<1){
-      const axis=cx-.005*t*t,width=.007*(1-t)+.0005;
-      const side=(x-axis)/width;
-      if(Math.abs(side)<1)ink=mix(0x707f6a,0xe6d9ab,clamp(.48-side*.26+Math.sqrt(1-side*side)*.35));
+  leg([[.377,.549,.045,.042],[.339,.626,.051,.039],[.274,.671,.058,.020],[...bellFeet[0],.058,.012]],true);
+  leg([[.534,.510,.049,.045],[.573,.616,.053,.027],[.610,.657,.066,.018],[...bellFeet[2],.059,.014]],true);
+  // One curved spine from the fine tail tip through pelvis and ribs to
+  // the poll. Thicker vertical sections at the breast bear the front legs.
+  sweep([[.171,.646,.065,.002,.002,.002],[.214,.667,.072,.014,.014,.011],
+    [.292,.633,.084,.028,.032,.027],[.357,.548,.106,.053,.077,.052],
+    [.410,.506,.116,.083,.104,.089],[.478,.499,.120,.083,.112,.095],
+    [.536,.490,.126,.061,.111,.081],[.575,.426,.134,.049,.096,.066],
+    [.596,.370,.142,.047,.060,.052]],skin,.044);
+  leg([[.398,.498,.145,.061],[.397,.573,.164,.053],[.436,.630,.169,.036],
+    [.411,.661,.160,.026],[.348,.705,.151,.020],[.350,.733,.151,.014],[...bellFeet[1],.156,.014]],false);
+  leg([[.530,.471,.156,.049],[.548,.529,.175,.045],[.538,.606,.175,.028],
+    [.554,.649,.170,.024],[.619,.675,.170,.022],[.677,.696,.174,.015],[...bellFeet[3],.171,.014]],false);
+  // Roof tiles overlap from the nape toward the tail. Their free corners
+  // sweep back in a single direction; the long belly stays quiet below.
+  for(let i=0;i<8;i++){
+    const u=i/7,x=.303+.240*u,y=.595-.144*Math.sin(u*1.74);
+    const size=.43+.58*Math.sin(u*1.93),z=.134+.089*Math.sin(u*1.80);
+    sweep([[x-.053*size,y-.026*size,z-.016,.004,.004,.005],
+      [x-.018*size,y-.038*size,z-.014,.030*size,.029*size,.026*size],
+      [x+.004*size,y-.012*size,z,.021*size,.043*size,.032*size],
+      [x+.018*size,y+.021*size,z+.003,.010*size,.019*size,.018*size]],shell,.006,6);
+  }
+  // A rear-swept listening casque, broad at the skull and thin at its tips.
+  for(let i=0;i<3;i++){
+    const x=.578+i*.016,y=.313-i*.005;
+    sweep([[x,y,.155+i*.004,.026,.033,.034],[x-.022,y-.039,.170,.018,.025,.023],
+      [x-.069+i*.015,y-.082-i*.021,.166,.009,.014,.010],
+      [x-.098+i*.022,y-.095-i*.036,.160,.001,.002,.001]],i===1?horn:shell,.019,1);
+  }
+  // The blunt lower mandible and down-hooked upper bill meet at the tip.
+  sweep([[.577,.355,.158,.042,.064,.051],[.619,.357,.168,.053,.071,.066],
+    [.654,.371,.170,.046,.059,.054],[.683,.396,.167,.038,.039,.039]],skin,.040);
+  sweep([[.633,.403,.173,.033,.038,.032],[.661,.432,.171,.032,.047,.031],
+    [.689,.435,.173,.022,.036,.025],[.723,.416,.174,.013,.014,.014]],bib,.027,2);
+  sweep([[.659,.366,.198,.027,.029,.025],[.689,.370,.198,.034,.026,.024],
+    [.722,.387,.190,.023,.019,.017],[.742,.407,.183,.011,.019,.012],
+    [.740,.426,.182,.003,.004,.004]],horn,.018,1);
+  // Supraorbital ridge and cheekbone sit proud of the corneal socket.
+  sweep([[.563,.343,.191,.011,.014,.010],[.580,.313,.202,.015,.014,.023],
+    [.603,.306,.213,.015,.012,.021],[.627,.316,.218,.014,.011,.017],
+    [.646,.334,.204,.010,.012,.009]],shell,.018,6);
+  sweep([[.601,.393,.192,.009,.010,.010],[.625,.394,.213,.016,.010,.017],
+    [.646,.379,.220,.021,.012,.022],[.672,.377,.214,.011,.010,.011]],skin,.017);
+  // Countershading uses the complete field normal; far limbs sit in the
+  // body shadow and articulations retain the same light as the torso.
+  for(let j=1;j<height-1;j++)for(let i=1;i<width-1;i++){
+    const n=j*width+i,z=depth[n];if(!z)continue;
+    const slope=(a,b,scale)=>((depth[a]||z)-(depth[b]||z))*scale;
+    const dx=slope(n+1,n-1,width*.5),dy=slope(n+width,n-width,height*.8);
+    const normal=Math.hypot(dx,dy,1),key=clamp((dx*.44+dy*.67+.56)/normal);
+    const bounce=clamp((-dy*.7-dx*.25)/normal)*.36;
+    const lit=clamp(.13+key*.89+bounce)*(.56+.44*smooth((z-.06)/.088));
+    const x=(i+.5)/width,y=(j+.5)/height;
+    let pigment=albedo[n];
+    if((pigment>>8&255)>(pigment>>16&255)+9){
+      // Growth rings follow the curve of the shell, swinging around each
+      // overlapping flute. Pale nacre wears through on the free cutting lip.
+      const along=(x-.298)/.246,band=y-.596+.146*Math.sin(along*1.74);
+      if(y>.35){
+        const plate=(along*7+.46*Math.sin(band*24)+.13*Math.sin(band*67));
+        const seam=Math.abs(plate-Math.round(plate));
+        pigment=mix(pigment,0x153e47,(1-smooth(seam/.080))*.67);
+        pigment=mix(pigment,0xc2c599,(1-smooth(Math.abs(seam-.11)/.047))*.68);
+        const rings=repeat(band+.016*Math.cos(plate*6.283),.015);
+        pigment=mix(pigment,0x96b8a0,(1-smooth(rings/.0021))*.27);
+      }
+    }else{
+      // Tiny freckles gather below the crest and along the outside flank.
+      // A clean belly and uninterrupted upper leg carry the weight.
+      const mask=Math.max(1-ellipse(x-.484,y-.503,.136,.049),
+        1-ellipse(x-.613,y-.338,.074,.045),0);
+      const u=x*196,v=y*112,row=Math.floor(v),off=u+.46*(row%2);
+      const pit=Math.hypot((off%1)-.5,(v%1)-.5);
+      const m=clamp(mask)*(1-smooth((pit-.10)/.17));
+      pigment=mix(pigment,0x52474a,m*.71);
+      const gill=ellipse(x-.649,y-.419,.048,.044);
+      if(gill<1){
+        const stria=repeat(y+.027*Math.cos((x-.646)*34),.013);
+        pigment=mix(pigment,0x643b48,(1-smooth(stria/.004))*smooth((1-gill)*3)*.68);
+      }
     }
+    let c=mix(0x142e3e,pigment,lit);
+    c=mix(c,0xffdfac,.30*smooth((key-.55)/.43));
+    const a=n*4;rgb[a]=z;rgb[a+1]=(c>>16&255)/255;rgb[a+2]=(c>>8&255)/255;rgb[a+3]=(c&255)/255;
   }
-  const throat=.456+f.throat*.65;
-  const u=(x-.675+.43*(y-throat))/.047, v=(y-throat)/.075;
-  const sac=u*u+v*v;
-  if(sac<1.035) {
-    const z=Math.sqrt(Math.max(0,1-sac));
-    const light=clamp(.29-u*.30-v*.57+z*.26);
-    const attachment=smooth((v+.87)*2.1)*smooth((u+.94)*2.4);
-    let glass=mix(0x754c42,0xdd985c,attachment*(.32+light*.47));
-    glass=cast(glass,0xffdf95,ellipse(u-.08,v-.11,.55,.69),.73*f.primary);
-    const lip=v-.53+.22*u*u;
-    glass=mark(glass,0xb66150,Math.abs(lip)*.063,.0021,p);
-    glass=cast(glass,0xffedc4,ellipse(u+.27,v+.49,.38,.26),.36);
-    ink=mix(ink,glass,smooth((1.035-sac)*4)*(.50+.50*attachment));
+  function sample(x,y,channel){
+    const u=clamp(x)*width-.5,v=clamp(y)*height-.5,i=Math.max(0,Math.min(width-2,Math.floor(u))),j=Math.max(0,Math.min(height-2,Math.floor(v)));
+    const fx=clamp(u-i),fy=clamp(v-j),n=(j*width+i)*4+channel,row=width*4;
+    return (rgb[n]*(1-fx)+rgb[n+4]*fx)*(1-fy)+(rgb[n+row]*(1-fx)+rgb[n+row+4]*fx)*fy;
   }
-  return lensEye(x,y,f,bellEye,.045,.067,0xeeb56f,ink);
+  return {width,height,rgb,depth:(x,y)=>sample(x,y,0),ink:(x,y)=>
+    (Math.round(sample(x,y,1)*255)<<16)|(Math.round(sample(x,y,2)*255)<<8)|Math.round(sample(x,y,3)*255)};
+}
+const bellSurface=bakeBelljaw();
+function belljaw(x,y,f,under){
+  if(x<.161||x>.803||y<.119||y>.817)return under;
+  const shadow=ellipse(x-.502,y-.754,.240,.048);
+  let ink=cast(under,0x102735,shadow,.69);
+  // Ribs lift between the planted feet; neither the pupil nor a sole drifts.
+  const breath=smooth(1-ellipse(x-.478,y-.511,.131,.162));
+  y-=breath*(f.throat*.61+(f.trip-1)*.006);
+  const depth=bellSurface.depth(x,y);
+  if(depth<.022)return ink;
+  const edgeWeight=smooth((depth-.085)/.096);
+  const u=x+f.ray*(depth-.207)*edgeWeight*.32,v=y-f.tilt*(depth-.207)*edgeWeight*.44;
+  // Clamp optical sampling at depth discontinuities such as a far ankle.
+  const valid=smooth(1-Math.abs(bellSurface.depth(u,v)-depth)/.027);
+  let skin=bellSurface.ink(x+(u-x)*valid,y+(v-y)*valid);
+  const throat=ellipse(x-.666-.22*(y-.431),y-.431,.037,.043);
+  if(throat<1){
+    const pleat=repeat(y+.021*Math.cos((x-.668)*49)+f.throat*.17,.014);
+    skin=mix(skin,mark(skin,0xffc284,pleat,.0017,f.pixel),smooth((1-throat)*3)*(.14+.16*f.primary));
+  }
+  const naris=ellipse(x-.705+.38*(y-.363),y-.365,.008,.0043);
+  skin=cast(skin,0x20242a,naris,.99);
+  skin=mark(skin,0xe5bc92,Math.abs(naris-1.4)*.002,.0009,f.pixel);
+  ink=mix(ink,skin,smooth((depth-.022)/.026));
+  return lensEye(x,y,f,bellEye,.029,.051,0xf4bd57,ink);
 }
 
 function siltShape(x,y) {
@@ -1148,14 +1100,12 @@ function coast(x,y,f){
   const distant=f.layout.distant;
   const localX=(x-distant.x)/distant.scale,localY=(y-distant.y)/distant.scale;
   color=siltback(localX,localY,f.small,color);
-  for(const [,,,,cx,cy] of bellLimbs){
-    if(Math.abs(x-cx)>.070||Math.abs(y-cy-.016)>.035)continue;
-    const stone=ellipse(x-cx,y-cy-.017,.063,.027);
-    if(stone<1){
-      color=mix(0x112c3c,0x688679,clamp(.61-(y-cy)*15-(x-cx)*3.5));
-      color=mark(color,0x244953,Math.abs(y-cy-.027-.023*Math.cos((x-cx)*32)),.0024,f.pixel);
-      color=cast(color,0x081725,ellipse(x-cx,y-cy-.011,.037,.010),.74);
-    }
+  // The toes meet the same tidal shelf. Shallow pressure pools darken
+  // directly under a sole and disappear gradually into the bank.
+  for(const [cx,cy] of bellFeet){
+    const footprint=ellipse(x-cx-.015,y-cy-.012,.054,.014);
+    color=cast(color,0x071b27,footprint,.91);
+    if(footprint<1.4&&y>cy+.011)color=mark(color,0x648783,Math.abs(footprint-1)*.008,.0015,f.pixel);
   }
   color=belljaw(x,y,f,color);
   const nest=ellipse(x-.601,y-.799+.10*(x-.60),.105,.046);
@@ -1241,7 +1191,7 @@ const bowl={core:.28,halo:1.63,white:.67,falloff:'soft',aspect:1.3};
 export const frikMindArt = [
   {name:'Waters of Time',view:'The keeper listens to a living memory in the basin',ink:bridge,
     glyphs:frikInkStrokes,
-    gate:[frikLook.x,frikLook.y,frikLook.span],depth:[.085,.038],duration:8.6,eye:true,
+    ocular:true,gate:[frikLook.x,frikLook.y,frikLook.span],depth:[.085,.038],duration:8.6,eye:true,
     lights:[
       glow(.728,.600,.099,0x5ae5ef,.88,'slow-flow',bowl,.63,.90),
       glow(.147,.709,.036,0x269be8,.57,'slow-flow',soft,.44,.76),
@@ -1258,14 +1208,14 @@ export const frikMindArt = [
       glow(.524,.644,.126,0x4bcdc3,.81,'heartbeat',bowl,.43,.70),
     ]},
   {name:'The Flooded Caldera',view:'A Belljaw warms three eggs while a Siltback watches',ink:coast,glyphs:nurseryInk,
-    gate:bellEye,depth:[.076,.025],duration:9.6,
+    ocular:true,gate:bellEye,depth:[.076,.025],duration:9.6,
     lights:[
       glow(.672,.468,.037,0xffa660,.49,'candle',soft,.95,.87),
       glow(.599,.334,.033,0xffcb82,.70,'heartbeat',pin,.71,.58),
       glow(.181,.481,.022,0x64f0d5,.49,'double-pulse',soft,.43,.58),
     ]},
   {name:'Heat Sight',view:'Belljaw sees the Waters glowing inside the Siltback',ink:heatSight,glyphs:pressureInk,
-    gate:siltEye,depth:[.055,.026],duration:8.6,
+    ocular:true,gate:siltEye,depth:[.055,.026],duration:8.6,
     lights:[
       glow(.435,.544,.045,0xa6ffda,.63,'double-pulse',bowl,.67,.88),
       glow(.526,.479,.036,0x98f8e0,.68,'ember',pin,.56,.58),
@@ -1278,7 +1228,7 @@ export const frikMindArt = [
     ]},
   {name:'Tide Sight',view:'Siltback recognizes the same Waters in its Frik keeper',ink:tideSight,
     glyphs:frikInkStrokes,glyphActor:{...visitor,mirror:true},
-    gate:returnGate,depth:[.070,.045],duration:9.4,
+    ocular:true,gate:returnGate,depth:[.070,.045],duration:9.4,
     lights:[
       glow(.330,.445,.14,0x70c6f5,.76,'slow-flow',soft,.52,.73),
       glow(returnGate[0],returnGate[1]-.020,.023,0x9af5df,.79,'beacon',pin,.4,.55),
@@ -1292,7 +1242,7 @@ export function makeMindState(index,time,effects,pixel,swing,motionSeed=0,grade=
   const bass=effects?clamp(audio?.[0]??0):0;
   const energy=effects?clamp(Math.max((audio?.[4]??0)*12,bass*.9,(audio?.[1]??0)*.7)*cymatic.gain):0;
   const rig=effects&&(style.eye||style.ink===tideSight)?frikIdleMotion(time,motionSeed):undefined;
-  const blink=style.eye&&rig?rig.face.blink:0;
+  const blink=rig?.face.blink??0;
   const lights=style.lights.map((lamp,i)=>{
     if(index===0){
       const [u,v]=i<2?[layout.mirrorBridge?1-lamp.u:lamp.u,lamp.v]:
@@ -1331,4 +1281,4 @@ export function makeMindState(index,time,effects,pixel,swing,motionSeed=0,grade=
   return state;
 }
 
-export const frikMindFields={orbitStars,bellSurface:bellSurface.fields,siltSurface:siltSurface.fields,spires,ritualBowl,deckWells,bellEye,siltEye,bellLimbs,bellCrestSegments,siltCrown,visitorRestContacts};
+export const frikMindFields={orbitStars,bellSurface,siltSurface:siltSurface.fields,spires,ritualBowl,deckWells,bellEye,siltEye,bellFeet,siltCrown,visitorRestContacts};

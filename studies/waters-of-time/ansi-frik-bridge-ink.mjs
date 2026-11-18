@@ -410,7 +410,7 @@ function naturalEye(x,y,f,beneath) {
     ink=mix(ink,0xffda78,clamp(dome*.18+fibers*.55+gleam*.22));
     ink=mark(ink,0x754636,Math.abs(iris-.57-.072*Math.cos(radial*11))*.015,.00065,f.pixel);
     ink=mark(ink,0xd8de97,Math.abs(iris-.89)*.013,.0010,f.pixel);
-    const pupil=oval(u,v,.044,.071,.57,.62);
+    const pupil=((x-frikLook.x)/.0134)**2+((y-frikLook.y)*28/48/.0134)**2;
     if(pupil<1)ink=mix(0x040d17,0x12323a,clamp(1-pupil)*.63);
     ink=light(ink,0xd0ffee,oval(u,v,-.29,-.37,.21,.17),.92);
     ink=light(ink,0x80bfd1,oval(u,v,.27,.35,.25,.14),.53);

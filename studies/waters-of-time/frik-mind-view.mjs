@@ -2,15 +2,15 @@ import {mountAnsiUI} from './ansi-ui.mjs';
 import {chapterSeconds,crossingFlight,crossingHints,flightTraceAt} from './lancing-route.mjs?v=lancing-2';
 import {crossing} from './frik-crossing.mjs?v=lancing-2';
 import {keeperLine,frikStoryCaption} from './ansi-frik-story.mjs?v=lancing-2';
-import {traceTotal,recoveredReading,traceReadings,matrixStages,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=lancing-2';
-import {fractalPassOptions, mountAnsiFractal} from './ansi-fractal.mjs?v=lancing-2';
-import {createFrikGpu} from './ansi-frik-gpu.mjs?v=lancing-2';
-import {mountAnsiReviewCamera} from './ansi-review-camera.mjs?v=lancing-2';
+import {traceTotal,recoveredReading,traceReadings,matrixStages,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=brood-1';
+import {fractalPassOptions, mountAnsiFractal} from './ansi-fractal.mjs?v=brood-1';
+import {createFrikGpu} from './ansi-frik-gpu.mjs?v=brood-1';
+import {mountAnsiReviewCamera} from './ansi-review-camera.mjs?v=brood-1';
 import {mountAudio} from './audio.mjs';
 import {mountFrikStudyScore} from './frik-study-score.mjs?v=ensemble-1';
 import {frikCameraRate,frikRewindRate,frikTraversalBoundary,frikMemoryNames,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=lancing-2';
 import {nextFrikMotionSeed,priorFrikMotionSeed} from './ansi-frik-motion.mjs?v=lancing-2';
-import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=lancing-2';
+import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=brood-1';
 
 const artwork = createFrikMindInk();
 
@@ -342,13 +342,13 @@ try{inkFrames=createFrikGpu(document);}
 catch(error){status.textContent='GPU field stopped · '+error.message.split('\n')[0];throw error;}
 window.addEventListener('pagehide',()=>inkFrames.dispose());
 if(new URLSearchParams(location.search).has('gpu-audit')){
- const {auditFrikGpu}=await import('./ansi-frik-gpu-audit.mjs?v=lancing-2');
+ const {auditFrikGpu}=await import('./ansi-frik-gpu-audit.mjs?v=brood-1');
  const proof=await auditFrikGpu(inkFrames,artwork,{deep:new URLSearchParams(location.search).get('gpu-audit')==='deep'});
  const output=document.createElement('output');output.id='gpu-audit';
  output.textContent=JSON.stringify(proof);document.querySelector('main').append(output);
 }
 if(new URLSearchParams(location.search).has('gpu-bench')){
- const {benchFrikFrames}=await import('./ansi-frik-frame-bench.mjs?v=lancing-2');
+ const {benchFrikFrames}=await import('./ansi-frik-frame-bench.mjs?v=brood-1');
  const proof=await benchFrikFrames(inkFrames,document,frikMindFrameGrid(8,pixelBounds),status);
  const output=document.createElement('output');output.id='gpu-bench';output.hidden=true;
  output.textContent=JSON.stringify(proof);document.querySelector('main').append(output);
@@ -420,9 +420,9 @@ const overlay=(_age,put)=>{
     glyph(symbol,x,y,size,ink,style);
   };
   const cells=put.cells;
-  put.cells=(key,source,x,y,w,h,depth)=>{
+  put.cells=(key,source,x,y,w,h,depth,opacity)=>{
     if(x+w>0&&x<1&&y+h>0&&y<1)sourceSheets.unshift({source,x,y,w,h});
-    cells(key,source,x,y,w,h,depth);
+    cells(key,source,x,y,w,h,depth,opacity);
   };
   if(frame?.spec.stamp===frameStamp+'/'+put.pass)artwork.paintProjectedLights(put,frame.projected);
   else artwork.paintLights(put,{...lit.shot,audio:[...audioBands,audioRms]},lightTime,effects,cap);

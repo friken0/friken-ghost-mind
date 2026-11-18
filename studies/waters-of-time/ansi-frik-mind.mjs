@@ -1,12 +1,12 @@
 import {crossingPort,flightTraces} from './lancing-route.mjs?v=lancing-2';
 import {crossing,crossingInk,crossingForeground,paintCrossingInstruments} from './frik-crossing.mjs?v=lancing-2';
-import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=lancing-2';
+import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=brood-1';
 import {ansiRgbWord,packAnsiRgb,ansiCymaticCell} from './ansi-animation.mjs?v=surface-light-3';
-import {progressivePasses} from './ansi-fractal.mjs?v=lancing-2';
+import {progressivePasses} from './ansi-fractal.mjs?v=brood-1';
 import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=lancing-2';
 import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-2';
-import {frikLook} from './ansi-frik-bridge-ink.mjs?v=lancing-2';
-import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=lancing-2';
+import {frikLook} from './ansi-frik-bridge-ink.mjs?v=brood-1';
+import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=brood-1';
 
 export const frikMindGrid = {width:48,height:28};
 const nativeGrades=progressivePasses(frikMindGrid.width,frikMindGrid.height,8);
@@ -90,12 +90,24 @@ export function frikMindReview(scene, camera, depthZoom,trip=camera.trip??0) {
 }
 
 function aperture(x, y, scene) {
-  const {eye,shore}=frikMindArt[scene];
+  const {ocular,shore}=frikMindArt[scene];
+  if(ocular)return x*x+(y*28/48)**2;
   if(shore){
     const coastline=y+.105*Math.sin(x*3.3)*(Math.abs(y)>.47?smooth((Math.abs(y)-.47)*3):0);
     return (x/1.03)**2+(coastline/.98)**2;
   }
-  return ((x+(eye?.12:0)*y)/.94)**2+(y/1.06)**2;
+  return (x/.94)**2+(y/1.06)**2;
+}
+
+// Gate dimensions use fractions of a 48 × 28 painting. The iris is circular
+// in painting space even when pass grids have rectangular ANSI cells.
+export function memoryOptics(style,footprint){
+  if(!style.ocular)return {inner:.622,outer:style.shore?.92:.695,
+    transmission:style.shore?1-smooth((1/footprint-1.12)/3.05):1};
+  // The first glimpse is all the way down in the dark of the pupil. The
+  // widening clear core reaches the frame corners before the camera rebases.
+  const open=smooth((footprint-.24)/.69),core=.045+.64*open,rim=core+.16+.065*open;
+  return {inner:core*core,outer:rim*rim,transmission:smooth((footprint-.24)/.46)};
 }
 
 export function projectState(shot,time,effects,grade,columns=analysisColumns) {
@@ -127,13 +139,15 @@ export function projectState(shot,time,effects,grade,columns=analysisColumns) {
       shot.audio,shot.rewinding,pitch*reach,yaw,pitch);
     data.prologue=chapter;data.beatAge=depth===0?(shot.beatAge??7):0;data.travel=depth===0?(shot.travel??0):0;
     data.answered=!!shot.answered;
-    levels.push({index,gate,span,data,trace:frikTrace(index,data.layout.mirrorBridge)});
+    const optics=memoryOptics(data.style,gate.span/span);
+    levels.push({index,gate,span,data,optics,trace:frikTrace(index,data.layout.mirrorBridge)});
     if(chapter>=0&&chapter<7){
       if(!socket)break;
       chapter=chapter===2?4:chapter+1;index=0;pixel/=gate.span;span/=gate.span;
       if(span/columns>2)break;
       continue;
     }
+    if(optics.transmission===0)break;
     chapter=-1;index=after(index);
     if(index===scene)break;
     if(motionSeed!=null)motionSeed=nextFrikMotionSeed(motionSeed);
@@ -144,7 +158,7 @@ export function projectState(shot,time,effects,grade,columns=analysisColumns) {
 }
 
 function sampleLevel(levels, level, x, y) {
-  const {index,gate,data,span}=levels[level];
+  const {index,gate,data,optics}=levels[level];
   if(data.prologue>=0&&data.prologue<7){
     const u=(x-gate.x)/gate.span,v=(y-gate.y)/gate.span,metric=u*u+v*v;
     const child=level+1<levels.length&&metric<.82;
@@ -154,11 +168,13 @@ function sampleLevel(levels, level, x, y) {
   }
   const u=(x-gate.x)/gate.span, v=(y-gate.y)/gate.span;
   const metric = aperture(u, v, index);
-  const edgeLimit=data.style.shore?.92:.695;
-  const haze=data.style.shore?smooth((span/gate.span-1.12)/3.05):0;
-  const apertureVisible=level+1<levels.length&&metric<edgeLimit&&haze<1;
-  const blink=data.style.eye&&data.blink>.06&&v<data.blink*1.7-.83;
-  if(apertureVisible&&metric<.622&&!blink&&haze===0)return sampleLevel(levels,level+1,u+.5,v+.5);
+  const {inner,outer,transmission}=optics;
+  const apertureVisible=level+1<levels.length&&metric<outer&&transmission>0;
+  // Lids occlude the parent painting. Once the camera is within the cornea,
+  // the closing lid is behind it, including on the last frame before rebase.
+  const lid=data.style.ocular?data.blink*(1-smooth((gate.span/levels[level].span-.54)/.32)):0;
+  const blink=lid>.06&&v<lid*1.7-.83;
+  if(apertureVisible&&metric<=inner&&!blink&&transmission===1)return sampleLevel(levels,level+1,u+.5,v+.5);
 
   const safe = smooth((metric - .625) * .43);
   const ray=data.ray*.40*safe,tilt=data.tilt*.42*safe;
@@ -169,8 +185,8 @@ function sampleLevel(levels, level, x, y) {
   if(data.trip)ink=gradeFrikStory(ink,data.colorGrade);
   if (!apertureVisible || blink) return ink;
   const inside = sampleLevel(levels, level + 1, u + .5, v + .5);
-  const edge=smooth((edgeLimit-metric)/(edgeLimit-.622));
-  return mix(ink,inside,edge*(1-haze));
+  const edge=smooth((outer-metric)/(outer-inner));
+  return mix(ink,inside,edge*transmission);
 }
 
 // The score moves a different physical medium in each shot. Memory changes
@@ -262,9 +278,39 @@ function surfaceSocket(u,v,index,gate,data){
  const height=memoryHeight(u,v,index)*smooth((metric-.625)*.43);
  return [u-data.ray*.40*height,v+data.tilt*.42*height];
 }
-function lightAndMotes(put, state) {
+// The retained glyph and bloom pass runs after the GPU field. Carry the
+// parent corneas into it as well, otherwise a nested sign can bypass the eye.
+// A plate fades only when its far edge fits inside the round opening.
+function ocularOverlay(base,gates){
+  if(!gates.length)return base;
+  function weight(x,y,rx=0,ry=0){
+    let power=1;
+    for(const g of gates){
+      const dx=(Math.abs(x-g.x)+rx)/g.scale,dy=(Math.abs(y-g.y)+ry)*28/48/g.scale;
+      power*=g.transmission*smooth((g.outer-dx*dx-dy*dy)/(g.outer-g.inner));
+      if(g.lid>.06&&y-ry<g.y+g.scale*(g.lid*1.7-.83))return 0;
+    }
+    return power;
+  }
+  return {pass:base.pass,
+    glyph(symbol,x,y,size,ink,style={}){
+      const a=weight(x,y,size*.38,size*.5);
+      if(a>0)base.glyph(symbol,x,y,size,ink,{...style,alpha:(style.alpha??1)*a});
+    },
+    bloom(x,y,size,ink,power,shape,grade){
+      const a=weight(x,y,size,size);
+      if(a>0)base.bloom(x,y,size,ink,power*a,shape,grade);
+    },
+    cells(key,source,x,y,w,h,depth){
+      const a=weight(x+w*.5,y+h*.5,w*.5,h*.5);
+      if(a>0)base.cells(key,source,x,y,w,h,depth,a);
+    }};
+}
+function lightAndMotes(base, state) {
+  const gates=[];
   let scale = 1 / state.window, ox = .5 - state.x * scale, oy = .5 - state.y * scale;
-  for (const {index, gate, data} of state.levels.slice(0, 3)) {
+  for (const {index, gate, data,optics} of state.levels.slice(0, 3)) {
+    const put=ocularOverlay(base,gates);
     if(data.prologue>=0&&data.prologue<7){
       const visibility=state.levels[0].data===data?1:smooth((scale-.16)/.70);
       if(visibility>0)paintCrossingInstruments(put,{levels:[{data}],window:1/scale,x:(.5-ox)/scale,y:(.5-oy)/scale,visibility});
@@ -312,6 +358,11 @@ function lightAndMotes(put, state) {
           }
         }
       }
+    }
+    if(data.style.ocular){
+      const diameter=gate.span*scale;
+      gates.push({...optics,x:ox+gate.x*scale,y:oy+gate.y*scale,scale:diameter,
+        lid:data.blink*(1-smooth((diameter-.54)/.32))});
     }
     ox += (gate.x - gate.span * .5) * scale;
     oy += (gate.y - gate.span * .5) * scale;

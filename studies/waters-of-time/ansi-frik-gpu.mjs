@@ -1,9 +1,9 @@
 import {globeAtlas} from './frik-planet-atlas.mjs';
-import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=lancing-2';
-import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=lancing-2';
-import {frikMindFields} from './ansi-frik-mind-art.mjs?v=lancing-2';
+import {frikFieldSource} from './ansi-frik-field-generated.mjs?v=brood-1';
+import {frikBridgeFields,frikLook} from './ansi-frik-bridge-ink.mjs?v=brood-1';
+import {frikMindFields} from './ansi-frik-mind-art.mjs?v=brood-1';
 import {frikAdSource,frikAdBounds} from './ansi-frik-hq-ad.mjs?v=lancing-2';
-import {projectState} from './ansi-frik-mind.mjs?v=lancing-2';
+import {projectState} from './ansi-frik-mind.mjs?v=brood-1';
 
 const vertex=`#version 300 es
 void main(){vec2 p=vec2(gl_VertexID==1?3.:-1.,gl_VertexID==2?3.:-1.);gl_Position=vec4(p,0.,1.);}`;
@@ -16,7 +16,8 @@ ${frikFieldSource}
 uniform State sceneState;
 uniform sampler2D childInk;
 uniform vec2 outputSize,viewCenter;
-uniform float viewSpan,shoreHaze;
+uniform float viewSpan;
+uniform vec3 optics;
 uniform vec3 gate,tracePort;
 uniform bool childVisible;
 uniform mat3 colorGrade;
@@ -34,19 +35,19 @@ void main(){
   outInk=vec4(unpackInk(crossingForeground(p.x,p.y,f,color))/255.,1.);return;
  }`:''}
  vec2 d=(p-gate.xy)/gate.z;
- float metric=${index===1?'square(d.x/1.03)+square((d.y+.105*sin(d.x*3.3)*(abs(d.y)>.47?fieldSmooth((abs(d.y)-.47)*3.):0.))/.98)':'square((d.x+'+(index===0?'.12':'0.')+'*d.y)/.94)+square(d.y/1.06)'};
- float limit=${index===1?'.92':'.695'};
- bool blink=${index===0?'f.blink>.06&&d.y<f.blink*1.7-.83':'false'};
- bool child=childVisible&&metric<limit&&shoreHaze<1.&&!blink;
+ float metric=${[0,3,4,6].includes(index)?'square(d.x)+square(d.y*28./48.)':index===1?'square(d.x/1.03)+square((d.y+.105*sin(d.x*3.3)*(abs(d.y)>.47?fieldSmooth((abs(d.y)-.47)*3.):0.))/.98)':'square(d.x/.94)+square(d.y/1.06)'};
+ float lid=f.blink*(1.-fieldSmooth((gate.z/viewSpan-.54)/.32));
+ bool blink=${[0,6].includes(index)?'lid>.06&&d.y<lid*1.7-.83':'false'};
+ bool child=childVisible&&metric<optics.y&&optics.z>0.&&!blink;
  vec3 inside=vec3(0.);
  if(child)inside=texture(childInk,vec2(screen.x,1.-screen.y)).rgb;
- if(child&&metric<.622&&shoreHaze==0.){outInk=vec4(inside,1.);return;}
+ if(child&&metric<=optics.x&&optics.z==1.){outInk=vec4(inside,1.);return;}
  float safe=fieldSmooth((metric-.625)*.43),ray=f.ray*.40*safe,tilt=f.tilt*.42*safe;
  float depth=memoryCrossing(p.x,p.y,${index}.0,ray,tilt);
  float ink=${names[index]}(p.x+ray*depth,p.y-tilt*depth,f);
  ${[0,1,2,3,4,5].includes(index)?'ink=traceInk(p.x,p.y,f,ink,'+index+'.0,tracePort.x,tracePort.y,tracePort.z);':''}
  if(f.trip>0.)ink=packInk(clamp(colorGrade*unpackInk(ink),0.,255.));
- if(child)ink=inkMix(ink,packInk(inside*255.),fieldSmooth((limit-metric)/(limit-.622))*(1.-shoreHaze));
+ if(child)ink=inkMix(ink,packInk(inside*255.),fieldSmooth((optics.y-metric)/(optics.y-optics.x))*optics.z);
  outInk=vec4(unpackInk(ink)/255.,1.);
 }`;
 
@@ -89,10 +90,13 @@ export function createFrikGpu(doc){
  }
  upload('armContours',4,b.armRows,b.armSpans,true);
  upload('frikMask',b.width,b.height,mask);upload('frikColor',b.width,b.height,color);upload('frikHeight',b.width,b.height,height,true,true);
- for(const [name,field] of [['bellField',frikMindFields.bellSurface],['siltField',frikMindFields.siltSurface]]){
+ const bell=frikMindFields.bellSurface;
+ upload('bellField',bell.width,bell.height,bell.rgb,true);
+ {
+  const field=frikMindFields.siltSurface;
   const data=new Float32Array(count*4);
   for(let i=0;i<count;i++){data[i*4]=field.depth[i];data[i*4+1]=field.light[i];data[i*4+2]=field.pigment[i]/255;data[i*4+3]=field.roughness[i]/255;}
-  upload(name,b.width,b.height,data,true);
+  upload('siltField',b.width,b.height,data,true);
  }
  // Group exact segments by vertical extent. Each strip retains polygon draw
  // order and both endpoint coordinates for continuous intersection at any zoom.
@@ -158,11 +162,10 @@ export function createFrikGpu(doc){
   for(const level of state.levels){
    const {data,index,gate}=level;levels.push({...level,x,y,window:span,clip});
    if(data.rig){const r=data.rig,o=index*16;motion.set([r.breath,r.pelvisX,r.pelvisY,r.head,r.neck,r.neckFlex,r.leftArm,r.leftClaw,r.rightArm,r.rightClaw,r.legs[0].x,r.legs[0].y,r.legs[1].x,r.legs[1].y,r.jaw,r.face.blink],o);}
-   // An opaque orbit atmosphere never samples its child at this footprint.
-   if(index===1 && span/gate.span>=4.17)break;
    const cx=.5+(gate.x-x)/span,cy=.5+(gate.y-y)/span,extent=gate.span/span*1.3;
-   const left=Math.max(clip[0],Math.floor((cx-extent)*columns)),top=Math.max(clip[1],Math.floor((cy-extent)*rows));
-   const right=Math.min(clip[2],Math.ceil((cx+extent)*columns)),bottom=Math.min(clip[3],Math.ceil((cy+extent)*rows));
+   const vertical=data.style.ocular?Math.max(extent,gate.span/span*Math.sqrt(level.optics.outer)*48/28):extent;
+   const left=Math.max(clip[0],Math.floor((cx-extent)*columns)),top=Math.max(clip[1],Math.floor((cy-vertical)*rows));
+   const right=Math.min(clip[2],Math.ceil((cx+extent)*columns)),bottom=Math.min(clip[3],Math.ceil((cy+vertical)*rows));
    clip=[Math.max(0,left),Math.max(0,top),Math.min(columns,right),Math.min(rows,bottom)];
    if(clip[0]>=clip[2]||clip[1]>=clip[3])break;
    x=(x-gate.x)/gate.span+.5;y=(y-gate.y)/gate.span+.5;span/=gate.span;
@@ -180,7 +183,7 @@ export function createFrikGpu(doc){
    gl.uniform3f(loc(p,'gate'),gate.x,gate.y,gate.span);
    if(level.trace)gl.uniform3f(loc(p,'tracePort'),level.trace.x,level.trace.y,level.trace.r);
    gl.uniform1i(loc(p,'childVisible'),Boolean(child));
-   gl.uniform1f(loc(p,'shoreHaze'),index===1?Math.max(0,Math.min(1,(level.span/gate.span-1.12)/3.05))**2*(3-2*Math.max(0,Math.min(1,(level.span/gate.span-1.12)/3.05))):0);
+   gl.uniform3f(loc(p,'optics'),level.optics.inner,level.optics.outer,level.optics.transmission);
    gl.activeTexture(gl.TEXTURE0+textures.length);gl.bindTexture(gl.TEXTURE_2D,child?.texture??targets[(i+1)%2].texture);
    for(const k of floats)gl.uniform1f(loc(p,'sceneState.'+k),k==='level'?index:data[k]??0);
    for(const k of bools)gl.uniform1i(loc(p,'sceneState.'+k),k==='hasRig'?!!data.rig:!!data[k]);

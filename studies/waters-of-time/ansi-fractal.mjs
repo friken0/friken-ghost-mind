@@ -1135,22 +1135,25 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
       Math.max(1,Math.round(w*width)),Math.max(1,Math.round(h*height)));
     };
     const depthQueue=createAnsiDepthQueue(item.depthOffset);
-    const layer=(image,x,y,w,h)=>{
+    const layer=(image,x,y,w,h,opacity=1)=>{
      x=projectX(x);y=projectY(y);w*=scale/viewX;h*=scale/viewY;
      if(!visible(x,y,w,h))return;
      const smoothing=objectsContext.imageSmoothingEnabled;
      objectsContext.imageSmoothingEnabled=!!item.smoothInk;
+     const alpha=objectsContext.globalAlpha;
+     objectsContext.globalAlpha=alpha*opacity;
      objectsContext.drawImage(image,x*width,y*height,w*width,h*height);
+     objectsContext.globalAlpha=alpha;
      objectsContext.imageSmoothingEnabled=smoothing;
     };
     // A region carries its glyph plate, bounds, and light at one depth.
-    put.layer=(image,x=0,y=0,w=1,h=1,depth)=>{
-     if(depth===undefined)layer(image,x,y,w,h);
-     else depthQueue.add(depth,(dx,dy)=>layer(image,x+dx,y+dy,w,h));
+    put.layer=(image,x=0,y=0,w=1,h=1,depth,opacity=1)=>{
+     if(depth===undefined)layer(image,x,y,w,h,opacity);
+     else depthQueue.add(depth,(dx,dy)=>layer(image,x+dx,y+dy,w,h,opacity));
     };
     // Retain actual authored characters, their colours and their source grid.
     // The shared glyph painter compiles a plate once for each source revision.
-    put.cells=(key,source,x=0,y=0,w=1,h=1,depth)=>{
+    put.cells=(key,source,x=0,y=0,w=1,h=1,depth,opacity=1)=>{
      const identity=key+'/'+colorTheme+'/'+inkMode;
      let raster=cellPlates.get(identity);
      if(!raster){
@@ -1167,7 +1170,7 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
       if(cellPlates.size>=32)cellPlates.delete(cellPlates.keys().next().value);
       cellPlates.set(identity,raster);
      }
-     put.layer(raster,x,y,w,h,depth);
+     put.layer(raster,x,y,w,h,depth,opacity);
     };
     put.depthRegion=(depth,paint)=>depthQueue.add(depth,(dx,dy)=>paint({
      layer:(image,x,y,w,h)=>layer(image,x+dx,y+dy,w,h),

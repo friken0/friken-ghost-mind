@@ -1,4 +1,4 @@
-import {createFrikMindInk,renderFrikMindRows} from './ansi-frik-mind.mjs?v=lancing-2';
+import {createFrikMindInk,renderFrikMindRows} from './ansi-frik-mind.mjs?v=brood-1';
 
 const artwork=createFrikMindInk();
 self.onmessage=({data:{spec,first,last,buffer}})=>{

@@ -3,7 +3,7 @@
 export function createFrikMindFrames(doc,onFrame){
  const limit=Math.min(4,Math.max(2,(navigator.hardwareConcurrency||4)-2));
  const workers=Array.from({length:limit},()=>new Worker(
-  new URL('./frik-mind-worker.mjs?v=lancing-2',import.meta.url),{type:'module'}));
+  new URL('./frik-mind-worker.mjs?v=brood-1',import.meta.url),{type:'module'}));
  const slots=Array.from({length:2},()=>{
   const raster=doc.createElement('canvas');
   return {raster,context:raster.getContext('2d',{alpha:false})};
