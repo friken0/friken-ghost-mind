@@ -1,7 +1,7 @@
 // The lens shape is drawn from the public-domain NASA frame STS088-724-66.
 // Coordinates describe the cranked shoulder, broad chipped heel and long lower spar.
 import {globeAtlas} from './frik-planet-atlas.mjs';
-import {clamp,mix,smooth} from './ansi-frik-mind-art.mjs';
+import {clamp,mix,smooth} from './ansi-frik-color.mjs';
 export const crossing=[
  ['Earth · 1899','We called it the Black Knight. It passed over Earth long before anyone thought to listen. Every time it crosses Colorado, three pulses fall out of the sky.'],
  ['Colorado Springs · The receiver','Nikola Tesla disconnects his transmitter. The needle jumps anyway. On a strip of paper he marks three strokes. The next three land right on top of them.'],
@@ -12,6 +12,43 @@ export const crossing=[
  ['Frik cutter · Archive interrupted','The pursuer pours an ocean of memories into the scan. The machine tries to file every life at once. Its shield opens. A thin cutting beam goes clean through.'],
  ['First contact · The Waters','A claw dips into a bowl aboard the ship that saved us. Our receiver fills with the smell of rain. I’m Friken.Ghost, Captain. I can show you what came through.'],
 ];
+// Instruments in the shot carry the same VGA glyphs as the BBS. They are
+// attached to scene coordinates, so inspection keeps the labels on the objects.
+export function paintCrossingInstruments(put,state){
+ const f=state.levels[0].data,n=f.prologue;
+ if(n<0||n>6)return;
+ const project=(v,center)=>.5+(v-center)/state.window;
+ const sign=(label,x,y,size,color,alpha=1)=>put.glyph(label,project(x,state.x),project(y,state.y),
+  size/state.window,color,{maxSize:36,alpha});
+ const t=f.time;
+ if(n===0){
+  sign('EARTH   /   NIGHT PASS',.185,.16,.013,'#bcd6d0');
+  sign('·   ·   ·',.515,.415,.026,'#b8f3db',.55+.35*Math.cos(t*2));
+ }else if(n===1){
+  sign('COLORADO SPRINGS',.68,.484,.012,'#3a2931');
+  sign('I   I   I',.74,.751,.012,'#3f3544');
+ }else if(n===2){
+  sign('ORBITAL YARD   /   GATE 01',.24,.16,.013,'#e8cb94');
+  const lamps=2+Math.floor((.5+.5*Math.sin(t*.23))*6);
+  sign('▥'.repeat(lamps)+'░'.repeat(8-lamps),.34,.61,.024,'#e9b974');
+ }else if(n===3){
+  sign('FIRST CROSSING',.31,.147,.020,'#ffe3a1');
+  sign('GODSPEED FROM HOME',.309,.19,.013,'#a7dbce');
+ }else if(n===4){
+  sign('AFT GLASS  /  EARTH',.48,.126,.012,'#c0e8eb');
+ }else if(n===5){
+  const roll=['01  WALLACE, M.','02  CHEN, Y.','03  OKAFOR, A.','04  RAO, K.'];
+  sign('SCAN   /   HUMAN',.72,.53,.016,'#ffc3a0');
+  for(let i=0;i<3;i++)sign(roll[(i+Math.floor(t*.65))%4],.72,.565+.033*i,.012,'#ff9282',1-i*.15);
+ }else{
+  const memories=['FIRST RAIN','SISTER AT THE DOOR','HATCHLING','TIDE TABLE','LAST MORNING'];
+  for(let i=0;i<5;i++){
+   const phase=(t*.14+i/5)%1;
+   sign(memories[i],.82-phase*.22,.24+phase*.14-.047*Math.sin(i+phase*5),.009,'#b0ebd6',Math.sin(phase*Math.PI));
+  }
+  sign('SCAN INTERRUPTED',.64,.61,.013,'#edc59a');
+ }
+}
 export function globeChannel(u,v,world,channel){
  const x=(u-Math.floor(u))*384,y=clamp(v)*191;
  const ix=Math.floor(x),iy=Math.floor(y),jx=(ix+1)%384,jy=Math.min(191,iy+1);

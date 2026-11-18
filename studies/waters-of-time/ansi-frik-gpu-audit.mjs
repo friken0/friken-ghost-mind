@@ -1,4 +1,4 @@
-import {renderFrikMindRows} from './ansi-frik-mind.mjs?v=waters-echo-2';
+import {renderFrikMindRows} from './ansi-frik-mind.mjs?v=first-crossing-3';
 // Explicit accuracy diagnostic. Its readback is deliberately outside playback.
 export async function auditFrikGpu(gpu,artwork,{deep=false}={}){
  const rows=[],columns=deep?970:128,height=deep?564:74;let buffer;
@@ -6,9 +6,11 @@ export async function auditFrikGpu(gpu,artwork,{deep=false}={}){
   {scene:0,centerX:.49312,centerY:.128886,zoom:2.1},
   {scene:0,centerX:.49312,centerY:.128886,zoom:3.8},
   {scene:0,centerX:.728,centerY:.603,zoom:4},{scene:1,centerX:.182,centerY:.232,zoom:4},
-  {scene:3,centerX:.599,centerY:.779,zoom:4},{scene:5,centerX:.19,centerY:.705,zoom:4}];
- for(let trip=0;trip<3;trip++)for(const pose of poses.filter(p=>!deep||[0,3,4].includes(p.scene)))for(const effects of deep?[true]:[false,true]){
-  const spec={columns,rows:height,shot:{...pose,trip,roomAim:[.087,-.061],swing:effects?.7:0,motionSeed:1978,audio:[.2,.15,.1,.25,.04]},time:12.75,effects,pass:8,stamp:'audit/'+trip+'/'+pose.scene+'/'+pose.zoom+'/'+effects};
+  {scene:2,centerX:.232,centerY:.586,zoom:4},{scene:4,centerX:.797,centerY:.354,zoom:4},
+  {scene:3,centerX:.599,centerY:.779,zoom:4},{scene:5,centerX:.19,centerY:.705,zoom:4},
+  ...Array.from({length:8},(_,prologue)=>({scene:0,prologue,centerX:.5,centerY:.5,zoom:0}))];
+ for(let trip=0;trip<3;trip++)for(const pose of poses.filter(p=>(p.prologue==null||trip===0)&&(!deep||[0,3,4].includes(p.scene))))for(const effects of deep?[true]:[false,true]){
+  const spec={columns,rows:height,shot:{...pose,trip,roomAim:[.087,-.061],swing:effects?.7:0,motionSeed:1978,audio:[.2,.15,.1,.25,.04]},time:12.75,effects,pass:8,stamp:'audit/'+trip+'/'+pose.scene'/'+pose.zoom+'/'+(pose.prologue??-1)+'/'+effects};
   let frame;
   for(let retry=0;retry<120;retry++){
    gpu.poll();frame=gpu.use(spec);if(frame?.spec.stamp===spec.stamp)break;
@@ -26,7 +28,7 @@ export async function auditFrikGpu(gpu,artwork,{deep=false}={}){
    }errors.push(error);if(error>4)pixels++;
   }
   errors.sort((a,b)=>a-b);
-  rows.push({columns,rows:height,scene:pose.scene,zoom:pose.zoom,trip,effects,mean:sum/(columns*height*3),p99:errors[Math.floor(errors.length*.99)],max,over4:pixels/(columns*height)});
+  rows.push({columns,rows:height,prologue:pose.prologue,scene:pose.scene,zoom:pose.zoom,trip,effects,mean:sum/(columns*height*3),p99:errors[Math.floor(errors.length*.99)],max,over4:pixels/(columns*height)});
  }
  gpu.poll();return rows;
 }

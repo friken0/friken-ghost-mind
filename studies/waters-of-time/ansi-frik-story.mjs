@@ -46,11 +46,11 @@ export const frikTestimony=[
  'We built the gate we were given. The machine counted our ships as they fled. One tooth in its drum was broken. My ship passed in the gap.',
  'My sister marked that egg so she would know the first young one when it hatched. Listen. There is still someone inside knocking.',
  'The bank went out from under them. This water is the last place where anything that lived on that shore can still feel its feet touch mud.',
- 'We found your ship by following the same scan. We gave the machine our dead to count. While it counted, we cut. Then your two little noises came down the line.',
- 'My sister would have pulled the string and sent the bowl back full. I have a ship. You have a ship. Come with me. Let us find who did this.',
+ 'We found your ship by following the same scan. We gave the machine our dead to count. While it counted, we cut. Your little board sent two taps back. Other bowls are answering from much farther down.',
+ 'My sister would have pulled the string and sent the bowl back full. A million bowls are still knocking. Bring your ship alongside mine. Let us go and see who is inside.',
 ];
 export function keeperLine(scene,answered=false){
- return scene===6&&answered?'Your hand tapped twice. Mine can do that too. I have a ship. You have a ship. Come with me. Let us find who did this.':frikTestimony[scene];
+ return scene===6&&answered?'Your hand tapped twice. Mine can do that too. A million bowls are still knocking. Bring your ship alongside mine. Let us go and see who is inside.':frikTestimony[scene];
 }
 export const frikStories=[
  [

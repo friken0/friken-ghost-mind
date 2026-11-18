@@ -1,4 +1,4 @@
-import {createFrikMindInk,renderFrikMindRows} from './ansi-frik-mind.mjs?v=waters-echo-2';
+import {createFrikMindInk,renderFrikMindRows} from './ansi-frik-mind.mjs?v=first-crossing-3';
 
 const artwork=createFrikMindInk();
 self.onmessage=({data:{spec,first,last,buffer}})=>{

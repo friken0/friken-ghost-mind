@@ -1,27 +1,16 @@
+import {clamp,smooth,mix} from './ansi-frik-color.mjs';
+export {clamp,smooth,mix} from './ansi-frik-color.mjs';
 import {mandelEscape} from './ansi-mandel-field.mjs';
-import {globeInk,knightInk} from './frik-crossing.mjs';
-import {frikIdleMotion} from './ansi-frik-motion.mjs?v=waters-echo-2';
-import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=waters-echo-2';
+import {globeInk,knightInk} from './frik-crossing.mjs?v=first-crossing-3';
+import {frikIdleMotion} from './ansi-frik-motion.mjs?v=first-crossing-3';
+import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=first-crossing-3';
 import {mirrorAnsiInk} from './ansi-mirror.mjs?v=frik-mind-46';
 import {ansiLightPulse} from './ansi-animation.mjs?v=surface-light-3';
-import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=waters-echo-2';
-import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=waters-echo-2';
+import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-3';
+import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=first-crossing-3';
 import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=frik-mind-46';
 
 // Each material in the bridge and the three views is authored in ANSI++.
-export const clamp = n => Math.min(1, Math.max(0, n));
-export function smooth(n) {
-  const t = clamp(n);
-  return t * t * (3 - 2 * t);
-}
-export function mix(a, b, t) {
-  if(t<=0)return a;
-  if(t>=1)return b;
-  const w = clamp(t), v = 1 - w;
-  return (Math.round((a >> 16 & 255) * v + (b >> 16 & 255) * w) << 16) |
-    (Math.round((a >> 8 & 255) * v + (b >> 8 & 255) * w) << 8) |
-    Math.round((a & 255) * v + (b & 255) * w);
-}
 const ellipse = (x, y, rx, ry) => (x / rx) ** 2 + (y / ry) ** 2;
 const repeat = (v, step) => Math.abs(v - Math.round(v / step) * step);
 function mark(ink, color, d, w, pixel) {

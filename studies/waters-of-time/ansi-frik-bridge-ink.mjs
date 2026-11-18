@@ -1,5 +1,5 @@
 import {roomReliefCrossing} from './ansi-parallax.mjs';
-import {frikMotionSource} from './ansi-frik-motion.mjs?v=waters-echo-2';
+import {frikMotionSource} from './ansi-frik-motion.mjs?v=first-crossing-3';
 import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=frik-mind-46';
 
 // Shapes read in the coordinate system of the supplied standing sketch.

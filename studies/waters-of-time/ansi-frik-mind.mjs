@@ -1,11 +1,11 @@
-import {crossing,crossingInk} from './frik-crossing.mjs';
+import {crossing,crossingInk,paintCrossingInstruments} from './frik-crossing.mjs?v=first-crossing-3';
 import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=echo-2';
 import {ansiRgbWord,packAnsiRgb,ansiCymaticCell} from './ansi-animation.mjs?v=surface-light-3';
 import {progressivePasses} from './ansi-fractal.mjs?v=frik-mind-46';
-import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=waters-echo-2';
-import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=waters-echo-2';
-import {frikLook} from './ansi-frik-bridge-ink.mjs?v=waters-echo-2';
-import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=waters-echo-2';
+import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=first-crossing-3';
+import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=first-crossing-3';
+import {frikLook} from './ansi-frik-bridge-ink.mjs?v=first-crossing-3';
+import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=first-crossing-3';
 
 export const frikMindGrid = {width:48,height:28};
 const nativeGrades=progressivePasses(frikMindGrid.width,frikMindGrid.height,8);
@@ -249,7 +249,7 @@ function surfaceSocket(u,v,index,gate,data){
 function lightAndMotes(put, state) {
   let scale = 1 / state.window, ox = .5 - state.x * scale, oy = .5 - state.y * scale;
   for (const {index, gate, data} of state.levels.slice(0, 3)) {
-    if(data.prologue>=0&&data.prologue<7)return;
+    if(data.prologue>=0&&data.prologue<7){paintCrossingInstruments(put,state);return;}
     if(data.style.paintCells&&gate.span*scale<2){
       data.style.paintCells(put,data,scale,ox,oy);
     }
