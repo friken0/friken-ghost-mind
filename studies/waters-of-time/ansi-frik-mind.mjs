@@ -1,12 +1,12 @@
 import {crossingPort,flightTraces} from './lancing-route.mjs?v=lancing-2';
-import {crossing,crossingInk,crossingForeground,paintCrossingInstruments} from './frik-crossing.mjs?v=tesla-print-1';
+import {crossing,crossingInk,crossingForeground,paintCrossingInstruments} from './frik-crossing.mjs?v=nursery-stance-1';
 import {frikTrace,traceReadings,matrixStrip,recoveredReading} from './frik-contact-matrix.mjs?v=brood-1';
 import {ansiRgbWord,packAnsiRgb,ansiCymaticCell} from './ansi-animation.mjs?v=surface-light-3';
 import {progressivePasses} from './ansi-fractal.mjs?v=brood-1';
 import {nextFrikMotionSeed,frikMotionPoint} from './ansi-frik-motion.mjs?v=lancing-2';
-import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-2';
+import {frikWaterSigns,keeperLine,frikStoryCaption,frikStoryTitles,frikRewindTitles,gradeFrikStory,frikMemoryGate,frikStoryIndex,rewindArtTrip,frikCymaticProfiles} from './ansi-frik-story.mjs?v=nursery-stance-1';
 import {frikLook} from './ansi-frik-bridge-ink.mjs?v=brood-1';
-import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=tesla-print-1';
+import {clamp, frikMindArt, makeMindState, memoryHeight,memoryCrossing,traceInk,mix, smooth} from './ansi-frik-mind-art.mjs?v=nursery-stance-1';
 
 export const frikMindGrid = {width:48,height:28};
 const nativeGrades=progressivePasses(frikMindGrid.width,frikMindGrid.height,8);

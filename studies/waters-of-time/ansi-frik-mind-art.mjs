@@ -1,12 +1,12 @@
 import {clamp,smooth,mix} from './ansi-frik-color.mjs';
 export {clamp,smooth,mix} from './ansi-frik-color.mjs';
 import {mandelEscape} from './ansi-mandel-field.mjs';
-import {globeInk,knightInk} from './frik-crossing.mjs?v=tesla-print-1';
+import {globeInk,knightInk} from './frik-crossing.mjs?v=nursery-stance-1';
 import {frikIdleMotion} from './ansi-frik-motion.mjs?v=lancing-2';
 import {frikAdInk,frikAdGate,paintFrikAd} from './ansi-frik-hq-ad.mjs?v=lancing-2';
 import {mirrorAnsiInk} from './ansi-mirror.mjs?v=lancing-2';
 import {ansiLightPulse} from './ansi-animation.mjs?v=surface-light-3';
-import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=lancing-2';
+import {frikStoryIndex,frikStoryGrade,frikMemoryLayout,frikActorPoint,frikCymaticProfiles} from './ansi-frik-story.mjs?v=nursery-stance-1';
 import {frikLook, frikStandingInk,frikInkStrokes} from './ansi-frik-bridge-ink.mjs?v=brood-1';
 import {frikCraftSurface} from './ansi-frik-craft-surface.mjs?v=lancing-2';
 
@@ -753,7 +753,8 @@ function createCreatureSurface(relief,materialAt) {
 // The z-buffer holds the front of each ellipsoidal sweep. Paired limbs have
 // different depth and footfall positions; the high outside hip grows into the
 // same flank as the ribs. The open space under the breast belongs to the eggs.
-const bellFeet=[[.292,.729],[.373,.777],[.617,.708],[.705,.766]];
+// Position of the load-bearing pad on the bank, near/far at each girdle.
+const bellFeet=[[.273,.755],[.369,.699],[.502,.756],[.587,.699]];
 function bakeBelljaw(){
   const width=1024,height=600,count=width*height;
   const depth=new Float32Array(count),group=new Float32Array(count);
@@ -793,35 +794,55 @@ function bakeBelljaw(){
       depth[n]=h?merge(h,g,join):g;
     }
   }
-  const k=(x,y,z,r)=>[x,y,z,r,r*1.62,r*.94];
-  function leg(points,far){
-    const foot=points.at(-1),[x,y,z]=foot;
-    sweep(points.map(v=>k(...v)),far?0x4c5a59:skin,.046);
-    for(let toe=0;toe<3;toe++){
-      const spread=(toe-1)*.014;
-      sweep([k(x-.003,y-.008,z,.012),k(x+.013,y+spread,z+.003,.009),
-        k(x+.028+(toe===1?.014:0),y+spread*1.6-.005,z,.004),
-        k(x+.034+(toe===1?.014:0),y+spread*1.9-.010,z,.001)],far?exterior:horn,.009,1);
+  // Paired legs use the same skeleton across the width of each girdle.
+  // The far feet stand farther up the bank. Compression through the rear
+  // hock and the straighter load line of the forearm give each pair its job.
+  function plantedLeg(foot,girdle,far){
+    const [x,y]=foot,scale=far?.83:1,z=far?.069:.165;
+    const sections=girdle==='hip'?[
+      [.043,-.253,-.019,.055,.087,.059], // pelvis
+      [.054,-.202,.007,.045,.066,.048],
+      [.065,-.152,.012,.029,.038,.033], // forward stifle
+      [.038,-.113,.009,.028,.031,.029], // gastrocnemius
+      [-.010,-.075,.001,.017,.020,.018], // point of the hock
+      [-.006,-.042,.002,.011,.027,.015],
+      [0,-.015,.006,.014,.017,.017],
+    ]:[
+      [.015,-.277,-.020,.038,.077,.049], // shoulder blade on the rib cage
+      [.024,-.224,.008,.040,.063,.045],
+      [-.009,-.160,.013,.027,.034,.029], // elbow tucked behind shoulder
+      [-.004,-.109,.011,.020,.052,.025],
+      [.001,-.047,.002,.013,.031,.017],
+      [-.002,-.017,.006,.017,.019,.019],
+    ];
+    const points=sections.map(([dx,dy,dz,rx,ry,rz])=>
+      [x+dx*scale-(far?.047*smooth((-dy-.095)/.16):0),y+dy*scale,z+dz,rx*scale,ry*scale,rz*scale]);
+    points.push([x+.008*scale,y-.008*scale,z+.010,.022*scale,.011*scale,.021*scale]);
+    sweep(points,far?0x85817a:skin,.024);
+    // One broad pad with short horn nails, kept inside the footprint.
+    for(let i=0;i<3;i++){
+      const toeY=y+(i-1)*.0045*scale,tip=x+(.034-.003*Math.abs(i-1))*scale;
+      sweep([[x+.010*scale,toeY-.007*scale,z+.009+i*.002,.011*scale,.008*scale,.013*scale],
+        [tip-.007*scale,toeY-.005*scale,z+.015+i*.002,.009*scale,.006*scale,.008*scale],
+        [tip,toeY-.0005*scale,z+.010+i*.002,.002*scale,.002*scale,.003*scale]],far?exterior:horn,.006,1);
     }
   }
-  leg([[.377,.549,.045,.042],[.339,.626,.051,.039],[.274,.671,.058,.020],[...bellFeet[0],.058,.012]],true);
-  leg([[.534,.510,.049,.045],[.573,.616,.053,.027],[.610,.657,.066,.018],[...bellFeet[2],.059,.014]],true);
-  // One curved spine from the fine tail tip through pelvis and ribs to
-  // the poll. Thicker vertical sections at the breast bear the front legs.
-  sweep([[.171,.646,.065,.002,.002,.002],[.214,.667,.072,.014,.014,.011],
-    [.292,.633,.084,.028,.032,.027],[.357,.548,.106,.053,.077,.052],
-    [.410,.506,.116,.083,.104,.089],[.478,.499,.120,.083,.112,.095],
-    [.536,.490,.126,.061,.111,.081],[.575,.426,.134,.049,.096,.066],
-    [.596,.370,.142,.047,.060,.052]],skin,.044);
-  leg([[.398,.498,.145,.061],[.397,.573,.164,.053],[.436,.630,.169,.036],
-    [.411,.661,.160,.026],[.348,.705,.151,.020],[.350,.733,.151,.014],[...bellFeet[1],.156,.014]],false);
-  leg([[.530,.471,.156,.049],[.548,.529,.175,.045],[.538,.606,.175,.028],
-    [.554,.649,.170,.024],[.619,.675,.170,.022],[.677,.696,.174,.015],[...bellFeet[3],.171,.014]],false);
+  plantedLeg(bellFeet[1],'hip',true);
+  plantedLeg(bellFeet[3],'shoulder',true);
+  // The tail sweeps up clear of the haunch. A lifted waist exposes a window
+  // between the two girdles even at the first few passes.
+  sweep([[.182,.373,.070,.002,.003,.002],[.197,.423,.078,.009,.012,.010],
+    [.228,.482,.089,.019,.027,.023],[.278,.483,.107,.045,.054,.048],
+    [.323,.471,.116,.064,.084,.073],[.386,.479,.119,.074,.080,.078],
+    [.461,.477,.124,.088,.094,.091],[.535,.468,.130,.071,.105,.082],
+    [.572,.419,.136,.051,.091,.066],[.596,.370,.142,.047,.060,.052]],skin,.037);
+  plantedLeg(bellFeet[0],'hip',false);
+  plantedLeg(bellFeet[2],'shoulder',false);
   // Roof tiles overlap from the nape toward the tail. Their free corners
   // sweep back in a single direction; the long belly stays quiet below.
   for(let i=0;i<8;i++){
-    const u=i/7,x=.303+.240*u,y=.595-.144*Math.sin(u*1.74);
-    const size=.43+.58*Math.sin(u*1.93),z=.134+.089*Math.sin(u*1.80);
+    const u=i/7,x=.280+.268*u,y=.471-.045*Math.sin(u*2.54);
+    const size=.54+.49*Math.sin(u*2.44),z=.163+.054*Math.sin(u*2.16);
     sweep([[x-.053*size,y-.026*size,z-.016,.004,.004,.005],
       [x-.018*size,y-.038*size,z-.014,.030*size,.029*size,.026*size],
       [x+.004*size,y-.012*size,z,.021*size,.043*size,.032*size],
@@ -862,7 +883,7 @@ function bakeBelljaw(){
     if((pigment>>8&255)>(pigment>>16&255)+9){
       // Growth rings follow the curve of the shell, swinging around each
       // overlapping flute. Pale nacre wears through on the free cutting lip.
-      const along=(x-.298)/.246,band=y-.596+.146*Math.sin(along*1.74);
+      const along=(x-.280)/.268,band=y-.471+.045*Math.sin(along*2.54);
       if(y>.35){
         const plate=(along*7+.46*Math.sin(band*24)+.13*Math.sin(band*67));
         const seam=Math.abs(plate-Math.round(plate));
@@ -901,7 +922,7 @@ function bakeBelljaw(){
 const bellSurface=bakeBelljaw();
 function belljaw(x,y,f,under){
   if(x<.161||x>.803||y<.119||y>.817)return under;
-  const shadow=ellipse(x-.502,y-.754,.240,.048);
+  const shadow=ellipse(x-.430,y-.729,.197,.041);
   let ink=cast(under,0x102735,shadow,.69);
   // Ribs lift between the planted feet; neither the pupil nor a sole drifts.
   const breath=smooth(1-ellipse(x-.478,y-.511,.131,.162));
@@ -1103,9 +1124,9 @@ function coast(x,y,f){
   // The toes meet the same tidal shelf. Shallow pressure pools darken
   // directly under a sole and disappear gradually into the bank.
   for(const [cx,cy] of bellFeet){
-    const footprint=ellipse(x-cx-.015,y-cy-.012,.054,.014);
+    const footprint=ellipse(x-cx-.009,y-cy-.002,.030,.009);
     color=cast(color,0x071b27,footprint,.91);
-    if(footprint<1.4&&y>cy+.011)color=mark(color,0x648783,Math.abs(footprint-1)*.008,.0015,f.pixel);
+    if(footprint<1.4&&y>cy+.003)color=mark(color,0x648783,Math.abs(footprint-1)*.008,.0015,f.pixel);
   }
   color=belljaw(x,y,f,color);
   const nest=ellipse(x-.601,y-.799+.10*(x-.60),.105,.046);

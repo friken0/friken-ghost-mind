@@ -2,11 +2,11 @@
 export const frikMemoryNames=['Survivors · jade','What the water kept · amber','The answering dark · violet'];
 const layouts=[
  {bridge:{x:0,y:0,scale:1},visitor:{x:.034,y:.104,scale:.88,mirror:true},
-  distant:{x:.015,y:.300,scale:.30},mirrorBridge:false},
+  distant:{x:.001,y:.307,scale:.215},mirrorBridge:false},
  {bridge:{x:-.105,y:.028,scale:.94},visitor:{x:-.091,y:.200,scale:.80,mirror:true},
-  distant:{x:.014,y:.238,scale:.325},mirrorBridge:false},
+  distant:{x:.008,y:.249,scale:.244},mirrorBridge:false},
  {bridge:{x:.155,y:.005,scale:.98},visitor:{x:.190,y:.090,scale:.96,mirror:true},
-  distant:{x:.030,y:.267,scale:.275},mirrorBridge:true},
+  distant:{x:.009,y:.285,scale:.218},mirrorBridge:true},
 ];
 export const frikMemoryLayout=trip=>layouts[frikStoryIndex(trip)];
 export const frikActorPoint=(actor,x,y)=>[actor.x+actor.scale*(actor.mirror?1-x:x),actor.y+actor.scale*y];

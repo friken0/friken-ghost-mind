@@ -2,17 +2,17 @@ import {mountNativeResponseHost} from './native-response-host.mjs';
 import {boardTerminalPage,boardTerminalGrid,mountAnsiTerminal} from './ansi-terminal.mjs?v=terminal-score-1';
 import {ansiSceneProgram} from './ansi-scenes.mjs';
 import {chapterSeconds,crossingFlight,crossingHints,flightTraceAt} from './lancing-route.mjs?v=lancing-2';
-import {crossing} from './frik-crossing.mjs?v=tesla-print-1';
-import {keeperLine,frikStoryCaption} from './ansi-frik-story.mjs?v=lancing-2';
+import {crossing} from './frik-crossing.mjs?v=nursery-stance-1';
+import {keeperLine,frikStoryCaption} from './ansi-frik-story.mjs?v=nursery-stance-1';
 import {traceTotal,recoveredReading,traceReadings,openFrikMatrix,frikTrace,traceInFocus,traceReturnCamera} from './frik-contact-matrix.mjs?v=brood-1';
 import {fractalPassOptions, mountAnsiFractal} from './ansi-fractal.mjs?v=brood-1';
-import {createFrikGpu} from './ansi-frik-gpu.mjs?v=tesla-print-1';
+import {createFrikGpu} from './ansi-frik-gpu.mjs?v=nursery-stance-1';
 import {mountAnsiReviewCamera} from './ansi-review-camera.mjs?v=brood-1';
 import {mountAudio} from './audio.mjs';
 import {mountFrikStudyScore} from './frik-study-score.mjs?v=score-windows-1';
-import {frikCameraRate,frikRewindRate,frikTraversalBoundary,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=lancing-2';
+import {frikCameraRate,frikRewindRate,frikTraversalBoundary,rewindArtTrip,endingReadSeconds} from './ansi-frik-story.mjs?v=nursery-stance-1';
 import {nextFrikMotionSeed,priorFrikMotionSeed} from './ansi-frik-motion.mjs?v=lancing-2';
-import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=tesla-print-1';
+import {createFrikMindInk, frikMindGrid, frikMindScenes,frikMindSceneSet, frikTeaserFlight, frikMindReview,frikMindFrameGrid} from './ansi-frik-mind.mjs?v=nursery-stance-1';
 
 const artwork = createFrikMindInk();
 
@@ -291,6 +291,13 @@ if(entry.searchParams.has('specimen')){
 startCrossing();
 const requested=['earth','receiver','yard','launch','lancing','scan','cutter','waters'].indexOf(entry.searchParams.get('chapter'));
 if(requested>=0)chapter=requested;
+if(entry.searchParams.get('chapter')==='nursery'){
+  chapter=-1;
+  scene=frikMindScenes.findIndex(gate=>gate.name==='The Flooded Caldera');
+  depthZoom=frikMindSceneSet(trip).slice(0,scene).reduce((sum,gate)=>sum+gate.zoom,0);
+  readScene=trip+'/'+scene;
+  enterReading();
+}
 storyFrame();
 if(!entry.searchParams.has('gpu-audit')&&!entry.searchParams.has('gpu-bench'))void score.prepare();
 

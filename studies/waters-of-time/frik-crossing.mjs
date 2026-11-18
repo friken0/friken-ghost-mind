@@ -429,8 +429,17 @@ function operatorInk(x,y,f,under){
     [273,281,132,144,180,162],[281,283,144,153,162,153]]){
     if(py>=y0&&py<y1){const k=(py-y0)/(y1-y0);left=l0+(l1-l0)*k;right=r0+(r1-r0)*k;}
    }
-   const ear=((px-244+.23*(py-174))/21)**2+((py-175)/30)**2;
-   if((px>left&&px<right)||ear<1){
+   // The ear shares its front edge with the temple. Only its free rear
+   // rim changes the silhouette, tapering from the folded top into the lobe.
+   let earFront=0,earBack=0;
+   for(const [y0,y1,a,b,c,d] of [
+    [151,156,245,237,245,253],[156,164,237,235,253,256],
+    [164,177,235,233,256,253],[177,188,233,232,253,246],
+    [188,195,232,233,246,241],[195,199,233,236,241,236]]){
+    if(py>=y0&&py<y1){const t=(py-y0)/(y1-y0);earFront=a+(b-a)*t;earBack=c+(d-c)*t;}
+   }
+   const pinna=earBack>earFront&&px>=earFront&&px<=earBack;
+   if((px>left&&px<right)||pinna){
     // Broad light from the bench. A narrow temple, hollow cheek and rounded
     // chin use the same tonal field all the way down to single-cell marks.
     let tone=.74-.0040*(px-138)-.0011*(py-168);
@@ -480,19 +489,21 @@ function operatorInk(x,y,f,under){
      const body=clamp(Math.min((1-m2)*8,(py-upper)*.49,(lower-py)*.57));
      ink=mix(ink,mix(0x332e33,0x836649,.26+.20*Math.cos(curl*1.85)),body);
     }
-    if(ear<1){
-     const inner=portraitPlane(px,py,245,173,10,20,.37);
-     const helix=Math.exp(-Math.abs(ear-.70)*10);
-     ink=mix(0x6f5148,0xe1b68a,clamp(.59+.23*helix-.42*inner+.14*(py-175)/30));
-     ink=mix(ink,0x594442,.74*portraitPlane(px,py,242,177,5.5,8.1,.55));
-     ink=mix(ink,0xe6be93,.77*portraitPlane(px,py,246,167,3.2,10,.52));
-     const fold=px-243-.36*(py-174)+.035*(py-174)*(py-174);
-     ink=mix(ink,0x745447,.67*Math.exp(-fold*fold*.15)*portraitPlane(px,py,242,175,16,15,0));
+    if(pinna){
+     const attach=smooth((px-earFront)/7);
+     const bowl=portraitPlane(px,py,245,173,5.2,10.5,.32);
+     const ridge=portraitPlane(px,py,248,165,2.6,9,.47);
+     const tragus=portraitPlane(px,py,238,177,3.4,4.1,-.31);
+     const rim=portraitPlane(px,py,252,162,2.3,6.7,.24);
+     const lobe=portraitPlane(px,py,238,189,4.1,5.8,.27);
+     const relief=.17*ridge+.14*rim+.12*tragus+.09*lobe-.34*bowl;
+     ink=mix(ink,mix(0x4b3b3e,0xf5d8aa,clamp(engraved+relief)),attach);
     }
     // The part divides two comb directions; highlights bend with each lock.
     const fringe=94+31*Math.exp(-((px-81)/18)*((px-81)/18))-5*Math.exp(-((px-139)/33)*((px-139)/33))+
       8*Math.exp(-((px-197)/20)*((px-197)/20))+62*smooth((px-202)/28);
-    if(py<fringe&&ear>.98){
+    const sideburn=19*portraitPlane(px,py,233,157,5.5,22,.15);
+    if(py<fringe+sideburn&&(!pinna||px<earFront+2)){
      const partX=122+.72*(95-py)+.010*(95-py)*(95-py);
      const d=px-partX;
      const lock=py-.0019*(px-160)*(px-160)+8.5*Math.sin((px-112)*.037)+.22*px;
