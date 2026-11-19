@@ -11,7 +11,7 @@ function packagedImage(url) {
  return image.decode().then(() => image);
 }
 
-export function mountAnsiIllustration(root,{host}={}){
+export function mountAnsiIllustration(root,{host,loadImage=packagedImage}={}){
  if(!root?.ownerDocument||!host?.rect)throw Error('ANSI host required');
  const doc=root.ownerDocument;
  const slot=doc.createElement('div');
@@ -84,14 +84,14 @@ export function mountAnsiIllustration(root,{host}={}){
   canvas.dataset.source=next.source;
   canvas.dataset.sha256=next.sha256;
   delete slot.dataset.renderer;
-  packagedImage(next.url).then(poster=>{
+  loadImage(next.url).then(poster=>{
    if(stamp!==request)return;
    image=poster;
    paint();
   }).catch(()=>{});
   if(!next.depth)return;
   const names=['background','subject','backgroundDepth','subjectDepth'];
-  Promise.all(names.map(name=>packagedImage(next.depth[name]))).then(images=>{
+  Promise.all(names.map(name=>loadImage(next.depth[name]))).then(images=>{
    if(stamp!==request)return;
    const [background,subject]=images;
    if(background.width!==subject.width||background.height!==subject.height)return;

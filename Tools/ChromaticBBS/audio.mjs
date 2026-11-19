@@ -21,6 +21,22 @@ export function spectrumBands(frequency,wave,sampleRate,fftSize,previous=0){
 /* Deterministic, short battle cues. One existing SFX bus, no extra context.
  * FM charge, pitched lances, filtered debris and a receipt-specific resolve. */
 export function renderBattleCue(kind,side=0,sampleRate=24000){
+ if(kind==='choir'||kind==='lullaby'){
+  const duration=kind==='choir'?1.04:.88,root=kind==='choir'?196:293.66;
+  const intervals=kind==='choir'?[1,1.5,1.2,2]:[1.5,1.333333,1.125,1];
+  const samples=new Float32Array(Math.ceil(duration*sampleRate));
+  for(let i=0;i<samples.length;i++){
+   const t=i/sampleRate;
+   for(const [j,interval] of intervals.entries()){
+    const local=t-j*.125;
+    if(local<0)continue;
+    const envelope=Math.min(1,local/.045)*(1-t/duration)**1.5*Math.exp(-local*2);
+    const phase=2*Math.PI*root*interval*local+.35*Math.sin(local*24);
+    samples[i]+=(Math.sin(phase)+.24*Math.sin(phase*2.003))*envelope*.082;
+   }
+  }
+  return samples;
+ }
  const profiles={deploy:[.36,80,240],sample:[.22,300,920],reinforce:[.5,110,660],pressure:[.42,160,60],volley:[.2,side?740:410,side?170:1300],impact:[.34,95,32],collapse:[.58,65,22],resonance:[.6,330,990],victory:[.5,220,660],defeat:[.5,150,55]};
  const p=profiles[kind];if(!p)throw Error('Unknown battle cue '+kind);
  const [duration,start,end]=p,samples=new Float32Array(Math.ceil(duration*sampleRate));let phase=0,rng=1337,noise=0;
@@ -35,7 +51,27 @@ export function renderBattleCue(kind,side=0,sampleRate=24000){
  return samples;
 }
 /** Short tactile interface cues; bounded PCM on the existing SFX bus. */
+function audienceCue(sampleRate,ending){
+ const duration=ending?1.4:.75,pcm=new Float32Array(Math.ceil(sampleRate*duration));
+ let noise=0x23a6b5;
+ for(let i=0;i<pcm.length;i++){
+  const t=i/sampleRate;
+  noise=(Math.imul(noise,1664525)+1013904223)|0;
+  const grit=noise/2147483648;
+  const envelope=Math.sin(Math.PI*t/duration)**1.55;
+  const applause=Math.max(0,Math.cos(t*132+Math.sin(t*38)))**12*.42+
+   Math.max(0,Math.cos(t*89+Math.sin(t*55)))**18*.34;
+  const cheer=Math.sin(2*Math.PI*(206*t+80*t*t)+1.3*Math.sin(t*38))*.11+
+   Math.sin(2*Math.PI*(372*t-65*t*t)+.8*Math.sin(t*29))*.08;
+  pcm[i]=envelope*(grit*applause+cheer)*.062;
+ }
+ return pcm;
+}
 export function renderInterfaceCue(kind,sampleRate=24000){
+ if(kind==='audience'||kind==='audience-end'){
+  if(!Number.isInteger(sampleRate)||sampleRate<8000||sampleRate>96000)throw Error('Invalid interface cue');
+  return audienceCue(sampleRate,kind==='audience-end');
+ }
  if(['rain','thunder-near','thunder-far','step-wet','step-metal'].includes(kind))return renderWeatherCue(kind,sampleRate);
  const profiles={tap:[.065,820,420],switch:[.14,320,1060],scan:[.19,540,1480],deal:[.13,1400,480],score:[.26,880,1320],secret:[.7,440,1760],carrier:[.42,320,1500],transmit:[.73,155,1720],reject:[.24,540,80]};
  if(!Object.hasOwn(profiles,kind)||!Number.isInteger(sampleRate)||sampleRate<8000||sampleRate>96000)throw Error('Invalid interface cue');
@@ -67,14 +103,14 @@ export function openingTrackIndex(seed,previous=-1,count=musicTracks.length){
  if(!Number.isInteger(count)||count<1||count>64)throw Error('Bounded track count required');
  const n=(Number(seed)>>>0)%count;return count>1&&n===previous?(n+1)%count:n;
 }
-export function mountAudio(root,{frame=()=>{},silent=false,initialTrack=0}={}){
+export function mountAudio(root,{frame=()=>{},silent=false,initialTrack=0,musicLevel=.55}={}){
   const get=id=>root?.querySelector('#cg-'+id);
   let context=null,mix=null,musicGain=null,voiceGain=null,sfxGain=null,analyser=null,voiceAnalyser=null;
   let frequency=null,wave=null,voiceFrequency=null,voiceWave=null,voicePrevious=0,raf=0,last=0,previous=0,musicSource=null,musicTrim=null,musicBuffer=null,track=0,musicEpoch=0,musicOffset=0,musicAt=0,musicOn=false,musicArmed=false,soundOn=true,speaking=false,modemSource=null,modemBuffer=null,modemStart=0,modemOffset=0,modemEnd=null,connecting=false;
   if(!Number.isInteger(initialTrack)||initialTrack<0||initialTrack>=musicTracks.length)throw Error('Unknown opening track');track=initialTrack;
   const battleBuffers=new Map(),battleSources=new Set(),uiBuffers=new Map(),uiSources=new Set();
   let weatherSource=null,weatherGain=null,weatherLevel=0;
-  const info={ui:{cues:0,voices:0,last:'none'},battle:{cues:0,voices:0,peakVoices:0,last:'none'},context:'locked',music:'paused',track:musicTracks[0]?.title,frames:0,rms:0,bands:[0,0,0,0],voiceRelativeMusicGain:.55,musicTargetGain:.55,musicDucked:false,voice:{},sampleMs:0};
+  const info={ui:{cues:0,voices:0,last:'none'},battle:{cues:0,voices:0,peakVoices:0,last:'none'},context:'locked',music:'paused',track:musicTracks[0]?.title,frames:0,rms:0,bands:[0,0,0,0],voiceRelativeMusicGain:musicLevel,musicTargetGain:musicLevel,musicDucked:false,voice:{},sampleMs:0};
   function label(){info.track=musicTracks[track]?.title;root?.setAttribute?.('data-music-state',info.music);root?.setAttribute?.('data-carrier-connected',String(musicArmed));const b=get('music');const bootMusic=get('boot-music');if(bootMusic){bootMusic.textContent='MUSIC: '+(musicOn?'ON':'OFF');bootMusic.setAttribute('aria-pressed',String(musicOn));}if(b){b.textContent='Music: '+(musicOn?'on':'off');b.setAttribute('aria-pressed',String(musicOn));}const t=get('track-name');if(t)t.textContent=musicTracks[track]?.title||'NO TRACK';const s=get('music-state');if(s)s.textContent=info.music==='playing'?'PLAYING / VOICE × 0.55':musicOn?'ON / '+info.music.toUpperCase().replaceAll('-',' '):'PAUSED BY YOU';}
   function graph(){
     if(!context){const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw Error('Web Audio unavailable');context=new Audio();mix=context.createGain();voiceGain=context.createGain();musicGain=context.createGain();sfxGain=context.createGain();analyser=context.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.45;frequency=new Uint8Array(analyser.frequencyBinCount);wave=new Float32Array(analyser.fftSize);voiceAnalyser=context.createAnalyser();voiceAnalyser.fftSize=1024;voiceAnalyser.smoothingTimeConstant=.28;voiceFrequency=new Uint8Array(voiceAnalyser.frequencyBinCount);voiceWave=new Float32Array(voiceAnalyser.fftSize);voiceGain.connect(voiceAnalyser);voiceAnalyser.connect(mix);musicGain.connect(mix);sfxGain.connect(mix);mix.connect(analyser);const limiter=context.createDynamicsCompressor();limiter.threshold.value=-3;limiter.knee.value=3;limiter.ratio.value=12;analyser.connect(limiter);limiter.connect(context.destination);sfxGain.gain.value=.8;musicGain.gain.value=info.musicTargetGain;}
@@ -88,7 +124,7 @@ export function mountAudio(root,{frame=()=>{},silent=false,initialTrack=0}={}){
   async function unlock(){if(silent)throw Error('Explicit QA audio mute');const g=graph();await Promise.race([context.resume(),new Promise(r=>setTimeout(r,250))]);if(context.state!=='running'){info.context=context.state;throw Error('Touch Connect to enable audio');}info.context='running';if(!raf)raf=requestAnimationFrame(sample);return g;}
   // Speech cuts music by 80%, then lets it breathe back after the line. The
   // existing music bus owns the envelope; no extra mixer or per-frame writes.
-  function gain(){const target=.55*(speaking?.2:1);info.musicTargetGain=target;info.musicDucked=speaking;root?.setAttribute?.('data-music-gain',target.toFixed(2));if(!context)return;musicGain.gain.setTargetAtTime(target,context.currentTime,speaking?.025:.18);}
+  function gain(){const target=musicLevel*(speaking?.2:1);info.musicTargetGain=target;info.musicDucked=speaking;root?.setAttribute?.('data-music-gain',target.toFixed(2));if(!context)return;musicGain.gain.setTargetAtTime(target,context.currentTime,speaking?.025:.18);}
   function pauseMusic(){musicEpoch++;if(musicSource){musicOffset=(musicOffset+context.currentTime-musicAt)%(musicBuffer?.duration||1);musicSource.onended=null;try{musicSource.stop();}catch{}musicSource.disconnect();musicSource=null;}musicTrim?.disconnect();musicTrim=null;info.music=musicOn?(musicArmed?'waiting-for-touch':'waiting-for-connection'):'paused';label();}
   async function startMusic(){
     if(!musicOn||!musicArmed||silent||musicSource)return;const own=++musicEpoch;

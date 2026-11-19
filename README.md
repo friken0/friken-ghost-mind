@@ -1,6 +1,6 @@
 ## The Lancing: Human Hubris
 
-[Play The Lancing: Human Hubris](https://friken0.github.io/friken-ghost-mind/studies/waters-of-time/) — an interactive ANSI++ first contact. Follow the colony ship through the gate, then explore the Frik captain’s memories.
+[Play the Frik first-contact study](https://friken0.github.io/friken-ghost-mind/studies/waters-of-time/). Follow the first colony ship through the gate. Four clues in the flight record and six in the Waters complete the archive.
 
 # Current: C26.29 / one living instrument
 

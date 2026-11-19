@@ -1,5 +1,8 @@
 {
   "schema": "friken.ghost.public-registry.v1",
+  "studies": {
+    "watersOfTime": "studies/waters-of-time/"
+  },
   "version": "C26.29-TheLivingInstrument",
   "framework": {
     "schema": "friken.ghost.framework.v1",
@@ -87,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 29502,
-      "sha256": "c8184e6a3340bb4c57c645ce93ddf4842fc2c4d41f80e53eabcff401ff0d0140"
+      "bytes": 29503,
+      "sha256": "14bf6b3baf63895273b59ceb4dd23ec346bda7c63e9560f65b7398ef7671f42b"
     },
     {
       "path": "Runbook-2.29-Packed.md",
@@ -112,8 +115,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/ANSI-Craft.md",
-      "bytes": 14859,
-      "sha256": "ecb27e6caffebdab53ed2b31944957de123734f86aac817b5b6ad0d0913f1c87"
+      "bytes": 43579,
+      "sha256": "c9801e953d55dc0f9f3ef28967bf0b58b9c86f138c229ef71548c497c5e1a2ae"
     },
     {
       "path": "Tools/ChromaticBBS/ANSI-Skirmish.md",
@@ -242,38 +245,38 @@
     },
     {
       "path": "Tools/ChromaticBBS/ansi-animation.mjs",
-      "bytes": 12361,
-      "sha256": "4baa5167c6639521c234098d353f8dee8c124cca90305483db589e8d27d97c1f"
+      "bytes": 26267,
+      "sha256": "67ea759e6870317a855e4c166190c79b14f01e5b693a651840f36d5538a76b41"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-animation.test.mjs",
-      "bytes": 6943,
-      "sha256": "a22311c1f196fb18fd4ddb683d8b1fd5a6c4897efb344962d77a19921e3cc9e1"
+      "bytes": 11486,
+      "sha256": "1a185e6fb79dac9a66e0fb3d164aba85cd4d8f20f486611d82f59fa6cc9b65c9"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-illustration.mjs",
-      "bytes": 7404,
-      "sha256": "b1f038ca4be4380277b5381203fe9d980da27dc7550353f4bb791e79cb5dd1ea"
+      "bytes": 7420,
+      "sha256": "627540f698666249c0994049d665968f53ec38bd6d0d50c782189fa31b7a6394"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-mesh.mjs",
-      "bytes": 13074,
-      "sha256": "e136e77f9eb8be8dfb9af0b63fb5dfd28b49609da969e55f69ac792008b42022"
+      "bytes": 16649,
+      "sha256": "79838c60927b670b7e0c9e867ff3c3ef3ed9be0387ef562b89d83f4f6a3071d8"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-mesh.test.mjs",
-      "bytes": 3134,
-      "sha256": "8563ff8a3f3288a4dbd4ffb105bb200131449238f9164c02371c2d5e30ddb45a"
+      "bytes": 3168,
+      "sha256": "11a1b6812024cdd4a523457c58faa110588a9c256523bcca1a17613786996f85"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-scenes.mjs",
-      "bytes": 37223,
-      "sha256": "6be515b3652f6517f9750915aacf9abb3e526a69bc6aa18aa7c18badb470ab34"
+      "bytes": 39187,
+      "sha256": "17000db8e9c96ce43ecae03072a5e163c495e99dbb9d380b42e31a8c011cff04"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-scenes.test.mjs",
-      "bytes": 3772,
-      "sha256": "00f7df67c998e7f79efcea8b69416577dcb7ac31c94f9c04aba6df8872dde20e"
+      "bytes": 4050,
+      "sha256": "fd374b1492bf0bf5ed1136a45417697fdc914ae2cb416cebe9a85f8d71fb51c6"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-skirmish.mjs",
@@ -297,13 +300,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/ansi-terminal.mjs",
-      "bytes": 29552,
-      "sha256": "5b77c37218b247102049c9acff2a47f3c15aefbcc95d54586152181cd145c58d"
+      "bytes": 40435,
+      "sha256": "5a04f6911eb48fbd675a8f6eec5943b6fb221eaff5a07694514fe284c7a621c4"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-terminal.test.mjs",
-      "bytes": 16388,
-      "sha256": "7704f4750a0a4f822d7c03328f395157f84468bfb1d26579ad6adaccf4457a31"
+      "bytes": 18178,
+      "sha256": "fa59854de5354a4598766e81540f00143a6d6840474ca577f1e3d8be98f0d94c"
     },
     {
       "path": "Tools/ChromaticBBS/ansi-ui.mjs",
@@ -319,11 +322,6 @@
       "path": "Tools/ChromaticBBS/app.mjs",
       "bytes": 30868,
       "sha256": "2c14552268d41f6d0fa938485893b6d2dca627389c705c22653d1d34e2a03cce"
-    },
-    {
-      "path": "Tools/ChromaticBBS/art-data.mjs",
-      "bytes": 1938935,
-      "sha256": "abbfdf45ad3ff6114f1b8eb260417857bec4c17605272cdce70baf6e4b10c372"
     },
     {
       "path": "Tools/ChromaticBBS/art/fizzpow/bitcoin-billionaire-office.webp",
@@ -396,9 +394,14 @@
       "sha256": "5afbc2576e15a7046a5dae617f67ae224d567ce03fb64cc2fcb58c20663448e9"
     },
     {
+      "path": "Tools/ChromaticBBS/art-data.mjs",
+      "bytes": 1938935,
+      "sha256": "abbfdf45ad3ff6114f1b8eb260417857bec4c17605272cdce70baf6e4b10c372"
+    },
+    {
       "path": "Tools/ChromaticBBS/audio.mjs",
-      "bytes": 18749,
-      "sha256": "b44e18b0a1b124abe958046c46a1e3d894cbc275152664078a884e6bc53851ad"
+      "bytes": 20326,
+      "sha256": "02e92e2d3cf0f8d37452317f1c30849c01e0fb971daf79c0d7c0351f1f819165"
     },
     {
       "path": "Tools/ChromaticBBS/audio.test.mjs",
@@ -412,8 +415,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/boot-world.mjs",
-      "bytes": 40288,
-      "sha256": "5c93a0e62ae83f4b1aaa1558427f366061010d7c2e76ee4a00efe3b0209c0428"
+      "bytes": 43580,
+      "sha256": "9c35f41e10a751369c1a480c6e823e908187c6195e2fd65d6740019c2f75b588"
     },
     {
       "path": "Tools/ChromaticBBS/bootstrap.md",
@@ -432,8 +435,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/build.py",
-      "bytes": 18688,
-      "sha256": "e659bab8554f7c090f53bdcd8fc9eea20ecc91c8a9567c9956ec41a4ef5c27e7"
+      "bytes": 18775,
+      "sha256": "3201f50c39133801b8e8f3351cbd1b6644ecb28f085382b69babdc449c243d9a"
     },
     {
       "path": "Tools/ChromaticBBS/canon.mjs",
@@ -481,16 +484,6 @@
       "sha256": "2f0a1e3b11d532d162ef4cba69cbf4cd9c5d342d42fd0ae52337d40129e49811"
     },
     {
-      "path": "Tools/ChromaticBBS/chapters.mjs",
-      "bytes": 26514,
-      "sha256": "3cb59b24b24acc1e055dbc2dae281c9bae3c68909c16254712613c716ade9807"
-    },
-    {
-      "path": "Tools/ChromaticBBS/chapters.test.mjs",
-      "bytes": 4585,
-      "sha256": "b7da8e33c357c9e5211998ebbdb3263e73b6420d4f31ca11577e692ad2c6df1a"
-    },
-    {
       "path": "Tools/ChromaticBBS/chapters/lot-forty-seven.json",
       "bytes": 195515,
       "sha256": "05c94990e469f9520f724b1cbe744a31d40fe65c850765bec70fc65a3165908d"
@@ -504,6 +497,16 @@
       "path": "Tools/ChromaticBBS/chapters/the-weather-inside.json",
       "bytes": 57713,
       "sha256": "cb00c18e50ea7e0b7182c91152e4fa7e8713c8a88a30f59fa20b991eb3ad7d01"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapters.mjs",
+      "bytes": 26514,
+      "sha256": "3cb59b24b24acc1e055dbc2dae281c9bae3c68909c16254712613c716ade9807"
+    },
+    {
+      "path": "Tools/ChromaticBBS/chapters.test.mjs",
+      "bytes": 4585,
+      "sha256": "b7da8e33c357c9e5211998ebbdb3263e73b6420d4f31ca11577e692ad2c6df1a"
     },
     {
       "path": "Tools/ChromaticBBS/cinema.mjs",
@@ -696,11 +699,6 @@
       "sha256": "0c067ec2e719f7112db6d1f4a989ece6f2fd153ce662bae6d2827d2e0b610fd1"
     },
     {
-      "path": "Tools/ChromaticBBS/lore/art-manifest.json",
-      "bytes": 12015,
-      "sha256": "2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"
-    },
-    {
       "path": "Tools/ChromaticBBS/lore/art/algatron.jpg",
       "bytes": 1013592,
       "sha256": "22bb0f1d0ad2477f55594542fc0604168ebdb8d025b8089c477e9d9771d6cd2f"
@@ -831,6 +829,11 @@
       "sha256": "f0e608be462af2c77d1fc43807a0d1819b0d7787a51ba035980a80ea27502ddf"
     },
     {
+      "path": "Tools/ChromaticBBS/lore/art-manifest.json",
+      "bytes": 12015,
+      "sha256": "2f9ef4fb771aa7fe6fca53e13ab878be1d301f1f6ad26aa7465a8b12ffe9d336"
+    },
+    {
       "path": "Tools/ChromaticBBS/lore/manifest.json",
       "bytes": 773,
       "sha256": "64b3129eff10409d78533593ecfca73d8d077403950465f4089041be8426e6ac"
@@ -917,13 +920,13 @@
     },
     {
       "path": "Tools/ChromaticBBS/native-response-host.mjs",
-      "bytes": 22491,
-      "sha256": "a11f9f52a8053670768611cc3ab28e91d9d30226364a57da59921570058ad187"
+      "bytes": 23487,
+      "sha256": "74ea499ac2ff9a8a6722e6cc25271a19a3c3bacca425a1b034459d005e593a48"
     },
     {
       "path": "Tools/ChromaticBBS/native-response-host.test.mjs",
-      "bytes": 18163,
-      "sha256": "ffef4e11d4d0a43606a5ec34677eb9deae17551cc55e6fb2cb0f3b0f9a1ce481"
+      "bytes": 19679,
+      "sha256": "307a47f27ebba68c49e0c8535695bda1b9f3e2087fb421349b7828dc89bc51db"
     },
     {
       "path": "Tools/ChromaticBBS/native-response-program.mjs",
@@ -967,8 +970,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/portrait.mjs",
-      "bytes": 19986,
-      "sha256": "011a44044fb59c45dfbae4f27cc0bd4e2c72f013bb3ab8fc0f0abe5dde2e7286"
+      "bytes": 20000,
+      "sha256": "abfcc1468b42e394d7d1b66f2a016d9bbc0bcf9d2930447e3250f2298a1eb348"
     },
     {
       "path": "Tools/ChromaticBBS/postmark-bloom.mjs",
@@ -992,8 +995,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/public-release.py",
-      "bytes": 12486,
-      "sha256": "cdea4c4541291175ea708a912c7bdc8d3b62728501a309bdc3233622dc2e9075"
+      "bytes": 12604,
+      "sha256": "ea53cf6a76701af2f23384ce5766f37929a77859c8c43511db8826ba61d29d82"
     },
     {
       "path": "Tools/ChromaticBBS/recorded-voice.mjs",
@@ -1222,8 +1225,8 @@
     },
     {
       "path": "Tools/ChromaticBBS/turn-out-of-time.mjs",
-      "bytes": 57352,
-      "sha256": "0cf577adc33db0195190daeb7eb8e130290c8d089c8c78c8ff8e50b7463836d5"
+      "bytes": 56899,
+      "sha256": "95b599b5a3a14dac62fbd5cd3855bdc38eb585a912f81c33636425c8da62096a"
     },
     {
       "path": "Tools/ChromaticBBS/vendor/ansi-ui/LICENSE.TXT",
@@ -1352,8 +1355,8 @@
     },
     {
       "path": "Tools/InfiniEngineSite/ghost-renderer.js",
-      "bytes": 29331,
-      "sha256": "74c7b413d134b37a2ee49b09baad4fbd54c4b90e9a76b2c8862f2acd5d2c156b"
+      "bytes": 29375,
+      "sha256": "ffd8f819a1700d1209502d92c27278818e4055493c0f4a04688c92ba73650812"
     },
     {
       "path": "Tools/InfiniEngineSite/ghost-renderer.test.mjs",
@@ -1711,11 +1714,6 @@
       "sha256": "acbc016afe120614d93276ec55d3eac3959a2a81aa08a63e6d1ff507e01b22e4"
     },
     {
-      "path": "studies/waters-of-time/life-arena.css",
-      "bytes": 6158,
-      "sha256": "2339418685b4113cbb09996615d97c40ef52c06d9234ea1566eb5baaaceae60c"
-    },
-    {
       "path": "studies/waters-of-time/modem.mjs",
       "bytes": 4062,
       "sha256": "cf2d0504510fdc6896cd77a05f5f0581f1345dc2cf972acb125495b6ece495e0"
@@ -1762,8 +1760,8 @@
     },
     {
       "path": "surreal-the-door-that-remembers.html",
-      "bytes": 12103647,
-      "sha256": "35b88874f97ccb466bbaec65b88a39f1d71449aba7710f3b9cb896f73074a76a"
+      "bytes": 12092102,
+      "sha256": "aa1a5c203b3dc9d101172918af40085114a17e7322bb29d377d84142fc84ee38"
     },
     {
       "path": "the-suitcase-that-kept-coming-back.html",
@@ -1783,8 +1781,5 @@
     "news": "data/news.json",
     "scoreboard": "data/scoreboard.json",
     "chapters": "data/chapters.json"
-  },
-  "studies": {
-    "watersOfTime": "studies/waters-of-time/"
   }
 }

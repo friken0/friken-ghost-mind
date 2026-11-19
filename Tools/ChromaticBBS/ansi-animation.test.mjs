@@ -1,6 +1,39 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createAnsiAnimator,ansiEffects,drawAnsiCell} from './ansi-animation.mjs';
+import {createAnsiAnimator,ansiEffects,drawAnsiCell,ansiInkGlyph,ansiIris,ansiPhosphor,ansiRgbHex,ansiRgbWord,ansiTrajectory,isAnsiRgb,packAnsiGlyph,packAnsiInk,packAnsiRgb,paintAnsiInkBands} from './ansi-animation.mjs';
+
+test('sampled truecolor materials retain their RGB channels and optional glyph',()=>{
+ const ink=packAnsiGlyph(packAnsiRgb(0xe89958),'╴');
+ assert.ok(isAnsiRgb(ink));
+ assert.equal(ansiInkGlyph(ink),'╴');
+ assert.equal(ansiRgbHex(ink),'#e89958');
+ assert.equal(ansiRgbWord(ink),0xff5899e8);
+ const indexed=packAnsiGlyph(packAnsiInk(6,9,2),'╴');
+ assert.ok(!isAnsiRgb(indexed));
+ assert.equal(ansiInkGlyph(indexed),'╴');
+});
+
+test('detail bands paint progressively and retain the authored parent glyph',()=>{
+ const bands=[{pass:1,marks:[{glyph:'╬',u:.5,v:.5,size:.1,ink:'#d09b76'}]},
+  {pass:2,marks:[{glyph:'·',u:.5,v:.5,size:.025,ink:'#fff9da'}]}];
+ const rendered=[];
+ const glyph=(char,u,v,size,ink)=>rendered.push({char,u,v,size,ink});
+ paintAnsiInkBands(bands,{pass:2,receive:pass=>pass===1,glyph});
+ assert.deepEqual(rendered.map(mark=>mark.char),['╬']);
+ rendered.length=0;
+ paintAnsiInkBands(bands,{pass:2,glyph});
+ assert.deepEqual(rendered.map(mark=>mark.char),['╬','·']);
+ assert.ok(rendered[0].size>rendered[1].size);
+});
+
+test('plate iris, scan persistence and effect trajectories settle exactly',()=>{
+ assert.equal(ansiIris(0,.25,.75),'circle(8% at 25% 75%)');
+ assert.equal(ansiIris(1,.25,.75),'');
+ assert.equal(ansiPhosphor(1,.5,0),0);
+ assert.ok(ansiPhosphor(.2,.75)>ansiPhosphor(.2,.01));
+ assert.deepEqual(ansiTrajectory([[0,0],[0,1],[1,1]],.5),[.25,.75]);
+ assert.deepEqual(ansiTrajectory([[0,0],[0,1],[1,1]],1.1),[1,1]);
+});
 
 test('each transition has exact endpoints and finite bounded cell layers',()=>{
   for(const effect of ansiEffects){
@@ -97,3 +130,55 @@ test('8000 admitted cells retain bounded work and idle checks do no repaint',t=>
 });
 
 test('measured cymatics colour and grow display layers, while silence and reduced motion keep source intact',async()=>{const {ansiCymaticCell}=await import('./ansi-animation.mjs'),cell={char:'▓',fg:10,bg:2},before=JSON.stringify(cell);assert.equal(ansiCymaticCell(cell),null);const frame=ansiCymaticCell(cell,{bands:[.8,.4,.6],rms:.2,time:3,x:12,y:8,style:'foliage',intensity:.8});assert.equal(frame.cymatic,true);assert.ok(frame.layers[0].scaleY>1);assert.ok(frame.layers[0].hue>=0&&frame.layers[0].hue<360);assert.equal(ansiCymaticCell(cell,{bands:[1],rms:1,reduced:true}),null);assert.equal(JSON.stringify(cell),before);});
+
+test('ANSI++ ink uses sixteen distinct dim levels and sixteen bounded, distinct flicker profiles',async()=>{
+ const {ansiInk,ansiDitherModes,ansiDitherPixel,ansiFlickerModes,ansiFlicker,ansiBloomProfile,
+  packAnsiInk,shadeAnsiWord}=await import('./ansi-animation.mjs');
+ assert.equal(new Set(Array.from({length:16},(_,dim)=>shadeAnsiWord(0xffffffff,dim))).size,16);
+ assert.equal(packAnsiInk(14,15),14);
+ assert.throws(()=>ansiInk({dim:16}),/0–15/);
+ assert.throws(()=>ansiInk({light:{kind:'point',flicker:16}}),/Bounded/);
+ assert.equal(new Set(ansiDitherModes.map(mode=>Array.from({length:128},(_,i)=>Number(ansiDitherPixel(mode,i%8,i>>3))).join(''))).size,ansiDitherModes.length);
+ const modes=ansiFlickerModes.map((_,mode)=>Array.from({length:120},(_,i)=>ansiFlicker(mode,i/12,2)));
+ assert.equal(modes.length,16);
+ assert.equal(new Set(modes.map(String)).size,16);
+ assert.ok(modes.flat().every(value=>value>=0&&value<=1));
+ assert.ok(modes.every((_,mode)=>ansiFlicker(mode,3,4,true)===1));
+ assert.ok(ansiBloomProfile(8).radius<ansiBloomProfile(1).radius*.25);
+ assert.ok(ansiBloomProfile(8).white>ansiBloomProfile(1).white);
+});
+
+test('sampled ANSI materials preserve a printable stroke alongside ink and dither',async()=>{
+ const {ansiInkGlyph,ansiMaterialGlyphs,packAnsiGlyph,packAnsiInk}=await import('./ansi-animation.mjs');
+ const ink=packAnsiInk(13,10,5);
+ assert.equal(ansiMaterialGlyphs.length,32);
+ for(const glyph of ansiMaterialGlyphs){
+  const material=packAnsiGlyph(ink,glyph);
+  assert.equal(material&0x7ff,ink);
+  assert.equal(ansiInkGlyph(material),glyph);
+ }
+});
+
+test('ANSI++ accepts named weathered light and independent core and halo', async()=>{
+ const {ansiInk,ansiLightPulse,createAnsiLightPainter}=await import('./ansi-animation.mjs');
+ const lamp={kind:'point',flicker:'slow-flow',rate:.32,depth:.65};
+ const shape={core:.28,halo:2.4,white:.83,falloff:'mist',aspect:1.4};
+ const resolved=ansiInk({bloom:9,bloomShape:shape,light:lamp});
+ assert.deepEqual(resolved.bloomShape,shape);
+ assert.equal(resolved.light.rate,.32);
+ assert.equal(resolved.light.depth,.65);
+ assert.throws(()=>ansiInk({light:{...lamp,flicker:'unknown'}}),/Bounded ANSI light/);
+ assert.throws(()=>ansiInk({bloomShape:{...shape,halo:20}}),/Bounded ANSI bloom/);
+ const sample=(flicker,depth=.65)=>Array.from({length:60},(_,i)=>ansiLightPulse({...lamp,flicker,depth},i/8,4));
+ assert.notDeepEqual(sample('slow-flow'),sample('candle'));
+ assert.ok(sample('candle',0).every(power=>power===1));
+ assert.equal(ansiLightPulse(lamp,2,4,true),1);
+
+ const kernels=[];
+ const doc={createElement:()=>({getContext:()=>({
+  createRadialGradient:()=>({addColorStop(){}}),fillRect(){},
+ })})};
+ const ctx={save(){},restore(){},drawImage(_r,_x,_y,w,h){kernels.push([w,h]);}};
+ createAnsiLightPainter(doc).bloom(ctx,{x:0,y:0,radius:10,color:'#6699dd',power:1,shape});
+ assert.deepEqual(kernels.map(pair=>pair.map(Math.round)),[[67,48],[8,6]]);
+});

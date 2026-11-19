@@ -15,6 +15,17 @@ function fakeHost(){
  return {doc,win,root,overlayRoot,canvas,terminal,context,paint,raf,observers,flush(now){const [id,fn]=raf.entries().next().value;raf.delete(id);fn(now);},ResizeObserver:class{constructor(fn){this.fn=fn;observers.push(this);}observe(){}disconnect(){this.closed=true;}}};
 }
 
+test('pixel lock maps each 8x16 logical pixel to whole device pixels and retains cell hits',()=>{
+ const grid={columns:80,rows:25};
+ const fit=nativeTerminalFit({left:1,top:3,width:1041,height:668},grid,{pixelRatio:2});
+ assert.equal(fit.cellWidth*2,24);
+ assert.equal(fit.cellHeight*2,48);
+ assert.equal(fit.left*2,Math.round(fit.left*2));
+ assert.deepEqual(nativeTerminalCell(fit,fit.left+fit.cellWidth*4.5,fit.top+fit.cellHeight*2.5),{row:3,column:5});
+ const tiny=nativeTerminalFit({width:320,height:180},grid,{pixelRatio:1});
+ assert.ok(tiny.width<=320&&tiny.height<=180&&tiny.scale>0);
+});
+
 test('native80×25 canvas letterboxes without stretching or clipped cell edges',()=>{
  for(const [width,height]of [[1554,600],[1554,900],[700,1200],[375,680],[2560,1440]]){
   const fit=nativeTerminalFit({left:17,top:31,width,height});assert.ok(Math.abs(fit.width/fit.height-1.6)<1e-12);assert.ok(fit.left>=17&&fit.top>=31&&fit.right<=width+17+1e-9&&fit.bottom<=height+31+1e-9);
@@ -24,6 +35,25 @@ test('native80×25 canvas letterboxes without stretching or clipped cell edges',
 test('program admission uses1-based cell rectangles and bounds actual editable values',()=>{
  const p=normalizeNativeProgram({text:'\x1b[2J',hotspots:[{id:'nav:map',row:25,column:70,width:9,key:'Escape'}],fields:[{id:'name',row:5,column:3,width:20,height:1,value:'Surreal',maxLength:40}]});assert.equal(p.hotspots[0].height,1);assert.equal(p.fields[0].value,'Surreal');
  assert.throws(()=>normalizeNativeProgram({...p,hotspots:[{id:'bad',row:0,column:1,width:2}]}));assert.throws(()=>normalizeNativeProgram({...p,fields:[{id:'too-long',row:1,column:1,width:80,value:'x'.repeat(41),maxLength:40}]}));assert.throws(()=>normalizeNativeProgram({...p,fields:[...p.fields,...p.fields]}));
+});
+test('the same host fits a compact board grid and keeps a reviewer key in a masked native field',()=>{
+ const f=fakeHost(),old=globalThis.ResizeObserver;globalThis.ResizeObserver=f.ResizeObserver;
+ let host;
+ try {
+  const grid={columns:48,rows:42};
+  host=mountNativeResponseHost(f.root,{terminal:f.terminal,gridForRect:()=>grid});
+  host.show({grid,text:'\x1b[2JREVIEW DESK',fields:[{id:'key',row:5,column:4,width:32,
+    value:'local-review-key',secret:true}]},{immediate:true});
+  const field=host.element.children.find(node=>node.dataset.ansiField==='key');
+  assert.equal(host.canvas,f.canvas);
+  assert.deepEqual(host.grid,grid);
+  assert.equal(field.type,'password');
+  assert.equal(field.value,'local-review-key');
+  assert.doesNotMatch(f.terminal.buffer.text,/local-review-key/);
+ } finally {
+  host?.destroy();
+  if(old===undefined)delete globalThis.ResizeObserver;else globalThis.ResizeObserver=old;
+ }
 });
 test('one host retains the exact boot canvas, streams at240cps and projects native fields onto the same grid',()=>{
  const f=fakeHost(),old=globalThis.ResizeObserver;globalThis.ResizeObserver=f.ResizeObserver;const actions=[],answers=[],focus=[];

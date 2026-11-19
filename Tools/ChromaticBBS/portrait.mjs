@@ -150,7 +150,7 @@ export function mountPortrait(canvas, report=()=>{}, options={}) {
       shiftX:(poseTarget[0]-poseFrom[0])*.39,shiftY:(poseTarget[1]-poseFrom[1])*.39,
       gearPhase,hitch:portrait.motion?hitch:0,pointerX:pointer[0],pointerY:pointer[1],pointerActive,serpentTime,serpentSway:sway,serpentLift:lift,wingFlex:wing};
   };
-  const host=canvas.closest('#chromatic-carrier')||canvas;
+  const host=options.host||canvas.closest('#chromatic-carrier')||canvas;
   const move=event=>{
     const next=ocularGazeFromPointer(event.clientX,event.clientY,canvas.getBoundingClientRect());
     if(!next)return;target=next;

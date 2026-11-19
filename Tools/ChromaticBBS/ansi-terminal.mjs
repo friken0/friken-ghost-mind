@@ -1,12 +1,12 @@
 import {ensureAnsiFont,ansiFontFamily} from './ansi-ui.mjs';
 import {ansiScene,ansiSessionTheme} from './ansi-scenes.mjs';
-import {createAnsiAnimator,ansiCymaticCell,drawAnsiCell} from './ansi-animation.mjs';
+import {ansiColourModes,ansiColourResolver,ansiPalette as sharedAnsiPalette,ansiRGB,ansiBloomProfile,ansiLightPulse,ansiHueColour,ansiInk,createAnsiAnimator,createAnsiLightPainter,ansiCymaticCell,drawAnsiCell} from './ansi-animation.mjs?v=surface-light-3';
 import {modemStages,modemDuration} from './modem.mjs';
+export const ansiPalette=sharedAnsiPalette;
 /* An actual bounded 80-column ANSI terminal, streamed at serial 8N1 speed.
  * The connection is theatre, not a claim of remote traffic. No raster art,
  * second animation clock, network input or terminal escape execution. */
 export const ansiGeometry=Object.freeze({columns:80,rows:25,cellWidth:16,cellHeight:32,bps:2400,bitsPerByte:10});
-export const ansiPalette=Object.freeze(['#000000','#aa0000','#00aa00','#aa5500','#0000aa','#aa00aa','#00aaaa','#aaaaaa','#555555','#ff5555','#55ff55','#ffff55','#5555ff','#ff55ff','#55ffff','#ffffff']);
 // A palette changes display inks only. ANSI indices, source cells, serial
 // progress, animation tracks and hit regions remain exactly the same.
 export const ansiColourThemes=Object.freeze([
@@ -33,12 +33,21 @@ export function createAnsiBuffer({columns=80,rows=25}={}){
   else if(op==='J'){if(n[0]===2){clear();row=col=0;}else if(n[0]===1)clear(0,row*columns+col+1);else clear(row*columns+col);}
   else if(op==='K'){const from=row*columns;clear(n[0]===1||n[0]===2?from:from+col,n[0]===1?from+col+1:from+columns);}
   else if(op==='s')saved=[row,col];else if(op==='u')[row,col]=saved;
-  else if(op==='m')for(const code of n){if(code===0){fg=7;bg=0;bold=false;}else if(code===1)bold=true;else if(code===22)bold=false;else if(code>=30&&code<=37)fg=code-30;else if(code>=90&&code<=97)fg=code-90+8;else if(code>=40&&code<=47)bg=code-40;else if(code>=100&&code<=107)bg=code-100+8;else if(code===39)fg=7;else if(code===49)bg=0;}
+  else if(op==='m')for(let i=0;i<n.length;i++){
+   const code=n[i];
+   if(code===38||code===48){
+    const format=n[++i],length=format===5?1:format===2?3:0;
+    const components=n.slice(i+1,i+1+length);
+    i+=length;
+    if(!length||components.length!==length||!components.every(v=>Number.isInteger(v)&&v>=0&&v<=255))continue;
+    const value=format===5?components[0]:ansiRGB(...components);
+    if(code===38)fg=value;else bg=value;
+   }else if(code===0){fg=7;bg=0;bold=false;}else if(code===1)bold=true;else if(code===22)bold=false;else if(code>=30&&code<=37)fg=code-30;else if(code>=90&&code<=97)fg=code-90+8;else if(code>=40&&code<=47)bg=code-40;else if(code>=100&&code<=107)bg=code-100+8;else if(code===39)fg=7;else if(code===49)bg=0;}
  }
  function feed(text){for(const char of text){
   if(pending){pending+=char;if(pending.length>64){pending='';continue;}if(pending.length===2&&char!=='['){pending='';continue;}if(pending.length>2&&/[A-Za-z]/.test(char)){command(pending.slice(2,-1),char);pending='';}continue;}
   if(char==='\x1b'){pending=char;continue;}if(char==='\r'){col=0;continue;}if(char==='\n'){newline();continue;}if(char==='\b'){col=Math.max(0,col-1);continue;}if(char<' ')continue;
-  if(col>=columns){col=0;newline();}cells[row*columns+col]={char,fg:bold&&fg<8?fg+8:fg,bg};col++;revision++;
+  if(col>=columns){col=0;newline();}cells[row*columns+col]={char,fg:bold&&typeof fg==='number'&&fg<8?fg+8:fg,bg};col++;revision++;
  }}
  return {cells,feed,clear,reset(){pending='';row=col=0;fg=7;bg=0;bold=false;saved=[0,0];clear();},get revision(){return revision;},get cursor(){return {row,col:Math.min(columns-1,col),fg,bg};},get text(){return Array.from({length:rows},(_,y)=>cells.slice(y*columns,(y+1)*columns).map(c=>c.char).join('')).join('\n');}};
 }
@@ -60,7 +69,7 @@ function addressedCover(recipient,cover,bps,seed){
  text+=at(25)+'╚'+'═'.repeat(78)+'╝';
  const put=(row,col,ink,value)=>{text+=at(row,col)+color(ink)+value;};
  put(2,4,14,'G H O S T L I N K');
- put(2,45,10,'CONNECT '+bps+' / 8N1');
+ put(2,45,10,ansiConnectLabel(bps));
  put(2,68,7,'LOCAL LINE');
  put(3,2,8,'─'.repeat(78));
  const art=ansiScene(cover.art,{width:32,height:15,seed});
@@ -81,22 +90,43 @@ function addressedCover(recipient,cover,bps,seed){
 }
 // Each character is one CP437-style serial cell, including shade/block art.
 // The glyphs are Unicode equivalents, not a painting masquerading as ANSI.
-export function connectionAnsi({recipient='SURREAL',label='TURN OUT OF TIME',bps=2400,cover=null,seed=0}={}){
+export const ansiLineRates=Object.freeze([300,1200,2400,9600,14400,21100,56000,128000,1544000]);
+export function ansiLineLabel(bps){
+ if(bps===128000)return '128K DSL';
+ if(bps===1544000)return 'T1 1.544M';
+ return bps===56000?'56K':bps+' bps';
+}
+export function ansiConnectLabel(bps){
+ return 'CONNECT '+(bps>56000?ansiLineLabel(bps):bps+' / 8N1');
+}
+export function connectionAnsi({recipient='SURREAL',label='TURN OUT OF TIME',bps=2400,cover=null,seed=0,station=false}={}){
  if(cover)return addressedCover(String(recipient),cover,bps,seed);
  recipient=String(recipient).replace(/[^\w .-]/g,'').slice(0,28).toUpperCase();label=String(label).replace(/[^\w .-]/g,'').slice(0,32).toUpperCase();
  let s=ESC+'2J'+color(8)+at(1)+'╔'+'═'.repeat(78)+'╗';
  const line=(y,text,fg=7,x=3)=>{s+=at(y,x)+color(fg)+text.slice(0,81-x);};
- line(2,'N O   C A R R I E R   /   H Y P E R S P A C E   B B S',13,9);
+ line(2,station?'C A R R I E R   L O C K E D   /   H Y P E R S P A C E   B B S':
+  'N O   C A R R I E R   /   H Y P E R S P A C E   B B S',13,9);
  const font={G:[' ████','█    ','█ ███','█   █',' ███ '],H:['█   █','█   █','█████','█   █','█   █'],O:[' ███ ','█   █','█   █','█   █',' ███ '],S:[' ████','█    ',' ███ ','    █','████ '],T:['█████','  █  ','  █  ','  █  ','  █  '],L:['█    ','█    ','█    ','█    ','█████'],I:['█████','  █  ','  █  ','  █  ','█████'],N:['█   █','██  █','█ █ █','█  ██','█   █'],K:['█   █','█  █ ','███  ','█  █ ','█   █']};
  for(let i=0;i<5;i++)line(4+i,[...'GHOSTLINK'].map(c=>font[c][i]).join('   '),i<2?15:i<4?14:6,6);
- line(9,'   G H O S T L I N K   /   A  D O O R  O U T  O F  T I M E',8,9);
+ line(9,station?'     G H O S T L I N K   /   H Y P E R S P A C E   R E L A Y':
+  '   G H O S T L I N K   /   A  D O O R  O U T  O F  T I M E',8,9);
 
  for(let y=2;y<=24;y++){line(y,'║',8,1);line(y,'║',8,80);}
  line(25,'╚'+'═'.repeat(78)+'╝',8,1);
  line(11,'░▒▓█  FRIKEN.GHOST  /  '+label+'  █▓▒░',11,8);
  line(12,'─'.repeat(72),8,5);
  line(13,'PHASE BUS  ░▒▓█╬══╬█▓▒░  /  SYNCHRONISING THE IMPROBABLE',8,6);
- line(14,'CONNECT '+bps+' / 8N1       LOCAL THEATRE / EXTERNAL RESPONSE',10,6);
+ if(station){
+  line(14,ansiConnectLabel(bps)+'       GHOSTLINK / ANSI++',10,6);
+  line(15,'DESTINATION: '+recipient,14,6);
+  line(17,'[OK] CARRIER   PHASE LOCK CONFIRMED',7,6);
+  line(18,'[OK] DISPLAY   TERMINAL INK RETAINED',7,6);
+  line(19,'[OK] ROUTE     '+label,7,6);
+  line(22,'ENTER OR SELECT THE PORTAL TO CROSS.',11,6);
+  line(24,'CARRIER HELD / AWAITING TRANSIT.',14,6);
+  return s+color(14)+at(24,73)+'▌';
+ }
+ line(14,ansiConnectLabel(bps)+'       LOCAL THEATRE / EXTERNAL RESPONSE',10,6);
  line(15,'CALLER: '+recipient+'     TRANSLATION: DEVELOPER → DEVELOPER',14,6);
  line(17,'[OK] IDENTITY  THE REPLY / V20. STILL A SMARTASS.',7,6);
  line(18,'[OK] MEMORY    NOW → RECENT → ARCHIVE → RECOVERY CAPSULE',7,6);
@@ -132,6 +162,7 @@ export function terminalHotspots(mode='dialer'){
  return defs.map(([id,row,column,width,key])=>({id,row,column,width,height:1,key}));
 }
 function controlProgram(mode,state={},cover=null){
+ if(mode==='held'&&state.station)return {text:'',spots:[],rows:[]};
  if(mode==='prompt'||mode==='command')return {text:'',spots:terminalHotspots(mode),rows:[]};
  const labels=mode==='dialer'?['[ D ] DIAL THE VOID','[ M ] MUSIC: '+(state.music?'ON':'OFF'),'[ V ] VOICE: '+(state.voice===false?'OFF':'ON'),'[ F ] FINISH CONNECTION ANIMATION']:mode==='held'?['[ ENTER ] OPEN THE REPLY','[ R ] RECONNECT / BOOT AGAIN','[ M ] MUSIC: '+(state.music?'ON':'OFF'),'[ V ] VOICE: '+(state.voice===false?'OFF':'ON')]:['[ SPACE ] '+(state.paused?'RESUME CONNECTION':'PAUSE / HOLD THE LINE'),'[ F ] FINISH CONNECTION ANIMATION','[ M ] MUSIC: '+(state.music?'ON':'OFF'),'[ V ] VOICE: '+(state.voice===false?'OFF':'ON')];
  let text='';const spots=terminalHotspots(mode),rows=[...new Set(spots.map(x=>x.row))];for(const row of rows)text+=at(row+1)+color(7)+' '.repeat(79);
@@ -148,8 +179,24 @@ export function ansiSerialFrame(text,seconds,{bps=2400,bitsPerByte=10,complete=f
  const count=complete?text.length:Math.min(text.length,Math.floor(seconds*bps/bitsPerByte));
  return {count,duration:text.length*bitsPerByte/bps,complete:count===text.length,text:text.slice(0,count)};
 }
-function paintGlyph(ctx,char,x,y,w,h){
+export function paintGlyph(ctx,char,x,y,w,h){
  if(char===' '||!char)return;
+ const code=char.codePointAt(0);
+ if(code>=0x1fb00&&code<=0x1fb3b){
+  let mask=code-0x1fb00+1;
+  if(mask>=21)mask++;
+  if(mask>=42)mask++;
+  for(let n=0;n<6;n++)if(mask&(1<<n))ctx.fillRect(x+(n%2)*w/2,y+Math.floor(n/2)*h/3,w/2,h/3);
+  return;
+ }
+ if(char==='╱'||char==='╲'||char==='╳'){
+  for(let row=0;row<16;row++){
+   const down=Math.floor(row/2),up=7-down;
+   if(char!=='╱')ctx.fillRect(x+down*w/8,y+row*h/16,w/8,h/16);
+   if(char!=='╲')ctx.fillRect(x+up*w/8,y+row*h/16,w/8,h/16);
+  }
+  return;
+ }
  const quadrants=' ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█',mask=quadrants.indexOf(char);if(mask>0&&!['▀','▄','▌','▐','█'].includes(char)){for(let n=0;n<4;n++)if(mask&(1<<n))ctx.fillRect(x+(n%2)*w/2,y+Math.floor(n/2)*h/2,w/2,h/2);return;}
  if('█▀▄▌▐░▒▓'.includes(char)){
   if(char==='█')ctx.fillRect(x,y,w,h);else if(char==='▀')ctx.fillRect(x,y,w,h/2);else if(char==='▄')ctx.fillRect(x,y+h/2,w,h/2);else if(char==='▌')ctx.fillRect(x,y,w/2,h);else if(char==='▐')ctx.fillRect(x+w/2,y,w/2,h);else{const stride=char==='░'?1:char==='▒'?2:3;for(let iy=0;iy<16;iy++)for(let ix=0;ix<8;ix++)if((ix+iy*3)%4<stride)ctx.fillRect(x+ix*w/8,y+iy*h/16,w/8,h/16);}return;
@@ -174,12 +221,39 @@ export function bootAnsiRail(index,seconds){
  const distance=(Math.floor(seconds*22)-at+total*1000)%total;
  return distance===0?15:distance<3?14:distance<7?6:8;
 }
-export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,cover=null,animation=true,transparent=false,cursor:showCursor=true}={}){
+export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,cover=null,animation=true,transparent=false,cursor:showCursor=true,glyphScale=2,colourMode='rgb'}={}){
  if(typeof document==='undefined'&&!canvas)throw Error('Canvas host required');
- canvas=canvas||document.createElement('canvas');canvas.width=1280;canvas.height=800;
- let columns=80,rows=25,buffer=createAnsiBuffer();const ctx=canvas.getContext('2d',{alpha:!!transparent}),animator=createAnsiAnimator({maxCells:8000,maxRate:20,seed:596564});
+ if(![1,2,4].includes(glyphScale))throw Error('Choose a 1×, 2× or 4× ANSI glyph raster');
+ canvas=canvas||document.createElement('canvas');
+ let cellWidth=8*glyphScale,cellHeight=16*glyphScale;
+ canvas.width=80*cellWidth;canvas.height=25*cellHeight;
+ function resizeRaster(){
+  canvas.width=columns*cellWidth;canvas.height=rows*cellHeight;
+  canvas.dataset.glyphScale=String(cellWidth/8);
+  priorCursor=-1;painted.clear();force=true;
+ }
+ let columns=80,rows=25,buffer=createAnsiBuffer();const displayContext=canvas.getContext('2d',{alpha:!!transparent}),animator=createAnsiAnimator({maxCells:8000,maxRate:20,seed:596564});
  let receiving=connectionAnsi({recipient,label,bps,cover,seed}),stream=receiving,mode='receiving',controlState={},modeKey='',count=-1,revision=0,elapsed=0,complete=false,force=false,presentation=0,lastTick=-1,lastReduced=false,priorCursor=-1,overlay=null,controls=null,lastLabel='',commandProgramKey='',programAnimation=false,programTracks=new Map(),reactiveCells=new Map(),pendingPatches=[],patchBytes=0;
- let displayTheme=ansiColourTheme();const theme=ansiSessionTheme(seed);const painted=new Map(),records=new Map();let manualHotspots=null,serialOffset=0,lastArtCells=null;
+ let displayTheme=ansiColourTheme(),resolveColour=ansiColourResolver(colourMode,displayTheme.colours);const theme=ansiSessionTheme(seed);const painted=new Map(),records=new Map();let manualHotspots=null,serialOffset=0,heldCount=null,lastArtCells=null;
+ const resolveHue=(ink,hue)=>{
+  const color=resolveColour(ink);
+  return hue?resolveColour(ansiHueColour(color,hue,colourMode!=='rgb')):color;
+ };
+ let baseRaster,lightPainter,cellInks=new Map(),cellLights=[],dynamicLights=false,lastLightTick=-1;
+ function configureInk(items){
+  if(!Array.isArray(items)||items.length>columns*rows)throw Error('Bounded ANSI ink cells required');
+  cellInks=new Map();cellLights=[];dynamicLights=false;lastLightTick=-1;
+  for(const item of items){
+   const {row,column,pass=1}=item;
+   if(!Number.isInteger(row)||row<1||row>rows||!Number.isInteger(column)||column<1||column>columns||
+     !Number.isInteger(pass)||pass<1||pass>8)throw Error('Bounded ANSI ink cell required');
+   const ink=ansiInk(item),index=(row-1)*columns+column-1;
+   cellInks.set(index,ink);
+   if(ink.bloom||ink.light)cellLights.push({index,row,column,pass,ink});
+   if(ink.light?.flicker&&ink.light.flicker!=='off'&&ink.light.depth!==0)dynamicLights=true;
+  }
+  if(cellLights.length>64)throw Error('ANSI terminal supports up to 64 local lights');
+ }
  const glyph=(context,char,x,y,w,h)=>paintGlyph(context,char,x,y,w,h);
  function animateCell(index,c,role,now){
   const id=String(index),key=c.char+'|'+c.fg+'|'+c.bg+'|'+role,prior=records.get(index);
@@ -202,32 +276,170 @@ export function mountAnsiTerminal({canvas,recipient,label,bps=2400,seed=0,cover=
   if(!Number.isFinite(time)||time<0)throw Error('Valid ANSI presentation clock required');const paintStart=performance.now();
   const promptMode=mode==='prompt'||mode==='command',typedCharacters=mode==='prompt'?bootCommand.length:Math.min(bootCommand.length,Math.floor(seconds*bootCommandCps));
   if(promptMode){const key=JSON.stringify([mode,typedCharacters,controlState.focus,controlState.boardStatus,Number.isFinite(controlState.connectionProgress)?Math.floor(controlState.connectionProgress*100):null,Math.floor((controlState.connSeconds||0)*8)]);if(key!==commandProgramKey){commandProgramKey=key;stream=promptAnsi({preview:mode==='prompt',typedCharacters,focus:controlState.focus,boardStatus:controlState.boardStatus,connectionProgress:controlState.connectionProgress,connSeconds:controlState.connSeconds});buffer.reset();count=-1;}}
-  const next=ansiSerialFrame(stream,Math.max(0,seconds+serialOffset*10/bps),{bps,complete:reveal||promptMode}),tick=Math.floor(time*20);presentation=time;elapsed=seconds;complete=next.complete;if(next.complete&&pendingPatches.length)force=true;
+  const next=ansiSerialFrame(stream,Math.max(0,(heldCount===null?seconds+serialOffset*10/bps:heldCount*10/bps)),{bps,complete:reveal||promptMode}),tick=Math.floor(time*20);presentation=time;elapsed=seconds;complete=next.complete;if(next.complete&&pendingPatches.length)force=true;
   if(artCells&&artCells.length!==buffer.cells.length)throw Error('ANSI art frame must match its grid');
   const frameCells=complete?artCells:null;
-  if(next.count===count&&!force&&frameCells===lastArtCells&&reducedMotion===lastReduced&&(!animation||reducedMotion||tick===lastTick))return false;
+  const lighting=mode==='program'&&cellLights.length>0&&canvas.ownerDocument;
+  const animatedFrame=animation&&!reducedMotion&&!promptMode&&(mode!=='program'||programAnimation||programTracks.size>0||reactiveCells.size>0||dynamicLights);
+  const lightTick=reducedMotion||!animation||!dynamicLights?0:Math.floor(time*12);
+  let ctx=displayContext;
+  if(lighting){
+   baseRaster??=canvas.ownerDocument.createElement('canvas');
+   if(baseRaster.width!==canvas.width||baseRaster.height!==canvas.height){
+    baseRaster.width=canvas.width;baseRaster.height=canvas.height;force=true;
+   }
+   ctx=baseRaster.getContext('2d',{alpha:!!transparent});
+  }
+  if(next.count===count&&!force&&frameCells===lastArtCells&&reducedMotion===lastReduced&&(!animatedFrame||tick===lastTick))return false;
+  const repaintGrid=force||next.count!==count||frameCells!==lastArtCells||
+   reducedMotion!==lastReduced||mode!=='program'||programAnimation;
   lastReduced=reducedMotion;lastArtCells=frameCells;
   const labelDirty=next.count!==count||force;
   if(next.count<count){buffer.reset();count=0;records.clear();animator.clear();painted.clear();}
   if(count<0)count=0;buffer.feed(stream.slice(count,next.count));count=next.count;if(next.complete&&pendingPatches.length){for(const patch of pendingPatches)buffer.feed(patch);pendingPatches=[];patchBytes=0;}canvas.dataset.queuedPatches=String(pendingPatches.length);
   if(force||!overlay){controls=manualHotspots?{text:'',spots:manualHotspots,rows:[]}:controlProgram(mode,controlState,cover);overlay=createAnsiBuffer({columns,rows});overlay.feed(controls.text);if(force)painted.clear();}
-  force=false;lastTick=tick;ctx.font='32px '+ansiFontFamily;ctx.textBaseline='top';ctx.imageSmoothingEnabled=false;
-  if(priorCursor>=0)painted.delete(priorCursor);let changes=0,animated=0,reactive=0;
-  for(let i=0;i<buffer.cells.length;i++){
-   const row=Math.floor(i/columns),art=frameCells?.[i],c=art?{char:art.glyph,fg:art.fg,bg:art.bg}:controls.rows.includes(row)?overlay.cells[i]:buffer.cells[i],x=i%columns*16,y=row*32,role=animation&&!reducedMotion&&!promptMode&&(mode!=='program'||programAnimation)?(cover&&mode!=='program'?addressAccent(i,c):bootAnsiCellRole(i,c.char,controls.rows)):null;
+  force=false;lastTick=tick;ctx.font=cellHeight+'px '+ansiFontFamily;ctx.textBaseline='top';ctx.imageSmoothingEnabled=false;
+  let changes=0,animated=0,reactive=0;
+  const cursor=buffer.cursor;
+  const cursorIndex=cursor.row*columns+cursor.col;
+  const activeCells=repaintGrid?null:new Set([...programTracks.keys(),...reactiveCells.keys()]);
+  if(showCursor){
+   if(priorCursor>=0){painted.delete(priorCursor);activeCells?.add(priorCursor);}
+   activeCells?.add(cursorIndex);
+  }
+  const paintCell=i=>{
+   const row=Math.floor(i/columns),art=frameCells?.[i],c=art?{char:art.glyph,fg:art.fg,bg:art.bg}:controls.rows.includes(row)?overlay.cells[i]:buffer.cells[i],x=i%columns*cellWidth,y=row*cellHeight,role=animation&&!reducedMotion&&!promptMode&&(mode!=='program'||programAnimation)?(cover&&mode!=='program'?addressAccent(i,c):bootAnsiCellRole(i,c.char,controls.rows)):null;
    let frame=null,signature;const track=mode==='program'&&!reducedMotion&&(c.char!==' '||c.bg!==0)?programTracks.get(i):null;
-   if(track&&animation&&c.char===track.frames[0].glyph){ const id=String(i),key=JSON.stringify(track);if(records.get(i)?.key!==key){animator.cycle(id,track.frames,{at:track.at||0,interval:track.interval||200,transition:track.transition??120,effect:track.effect||'scan',mode:'loop'});records.set(i,{key});}frame=animator.sample(id,time*1000);signature=JSON.stringify(frame.layers);animated++;}
+   if(track&&animation&&c.char===track.frames[0].glyph){ const id=String(i);if(records.get(i)?.key!==track){animator.cycle(id,track.frames,{at:track.at||0,interval:track.interval||200,transition:track.transition??120,effect:track.effect||'scan',mode:'loop'});records.set(i,{key:track});}frame=animator.sample(id,time*1000);signature=JSON.stringify(frame.layers);animated++;}
    else if(role==='packet-rail'){const fg=bootAnsiRail(i,time);signature=c.char+'|'+fg+'|'+c.bg;frame={layers:[{glyph:c.char,fg,bg:c.bg,alpha:1,scaleX:1,scaleY:1}]};animated++;}
    else if(role){frame=animateCell(i,c,role,time*1000);signature=JSON.stringify(frame.layers);animated++;}
    else{signature=c.char+'|'+c.fg+'|'+c.bg;if(records.has(i)){records.delete(i);animator.unregister(String(i));}}
    if(energy&&reactiveCells.has(i)&&animation&&!reducedMotion&&complete){const r=reactiveCells.get(i),audioFrame=ansiCymaticCell(c,{...energy,time,x:i%columns,y:row,intensity:r.intensity,style:r.style,frame});if(audioFrame?.cymatic){frame=audioFrame;signature=JSON.stringify(frame.layers);reactive++;}}
-   if(painted.get(i)===signature)continue;painted.set(i,signature);changes++;if(transparent&&c.bg===0)ctx.clearRect(x,y,16,32);else{ctx.fillStyle=displayTheme.colours[c.bg];ctx.fillRect(x,y,16,32);}
-   if(frame)drawAnsiCell(ctx,frame,{x,y,width:16,height:32,paintGlyph:glyph,palette:displayTheme.colours,clear:false});
-   else{ctx.fillStyle=displayTheme.colours[c.fg];paintGlyph(ctx,c.char,x,y,16,32);}
+   if(painted.get(i)===signature)return;painted.set(i,signature);changes++;if(transparent&&c.bg===0)ctx.clearRect(x,y,cellWidth,cellHeight);else{ctx.fillStyle=resolveColour(c.bg);ctx.fillRect(x,y,cellWidth,cellHeight);}
+   if(frame)drawAnsiCell(ctx,frame,{x,y,width:cellWidth,height:cellHeight,paintGlyph:glyph,resolveHue,clear:false});
+   else{ctx.fillStyle=resolveColour(c.fg);paintGlyph(ctx,c.char,x,y,cellWidth,cellHeight);}
+   const style=mode==='program'?cellInks.get(i):null;
+   if(style){
+    if(style.dim<15){ctx.fillStyle='rgba(0,0,0,'+(1-style.dim/15)+')';ctx.fillRect(x,y,cellWidth,cellHeight);}
+    if(style.dither!=='off'&&canvas.ownerDocument){
+     lightPainter??=createAnsiLightPainter(canvas.ownerDocument);
+     lightPainter.dither(ctx,style.dither,x,y,cellWidth,cellHeight);
+    }
+   }
   }
-  const cursor=buffer.cursor;priorCursor=cursor.row*columns+cursor.col;if(showCursor&&Math.floor(time*2)%2===0){ctx.fillStyle=displayTheme.colours[14];ctx.fillRect(cursor.col*16,cursor.row*32+28,16,3);}revision++;
-  canvas.dataset.colourTheme=displayTheme.id;canvas.dataset.columns=String(columns);canvas.dataset.rows=String(rows);canvas.dataset.serialBytes=String(count);canvas.dataset.bps=String(bps);canvas.dataset.complete=String(complete);canvas.dataset.animationCells=String(animated);canvas.dataset.cymaticCells=String(reactive);canvas.dataset.changedCells=String(changes);canvas.dataset.animationFps=animation&&!reducedMotion&&!promptMode?'20':'0';canvas.dataset.mode=mode;canvas.dataset.transparent=String(transparent);canvas.dataset.commandCharacters=String(promptMode?typedCharacters:0);canvas.dataset.paintMs=(performance.now()-paintStart).toFixed(2);if(labelDirty){const label=buffer.text;if(label!==lastLabel){canvas.setAttribute('aria-label',label);lastLabel=label;}}return true;
+  if(activeCells)activeCells.forEach(paintCell);
+  else for(let i=0;i<buffer.cells.length;i++)paintCell(i);
+  priorCursor=showCursor?cursorIndex:-1;
+  if(showCursor&&Math.floor(time*2)%2===0){ctx.fillStyle=displayTheme.colours[14];ctx.fillRect(cursor.col*cellWidth,(cursor.row+.875)*cellHeight,cellWidth,cellHeight*3/32);}
+  if(lighting&&(changes||lightTick!==lastLightTick)){
+   lastLightTick=lightTick;
+   if(transparent)displayContext.clearRect(0,0,canvas.width,canvas.height);
+   displayContext.drawImage(baseRaster,0,0);
+   lightPainter??=createAnsiLightPainter(canvas.ownerDocument);
+   for(const {index,row,column,pass,ink} of cellLights){
+    const c=frameCells?.[index]??buffer.cells[index];
+    if(!c||(c.glyph??c.char)===' '&&c.bg===0)continue;
+    const x=(column-.5)*cellWidth,y=(row-.5)*cellHeight;
+    if(ink.bloom){
+     const radius=ansiBloomProfile(pass).radius*cellHeight;
+     const color=resolveColour(c.fg),power=ink.bloom/38;
+     if(ink.bloomShape)lightPainter.bloom(displayContext,{x,y,radius,color,power,pass,shape:ink.bloomShape});
+     else lightPainter.glow(displayContext,{x,y,width:radius*2,height:radius*2,color,power,pass});
+    }
+    if(ink.light){
+     const {kind,color,power,radius}=ink.light;
+     lightPainter.glow(displayContext,{x,y,width:radius*cellWidth*(kind==='area'?3:2),height:radius*cellWidth*2,
+      color:resolveColour(color),power:power/22*ansiLightPulse(ink.light,lightTick/12,index,reducedMotion||!animation),pass,kind});
+    }
+   }
+  }
+  canvas.dataset.inkLights=String(lighting?cellLights.length:0);
+  revision++;
+  canvas.dataset.glyphScale=String(cellWidth/8);canvas.dataset.colourTheme=displayTheme.id;canvas.dataset.colourMode=colourMode;canvas.dataset.columns=String(columns);canvas.dataset.rows=String(rows);canvas.dataset.serialBytes=String(count);canvas.dataset.bps=String(bps);canvas.dataset.complete=String(complete);canvas.dataset.animationCells=String(animated);canvas.dataset.cymaticCells=String(reactive);canvas.dataset.changedCells=String(changes);canvas.dataset.animationFps=animatedFrame?'20':'0';canvas.dataset.mode=mode;canvas.dataset.transparent=String(transparent);canvas.dataset.commandCharacters=String(promptMode?typedCharacters:0);canvas.dataset.paintMs=(performance.now()-paintStart).toFixed(2);if(labelDirty){const label=buffer.text;if(label!==lastLabel){canvas.setAttribute('aria-label',label);lastLabel=label;}}return true;
  }
  ensureAnsiFont().then(()=>{force=true;update(elapsed,{reveal:complete,time:presentation});}).catch(error=>{canvas.dataset.fontError=error.message;});
- update(0);return {canvas,get buffer(){return buffer;},get colourTheme(){return displayTheme.id;},setPalette(id){const next=ansiColourTheme(id);if(displayTheme===next)return false;displayTheme=next;force=true;painted.clear();update(elapsed,{reveal:complete,time:presentation,reducedMotion:lastReduced});return true;},setBps(value){if(![300,1200,2400,9600,14400,21100,56000].includes(value))throw Error('Known serial speed required');serialOffset=Math.max(0,count)-elapsed*value/10;bps=value;receiving=connectionAnsi({recipient,label,bps,cover,seed});},setGrid(nextColumns,nextRows,{preserve=true}={}){const next=createAnsiBuffer({columns:nextColumns,rows:nextRows});if(nextColumns===columns&&nextRows===rows)return; if(preserve)for(let y=0;y<Math.min(rows,nextRows);y++)for(let x=0;x<Math.min(columns,nextColumns);x++)Object.assign(next.cells[y*nextColumns+x],buffer.cells[y*columns+x]);columns=nextColumns;rows=nextRows;buffer=next;canvas.width=columns*16;canvas.height=rows*32;overlay=null;priorCursor=-1;painted.clear();records.clear();animator.clear();force=true;},update,get mode(){return mode;},get hotspots(){return manualHotspots||terminalHotspots(mode);},get program(){return stream;},setMode(next,state={}){if(!['prompt','command','dialer','receiving','held'].includes(next))throw Error('Unknown terminal mode');const key=JSON.stringify([next,state]);if(key===modeKey)return;modeKey=key;const changed=mode!==next;mode=next;controlState=state;manualHotspots=null;commandProgramKey='';if(changed){serialOffset=0;pendingPatches=[];patchBytes=0;buffer.reset();stream=next==='dialer'?dialerAnsi({recipient,label,bps,...state}):next==='held'?heldAnsi({recipient,label,bps,cover,seed,...state}):receiving;count=-1;elapsed=0;records.clear();animator.clear();painted.clear();}force=true;update(elapsed,{reveal:mode!=='receiving',time:presentation});},setControls(patch){controlState={...controlState,...patch};modeKey=JSON.stringify([mode,controlState]);commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setFocus(id){if(controlState.focus===id)return;controlState={...controlState,focus:id};commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setProgram(text,{hotspots=[],animation:animateProgram=false,preserve=false}={}){if(typeof text!=='string'||text.length>128000||!Array.isArray(hotspots)||hotspots.length>96)throw Error('Bounded ANSI program required');mode='program';programAnimation=animateProgram===true;programTracks=new Map();reactiveCells=new Map();if(animateProgram&&typeof animateProgram==='object'){if(!Array.isArray(animateProgram.tracks)||animateProgram.tracks.length>256)throw Error('Bounded ANSI art tracks required');for(const t of animateProgram.tracks){if(!Number.isInteger(t.row)||t.row<1||t.row>rows||!Number.isInteger(t.column)||t.column<1||t.column>columns||!Array.isArray(t.frames)||t.frames.length>16)throw Error('Bounded ANSI art cell required');programTracks.set((t.row-1)*columns+t.column-1,t);}}if(animateProgram?.cymatics){if(!Array.isArray(animateProgram.cymatics)||animateProgram.cymatics.length>4)throw Error('Bounded ANSI audio regions required');for(const r of animateProgram.cymatics){if(!Number.isInteger(r.row)||!Number.isInteger(r.column)||!Number.isInteger(r.width)||!Number.isInteger(r.height)||r.row<1||r.column<1||r.row+r.height>rows+1||r.column+r.width>columns+1||!Number.isFinite(r.intensity)||r.intensity<0||r.intensity>1)throw Error('Bounded ANSI audio region required');const count=r.width*r.height,budget=r.style==='trip'?384:128;for(let n=0;n<Math.min(count,budget);n++){const offset=Math.floor(n*count/Math.min(count,budget)),y=r.row-1+Math.floor(offset/r.width),x=r.column-1+offset%r.width;reactiveCells.set(y*columns+x,r);}}}pendingPatches=[];patchBytes=0;stream=preserve?text.replace(/\x1b\[2J/g,''):text;manualHotspots=hotspots;serialOffset=0;if(!preserve)buffer.reset();count=-1;modeKey='';elapsed=0;force=true;records.clear();animator.clear();painted.clear();update(0,{time:presentation});},patch(text){if(typeof text!=='string'||text.length>16000)throw Error('Bounded ANSI patch required');if(!complete){if(pendingPatches.length>=128||patchBytes+text.length>128000)throw Error('Pending ANSI patch budget exceeded');pendingPatches.push(text);patchBytes+=text.length;canvas.dataset.queuedPatches=String(pendingPatches.length);return false;}buffer.feed(text);force=true;return update(elapsed,{reveal:true,time:presentation});},setAnimationEnabled(value){animation=!!value;force=true;update(elapsed,{reveal:complete,time:presentation});},get commandDuration(){return bootCommand.length/bootCommandCps;},get duration(){return (manualHotspots===null?receiving.length:stream.length)*10/bps;},get elapsed(){return elapsed;},get revision(){return revision;},get complete(){return complete;},reset(){pendingPatches=[];patchBytes=0;buffer.reset();count=-1;records.clear();animator.clear();painted.clear();return update(0,{time:presentation});},reveal(){return update(elapsed,{reveal:true,time:presentation});}};
+ update(0);return {canvas,get buffer(){return buffer;},get colourTheme(){return displayTheme.id;},get colourMode(){return colourMode;},setColourMode(value){
+ if(!ansiColourModes.includes(value))throw Error('Choose ANSI 16, 64 or RGB');
+ if(colourMode===value)return false;
+ colourMode=value;resolveColour=ansiColourResolver(colourMode,displayTheme.colours);force=true;
+ update(elapsed,{reveal:complete,time:presentation,reducedMotion:lastReduced});return true;
+ },setPalette(id){const next=ansiColourTheme(id);if(displayTheme===next)return false;displayTheme=next;resolveColour=ansiColourResolver(colourMode,displayTheme.colours);force=true;painted.clear();update(elapsed,{reveal:complete,time:presentation,reducedMotion:lastReduced});return true;},setBps(value){if(!ansiLineRates.includes(value))throw Error('Known serial speed required');serialOffset=Math.max(0,count)-elapsed*value/10;bps=value;receiving=connectionAnsi({recipient,label,bps,cover,seed});},setGrid(nextColumns,nextRows,{preserve=true}={}){const next=createAnsiBuffer({columns:nextColumns,rows:nextRows});if(nextColumns===columns&&nextRows===rows)return; if(preserve)for(let y=0;y<Math.min(rows,nextRows);y++)for(let x=0;x<Math.min(columns,nextColumns);x++)Object.assign(next.cells[y*nextColumns+x],buffer.cells[y*columns+x]);columns=nextColumns;rows=nextRows;buffer=next;resizeRaster();overlay=null;records.clear();animator.clear();},setGlyphScale(value){
+ if(![1,2,4].includes(value))throw Error('Choose a 1×, 2× or 4× ANSI glyph raster');
+ if(cellWidth===value*8)return;
+ cellWidth=value*8;cellHeight=value*16;resizeRaster();
+ update(elapsed,{reveal:complete,time:presentation,reducedMotion:lastReduced,artCells:lastArtCells});
+ },update,get paused(){return heldCount!==null;},setPaused(value){if(value&&heldCount===null)heldCount=Math.max(0,count);else if(!value&&heldCount!==null){serialOffset=heldCount-elapsed*bps/10;heldCount=null;}canvas.dataset.paused=String(heldCount!==null);},get mode(){return mode;},get hotspots(){return manualHotspots||terminalHotspots(mode);},get program(){return stream;},setMode(next,state={}){if(!['prompt','command','dialer','receiving','held'].includes(next))throw Error('Unknown terminal mode');const key=JSON.stringify([next,state]);if(key===modeKey)return;modeKey=key;const changed=mode!==next;mode=next;controlState=state;manualHotspots=null;commandProgramKey='';if(changed){serialOffset=0;heldCount=null;pendingPatches=[];patchBytes=0;buffer.reset();stream=next==='dialer'?dialerAnsi({recipient,label,bps,...state}):next==='held'?heldAnsi({recipient,label,bps,cover,seed,...state}):receiving;count=-1;elapsed=0;records.clear();animator.clear();painted.clear();}force=true;update(elapsed,{reveal:mode!=='receiving',time:presentation});},setControls(patch){controlState={...controlState,...patch};modeKey=JSON.stringify([mode,controlState]);commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setFocus(id){if(controlState.focus===id)return;controlState={...controlState,focus:id};commandProgramKey='';force=true;update(elapsed,{reveal:complete,time:presentation});},setProgram(text,{hotspots=[],animation:animateProgram=false,preserve=false}={}){if(typeof text!=='string'||text.length>128000||!Array.isArray(hotspots)||hotspots.length>96)throw Error('Bounded ANSI program required');configureInk(animateProgram?.ink??[]);mode='program';programAnimation=animateProgram===true;programTracks=new Map();reactiveCells=new Map();if(animateProgram&&typeof animateProgram==='object'){if(!Array.isArray(animateProgram.tracks??[])||(animateProgram.tracks??[]).length>256)throw Error('Bounded ANSI art tracks required');for(const t of animateProgram.tracks??[]){if(!Number.isInteger(t.row)||t.row<1||t.row>rows||!Number.isInteger(t.column)||t.column<1||t.column>columns||!Array.isArray(t.frames)||t.frames.length>16)throw Error('Bounded ANSI art cell required');programTracks.set((t.row-1)*columns+t.column-1,t);}}if(animateProgram?.cymatics){if(!Array.isArray(animateProgram.cymatics)||animateProgram.cymatics.length>4)throw Error('Bounded ANSI audio regions required');for(const r of animateProgram.cymatics){if(!Number.isInteger(r.row)||!Number.isInteger(r.column)||!Number.isInteger(r.width)||!Number.isInteger(r.height)||r.row<1||r.column<1||r.row+r.height>rows+1||r.column+r.width>columns+1||!Number.isFinite(r.intensity)||r.intensity<0||r.intensity>1)throw Error('Bounded ANSI audio region required');const count=r.width*r.height,budget=r.style==='trip'?384:128;for(let n=0;n<Math.min(count,budget);n++){const offset=Math.floor(n*count/Math.min(count,budget)),y=r.row-1+Math.floor(offset/r.width),x=r.column-1+offset%r.width;reactiveCells.set(y*columns+x,r);}}}pendingPatches=[];patchBytes=0;stream=preserve?text.replace(/\x1b\[2J/g,''):text;manualHotspots=hotspots;serialOffset=0;heldCount=null;if(!preserve)buffer.reset();count=-1;modeKey='';elapsed=0;force=true;records.clear();animator.clear();painted.clear();update(0,{time:presentation});},patch(text){if(typeof text!=='string'||text.length>16000)throw Error('Bounded ANSI patch required');if(!complete){if(pendingPatches.length>=128||patchBytes+text.length>128000)throw Error('Pending ANSI patch budget exceeded');pendingPatches.push(text);patchBytes+=text.length;canvas.dataset.queuedPatches=String(pendingPatches.length);return false;}buffer.feed(text);force=true;return update(elapsed,{reveal:true,time:presentation});},setAnimationEnabled(value){animation=!!value;force=true;update(elapsed,{reveal:complete,time:presentation});},get commandDuration(){return bootCommand.length/bootCommandCps;},get duration(){return (manualHotspots===null?receiving.length:stream.length)*10/bps;},get elapsed(){return elapsed;},get revision(){return revision;},get complete(){return complete;},reset(){heldCount=null;serialOffset=0;pendingPatches=[];patchBytes=0;buffer.reset();count=-1;records.clear();animator.clear();painted.clear();return update(0,{time:presentation});},reveal(){heldCount=null;return update(elapsed,{reveal:true,time:presentation});}};
+}
+
+// Shared cell chrome for HQ rooms and full-screen story programs.
+const cleanBoardText = value => String(value ?? '').replace(/[\x00-\x1f\x7f-\x9f]/g, ' ');
+export const clipTerminalText = (value, width) => [...cleanBoardText(value)].slice(0, width).join('');
+export function wrapTerminalText(value, width) {
+  const rows = [];
+  for (const paragraph of String(value ?? '').split(/\r?\n/)) {
+    let chars = [...cleanBoardText(paragraph).trim()];
+    while (chars.length > width) {
+      const gap = chars.slice(0, width + 1).lastIndexOf(' ');
+      const end = gap > 0 ? gap : width;
+      rows.push(chars.splice(0, end).join(''));
+      while (chars[0] === ' ') chars.shift();
+    }
+    rows.push(chars.join(''));
+  }
+  return rows;
+}
+
+export function boardTerminalGrid(rect,wide=false) {
+  const aspect = rect.width / Math.max(1, rect.height);
+  if (aspect < 1.2) {
+    const columns = rect.width < 530 ? (wide?62:48) : (wide?74:62);
+    return {columns, rows: Math.max(42, Math.min(50, Math.round(columns / (2 * aspect))))};
+  }
+  const rows = Math.max(32, Math.min(38, Math.round(45 / aspect)));
+  return {columns: Math.min(wide?160:140, Math.max(80, Math.round(aspect * rows * (wide?2.4:2)))), rows};
+}
+
+
+export function boardTerminalPage({columns:C,rows:R},focus){
+  const cells = Array.from({length:C * R}, () => ({glyph:' ', fg:7, bg:0}));
+  const hotspots = [], fields = [], tracks = [], inkStyles=[];
+  const ink = (r,c,glyph,fg=7,bg=0) => {
+    if (r >= 1 && r <= R && c >= 1 && c <= C) cells[(r-1)*C+c-1] = {glyph,fg,bg};
+  };
+  function put(r,c,value,fg=7,bg=0,width=C-c) {
+    [...clipTerminalText(value,width)].forEach((glyph,i) => ink(r,c+i,glyph,fg,bg));
+  }
+  function prose(r,c,width,value,maxRows,fg=7) {
+    const lines = wrapTerminalText(value,width).slice(0,maxRows);
+    lines.forEach((line,i) => put(r+i,c,line,fg,0,width));
+    return r+lines.length;
+  }
+  function box(r,c,width,height,title='',fg=6,bg=0) {
+    put(r,c,'╔'+'═'.repeat(width-2)+'╗',fg,bg,width);
+    put(r+height-1,c,'╚'+'═'.repeat(width-2)+'╝',fg,bg,width);
+    for (let y=r+1; y<r+height-1; y++) put(y,c,'║'+' '.repeat(width-2)+'║',fg,bg,width);
+    if(title) put(r,c+2,' '+title+' ',fg,bg,width-4);
+  }
+  function rule(r,title='') {
+    put(r,1,'╠'+'═'.repeat(C-2)+'╣',6,0,C);
+    if (title) put(r,3,' '+title+' ',14,0,C-5);
+  }
+  function action(id,r,c,width,key,title,{fg=14,primary=false,label=title,disabled=false}={}) {
+    width=Math.min(width,C-c);
+    if(r<1||r>R||c<1||width<1)return r;
+    const keycap = {Enter:'↵',Escape:'ESC',Backspace:'←',' ':'SPACE',ArrowLeft:'←',ArrowRight:'→',ArrowUp:'↑',ArrowDown:'↓',PageUp:'↑',PageDown:'↓'}[key] || key;
+    const lines = wrapTerminalText('['+keycap.toUpperCase()+'] '+title,width).slice(0,R-r+1);
+    const bg = focus === id ? 4 : 0;
+    lines.forEach((line,i) => put(r+i,c,line.padEnd(width),disabled?8:primary?11:fg,bg,width));
+    hotspots.push({id,row:r,column:c,width,height:lines.length,key,ariaLabel:label,disabled});
+    if(primary&&width>1){
+      // Light the command key, not the label or the surrounding controls.
+      inkStyles.push({row:r,column:c+1,bloom:4,pass:5});
+      const keyGlyph=keycap[0].toUpperCase();
+      tracks.push({row:r,column:c+1,interval:740,transition:410,effect:'pulse',
+        frames:[{glyph:keyGlyph,fg:11,bg},{glyph:keyGlyph,fg:15,bg}]});
+    }
+    return r+lines.length;
+  }
+  return {cells,hotspots,fields,tracks,inkStyles,ink,put,prose,box,rule,action};
 }

@@ -2,7 +2,7 @@
  * sustained window may shrink only the field target. UI/output pixels never
  * enter this policy. No device-name guess, timer-query estimate or startup
  * compile stall may pick a density. Native mode never adapts. */
-export function createFrameBudget({enabled=false,targetFps=40,minScale=.375}={}){
+export function createFrameBudget({enabled=false,targetFps=40,minScale=.375,degradeFps=30,recoverFps=54}={}){
  if(!Number.isFinite(targetFps)||targetFps<30||!Number.isFinite(minScale)||minScale<=0||minScale>1)throw Error('Invalid field frame budget');
  let scale=1,last=0,start=0,warmUntil=0,frames=0,recoverAt=0;
  return {get scale(){return scale;},reset(){last=start=frames=0;warmUntil=0;},
@@ -12,8 +12,8 @@ export function createFrameBudget({enabled=false,targetFps=40,minScale=.375}={})
    last=now;if(now<warmUntil){start=now;frames=0;return false;}
    frames++;const elapsed=now-start;if(elapsed<1400||frames<12)return false;
    const fps=frames*1000/elapsed;let next=scale;
-   if(fps<30)next=Math.max(minScale,Math.floor(scale*Math.sqrt(fps/targetFps)*16)/16);
-   else if(fps>54&&now>recoverAt)next=Math.min(1,scale+1/16);
+   if(fps<degradeFps)next=Math.max(minScale,Math.floor(scale*Math.sqrt(fps/targetFps)*16)/16);
+   else if(fps>recoverFps&&now>recoverAt)next=Math.min(1,scale+1/16);
    start=now;frames=0;if(next===scale)return false;
    scale=next;warmUntil=now+600;recoverAt=now+12000;return true;
   }

@@ -1,3 +1,4 @@
+import {ansiSGRColour} from './ansi-animation.mjs';
 /* Original half-block ANSI paintings. A cell carries two palette pixels;
  * authored six-frame loops animate anatomy, flame, moonlight and packets.
  * No bitmap generation, WebGL, timer or independent animation clock. */
@@ -29,29 +30,11 @@ function livePlate(kind,width,height,seed){
  const W=width*2,H=height*2,theme=ansiSessionTheme(seed);
  const galaxy=kind==='spiral-galaxy',clearing=kind==='aurora-home';
  const scale=Math.min(W*.59,H*1.08);
- const sky=Uint8Array.from({length:W*H},(_,i)=>{
-  const n=grain(i%W,Math.floor(i/W),seed);
-  return n>.9988?7:n>.993?8:0;
- });
- const geometry=galaxy?Array.from(sky,(_,i)=>{
-  const x=(i%W+.5-W*.50)/scale,y=(Math.floor(i/W)+.5-H*.50)*2/scale;
-  const rx=.977*x-.213*y,ry=(.213*x+.977*y)/.57;
-  const r=Math.hypot(rx,ry);
-  return {r,near:clamp(.5+ry*.55,0,1),phase:Math.atan2(ry,rx)-1.85*Math.log(.15+r),
-          grain:grain(i%W,Math.floor(i/W),seed+73)};
- }):null;
  const stars=galaxy?Array.from({length:230},(_,i)=>{
   const r=.13+.88*Math.sqrt(grain(i,1,seed));
   return {r,angle:(i%2)*Math.PI+1.85*Math.log(.15+r)+(grain(i,2,seed)-.5)*.95,
           z:(grain(i,3,seed)-.5)*(.20-.07*r),drift:.70+grain(i,4,seed)*.62,light:grain(i,5,seed)};
  }):[];
- const clouds=galaxy?null:Array.from({length:W},(_,x)=>{
-  const u=x/W;
-  return {bank:.29+.056*Math.sin(u*8+1)+.029*Math.sin(u*19),
-          far:.62-.17*Math.sin(u*3.2+.43)-.035*Math.cos(u*14),
-          mid:.74-.16*Math.sin(u*5.9+1.1)-.04*Math.sin(u*15),
-          near:.88-.12*Math.cos(u*8.3)+.025*Math.sin(u*28)};
- });
  const lightning=[[.68,.24],[.65,.34],[.70,.38],[.65,.48],[.67,.52],[.61,.65]];
  const fork=[[.70,.38],[.74,.43],[.72,.50],[.79,.57]];
  const homes=[[.14,.77],[.22,.82],[.26,.83],[.80,.78]];
@@ -64,71 +47,88 @@ function livePlate(kind,width,height,seed){
   }
   return d;
  };
- function frame(seconds){
-  const pixels=sky.slice(),time=Number.isFinite(seconds)?Math.max(0,seconds):0;
-  if(galaxy){
-   for(let i=0;i<pixels.length;i++){
-    const {r,near,phase,grain:n}=geometry[i];
-    if(r>1.08)continue;
-    const core=Math.exp(-r*r*25)*(.90+n*.12);
-    const arm=Math.pow(Math.max(0,Math.cos(2*(phase-time*(.036+.058*r)))),6);
-    const tail=Math.pow(Math.max(0,Math.cos(2*(phase-time*(.036+.058*r)-.34))),5);
-    const glow=arm*Math.max(0,1-r*.87)*(.65+.35*near);
-    if(core>.83)pixels[i]=15;
-    else if(core>.55)pixels[i]=11;
-    else if(core>.29)pixels[i]=n>.60?11:3;
-    else if(glow>.64)pixels[i]=n>.66?14:6;
-    else if(glow>.41)pixels[i]=n>.56?14:12;
-    else if(glow>.21)pixels[i]=n>.76?12:4;
-    else if(glow>.08&&n>.35)pixels[i]=n>.78?5:4;
-    else if((tail>.59&&r>.19&&r<.94&&n>.31)||(r<.48&&n>.89))pixels[i]=5;
-   }
-   for(const s of stars){
-    const a=s.angle+time*(.046+.145*s.r)*s.drift;
-    const x=s.r*Math.cos(a),y=s.r*Math.sin(a)*.57+s.z;
-    const col=Math.floor(W*.50+scale*(.977*x+.213*y));
-    const row=Math.floor(H*.50+scale*(-.213*x+.977*y)/2);
-    if(col<0||row<0||col>=W||row>=H)continue;
-    const i=row*W+col;
-    if(pixels[i]===15||pixels[i]===11)continue;
-    const light=s.light+(y>0?.08:0);
-    pixels[i]=light>.94?15:light>.75?14:light>.52?12:light>.22?6:5;
-   }
-  }else{
-  const beat=(time+2.6)%9.7,flash=!clearing&&beat>4.6&&beat<5.1?Math.sin((beat-4.6)*2*Math.PI):0;
-   for(let row=0;row<H;row++)for(let col=0;col<W;col++){
-    const i=row*W+col,x=(col+.5)/W,y=(row+.5)/H,n=grain(col,row,seed+11);
-    const {bank,far,mid,near}=clouds[col];
-    const cloudEdge=bank+.17+.02*Math.sin(x*19+time*.23);
-    const cloudVein=.034*Math.sin(x*11+y*18-time*.36);
-    if(y>near) pixels[i]=0;
-    else if(y>mid) pixels[i]=y<mid+.027&&n>.53?6:y<mid+.065?4:0;
-    else if(y>far) pixels[i]=y<far+.038?(n>.50?12:4):y<far+.13?4:8;
-    else if(!clearing&&y>bank&&y<cloudEdge){
-     pixels[i]=y+cloudVein>cloudEdge-.04?(n>.42?8:4):4;
-     if(y<bank+.022&&n>.75)pixels[i]=5;
-    }
-    if(clearing&&y<far){
-     const ribbon=.29-.12*Math.sin(x*4+time*.20)+.035*Math.sin(x*12-time*.26);
-     const distance=Math.abs(y-ribbon);
-     if(distance<.013)pixels[i]=x>.70?14:6;
-     else if(distance<.040&&n>.40)pixels[i]=x>.58?5:2;
-     else if(distance<.074&&n>.75)pixels[i]=1;
-    }
-    if(y<far&&flash>.17){
-     const d=Math.min(lineDistance(x,y,lightning),lineDistance(x,y,fork)*1.45);
-     if(d<.007)pixels[i]=15;
-     else if(d<.023*flash)pixels[i]=12;
-    }
-    // A small, recognisable cluster of roofs and warm windows in the valley.
-    for(const [homeX,homeY] of homes){
-     const dx=Math.abs(x-homeX),dy=y-homeY;
-     if(dy>=0&&dy<.035&&dx<.017)pixels[i]=8;
-     if(dy<0&&dy>-.024&&dx<.022*(dy+.024)/.024)pixels[i]=7;
-     if(dy>.014&&dy<.026&&dx<.009)pixels[i]=n>.13?11:3;
-    }
-   }
+ let starTime=-1,starGrid=new Map();
+ function galaxyStars(time){
+  if(time===starTime)return;
+  starTime=time;starGrid=new Map();
+  for(const s of stars){
+   const a=s.angle+time*(.046+.145*s.r)*s.drift;
+   const x=s.r*Math.cos(a),y=s.r*Math.sin(a)*.57+s.z;
+   const u=.5+scale*(.977*x+.213*y)/W,v=.5+scale*(-.213*x+.977*y)/(2*H);
+   const col=Math.floor(u*W),row=Math.floor(v*H);
+   if(col<0||row<0||col>=W||row>=H)continue;
+   const light=s.light+(y>0?.08:0);
+   starGrid.set(row*W+col,{u,v,ink:light>.94?15:light>.75?14:light>.52?12:light>.22?6:5});
   }
+ }
+ function sample(u,v,time,pass=1){
+  const col=Math.floor(u*W),row=Math.floor(v*H);
+  const background=grain(col,row,seed);
+  let pixel=background>.9988?7:background>.993?8:0;
+  if(galaxy){
+   const x=(u-.5)*W/scale,y=(v-.5)*H*2/scale;
+   const rx=.977*x-.213*y,ry=(.213*x+.977*y)/.57;
+   const r=Math.hypot(rx,ry);
+   if(r>1.08)return pixel;
+   const n=grain(col,row,seed+73);
+   const near=clamp(.5+ry*.55,0,1);
+   const angle=Math.atan2(ry,rx)-1.85*Math.log(.15+r);
+   const shift=2*(angle-time*(.036+.058*r));
+   const core=Math.exp(-r*r*25)*(.90+n*.12);
+   const arm=Math.pow(Math.max(0,Math.cos(shift)),6);
+   const tail=Math.pow(Math.max(0,Math.cos(shift-.68)),5);
+   const glow=arm*Math.max(0,1-r*.87)*(.65+.35*near);
+   if(core>.83)return 15;
+   if(core>.55)return 11;
+   galaxyStars(time);
+   const star=starGrid.get(row*W+col);
+   if(star&&(pass===1||Math.hypot((u-star.u)*W,(v-star.v)*H)<.35))return star.ink;
+   if(core>.29)return n>.60?11:3;
+   if(glow>.64)return n>.66?14:6;
+   if(glow>.41)return n>.56?14:12;
+   if(glow>.21)return n>.76?12:4;
+   if(glow>.08&&n>.35)return n>.78?5:4;
+   if((tail>.59&&r>.19&&r<.94&&n>.31)||(r<.48&&n>.89))return 5;
+   return pixel;
+  }
+  const n=grain(col,row,seed+11);
+  const bank=.29+.056*Math.sin(u*8+1)+.029*Math.sin(u*19);
+  const far=.62-.17*Math.sin(u*3.2+.43)-.035*Math.cos(u*14);
+  const mid=.74-.16*Math.sin(u*5.9+1.1)-.04*Math.sin(u*15);
+  const near=.88-.12*Math.cos(u*8.3)+.025*Math.sin(u*28);
+  const cloudEdge=bank+.17+.02*Math.sin(u*19+time*.23);
+  const cloudVein=.034*Math.sin(u*11+v*18-time*.36);
+  if(v>near)pixel=0;
+  else if(v>mid)pixel=v<mid+.027&&n>.53?6:v<mid+.065?4:0;
+  else if(v>far)pixel=v<far+.038?(n>.50?12:4):v<far+.13?4:8;
+  else if(!clearing&&v>bank&&v<cloudEdge){
+   pixel=v+cloudVein>cloudEdge-.04?(n>.42?8:4):4;
+   if(v<bank+.022&&n>.75)pixel=5;
+  }
+  if(clearing&&v<far){
+   const ribbon=.29-.12*Math.sin(u*4+time*.20)+.035*Math.sin(u*12-time*.26);
+   const distance=Math.abs(v-ribbon);
+   if(distance<.013)pixel=u>.70?14:6;
+   else if(distance<.040&&n>.40)pixel=u>.58?5:2;
+   else if(distance<.074&&n>.75)pixel=1;
+  }
+  const beat=(time+2.6)%9.7,flash=!clearing&&beat>4.6&&beat<5.1?Math.sin((beat-4.6)*TAU):0;
+  if(v<far&&flash>.17){
+   const d=Math.min(lineDistance(u,v,lightning),lineDistance(u,v,fork)*1.45);
+   if(d<.007)pixel=15;
+   else if(d<.023*flash)pixel=12;
+  }
+  for(const [homeX,homeY] of homes){
+   const dx=Math.abs(u-homeX),dy=v-homeY;
+   if(dy>=0&&dy<.035&&dx<.017)pixel=8;
+   if(dy<0&&dy>-.024&&dx<.022*(dy+.024)/.024)pixel=7;
+   if(dy>.014&&dy<.026&&dx<.009)pixel=n>.13?11:3;
+  }
+  return pixel;
+ }
+ function frame(seconds){
+  const time=Number.isFinite(seconds)?Math.max(0,seconds):0;
+  const pixels=Uint8Array.from({length:W*H},(_,i)=>sample((i%W+.5)/W,(Math.floor(i/W)+.5)/H,time));
   return Array.from({length:width*height},(_,i)=>{
    const row=Math.floor(i/width),column=i%width,p=row*2*W+column*2;
    const sample=[pixels[p],pixels[p+1],pixels[p+W],pixels[p+W+1]];
@@ -143,7 +143,7 @@ function livePlate(kind,width,height,seed){
    return {glyph:quadrants[mask],fg,bg,row:row+1,column:column+1};
   });
  }
- return {kind,theme,cells:frame(0),tracks:[],frame};
+ return {kind,theme,cells:frame(0),tracks:[],frame,sample:(u,v,phase,pass)=>sample(u,v,phase/.12,pass)};
 }
 
 function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
@@ -152,7 +152,7 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
  const theme=ansiSessionTheme(seed),p=theme.palette,H=height*2;
  const noise=(x,y)=>{let h=Math.imul(x+71,374761393)^Math.imul(y+139,668265263)^(seed>>>0);h=Math.imul(h^(h>>>16),0x85ebca6b);h=Math.imul(h^(h>>>13),0xc2b2ae35);h^=h>>>16;return (h>>>0)/4294967295;};
  function inside(x,y,points){let hit=false;for(let i=0,j=points.length-1;i<points.length;j=i++){const a=points[i],b=points[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;}
- function foreground(x,y,frame){
+ function foreground(x,y,frame,pass){
   const u=(x+.5)/(width*2),v=(y+.5)/H,t=frame*Math.PI/3;
   if(kind==='postmark-stamp'){
    // Perforated first-issue stamp, paper shadow, two orbit marks and a seed.
@@ -223,7 +223,10 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    if(Math.abs(dy)<opening&&Math.abs(nx)<.98){
     if(iris<.38){if((ex/pupil)**2+(ey/.33)**2<1)return 0;
      if(Math.hypot(ex+.10,ey+.14)<.045)return 15;
-     const fibres=Math.sin(Math.atan2(ey,ex)*18+iris*24)+Math.cos(iris*40),ring=iris>.34;
+     const angle=Math.atan2(ey,ex),fibres=Math.sin(angle*18+iris*24)+Math.cos(iris*40),ring=iris>.34;
+     if(pass>=4&&iris>.18&&iris<.32&&Math.sin(angle*44+iris*55)>.94)return 15;
+     if(pass>=3&&iris>.28&&iris<.345&&Math.sin(angle*29-iris*32)>.8)return 11;
+     if(pass>=2&&iris>.325&&iris<.36&&Math.cos(angle*8+iris*20)>.5)return 9;
      return ring?3:iris<.13?11:fibres>1?11:fibres>-.2?9:1;}
     return Math.abs(dy)>opening-.045?1:Math.abs(nx)>.64?1:Math.abs(nx)>.32?9:11;
    }
@@ -231,6 +234,8 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    const wx=x+1.1*Math.sin(y*.19),wy=y+.7*Math.sin(x*.14),row=Math.floor(wy/10);let nearest={d:9,dx:0,dy:0,variation:0};
    for(let rr=row-1;rr<=row+1;rr++){const offset=(rr%2)*7,col=Math.round((wx-offset)/14);for(let cc=col-1;cc<=col+1;cc++){const n=noise(cc,rr),cx=cc*14+offset+(n-.5),cy=rr*10+(noise(rr,cc)-.5),dx=(wx-cx)/(7.6+n*1.2),dy=(wy-cy)/(6.1+n*.9),d=dx*dx+dy*dy;if(d<nearest.d)nearest={d,dx,dy,variation:n};}}
    const {d,dx:scaleX,dy:scaleY,variation}=nearest,light=Math.max(0,1-d)*.48-scaleX*.16-scaleY*.19+variation*.08;
+   if(pass>=4&&d<.49&&Math.sin(scaleX*27+scaleY*14)>.96)return light>.41?14:12;
+   if(pass>=3&&d>.52&&d<.61&&light>.37)return 6;
    if(d>.82)return 4;if(d>.66)return 12;
    if(light>.7&&noise(x,y)>.72)return 15;return light>.49?14:light>.18?12:4;
   }
@@ -245,7 +250,12 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
     return v-bob<.603?14:v-bob<.63?4:8;
    if(u>.29&&u<.59&&v-bob>.44&&v-bob<.58){
     if(v-bob<.46||u<.31)return 7;
-    if(u>.43&&u<.52&&v-bob>.485&&v-bob<.545)return frame===2?15:11;
+    if(u>.43&&u<.52&&v-bob>.485&&v-bob<.545){
+     if(pass>=2&&Math.abs(u-.475)<.003)return 3;
+     if(pass>=3&&v-bob>.518&&v-bob<.524)return 3;
+     return frame===2?15:11;
+    }
+    if(pass>=4&&v-bob>.49&&v-bob<.53&&u>.344&&u<.40&&Math.cos(u*240)>.86)return 14;
     return 6;
    }
    if(u>.34&&u<.357&&v-bob>.37&&v-bob<.45)return 7;
@@ -256,7 +266,11 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
     return ripples>.75?6:ripples>.26?4:0;
    }
    if(v>.47+.044*Math.sin(u*19)+.037*Math.sin(u*34)&&u>.64)return 0;
-   if(moon<.098)return moon>.082?7:15;
+   if(moon<.098){
+    if(pass>=2&&Math.hypot((u-.284)*width/(height*2),v-.219)<.019)return 7;
+    if(pass>=3&&Math.hypot((u-.248)*width/(height*2),v-.267)<.011)return 7;
+    return moon>.082?7:15;
+   }
    if(moon<.139)return 6;
    if(noise(x,y)>.987&&v<.45)return 7;
    return Math.sin(v*24+u*8)>.60?0:4;
@@ -301,7 +315,17 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
    // backdrop must not compete through random per-cell colour changes.
    const aspect=width/(height*2),plants=[[.5,.36,.28],[.18,.53,.15],[.82,.52,.15]];
    for(let i=0;i<plants.length;i++){const [cx,cy,size]=plants[i],dx=(u-cx)*aspect,dy=v-cy,r=Math.hypot(dx,dy),a=Math.atan2(dy,dx),petal=.78+.22*Math.cos(a*9+r*8),edge=size*petal;
-    if(r<edge){if(edge-r<.016)return 6;if(r<size*.20)return r<size*.07?15:11;const vein=Math.cos(a*9+r*8),rim=r/Math.max(.001,edge);return rim>.84?13:vein>.6?15:vein>-.25?13:5;}
+    if(r<edge){
+     const rim=r/Math.max(.001,edge),vein=Math.cos(a*9+r*8);
+     if(edge-r<.016)return 6;
+     if(r<size*.20){
+      if(pass>=3&&r>size*.11&&Math.cos(a*11+r*77)>.6)return 3;
+      return r<size*.07?15:11;
+     }
+     if(pass>=4&&rim>.27&&rim<.81&&Math.sin(a*18+r*36)>.93)return 9;
+     if(pass>=2&&rim>.53&&rim<.87&&vein>.92)return 11;
+     return rim>.84?13:vein>.6?15:vein>-.25?13:5;
+    }
     const stem=cx+.012*Math.sin((v-cy)*5),root=.93;
     if(v>cy+size*.45&&v<root&&Math.abs(u-stem)<.006)return 10;
     if(v>cy+size*.45&&v<root){for(const side of [-1,1]){const lx=(u-stem-side*.040)*aspect,ly=(v-(cy+.33+side*.035));const leaf=Math.abs(lx/.12)+Math.abs((ly+side*lx*.35)/.055);if(leaf<1)return leaf>.82?2:Math.abs(ly+side*lx*.35)<.010?10:2;}}
@@ -547,8 +571,8 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
  }
  // Quiet environments keep their value below the lit subject. Deliberate
  // black recesses are part of the design; generic texture never fills them.
- function pixel(x,y,frame){
-  const ink=foreground(x,y,frame);if(ink!==0)return ink;
+ function pixel(x,y,frame,pass=1){
+  const ink=foreground(x,y,frame,pass);if(ink!==0)return ink;
   const u=(x+.5)/(width*2),v=(y+.5)/H;
   if(['eye','city','beacon','convoy','trip'].includes(kind))return 0;
   if(kind==='family')return 0;
@@ -570,14 +594,32 @@ function buildAnsiScene(kind,{width=44,height=14,seed=0,stage=0}={}){
   if(new Set(frames.map(f=>JSON.stringify(f))).size>1)candidates.push({row:row+1,column:column+1,interval:theme.tempo*2,transition:theme.tempo*2,effect:kind==='family'?'flip':'hue-shift',frames});
  }
  const tracks=kind==='trip'?[]:candidates.length<=192?candidates:Array.from({length:192},(_,i)=>candidates[Math.floor(i*candidates.length/192)]);
- return {cells,tracks,theme,kind};
+ return {cells,tracks,theme,kind,sample:(u,v,phase,pass)=>pixel(u*width*2-.5,v*H-.5,Math.floor(phase/(theme.tempo*.00024))%6,pass)};
 }
 
 /** An art-only ANSI stream for a denser sprite grid inside a retained region. */
-export function ansiSceneProgram(scene,{columns,rows}={}){
+export function ansiSceneProgram(scene,{columns,rows}={},onCell){
  const C=columns||Math.max(...scene.cells.map(c=>c.column)),R=rows||Math.max(...scene.cells.map(c=>c.row));let text='\x1b[2J',prior='';
- for(const c of scene.cells){if(c.column===1)text+='\x1b['+c.row+';1H';const style=c.fg+':'+c.bg;if(style!==prior){text+='\x1b['+(c.fg>7?90+c.fg-8:30+c.fg)+';'+(c.bg>7?100+c.bg-8:40+c.bg)+'m';prior=style;}text+=c.glyph;}
- return {text,grid:{columns:C,rows:R},animation:{tracks:scene.tracks,cymatics:scene.kind==='trip'?[]:[{row:1,column:1,width:C,height:R,style:scene.kind==='trip'?'trip':['city','bitcoin-city','harbor','beacon'].includes(scene.kind)?'water':scene.kind==='rose'?'foliage':'metal',intensity:scene.kind==='trip'?.9:.18}]}};
+ for(const c of scene.cells){onCell?.(c,text.length);if(c.column===1)text+='\x1b['+c.row+';1H';const style=c.fg+':'+c.bg;if(style!==prior){text+='\x1b['+ansiSGRColour(c.fg)+';'+ansiSGRColour(c.bg,true)+'m';prior=style;}text+=c.glyph;}
+ const ink=(scene.lights??[]).map(lamp=>({column:Math.floor(lamp.u*C)+1,row:Math.floor(lamp.v*R)+1,
+  bloom:6,light:{kind:lamp.kind,color:lamp.color,power:5,flicker:lamp.flicker,radius:1.8}}));
+ return {text,grid:{columns:C,rows:R},animation:{tracks:scene.tracks,ink,cymatics:scene.kind==='trip'?[]:[{row:1,column:1,width:C,height:R,style:scene.kind==='trip'?'trip':['city','bitcoin-city','harbor','beacon'].includes(scene.kind)?'water':scene.kind==='rose'?'foliage':'metal',intensity:scene.kind==='trip'?.9:.18}]}};
+}
+
+// Small lighting cues belong to subjects, never to every bright glyph.
+const sceneLamps={
+ eye:[[.47,.42,11,.12,10]],harbor:[[.27,.24,15,.20,0],[.475,.51,11,.13,10]],
+ trip:[[.50,.36,13,.15,1],[.18,.53,11,.09,10],[.82,.52,13,.09,2]],
+ 'bitcoin-city':[[.67,.26,11,.22,1]],city:[[.29,.24,14,.19,1]],
+ serpent:[[.51,.15,14,.105,10]],rose:[[.50,.40,13,.14,2]],
+ beacon:[[.50,.39,11,.19,6]],network:[[.51,.49,14,.15,8]],
+ engine:[[.51,.50,14,.18,10]],forge:[[.50,.59,11,.19,2]],
+ 'spiral-galaxy':[[.50,.49,15,.23,1]],'monsoon-ridge':[[.67,.27,14,.18,14]],
+ 'aurora-home':[[.67,.41,14,.19,1]],'postmark-stamp':[[.49,.38,11,.11,0]],
+};
+export function ansiSceneLights(kind){
+ return (sceneLamps[kind]??[]).map(([u,v,color,size,flicker])=>({u,v,color,size,flicker,power:.39,
+  kind:size>.14?'area':'point'}));
 }
 
 // Rebuilding six authored frames on every hover/score update stole main-
@@ -586,6 +628,6 @@ const sceneCache=new Map();
 export function ansiScene(kind,options={}){
  const key=JSON.stringify([kind,options.width??44,options.height??14,options.seed??0,options.stage??0]);
  if(sceneCache.has(key)){const value=sceneCache.get(key);sceneCache.delete(key);sceneCache.set(key,value);return value;}
- const scene=buildAnsiScene(kind,options),freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){for(const item of Object.values(value))freeze(item);Object.freeze(value);}return value;};
+ const scene={...buildAnsiScene(kind,options),lights:ansiSceneLights(kind)},freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){for(const item of Object.values(value))freeze(item);Object.freeze(value);}return value;};
  freeze(scene);sceneCache.set(key,scene);if(sceneCache.size>8)sceneCache.delete(sceneCache.keys().next().value);return scene;
 }

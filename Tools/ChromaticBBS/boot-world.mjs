@@ -74,7 +74,7 @@ export function bootLampSignals(progress,phase,signal,time){
 }
 export const bootWorldFragment=`precision highp float;
 uniform vec2 uRes,uPointer;
-uniform float uTime,uProgress,uPhase;
+uniform float uTime,uProgress,uPhase,uWarp;
 uniform vec4 uBands;
 uniform vec2 uDrive;
 uniform vec3 uEye,uLook;
@@ -224,11 +224,30 @@ vec3 terminalGlass(vec2 tex){
  float edge=pow(1.-max(abs(tex.x-.5),abs(tex.y-.5))*1.25,.3);
  return ink*edge+vec3(.002,.005,.009);
 }
+vec3 warpCorridor(vec2 uv,float t) {
+ vec2 drift=vec2(sin(t*7.1),sin(t*5.3))*.07*sin(t*3.14159);
+ vec2 p=uv-drift;float radius=length(p),angle=CraftAngle(p.y,p.x);
+ float z=.48/max(.021,radius), rush=t*(2.+t*7.);
+ float bend=angle+z*.13+t*.98;
+ float ring=pow(.5+.5*cos((z-rush)*5.8),16.);
+ float ribs=pow(.5+.5*cos(bend*9.+z*.78),19.);
+ float braid=pow(.5+.5*cos(bend*3.-z*4.1+rush*3.),18.);
+ float aperture=exp(-radius*11.)*smoothstep(.48,.84,t);
+ float vignette=smoothstep(.027,.15,radius)*(1.-smoothstep(.54,1.25,radius));
+ vec3 deep=vec3(.018,.019,.067),cyan=vec3(.035,.89,.94),violet=vec3(.73,.09,.76),gold=vec3(1.,.59,.12);
+ vec3 col=deep+vignette*(cyan*ribs*(.26+ring*.88)+violet*ring*.57+gold*braid*.78);
+ col+=cyan*aperture*.65;col*=1.-smoothstep(.78,1.,t);
+ return col/(1.+col);
+}
 void main(){
+ if(uWarp>0.){vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
+  gl_FragColor=vec4(warpCorridor(uv,uWarp),1.);return;}
+
  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
  vec3 ro=uEye;
  vec3 target=uLook;vec3 f=normalize(target-ro),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f);
- vec3 rd=normalize(f*uLens+uv.x*r+uv.y*up),skyColor=sky(rd),col=skyColor;float travel=0.,glow=0.;vec2 hit=vec2(1.);
+ vec3 rd=normalize(f*uLens+uv.x*r+uv.y*up);
+ float travel=0.;vec2 hit=vec2(1.);
  // The screen is an analytic world plane inside the SDF bezel. Its direct
  // emission bypasses marching/tonemapping so 80 columns stay pixel-legible.
  float screenDepth=(.53-ro.z)/rd.z;
@@ -238,10 +257,9 @@ void main(){
   gl_FragColor=vec4(terminalGlass(tex),1.);return;
  }
 
+ vec3 skyColor=sky(rd),col=skyColor;
  for(int i=0;i<76;i++){
   vec3 p=ro+rd*travel;hit=map(p);
-  vec3 g=p-BOOT_PORTAL;float ring=abs(length(g.xy)-(1.98+uProgress*.05))+abs(g.z)*.6;
-  glow+=.0014/(.02+ring*ring)*(.25+uProgress*.75);
   if(hit.x<.0015||travel>34.)break;travel+=max(.006,hit.x*.78);
  }
  if(travel<34.&&hit.x<.01){
@@ -284,25 +302,37 @@ void main(){
   float power=k==0?uLamps.x:k==1?uLamps.y:k==2?uLamps.z:uLamps.w;vec3 hue=k==0?vec3(.02,.8,.7):k==1?vec3(.3,.14,1.):k==2?vec3(.9,.04,.4):vec3(1.,.57,.08);
   col+=hue*pow(.008/(.008+dist*dist),1.4)*power*.35*v;
  }
- col+=vec3(.015,.65,.68)*glow*(.8+uBands.y*.5);
  // Broad travelling arcs through the throat. Low frequency, no white strobe.
- vec3 at=ro+rd*((BOOT_PORTAL.z-ro.z)/max(.01,rd.z));vec2 gate=at.xy-BOOT_PORTAL.xy;
- float radius=length(gate),angle=CraftAngle(gate.y,gate.x);
- float breath=.018*sin(uTime*.8)+uBands.x*.12+uDrive.y*.025;
- float contour=radius-1.84-breath-(.025+uBands.y*.10)*sin(angle*6.+uTime*.5);
- float filament=exp(-pow(contour/(.022+uBands.z*.02),2.));
- float gateDepth=(BOOT_PORTAL.z-ro.z)/max(.01,rd.z),visible=step(gateDepth-.12,travel)*step(0.,rd.z);
- col+=vec3(.08,.75,.72)*filament*(.22+uProgress+uDrive.x*2.)*visible;
- // The open throat is a standing-wave membrane, not an opaque portal disc.
- float inside=1.-smoothstep(1.72,1.96,radius);
- float radial=sin(radius*(13.+uBands.z*5.)-uTime*(.7+uBands.y*.7));
- float lobes=sin(angle*5.+uTime*.22+uBands.y*2.)*sin(angle*3.-radius*2.);
- float nodes=exp(-abs(radial*lobes)*14.);
- float front=exp(-pow(sin(radius*6.-uTime*.85)/( .08+uBands.x*.18),2.));
- float wake=.05+uProgress*.12+uDrive.x*.8+uDrive.y*.24;
- vec3 membrane=mix(vec3(.015,.30,.32),vec3(.38,.07,.31),.5+.5*lobes);
- col+=inside*visible*(membrane*nodes*wake+vec3(.06,.46,.50)*front*wake*.55);
- float bloom=pow(max(0.,1.-radius/1.9),4.)*(uProgress+uDrive.x);col+=vec3(.025,.13,.16)*bloom*visible;
+ float gateDepth=(BOOT_PORTAL.z-ro.z)/max(.01,rd.z);
+ if(rd.z>0.&&travel>=gateDepth-.12){
+  vec2 gate=(ro+rd*gateDepth).xy-BOOT_PORTAL.xy;
+  float radius=length(gate),halo=radius-(1.98+uProgress*.05);
+  col+=vec3(.015,.65,.68)*(.0038/(.034+halo*halo))*(.38+uProgress+uBands.y);
+  if(radius<2.35){
+   float angle=CraftAngle(gate.y,gate.x);
+   float breath=.018*sin(uTime*.8)+uBands.x*.12+uDrive.y*.025;
+   float contour=radius-1.84-breath-(.025+uBands.y*.10)*sin(angle*6.+uTime*.5);
+   float filament=exp(-pow(contour/(.022+uBands.z*.02),2.));
+   col+=vec3(.08,.75,.72)*filament*(.22+uProgress+uDrive.x*2.);
+   if(radius<1.96){
+    // The open throat is a standing-wave membrane.
+    float inside=1.-smoothstep(1.72,1.96,radius);
+    float radial=sin(radius*(13.+uBands.z*5.)-uTime*(.7+uBands.y*.7));
+    float lobes=sin(angle*5.+uTime*.22+uBands.y*2.)*sin(angle*3.-radius*2.);
+    float nodes=exp(-abs(radial*lobes)*14.);
+    float front=exp(-pow(sin(radius*6.-uTime*.85)/( .08+uBands.x*.18),2.));
+    float wake=.06+uProgress*.31+uDrive.x*.9+uDrive.y*.24;
+    float spiral=exp(-pow(sin(angle*3.+radius*9.-uTime*(1.+uProgress*3.))/ .16,2.));
+    float shock=exp(-pow((radius-fract(uTime*.62+uProgress)*1.92)/(.046+.075*uProgress),2.));
+    col+=inside*(vec3(.05,.6,.68)*spiral*.23*uProgress+
+      vec3(.98,.32,.12)*shock*(.08+.4*uProgress*uProgress));
+    vec3 membrane=mix(vec3(.015,.30,.32),vec3(.38,.07,.31),.5+.5*lobes);
+    col+=inside*(membrane*nodes*wake+vec3(.06,.46,.50)*front*wake*.55);
+    float bloom=pow(max(0.,1.-radius/1.9),4.)*(uProgress+uDrive.x);
+    col+=vec3(.025,.13,.16)*bloom;
+   }
+  }
+ }
  col*=2.5;col=col/(1.+col);col=pow(col,vec3(.85));col*=1.-.16*dot(uv,uv);
  gl_FragColor=vec4(col,1.);
 }`;
@@ -310,12 +340,16 @@ const bootGlassFragment=`precision highp float;
 uniform vec2 uRes;uniform vec3 uEye,uLook;uniform float uLens;uniform sampler2D uTerminal,uBackground;
 void main(){vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;vec3 f=normalize(uLook-uEye),r=normalize(cross(f,vec3(0.,1.,0.))),up=cross(r,f),rd=normalize(f*uLens+uv.x*r+uv.y*up);float depth=(.53-uEye.z)/rd.z;vec3 p=uEye+rd*depth-vec3(-2.75,.54,.53);vec3 col=texture2D(uBackground,gl_FragCoord.xy/uRes).rgb;
  if(rd.z>0.&&depth>0.&&abs(p.x)<1.6&&abs(p.y)<1.){vec2 tex=vec2(.5-p.x/3.2,.5-p.y/2.);col=texture2D(uTerminal,tex).rgb*pow(1.-max(abs(tex.x-.5),abs(tex.y-.5))*1.25,.3)+vec3(.002,.005,.009);}gl_FragColor=vec4(col,1.);}`;
-export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,0],level=()=>0,reduced=false,pixelRatio='auto',adaptive=false,terminal:terminalOptions={}}={}){
+export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>[0,0,0,0],level=()=>0,reduced=false,pixelRatio='auto',adaptive=false,
+  drawFps=bootWorldBudget.fps,maxFieldPixels=Infinity,terminal:terminalOptions={}}={}){
+ let transit=null;
  let gl=null,program=null,glassProgram=null,backgroundTexture=null,backgroundFramebuffer=null,backgroundSize=[0,0],screenCache=false,skinTextures=[],skinReady=false,terminalTexture=null,terminalRevision=-1,externalDisplay=null,externalRevision=0,terminalReply=false,destroyed=false,vertexBuffer=null,shaderObjects=[],raf=0,last=0,time=0,visible=false,paused=false,phase=0,progress=0;
  let pointer=[0,0],camera=bootCameraView('wide',{aspect:canvas.getBoundingClientRect().width/Math.max(1,canvas.getBoundingClientRect().height)}),focus='wide',candidate=null,candidateAt=0,pointerLast=[-1e4,-1e4],flight=null,flightAge=0,frames=0,stamp=0,read=false;
  let signal={bands:[0,0,0,0],level:0,ink:0},pendingInk=0;
  const terminal=mountAnsiTerminal(terminalOptions);let terminalElapsed=0,terminalManual=false,terminalComplete=false;
- const frameBudget=createFrameBudget({enabled:adaptive});
+ const frameBudget=createFrameBudget({enabled:adaptive,
+  targetFps:Math.min(40,drawFps),degradeFps:Math.min(30,drawFps*.86),recoverFps:Math.min(54,drawFps*.96)});
+ const frameInterval=1000/drawFps;
  const metrics={frames:0,drawMs:0,fps:0,pixels:0,renderer:'unavailable'};
  try{
   gl=canvas.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:false,powerPreference:'low-power'});
@@ -325,8 +359,8 @@ export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>
   glassProgram=gl.createProgram();gl.attachShader(glassProgram,shader(gl.VERTEX_SHADER,'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'));gl.attachShader(glassProgram,shader(gl.FRAGMENT_SHADER,bootGlassFragment));gl.bindAttribLocation(glassProgram,0,'a');gl.linkProgram(glassProgram);if(!gl.getProgramParameter(glassProgram,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(glassProgram));
   gl.useProgram(program);const buffer=vertexBuffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const pos=gl.getAttribLocation(program,'a');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
   metrics.renderer='webgl-sdf';canvas.dataset.renderer='webgl-sdf';canvas.dataset.shader='ready';
- }catch(error){canvas.dataset.shader='failed';canvas.dataset.error=error.message;canvas.setAttribute('aria-label','Signal Dock unavailable: '+error.message);if(fps)fps.textContent='TEXT / NO WEBGL';return {set(){},show(){},focus(){},destroy(){},terminal,metrics};}
- const uniform=name=>gl.getUniformLocation(program,name),u={coreTurn:uniform('uCoreTurn'),relayXY:uniform('uRelayXY'),relayYZ:uniform('uRelayYZ'),knotTurns:uniform('uKnotTurns[0]'),r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive'),eye:uniform('uEye'),look:uniform('uLook'),lens:uniform('uLens'),lamps:uniform('uLamps'),skinA:uniform('uSkinAlbedo'),skinM:uniform('uSkinMatrix'),skinReady:uniform('uSkinReady'),terminal:uniform('uTerminal'),terminalReady:uniform('uTerminalReady')};
+ }catch(error){canvas.dataset.shader='failed';canvas.dataset.error=error.message;canvas.setAttribute('aria-label','Signal Dock unavailable: '+error.message);if(fps)fps.textContent='TEXT / NO WEBGL';return {set(){},show(){},focus(){},destroy(){},transit:()=>Promise.resolve(),terminal,metrics};}
+ const uniform=name=>gl.getUniformLocation(program,name),u={warp:uniform('uWarp'),coreTurn:uniform('uCoreTurn'),relayXY:uniform('uRelayXY'),relayYZ:uniform('uRelayYZ'),knotTurns:uniform('uKnotTurns[0]'),r:uniform('uRes'),p:uniform('uPointer'),t:uniform('uTime'),v:uniform('uProgress'),s:uniform('uPhase'),b:uniform('uBands'),d:uniform('uDrive'),eye:uniform('uEye'),look:uniform('uLook'),lens:uniform('uLens'),lamps:uniform('uLamps'),skinA:uniform('uSkinAlbedo'),skinM:uniform('uSkinMatrix'),skinReady:uniform('uSkinReady'),terminal:uniform('uTerminal'),terminalReady:uniform('uTerminalReady')};
  // A single admitted Human material bake; no per-frame texture generation.
  const skinOwner={};
  for(let unit=0;unit<2;unit++){
@@ -354,39 +388,75 @@ export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>
  const knotTurns=new Float32Array(16),bandBuffer=new Float32Array(4),lifecycle=new AbortController(),listen={signal:lifecycle.signal};
  function selectView(mode,{reply}={}){const layoutChanged=reply!==undefined&&terminalReply!==reply;if(reply!==undefined)terminalReply=!!reply;if(mode!==focus||layoutChanged){screenCache=false;const entropy=new Uint32Array(1);crypto.getRandomValues(entropy);const rect=canvas.getBoundingClientRect();flight=bootCameraFlight(camera,mode,entropy[0],{aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height),reply:terminalReply});flightAge=0;}focus=mode;candidate=null;canvas.dataset.focus=focus;if(focusLabel)focusLabel.textContent=mode==='wide'?'GHOSTLINK / MODEM · ANSI SCREEN · PORTAL':mode==='modem'?'PHASE MODEM / EDGE TO PULL BACK':mode==='screen'?'ANSI / 80 COLUMNS / 2400 BPS / EDGE TO PULL BACK':'CARRIER APERTURE / EDGE TO PULL BACK';for(const [key,button]of Object.entries(viewButtons))button?.setAttribute('aria-pressed',String(key===mode));if(visible&&!raf)show(true);}
  for(const [mode,button]of Object.entries(viewButtons))button?.addEventListener('click',()=>selectView(mode),listen);selectView('wide');
+ function throughPortal({immediate=reduced,onWarpFrame}={}){
+  if(immediate||destroyed||canvas.dataset.shader!=='ready')return Promise.resolve();
+  if(transit)return transit.promise;
+  const rect=canvas.getBoundingClientRect(),viewport={aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height)};
+  selectView('portal');
+  if(!flight)flight=bootCameraFlight(camera,'portal',Math.floor(time*1000),viewport);
+  // Run through the geometry, not just up to the inspection point.
+  flight.to={eye:[BOOT_X+.08,.96,3.0],look:[BOOT_X,.95,5.4],lens:1.24};
+  flight.control=flight.control.map((p,i)=>p.map((x,k)=>x+(flight.to.eye[k]-x)*(i?.72:.31)));
+  flight.duration=1.16;flightAge=0;
+  let finish;
+  const promise=new Promise(resolve=>{finish=resolve;});
+  transit={start:performance.now(),promise,finish,onWarpFrame};
+  paused=false;terminalReply=false;screenCache=false;show(true);
+  return promise;
+ }
+ const BOOT_X=bootPortalCenter[0];
  function draw(now){
   raf=0;if(destroyed||!visible||document.hidden)return;
-  if(now-last>=1000/bootWorldBudget.fps-.1){
-   const dt=Math.min(.08,Math.max(0,(now-last)/1000));last=now-((now-last)%(1000/bootWorldBudget.fps));if(!paused&&!reduced)time+=dt;
+  if(now-last>=frameInterval-.1){
+   const dt=Math.min(.12,Math.max(0,(now-last)/1000));last=now-((now-last)%frameInterval);if(!paused&&!reduced)time+=dt;
+   const transitAge=transit?(now-transit.start)/1000:0;
+   const warp=transit?Math.max(0,(transitAge-1.03)/1.14):0;
+   canvas.dataset.transit=warp>0?'wormhole':transit?'approach':'';
+   if(warp>=1){const arrival=transit;transit=null;arrival.onWarpFrame?.(1);show(false);arrival.finish();return;}
    const rect=canvas.getBoundingClientRect(),scale=bootRenderScale(pixelRatio,{pixelRatio:devicePixelRatio||1,apple:/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent||'')});canvas.dataset.renderScale=String(scale);
    const w=Math.max(1,Math.round(rect.width*scale)),h=Math.max(1,Math.round(rect.height*scale));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;screenCache=false;}
    signal=bootSignalEnvelope(signal,energy(),level(),pendingInk,dt,{held:paused,reduced});pendingInk=0;bandBuffer.set(signal.bands);
    if(!terminalManual)terminalElapsed=progress*terminal.duration;const terminalChanged=terminal.update(terminalElapsed,{reveal:terminalComplete||terminal.mode!=='receiving',time,reducedMotion:reduced});if(terminalChanged&&terminalElapsed>0&&!terminal.complete)pendingInk=Math.max(pendingInk,.65);
    if(terminalRevision!==(externalDisplay?externalRevision:terminal.revision)){gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,externalDisplay||terminal.canvas);terminalRevision=externalDisplay?externalRevision:terminal.revision;}
-   if(candidate&&time-candidateAt>(candidate==='wide'?.65:.2))selectView(candidate);if(flight&&!paused){flightAge+=dt;camera=bootCameraAt(flight,flightAge,{reduced});}if(focus==='wide'&&(!flight||flightAge>=flight.duration))camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height)});if(!flight||flightAge>=flight.duration){if(focus==='screen')camera=bootScreenView(rect.width/Math.max(1,rect.height),Math.max(1,rect.height),{reply:terminalReply});else if(focus==='wide')camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height)});}canvas.dataset.cameraTravel=flight?Math.min(1,flightAge/flight.duration).toFixed(3):'1';const lamps=bootLampSignals(progress,phase,signal,time);
+   if(candidate&&time-candidateAt>(candidate==='wide'?.65:.2))selectView(candidate);if(flight&&!paused){flightAge=transit?transitAge:flightAge+dt;camera=bootCameraAt(flight,flightAge,{reduced});}if(focus==='wide'&&(!flight||flightAge>=flight.duration))camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height)});if(!flight||flightAge>=flight.duration){if(focus==='screen')camera=bootScreenView(rect.width/Math.max(1,rect.height),Math.max(1,rect.height),{reply:terminalReply});else if(focus==='wide')camera=bootCameraView('wide',{aspect:rect.width/Math.max(1,rect.height),height:Math.max(1,rect.height)});}canvas.dataset.cameraTravel=flight?Math.min(1,flightAge/flight.duration).toFixed(3):'1';const lamps=bootLampSignals(progress,phase,signal,time);
    if(frameBudget.sample(now))screenCache=false;
-   const fieldW=Math.max(1,Math.round(w*frameBudget.scale)),fieldH=Math.max(1,Math.round(h*frameBudget.scale));canvas.dataset.fieldSize=fieldW+'×'+fieldH;canvas.dataset.fieldScale=frameBudget.scale.toFixed(4);
+   const fieldScale=Math.min(frameBudget.scale,Math.sqrt(maxFieldPixels/(w*h)));
+   const fieldW=Math.max(1,Math.round(w*fieldScale)),fieldH=Math.max(1,Math.round(h*fieldScale));canvas.dataset.fieldSize=fieldW+'×'+fieldH;canvas.dataset.fieldScale=fieldScale.toFixed(4);
    const begin=performance.now();gl.viewport(0,0,fieldW,fieldH);const heldScreen=focus==='screen'&&(!flight||flightAge>=flight.duration);
    const drawGlass=()=>{gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,w,h);gl.useProgram(glassProgram);gl.uniform2f(glassU.uRes,w,h);gl.uniform3fv(glassU.uEye,camera.eye);gl.uniform3fv(glassU.uLook,camera.look);gl.uniform1f(glassU.uLens,camera.lens);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(glassU.uTerminal,2);gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);gl.uniform1i(glassU.uBackground,3);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-cached-bezel-live-glass';};
-   if(heldScreen&&screenCache)drawGlass();
+   if(warp>0){
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,w,h);gl.useProgram(program);
+    gl.uniform2f(u.r,w,h);gl.uniform1f(u.warp,warp);gl.drawArrays(gl.TRIANGLES,0,6);
+    canvas.dataset.renderMode='analytic-wormhole';
+    transit.onWarpFrame?.(warp);
+   }else if(heldScreen&&screenCache)drawGlass();
    else{
+    const direct=!heldScreen&&fieldW===w&&fieldH===h;
     // Render the retained bezel directly into an RGBA target. Copying the
     // opaque default framebuffer into RGBA is not portable across drivers.
     // The texture is never sampled while its framebuffer is bound.
-    {
-     gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);
-     if(backgroundSize[0]!==fieldW||backgroundSize[1]!==fieldH){gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,fieldW,fieldH,0,gl.RGBA,gl.UNSIGNED_BYTE,null);backgroundSize=[fieldW,fieldH];}
-     gl.bindFramebuffer(gl.FRAMEBUFFER,backgroundFramebuffer);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,backgroundTexture,0);
-     const status=gl.checkFramebufferStatus(gl.FRAMEBUFFER);canvas.dataset.bezelFramebuffer=String(status);
-     if(status!==gl.FRAMEBUFFER_COMPLETE)throw Error('Native bezel framebuffer incomplete: '+status);
+    if(direct)gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    else{
+     gl.bindFramebuffer(gl.FRAMEBUFFER,backgroundFramebuffer);
+     if(backgroundSize[0]!==fieldW||backgroundSize[1]!==fieldH){
+      gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,backgroundTexture);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,fieldW,fieldH,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,backgroundTexture,0);
+      const status=gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+      canvas.dataset.bezelFramebuffer=String(status);
+      if(status!==gl.FRAMEBUFFER_COMPLETE)throw Error('Native bezel framebuffer incomplete: '+status);
+      backgroundSize=[fieldW,fieldH];
+     }
     }
-    gl.useProgram(program);
+    gl.useProgram(program);gl.uniform1f(u.warp,0);
     gl.uniform2f(u.coreTurn,Math.cos(time*.16),Math.sin(time*.16));gl.uniform2f(u.relayXY,Math.cos(time*.12),Math.sin(time*.12));gl.uniform2f(u.relayYZ,Math.cos(.6+time*.09),Math.sin(.6+time*.09));
     for(let k=0;k<4;k++)knotTurns.set([Math.cos(k*.7854+time*.07),Math.sin(k*.7854+time*.07),Math.cos(k*.64),Math.sin(k*.64)],k*4);gl.uniform4fv(u.knotTurns,knotTurns);
     gl.uniform2f(u.r,fieldW,fieldH);gl.uniform2f(u.p,pointer[0],pointer[1]);gl.uniform1f(u.t,time);gl.uniform1f(u.v,progress);gl.uniform1f(u.s,phase);gl.uniform4fv(u.b,bandBuffer);gl.uniform2f(u.d,signal.level,signal.ink);gl.uniform3fv(u.eye,camera.eye);gl.uniform3fv(u.look,camera.look);gl.uniform1f(u.lens,camera.lens);gl.uniform4fv(u.lamps,lamps);
     for(let unit=0;unit<2;unit++){gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,skinTextures[unit]);}
     gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,terminalTexture);gl.uniform1i(u.terminal,2);gl.uniform1f(u.terminalReady,1);gl.uniform1i(u.skinA,0);gl.uniform1i(u.skinM,1);gl.uniform1f(u.skinReady,skinReady?1:0);gl.drawArrays(gl.TRIANGLES,0,6);canvas.dataset.renderMode='native-sdf';
-    screenCache=heldScreen;drawGlass();canvas.dataset.renderMode=heldScreen?'native-cached-bezel-live-glass':'sdf-field-native-glass';
+    screenCache=heldScreen;
+    if(!direct)drawGlass();
+    canvas.dataset.renderMode=heldScreen?'native-cached-bezel-live-glass':direct?'native-sdf':'sdf-field-native-glass';
    }
    metrics.frames++;metrics.drawMs=performance.now()-begin;metrics.pixels=fieldW*fieldH;canvas.dataset.drawMs=metrics.drawMs.toFixed(3);canvas.dataset.progress=progress.toFixed(3);canvas.dataset.frames=String(metrics.frames);
    if(!read){const pixels=new Uint8Array(4);gl.readPixels(w>>1,h>>1,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);canvas.dataset.pixel=[...pixels].join(',');read=true;}
@@ -403,8 +473,8 @@ export function mountBootWorld(canvas,{fps,focusLabel,viewButtons={},energy=()=>
  // Camera focus is selected by explicit press. Pointer motion never flies
  // away from a control; the host uses pick() with its shared press binding.
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}else if(visible)show(true);},listen);
- canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();show(false);releaseMaterialOwner(skinOwner);canvas.dataset.shader='lost';if(fps)fps.textContent='SDF CONTEXT LOST / RELOAD';},listen);
+ canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();show(false);transit?.finish();transit=null;releaseMaterialOwner(skinOwner);canvas.dataset.shader='lost';if(fps)fps.textContent='SDF CONTEXT LOST / RELOAD';},listen);
  function screenRect(){const rect=canvas.getBoundingClientRect(),aspect=rect.width/Math.max(1,rect.height),corners=[[-4.35,1.54,.53],[-1.15,-.46,.53]].map(point=>bootProject(point,camera,aspect)),left=Math.min(...corners.map(p=>(p[0]+1)*.5*rect.width)),top=Math.min(...corners.map(p=>(1-p[1])*.5*rect.height)),width=Math.abs(corners[0][0]-corners[1][0])*.5*rect.width,height=Math.abs(corners[0][1]-corners[1][1])*.5*rect.height;return {x:left,y:top,left:rect.left+left,top:rect.top+top,width,height,right:rect.left+left+width,bottom:rect.top+top+height};}
  function screenCell(clientX,clientY){const rect=canvas.getBoundingClientRect(),aspect=rect.width/Math.max(1,rect.height),pointer=[(clientX-rect.left)/rect.width*2-1,1-(clientY-rect.top)/rect.height*2],basis=bootBasis(camera),ray=vnorm(basis.f.map((v,i)=>v*camera.lens+basis.r[i]*pointer[0]*aspect*.5+basis.up[i]*pointer[1]*.5)),depth=(.53-camera.eye[2])/ray[2];if(depth<=0||ray[2]<=0)return null;const point=camera.eye.map((v,i)=>v+ray[i]*depth),u=.5-(point[0]+2.75)/3.2,v=.5-(point[1]-.54)/2.;if(u<0||u>=1||v<0||v>=1)return null;const column=Math.floor(u*80),row=Math.floor(v*25),hotspot=terminal.hotspots.find(h=>column>=h.column&&column<h.column+h.width&&row>=h.row&&row<h.row+h.height);return {u,v,column,row,hotspot:hotspot?.id||null};}
- return {show,metrics,terminal,focus:selectView,screenRect,screenCell,pick(clientX,clientY){const rect=canvas.getBoundingClientRect();return bootPick([(clientX-rect.left)/rect.width*2-1,1-(clientY-rect.top)/rect.height*2],camera,rect.width/Math.max(1,rect.height));},setDisplay(source,revision=performance.now()){externalDisplay=source;externalRevision=revision;terminalRevision=-1;if(visible&&!raf)show(true);},freeze(){terminalReply=true;if(visible&&!raf)show(true);},resume(){terminalReply=false;if(visible&&!raf)show(true);},destroy(){if(destroyed)return;show(false);destroyed=true;lifecycle.abort();releaseMaterialOwner(skinOwner);for(const tex of skinTextures)gl.deleteTexture(tex);gl.deleteTexture(terminalTexture);gl.deleteTexture(backgroundTexture);gl.deleteFramebuffer(backgroundFramebuffer);gl.deleteProgram(glassProgram);gl.deleteBuffer(vertexBuffer);for(const shader of shaderObjects)gl.deleteShader(shader);gl.deleteProgram(program);},set(state){if(state.terminalReply!==undefined)terminalReply=!!state.terminalReply;if(state.terminalMode){if(terminal.mode!==state.terminalMode){terminalElapsed=0;terminalComplete=state.terminalMode!=='receiving';}terminal.setMode(state.terminalMode,state.terminalControls||{});}else if(state.terminalControls)terminal.setControls(state.terminalControls);if(state.terminalFocus!==undefined)terminal.setFocus(state.terminalFocus);if(state.terminalReset){terminal.reset();terminalElapsed=0;terminalComplete=false;}if(state.terminalElapsed!==undefined){terminalManual=true;terminalElapsed=Math.max(0,state.terminalElapsed);}if(state.terminalComplete!==undefined)terminalComplete=!!state.terminalComplete;if(state.focus)selectView(state.focus);if(state.reset){screenCache=false;camera=bootCameraView();focus='wide';flight=null;flightAge=0;selectView('wide');pointerLast=[-1e4,-1e4];}phase=state.phase??phase;progress=Math.max(0,Math.min(1,state.progress??progress));if(state.paused!==undefined)paused=!!state.paused;pendingInk=Math.max(pendingInk,state.ink||0);canvas.dataset.held=String(paused);if(visible&&!raf)show(true);}};
+ return {show,metrics,terminal,transit:throughPortal,focus:selectView,screenRect,screenCell,pick(clientX,clientY){const rect=canvas.getBoundingClientRect();return bootPick([(clientX-rect.left)/rect.width*2-1,1-(clientY-rect.top)/rect.height*2],camera,rect.width/Math.max(1,rect.height));},setDisplay(source,revision=performance.now()){externalDisplay=source;externalRevision=revision;terminalRevision=-1;if(visible&&!raf)show(true);},freeze(){terminalReply=true;if(visible&&!raf)show(true);},resume(){terminalReply=false;if(visible&&!raf)show(true);},destroy(){if(destroyed)return;show(false);destroyed=true;transit?.finish();transit=null;lifecycle.abort();releaseMaterialOwner(skinOwner);for(const tex of skinTextures)gl.deleteTexture(tex);gl.deleteTexture(terminalTexture);gl.deleteTexture(backgroundTexture);gl.deleteFramebuffer(backgroundFramebuffer);gl.deleteProgram(glassProgram);gl.deleteBuffer(vertexBuffer);for(const shader of shaderObjects)gl.deleteShader(shader);gl.deleteProgram(program);},set(state){if(state.terminalReply!==undefined)terminalReply=!!state.terminalReply;if(state.terminalMode){if(terminal.mode!==state.terminalMode){terminalElapsed=0;terminalComplete=state.terminalMode!=='receiving';}terminal.setMode(state.terminalMode,state.terminalControls||{});}else if(state.terminalControls)terminal.setControls(state.terminalControls);if(state.terminalFocus!==undefined)terminal.setFocus(state.terminalFocus);if(state.terminalReset){terminal.reset();terminalElapsed=0;terminalComplete=false;}if(state.terminalElapsed!==undefined){terminalManual=true;terminalElapsed=Math.max(0,state.terminalElapsed);}if(state.terminalComplete!==undefined)terminalComplete=!!state.terminalComplete;if(state.focus)selectView(state.focus);if(state.reset){screenCache=false;camera=bootCameraView();focus='wide';flight=null;flightAge=0;selectView('wide');pointerLast=[-1e4,-1e4];}phase=state.phase??phase;progress=Math.max(0,Math.min(1,state.progress??progress));if(state.paused!==undefined)paused=!!state.paused;pendingInk=Math.max(pendingInk,state.ink||0);canvas.dataset.held=String(paused);if(visible&&!raf)show(true);}};
 }

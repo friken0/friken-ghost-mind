@@ -1,5 +1,7 @@
 import {ansiScene,ansiSceneProgram} from './ansi-scenes.mjs';
-import {mountAnsiTerminal} from './ansi-terminal.mjs';
+import {mountAnsiFractal,mountAnsiLoupe} from './ansi-fractal.mjs';
+import {ansiBloomProfile, ansiFlicker, createAnsiLightPainter} from './ansi-animation.mjs';
+import {ansiColourTheme,mountAnsiTerminal} from './ansi-terminal.mjs';
 /* ANSI++ weighted sprite meshes. The original terminal cells remain source.
  * Capture a completed painting; deform a pinned quad grid with authored bones.
  * Linear blend skinning evaluates at most four influences per vertex.
@@ -58,25 +60,79 @@ export function poseAnsiMesh(mesh,seconds=0,{held=false}={}){
  * One smooth field per plant; never independent random cell displacement. */
 export function poseAnsiGarden(mesh,seconds,{bands=[],rms=0,aspect=1,held=false}={}){
  if(!Number.isFinite(seconds)||seconds<0||!Number.isFinite(aspect)||aspect<=0||aspect>8)throw Error('Bounded garden clock/aspect required');
- const bass=held?0:clamp(Number(bands[0])||0),mid=held?0:clamp(Number(bands[1])||0),plants=[[.5,.36,.28],[.18,.53,.15],[.82,.52,.15]];
- return mesh.vertices.map(v=>{let x=v.u,y=v.v;const pin=Math.sin(Math.PI*v.u)*Math.sin(Math.PI*v.v);for(const [i,[cx,cy,size]]of plants.entries()){
-  const dx=(v.u-cx)*aspect,dy=v.v-cy,r=Math.hypot(dx,dy),flower=Math.exp(-((r/(size*1.3))**4)),open=bass*.085,angle=mid*.045*Math.sin(seconds*1.7+i*.3),co=Math.cos(angle),si=Math.sin(angle);
+ const bass=Math.sqrt(clamp((Number(bands[0])||0)*1.8)),mid=Math.sqrt(clamp((Number(bands[1])||0)*1.8)),plants=[[.5,.36,.28],[.18,.53,.15],[.82,.52,.15]];
+ return mesh.vertices.map(v=>{let x=v.u,y=v.v;if(held)return {x,y,u:v.u,v:v.v};const pin=Math.sin(Math.PI*v.u)*Math.sin(Math.PI*v.v);for(const [i,[cx,cy,size]]of plants.entries()){
+  const dx=(v.u-cx)*aspect,dy=v.v-cy,r=Math.hypot(dx,dy),flower=Math.exp(-((r/(size*1.3))**4)),open=bass*.24+.065*Math.sin(seconds*1.45+i*.8),angle=(.065+mid*.18)*Math.sin(seconds*1.7+i*.8),co=Math.cos(angle),si=Math.sin(angle);
   x+=((dx*co-dy*si)*(1+open)-dx)/aspect*flower*pin;y+=((dx*si+dy*co)*(1+open)-dy)*flower*pin;
   const stem=Math.exp(-(((v.u-cx)*aspect/.17)**2))*clamp((v.v-cy)/.13)*clamp((.96-v.v)/.5);
-  x+=Math.sin(seconds*1.5+i*.35)*mid*.025*stem*pin;
+  x+=Math.sin(seconds*1.5+i*.8)*(.019+mid*.064)*stem*pin;
  }return {x,y,u:v.u,v:v.v};});
 }
-function triangle(ctx,image,a,b,c,w,h){const sx=[a.u*w,b.u*w,c.u*w],sy=[a.v*h,b.v*h,c.v*h],dx=[a.x*w,b.x*w,c.x*w],dy=[a.y*h,b.y*h,c.y*h],den=sx[0]*(sy[1]-sy[2])+sx[1]*(sy[2]-sy[0])+sx[2]*(sy[0]-sy[1]);if(Math.abs(den)<1e-9)return;const coef=z=>[(z[0]*(sy[1]-sy[2])+z[1]*(sy[2]-sy[0])+z[2]*(sy[0]-sy[1]))/den,(z[0]*(sx[2]-sx[1])+z[1]*(sx[0]-sx[2])+z[2]*(sx[1]-sx[0]))/den,(z[0]*(sx[1]*sy[2]-sx[2]*sy[1])+z[1]*(sx[2]*sy[0]-sx[0]*sy[2])+z[2]*(sx[0]*sy[1]-sx[1]*sy[0]))/den],x=coef(dx),y=coef(dy);ctx.save();ctx.beginPath();ctx.moveTo(dx[0],dy[0]);ctx.lineTo(dx[1],dy[1]);ctx.lineTo(dx[2],dy[2]);ctx.closePath();ctx.clip();ctx.transform(x[0],y[0],x[1],y[1],x[2],y[2]);ctx.drawImage(image,0,0);ctx.restore();}
+function triangle(ctx,image,a,b,c,w,h){const sx=[a.u*w,b.u*w,c.u*w],sy=[a.v*h,b.v*h,c.v*h],dx=[a.x*w,b.x*w,c.x*w],dy=[a.y*h,b.y*h,c.y*h],den=sx[0]*(sy[1]-sy[2])+sx[1]*(sy[2]-sy[0])+sx[2]*(sy[0]-sy[1]);if(Math.abs(den)<1e-9)return;const coef=z=>[(z[0]*(sy[1]-sy[2])+z[1]*(sy[2]-sy[0])+z[2]*(sy[0]-sy[1]))/den,(z[0]*(sx[2]-sx[1])+z[1]*(sx[0]-sx[2])+z[2]*(sx[1]-sx[0]))/den,(z[0]*(sx[1]*sy[2]-sx[2]*sy[1])+z[1]*(sx[2]*sy[0]-sx[0]*sy[2])+z[2]*(sx[0]*sy[1]-sx[1]*sy[0]))/den],x=coef(dx),y=coef(dy);ctx.save();ctx.beginPath();ctx.moveTo(dx[0],dy[0]);ctx.lineTo(dx[1],dy[1]);ctx.lineTo(dx[2],dy[2]);ctx.closePath();ctx.clip();ctx.transform(x[0],y[0],x[1],y[1],x[2],y[2]);ctx.drawImage(image,0,0,w,h);ctx.restore();}
+/** Paint a captured ANSI glyph plate with the existing weighted mesh. */
+export function paintAnsiMesh(ctx,image,mesh,pose,width,height){
+ for(const [a,b,c] of mesh.triangles)triangle(ctx,image,pose[a],pose[b],pose[c],width,height);
+}
 export function mountAnsiMeshSprite(root,{host}={}){
- if(!root?.ownerDocument||!host?.canvas)throw Error('ANSI sprite host required');const doc=root.ownerDocument,canvas=doc.createElement('canvas'),texture=doc.createElement('canvas'),ctx=canvas.getContext('2d'),ink=texture.getContext('2d');canvas.className='native-ansi-mesh';canvas.setAttribute('aria-hidden','true');canvas.style.cssText='position:absolute;z-index:2;pointer-events:none;display:none;';root.append(canvas);let key='',mesh=null,artTerminal=null,scene=null,start=0,last=-1,priorHeld=null,wasComplete=false,gardenBands=[0,0],gardenClock=0,fieldClock=0,fieldTick=-1,field=null;
- return {canvas,update(item,visible,clock,held=false,energy=null){if(!item){canvas.style.display='none';return;}const {revealOffsets,...identity}=item,id=JSON.stringify(identity);if(id!==key){key=id;mesh=item.effect==='none'?null:createAnsiMesh(ansiMeshRig(item.effect,{period:item.period||6,amplitude:item.amplitude??1}),{columns:item.effect==='faces'?24:10,rows:item.effect==='faces'?20:10});start=clock;last=-1;priorHeld=null;wasComplete=false;fieldClock=0;fieldTick=-1;field=null;
-   if(item.source){const columns=80,rows=Math.min(50,Math.max(8,Math.round(item.height*columns/item.width)));scene=ansiScene(item.source.kind,{width:columns,height:rows,seed:item.source.seed,stage:item.source.stage});artTerminal??=mountAnsiTerminal({canvas:texture,cursor:false});artTerminal.setGrid(columns,rows,{preserve:false});const program=ansiSceneProgram(scene,{columns,rows});artTerminal.setProgram(program.text,{animation:program.animation});canvas.width=columns*16;canvas.height=rows*32;}
+ if(!root?.ownerDocument||!host?.canvas)throw Error('ANSI sprite host required');const doc=root.ownerDocument,canvas=doc.createElement('canvas'),texture=doc.createElement('canvas'),ctx=canvas.getContext('2d'),ink=texture.getContext('2d');canvas.className='native-ansi-mesh';canvas.setAttribute('aria-hidden','true');canvas.style.cssText='position:absolute;z-index:2;pointer-events:none;display:none;';root.append(canvas);
+ const detail=mountAnsiFractal(root,{host,textureOnly:true});
+ const composite=doc.createElement('canvas'),mix=composite.getContext('2d'),lighting=createAnsiLightPainter(doc);
+ let key='',mesh=null,artTerminal=null,scene=null,start=0,last=-1,priorHeld=null,wasComplete=false,gardenBands=[0,0],gardenClock=0,fieldClock=0,fieldTick=-1,field=null;
+ const loupe=mountAnsiLoupe(root,canvas,point=>{
+  const layers=detail.inkBands(point);
+  if(layers.length)return layers;
+  const buffer=(artTerminal??host.terminal)?.buffer;
+  if(!buffer?.cells)return [];
+  const x0=artTerminal?0:activeItem.column-1,y0=artTerminal?0:activeItem.row-1;
+  const width=artTerminal?80:activeItem.width,height=artTerminal?Math.round(texture.height/32):activeItem.height;
+  const columns=Math.min(15,width),rows=Math.min(3,height),stride=artTerminal?80:host.grid.columns;
+  const x=x0+Math.max(0,Math.min(width-columns,Math.floor(point.x*width)-Math.floor(columns/2)));
+  const y=y0+Math.max(0,Math.min(height-rows,Math.floor(point.y*height)-1));
+  const cells=Array.from({length:columns*rows},(_,i)=>{
+   const cell=buffer.cells[(y+Math.floor(i/columns))*stride+x+i%columns];
+   return cell&&{glyph:cell.char,fg:cell.fg&15,bg:cell.bg&15};
+  });
+  return [{label:'SOURCE ANSI',columns,rows,cells}];
+ });
+ let activeItem;
+ return {canvas,reveal(){detail.reveal();},update(item,visible,clock,held=false,energy=null){if(!item){loupe?.sync(null);canvas.style.display='none';detail.update(null,false,clock);return;}activeItem=item;const {revealOffsets,passes=4,filter,...identity}=item,id=JSON.stringify(identity);if(id!==key){loupe?.sync(null);key=id;mesh=item.effect==='none'?null:createAnsiMesh(ansiMeshRig(item.effect,{period:item.period||6,amplitude:item.amplitude??1}),{columns:item.effect==='faces'?24:10,rows:item.effect==='faces'?20:10});start=clock;last=-1;priorHeld=null;wasComplete=false;fieldClock=0;fieldTick=-1;field=null;detail.update(null,false,clock);
+   if(item.source){const columns=80,rows=Math.min(50,Math.max(8,Math.round(item.height*columns/item.width)));scene=ansiScene(item.source.kind,{width:columns,height:rows,seed:item.source.seed,stage:item.source.stage});artTerminal??=mountAnsiTerminal({canvas:texture,cursor:false});artTerminal.setGrid(columns,rows,{preserve:false});const program=ansiSceneProgram(scene,{columns,rows});artTerminal.setProgram(program.text,{animation:{...program.animation,ink:[]}});canvas.width=columns*16;canvas.height=rows*32;}
    else{artTerminal=null;scene=null;canvas.width=texture.width=item.width*16;canvas.height=texture.height=item.height*32;}}
-  const fit=host.rect(),base=root.getBoundingClientRect();canvas.style.display='block';Object.assign(canvas.style,{left:fit.left-base.left+(item.column-1)*fit.cellWidth+'px',top:fit.top-base.top+(item.row-1)*fit.cellHeight+'px',width:item.width*fit.cellWidth+'px',height:item.height*fit.cellHeight+'px'});const theme=host.terminal?.colourTheme||'ansi',changedTheme=artTerminal&&artTerminal.colourTheme!==theme;if(artTerminal)artTerminal.setPalette(theme);if(visible&&held&&priorHeld===true&&last>=0&&!changedTheme)return;if(visible&&!wasComplete)start=clock;wasComplete=visible;const begin=performance.now(),age=Math.max(0,clock-start);
-  if(visible&&scene?.frame){
+  const fit=host.rect(),base=root.getBoundingClientRect();canvas.style.display='block';Object.assign(canvas.style,{left:fit.left-base.left+(item.column-1)*fit.cellWidth+'px',top:fit.top-base.top+(item.row-1)*fit.cellHeight+'px',width:item.width*fit.cellWidth+'px',height:item.height*fit.cellHeight+'px'});const theme=host.terminal?.colourTheme||'ansi';loupe?.sync(visible?{theme,pass:Number(canvas.dataset.detailPass)}:null);const changedTheme=artTerminal&&artTerminal.colourTheme!==theme;if(artTerminal)artTerminal.setPalette(theme);if(visible&&held&&priorHeld===true&&last>=0&&!changedTheme&&(!scene?.sample||(detail.canvas.dataset.complete==='true'&&detail.canvas.dataset.passes===String(passes))))return;if(visible&&!wasComplete)start=clock;wasComplete=visible;const begin=performance.now(),age=Math.max(0,clock-start);
+  if(visible&&scene?.frame&&(Number(detail.canvas.dataset.pass)||0)<2){
    if(!held&&priorHeld!==true&&last>=start)fieldClock+=Math.min(.12,Math.max(0,clock-last));
    const tick=Math.floor(fieldClock*15);
    if(tick!==fieldTick){field=scene.frame(tick/15);fieldTick=tick;}
   }
-  if(artTerminal)artTerminal.update(0,{reveal:true,time:age,reducedMotion:held||!visible,energy:visible&&!scene?.frame?energy:null,artCells:visible?field:null});else{ink.clearRect(0,0,texture.width,texture.height);ink.drawImage(host.canvas,(item.column-1)*16,(item.row-1)*32,texture.width,texture.height,0,0,texture.width,texture.height);}ctx.clearRect(0,0,canvas.width,canvas.height);ctx.imageSmoothingEnabled=false;if(!visible&&item.revealOffsets){const bytes=Number(host.canvas.dataset.serialBytes)||0,cw=canvas.width/item.width,ch=canvas.height/item.height;ctx.save();ctx.beginPath();for(let row=0;row<item.height;row++){let shown=0;for(let col=0;col<item.width;col++)if(item.revealOffsets[row*item.width+col]<=bytes)shown++;else break;if(shown)ctx.rect(0,row*ch,shown*cw,ch);}ctx.clip();ctx.drawImage(texture,0,0);ctx.restore();canvas.dataset.serialPhase='drawing';canvas.dataset.sourceColumns=String(artTerminal?80:item.width);return;}canvas.dataset.serialPhase='animated';const garden=item.source?.kind==='trip';if(garden){const dt=Math.min(.15,Math.max(0,clock-gardenClock));gardenClock=clock;for(let i=0;i<2;i++){const target=held?0:clamp(Number(energy?.bands?.[i])||0),tau=target>gardenBands[i] ? .12 : .38;gardenBands[i]+=(target-gardenBands[i])*(1-Math.exp(-dt/tau));}}const pose=mesh?(garden?poseAnsiGarden(mesh,Math.max(0,clock-start),{held,aspect:canvas.width/canvas.height,bands:gardenBands}):poseAnsiMesh(mesh,clock-start,{held})):null;canvas.dataset.cymaticMode=garden?'coherent-plant-mesh':'cell-material';if(garden)canvas.dataset.gardenEnergy=gardenBands.map(n=>n.toFixed(3)).join(',');if(held||!mesh)ctx.drawImage(texture,0,0);else for(const t of mesh.triangles)triangle(ctx,texture,...t.map(i=>pose[i]),canvas.width,canvas.height);last=clock;priorHeld=held;canvas.dataset.effect=scene?.frame?scene.kind:item.effect;canvas.dataset.sourceColumns=String(artTerminal?80:item.width);canvas.dataset.cymaticCells=artTerminal?.canvas.dataset.cymaticCells||'0';canvas.dataset.phase=((clock-start)/(item.period||6)%1).toFixed(3);canvas.dataset.triangles=String(mesh?.triangles.length||0);canvas.dataset.paintMs=(performance.now()-begin).toFixed(2);},destroy(){canvas.remove();mesh=null;}};
+  if(artTerminal)artTerminal.update(0,{reveal:true,time:age,reducedMotion:held||!visible,energy:visible&&!scene?.frame?energy:null,artCells:visible?field:null});else{ink.clearRect(0,0,texture.width,texture.height);ink.drawImage(host.canvas,(item.column-1)*16,(item.row-1)*32,texture.width,texture.height,0,0,texture.width,texture.height);}ctx.clearRect(0,0,canvas.width,canvas.height);ctx.imageSmoothingEnabled=false;if(!visible&&item.revealOffsets){const bytes=Number(host.canvas.dataset.serialBytes)||0,cw=canvas.width/item.width,ch=canvas.height/item.height;ctx.save();ctx.beginPath();for(let row=0;row<item.height;row++){let shown=0;for(let col=0;col<item.width;col++)if(item.revealOffsets[row*item.width+col]<=bytes)shown++;else break;if(shown)ctx.rect(0,row*ch,shown*cw,ch);}ctx.clip();ctx.drawImage(texture,0,0);ctx.restore();canvas.dataset.serialPhase='drawing';canvas.dataset.sourceColumns=String(artTerminal?80:item.width);return;}canvas.dataset.serialPhase='animated';
+ const garden=item.source?.kind==='trip';
+ let image=texture;
+ if(visible&&scene?.sample){
+   detail.update({id:key,width:item.width,height:item.height,seed:item.source.seed,
+     bps:Number(host.canvas.dataset.bps)||14400,sample:scene.sample,passes,filter},true,clock,held);
+   canvas.dataset.detailPass=detail.canvas.dataset.pass;
+   if(Number(canvas.dataset.detailPass)>1){
+     if(composite.width!==texture.width||composite.height!==texture.height){
+       composite.width=texture.width;composite.height=texture.height;
+     }
+     mix.imageSmoothingEnabled=false;
+     mix.drawImage(detail.canvas,0,0,composite.width,composite.height);
+     // The new geometry supplies the quiet material; the exact authored
+     // glyph keys still supply the face, water, and machine lights in motion.
+     for(const {row,column} of scene.tracks){
+       const x=(column-1)*16,y=(row-1)*32;
+       mix.drawImage(texture,x,y,16,32,x,y,16,32);
+     }
+     image=composite;
+   }
+ } else delete canvas.dataset.detailPass;if(garden){const dt=Math.min(.15,Math.max(0,clock-gardenClock));gardenClock=clock;for(let i=0;i<2;i++){const target=held?0:clamp(Number(energy?.bands?.[i])||0),tau=target>gardenBands[i] ? .12 : .38;gardenBands[i]+=(target-gardenBands[i])*(1-Math.exp(-dt/tau));}}const pose=mesh?(garden?poseAnsiGarden(mesh,Math.max(0,clock-start),{held,aspect:canvas.width/canvas.height,bands:gardenBands}):poseAnsiMesh(mesh,clock-start,{held})):null;canvas.dataset.cymaticMode=garden?'coherent-plant-mesh':'cell-material';if(garden)canvas.dataset.gardenEnergy=gardenBands.map(n=>n.toFixed(3)).join(',');if(held||!mesh)ctx.drawImage(image,0,0);else paintAnsiMesh(ctx,image,mesh,pose,canvas.width,canvas.height);if(visible&&scene?.lights?.length){
+  const pass=Number(canvas.dataset.detailPass)||1,{radius}=ansiBloomProfile(pass);
+  const palette=ansiColourTheme(theme).colours;
+  for(const [i,lamp] of scene.lights.entries()){
+   const x=lamp.u*canvas.width,y=lamp.v*canvas.height,size=lamp.size*canvas.height;
+   const power=lamp.power*(garden?.65+gardenBands[0]*.35:1)*ansiFlicker(lamp.flicker,age,i,held);
+   lighting.glow(ctx,{x,y,width:size*radius*(lamp.kind==='area'?1.4:1),height:size*radius,
+    color:palette[lamp.color],power,pass,kind:lamp.kind});
+  }
+ }last=clock;priorHeld=held;canvas.dataset.effect=scene?.frame?scene.kind:item.effect;canvas.dataset.sourceColumns=String(artTerminal?80:item.width);canvas.dataset.cymaticCells=artTerminal?.canvas.dataset.cymaticCells||'0';canvas.dataset.phase=((clock-start)/(item.period||6)%1).toFixed(3);canvas.dataset.triangles=String(mesh?.triangles.length||0);canvas.dataset.paintMs=(performance.now()-begin).toFixed(2);loupe?.refresh();},destroy(){loupe?.destroy();detail.destroy();canvas.remove();mesh=null;}};
 }

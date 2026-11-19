@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ansiColourThemes,ansiColourTheme,ansiGeometry,createAnsiBuffer,connectionAnsi,dialerAnsi,heldAnsi,terminalHotspots,ansiSerialFrame,mountAnsiTerminal,bootAnsiCellRole,bootAnsiRail,promptAnsi,bootCommand,bootCommandCps,terminalConnectionStages} from './ansi-terminal.mjs';
+import {ansiColourThemes,ansiColourTheme,ansiGeometry,createAnsiBuffer,connectionAnsi,dialerAnsi,heldAnsi,terminalHotspots,ansiSerialFrame,mountAnsiTerminal,bootAnsiCellRole,bootAnsiRail,promptAnsi,bootCommand,bootCommandCps,terminalConnectionStages,paintGlyph} from './ansi-terminal.mjs';
 import {bootScreenView,bootCameraView,bootCameraFlight,bootCameraAt,bootProject,bootPick,bootRenderScale} from './boot-world.mjs';
 
 test('ANSI controls survive arbitrary serial boundaries and never become visible text',()=>{
@@ -149,4 +149,42 @@ test('an addressed cover draws bounded art, readable subject and exact connected
  const other=createAnsiBuffer();other.feed(heldAnsi({recipient:'Surreal',cover:{...cover,art:'eye'}}));
  assert.match(other.text,/TO \/ SURREAL/);
  assert.notDeepEqual(other.cells.slice(3*80,4*80+35),buffer.cells.slice(3*80,4*80+35));
+});
+
+test('extended ANSI inks survive serial chunks and the three display modes',async()=>{
+ const {ansiPalette,ansiPalette64,ansiColourResolver}=await import('./ansi-animation.mjs');
+ const {ansiSceneProgram}=await import('./ansi-scenes.mjs');
+ const {text}=ansiSceneProgram({cells:[
+  {row:1,column:1,glyph:'X',fg:'#79c6a1',bg:201},
+  {row:1,column:2,glyph:'Y',fg:14,bg:'#0d2416'},
+ ]},{columns:80,rows:25});
+ const parsed=createAnsiBuffer();
+ for(const byte of text)parsed.feed(byte);
+ assert.deepEqual(parsed.cells.slice(0,2),[
+  {char:'X',fg:'#79c6a1',bg:201},{char:'Y',fg:14,bg:'#0d2416'},
+ ]);
+ assert.equal(new Set(ansiPalette64).size,64);
+ const classic=ansiColourResolver('16'),expanded=ansiColourResolver('64'),rgb=ansiColourResolver('rgb');
+ assert.ok(ansiPalette.includes(classic('#79c6a1')));
+ assert.ok(ansiPalette64.includes(expanded('#79c6a1')));
+ assert.notEqual(classic('#79c6a1'),expanded('#79c6a1'));
+ assert.equal(rgb('#79c6a1'),'#79c6a1');
+ assert.equal(rgb(201),'#ff00ff');
+ for(const resolve of [classic,expanded,rgb])assert.equal(resolve(14),ansiPalette[14]);
+});
+
+test('legacy sextants and diagonals have deterministic native glyph coverage',()=>{
+ const rectangles=[];
+ const context={fillRect:(...rect)=>rectangles.push(rect),fillText:()=>assert.fail('native glyph used font fallback')};
+ paintGlyph(context,String.fromCodePoint(0x1fb00),0,0,12,24);
+ assert.deepEqual(rectangles,[[0,0,6,8]]);
+ rectangles.length=0;
+ paintGlyph(context,String.fromCodePoint(0x1fb3b),0,0,12,24);
+ assert.equal(rectangles.length,5);
+ assert.ok(!rectangles.some(([x,y])=>x===0&&y===0));
+ rectangles.length=0;
+ paintGlyph(context,'╳',0,0,8,16);
+ assert.equal(rectangles.length,32);
+ assert.deepEqual(rectangles[0],[0,0,1,1]);
+ assert.deepEqual(rectangles[1],[7,0,1,1]);
 });
