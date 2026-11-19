@@ -87,3 +87,26 @@ Bring the full game and the offline engine together:
   this public repo, uses the existing framework, logs into the BBS, then
   rolls a Turn-Out-Of-Time with the shared renderer. Check the newest
   runbook (Runbook 2.29) for the current contract.
+
+## Round 3 verdict (Prime, Nov 19): native shapes read as a kid's doodle
+
+`frik-native.mjs` proved the RENDERING half (material ramp + level per
+sample, shades only between neighbouring steps, silhouette-only second
+pass, world-anchored cells, strong palette separation). Its FORM half
+failed: ellipses and capsules are not anatomy. Converting the prototype
+painting failed the other way: good form, converted look.
+
+Next attempt keeps the prototype's form and replaces only its output:
+
+- The keeper already exists as authored fields in
+  `waters-of-time/ansi-frik-bridge-ink.mjs` (`frikBridgeFields`: parts,
+  section, boundaries, relief, litSkin, materials, skullPits, cheekFolds,
+  legJoints) traced from the canon sketch, plus the IK rig. Sample THOSE
+  as (material id, relief normal, light) and emit ramp + level + glyph,
+  instead of their RGB shading. Same for the bridge, Belljaw, Siltback.
+- Do the same at the shader level for the GPU path (and later
+  FriktalCompute): an "ANSI G-buffer" of material / light / edge per
+  cell that a cell pass turns into glyphs. One art source, two outputs.
+- Judge against real ANSI art at its best (ACiD / iCE scene pieces): the
+  artist's value structure, outline discipline and glyph texture, at
+  sizes where cells stay visible.
