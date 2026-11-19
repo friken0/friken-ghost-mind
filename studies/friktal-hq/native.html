@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frik Keeper · Native ANSI++</title>
+<style>
+html,body{margin:0;height:100%;background:#05040c;overflow:hidden}
+canvas{display:block;width:100vw;height:100vh;image-rendering:pixelated}
+</style>
+</head>
+<body>
+<canvas id="screen" aria-label="The Frik keeper on the comms viewscreen, drawn as native ANSI++ cells"></canvas>
+<script type="module">
+import {paintGlyph} from '../../Tools/ChromaticBBS/ansi-terminal.mjs';
+import {ensureAnsiFont, ansiFontFamily} from '../../Tools/ChromaticBBS/ansi-ui.mjs';
+import {rampModel, solveRampCell, cellStyles} from '../../Tools/ChromaticBBS/ansi-cellsolve.mjs';
+import {frikInks, frikRamps, frikScene, frikMarks} from './frik-native.mjs';
+
+const params = new URLSearchParams(location.search);
+const C0 = +(params.get('cols') ?? 120);           // cells across at each octave
+const passes = +(params.get('passes') ?? 2);       // 2 = silhouette refinement pass
+const model = rampModel(frikInks, frikRamps);
+const style = {...cellStyles.plus, quadAllowed: true, stepRange: .9};
+const canvas = document.getElementById('screen'), ctx = canvas.getContext('2d', {alpha: false});
+ensureAnsiFont();
+
+// Viewscreen frame: the scene lives in x[0,1.6] y[0,1]; a camera zooms
+// toward the eye on a slow, continuous push (?zoom=fixed to hold).
+function camera(t) {
+  if (params.has('zoom')) return {z: +params.get('zoom'), cx: .8 + (.995 - .8) * Math.min(1, +params.get('zoom') / 3), cy: .5 + (.235 - .5) * Math.min(1, +params.get('zoom') / 3)};
+  const z = Math.max(0, (t - 3) * .08) % 3.2;
+  const k = Math.min(1, z / 3);
+  return {z, cx: .8 + (.995 - .8) * k, cy: .5 + (.235 - .5) * k};
+}
+
+const ramp = new Int8Array(8), level = new Float32Array(8), cell = {};
+function solve(x, y, w, h, t) {
+  let mixed = false;
+  for (let i = 0; i < 8; i++) {
+    const [r, l] = frikScene(x + ((i & 1) + .5) / 2 * w, y + ((i >> 1) + .5) / 4 * h, t);
+    ramp[i] = r; level[i] = l;
+    if (r !== ramp[0]) mixed = true;
+  }
+  solveRampCell(ramp, level, model, style, cell);
+  return mixed;
+}
+function draw(ch, fg, bg, X, Y, W, H) {
+  ctx.fillStyle = frikInks[bg]; ctx.fillRect(X, Y, W + .5, H + .5);
+  if (ch !== ' ') { ctx.fillStyle = frikInks[fg]; paintGlyph(ctx, ch, X, Y, W, H); }
+}
+
+function frame(ms) {
+  const t = ms / 1000;
+  const W = canvas.width = innerWidth * Math.min(2, devicePixelRatio), H = canvas.height = innerHeight * Math.min(2, devicePixelRatio);
+  ctx.fillStyle = frikInks[0]; ctx.fillRect(0, 0, W, H);
+  // Viewscreen rect (16:10 inside a bezel).
+  const vw = Math.min(W * .94, H * .94 * 1.6), vh = vw / 1.6, vx = (W - vw) / 2, vy = (H - vh) / 2;
+  const cam = camera(t), o = Math.floor(cam.z), span = 2 ** -cam.z;
+  // World-anchored octave grid: cells keep their place in the scene; their
+  // screen size breathes between 1x and 2x, then the next octave takes over.
+  const cw = 1.6 * 2 ** -o / C0, chh = cw * 2 * (vh / vw) * 1.6 / 1.6 * (vw / vh) / 1.6;
+  const ch = cw * 2 / 1.6 * 1.6 * (1 / 1.6) * 1.6; // cell aspect 1:2 in screen pixels
+  const sx = vw / (1.6 * span), sy = vh / span;
+  const left = cam.cx - .8 * span, top = cam.cy - .5 * span;
+  const cellH = cw * sx * 2 / sy;
+  const i0 = Math.floor(left / cw), j0 = Math.floor(top / cellH);
+  const i1 = Math.ceil((left + 1.6 * span) / cw), j1 = Math.ceil((top + span) / cellH);
+  ctx.save(); ctx.beginPath(); ctx.rect(vx, vy, vw, vh); ctx.clip();
+  for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) {
+    const x = i * cw, y = j * cellH;
+    const X = vx + (x - left) * sx, Y = vy + (y - top) * sy, CW = cw * sx, CH = cellH * sy;
+    const mixed = solve(x, y, cw, cellH, t);
+    if (passes > 1 && mixed) {
+      for (let q = 0; q < 4; q++) {
+        const qx = x + (q & 1) * cw / 2, qy = y + (q >> 1) * cellH / 2;
+        solve(qx, qy, cw / 2, cellH / 2, t);
+        draw(cell.char, cell.fg, cell.bg, X + (q & 1) * CW / 2, Y + (q >> 1) * CH / 2, CW / 2, CH / 2);
+      }
+    } else draw(cell.char, cell.fg, cell.bg, X, Y, CW, CH);
+  }
+  // Authored glyph marks, typed on top at whole-cell size.
+  ctx.textBaseline = 'top';
+  const cellPx = cw * sx;
+  ctx.font = Math.round(cellPx * 2) + 'px ' + ansiFontFamily;
+  for (const m of frikMarks(t)) {
+    ctx.globalAlpha = Math.max(0, Math.min(1, m.alpha));
+    ctx.fillStyle = frikInks[m.ink];
+    ctx.fillText(m.ch, vx + (m.x - left) * sx - cellPx / 2, vy + (m.y - top) * sy - cellPx);
+  }
+  ctx.globalAlpha = 1; ctx.restore();
+  // Bezel: a comms viewscreen in VGA ink.
+  ctx.strokeStyle = frikInks[6]; ctx.lineWidth = Math.max(2, W / 400);
+  ctx.strokeRect(vx - 4, vy - 4, vw + 8, vh + 8);
+  ctx.fillStyle = frikInks[6]; ctx.font = Math.round(H / 36) + 'px ' + ansiFontFamily;
+  ctx.fillText('COMMS / FRIK KEEPER / CHANNEL OPEN', vx + 8, vy - H / 30);
+  canvas.dataset.zoom = cam.z.toFixed(2);
+  if (!params.has('still')) requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
