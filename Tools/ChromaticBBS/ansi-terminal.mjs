@@ -148,7 +148,7 @@ export function ansiSerialFrame(text,seconds,{bps=2400,bitsPerByte=10,complete=f
  const count=complete?text.length:Math.min(text.length,Math.floor(seconds*bps/bitsPerByte));
  return {count,duration:text.length*bitsPerByte/bps,complete:count===text.length,text:text.slice(0,count)};
 }
-function paintGlyph(ctx,char,x,y,w,h){
+export function paintGlyph(ctx,char,x,y,w,h){
  if(char===' '||!char)return;
  const quadrants=' ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█',mask=quadrants.indexOf(char);if(mask>0&&!['▀','▄','▌','▐','█'].includes(char)){for(let n=0;n<4;n++)if(mask&(1<<n))ctx.fillRect(x+(n%2)*w/2,y+Math.floor(n/2)*h/2,w/2,h/2);return;}
  if('█▀▄▌▐░▒▓'.includes(char)){

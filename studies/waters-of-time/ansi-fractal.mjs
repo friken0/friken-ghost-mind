@@ -709,6 +709,7 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
   }
  }
  const quadrantGlyphs=' ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█';
+ let paletteTrue=false;
  function quadrantInk(layer,index,out){
   const {art,across}=layer,base=index*across*2;
   let lo=Infinity,hi=-Infinity;
@@ -727,6 +728,15 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
    else{br+=r;bg+=g;bb+=b;bn++;}
   }
   out[0]=bits;
+  if(paletteTrue){
+   // ANSI++ palette-true cell: each side keeps a real sampled ink (the one
+   // nearest its side's mean) instead of an averaged RGB, so a cell never
+   // holds a colour the palette does not.
+   const pick=(set,r,g,b,n)=>{let best=0xff000000,d=Infinity;for(let q=0;q<4;q++){if(((bits>>q)&1)!==set)continue;const m=out[3+q],e=Math.abs((m&255)-r/n)+Math.abs((m>>>8&255)-g/n)+Math.abs((m>>>16&255)-b/n);if(e<d){d=e;best=m;}}return best;};
+   out[1]=an?pick(1,ar,ag,ab,an):0xff000000;
+   out[2]=bn?pick(0,br,bg,bb,bn):out[1];
+   return;
+  }
   out[1]=an?0xff000000|Math.round(ar/an)|(Math.round(ag/an)<<8)|(Math.round(ab/an)<<16):0xff000000;
   out[2]=0xff000000|Math.round(br/bn)|(Math.round(bg/bn)<<8)|(Math.round(bb/bn)<<16);
  }
@@ -953,6 +963,7 @@ export function mountAnsiFractal(root,{host,textureOnly=false,frameBudget=4}){
   drawRows(layer,layer.filled);
  }
  function update(item,ready,time,reduced=false){
+  paletteTrue=!!item?.paletteTrue;
   if(!item){
    shownRelief=null;
    inspectOverlay=null;

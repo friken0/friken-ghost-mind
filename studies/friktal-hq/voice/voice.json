@@ -1,0 +1,37 @@
+{
+ "schema": "friktal.hq-voice.v1",
+ "voice": "am_michael",
+ "model": "onnx-community/Kokoro-82M-v1.0-ONNX@1939ad2a8e416c0acfeecc08a694d14ef25f2231",
+ "clips": {
+  "ghost-0": {
+   "file": "ghost-0.mp3",
+   "duration": 9.025,
+   "text": "Captain. The thing on the other ship is holding out a bowl of water. That is either diplomacy or soup. I am not ruling out soup."
+  },
+  "ghost-2": {
+   "file": "ghost-2.mp3",
+   "duration": 9.925,
+   "text": "Sixty-one percent decode. The other thirty-nine is either grief or very specific swearing. I would bet my last checksum on both."
+  },
+  "ghost-4": {
+   "file": "ghost-4.mp3",
+   "duration": 10.775,
+   "text": "Oh. That is not an eye. That is a planet. Somebody keeps a whole world in a cornea, and I complain about a hundred and twenty-eight kilobyte program limit."
+  },
+  "ghost-7": {
+   "file": "ghost-7.mp3",
+   "duration": 8.3,
+   "text": "Captain… I have read those plans. Ours had the same rivets. We were proud too. Very proud. Ten centuries of proud."
+  },
+  "ghost-9": {
+   "file": "ghost-9.mp3",
+   "duration": 10.05,
+   "text": "He is not showing us his world. He is showing us ours, about ninety years early. I would like a word with whoever schedules the foreshadowing."
+  },
+  "ghost-11": {
+   "file": "ghost-11.mp3",
+   "duration": 6.075,
+   "text": "That is an invitation, Captain. I am saying yes before my pride gets a vote."
+  }
+ }
+}
