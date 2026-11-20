@@ -154,7 +154,7 @@ export function projectState(shot,time,effects,grade,columns=analysisColumns) {
     pixel/=gate.span;
     span/=gate.span;
   }
-  return {levels,x,y,window,narration:{rank:shot.matrixRank??0,evidence:shot.evidence,answered:shot.answered,find:shot.find,trip:shot.trip??0,rewinding:!!shot.rewinding,final:shot.scene===frikMindScenes.length-1}};
+  return {levels,x,y,window,narration:{script:shot.script,rank:shot.matrixRank??0,evidence:shot.evidence,answered:shot.answered,find:shot.find,trip:shot.trip??0,rewinding:!!shot.rewinding,final:shot.scene===frikMindScenes.length-1}};
 }
 
 function sampleLevel(levels, level, x, y) {
@@ -377,7 +377,8 @@ function paintStoryCaption(put,state){
   const chapter=state.levels[0].data.prologue;
   if(chapter>=0){
     const evidence=flightTraces.find(p=>p.id===state.narration.find);
-    const [title,line]=evidence?[evidence.name,evidence.line]:crossing[chapter];
+    // A host may tell the crossing in its own words (Lancing NEXT); default is the original.
+    const [title,line]=evidence?[evidence.name,evidence.line]:(state.narration.script??crossing)[chapter];
     put.depthRegion(1,()=>{
       put(.035,.79,.93,.20,'#060d1cf0');
       put.textBlock(title.toUpperCase(),.06,.803,.88,.038,.030,'#f7ce94',{maxSize:26,maxLines:1});

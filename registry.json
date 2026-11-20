@@ -1430,8 +1430,8 @@
     },
     {
       "path": "studies/waters-of-time/ansi-fractal.mjs",
-      "bytes": 109946,
-      "sha256": "fb05017accbed67dbe8c70d8cdda374cc17490934aa94422c472d93967c0b3e5"
+      "bytes": 108993,
+      "sha256": "05e43a2484ee388cd0ec465dedc1f09795a33a710b3257774380f7bf84b00dfd"
     },
     {
       "path": "studies/waters-of-time/ansi-frik-bridge-ink.mjs",
@@ -1480,8 +1480,8 @@
     },
     {
       "path": "studies/waters-of-time/ansi-frik-mind.mjs",
-      "bytes": 23096,
-      "sha256": "5a39e903bb4ed82a91194be3767206584f04af98084c17218d47e746cedb6a40"
+      "bytes": 23235,
+      "sha256": "9624dbc63872d8f61cf56eb4299a4b6c046303ed0570ac5f09e76b53e2eabd37"
     },
     {
       "path": "studies/waters-of-time/ansi-frik-motion.mjs",
@@ -1500,8 +1500,8 @@
     },
     {
       "path": "studies/waters-of-time/ansi-mandel-field.mjs",
-      "bytes": 376,
-      "sha256": "b1daacdcc7c1dfeda978a6596e2ab178667004f85efed70fe264a3af21a736bb"
+      "bytes": 1994,
+      "sha256": "4dc848858f86a8f7c5f050066c32a6feba021aa8964feb6f89dc782dc8f541c9"
     },
     {
       "path": "studies/waters-of-time/ansi-mirror.mjs",
